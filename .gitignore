@@ -1,0 +1,11 @@
+# Godot
+.godot/
+/android/
+*.tmp
+
+# Exportações
+/build/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
