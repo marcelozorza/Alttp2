@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://objects/light_crate.tscn" id="2_crate"]
+[ext_resource type="PackedScene" path="res://objects/heavy_block.tscn" id="3_block"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -121,5 +123,11 @@ color = Color(0.5, 0.48, 0.44, 1)
 position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_pillar_base")
 
+[node name="LightCrate" parent="Objects" instance=ExtResource("2_crate")]
+position = Vector2(120, 96)
+
+[node name="HeavyBlock" parent="Objects" instance=ExtResource("3_block")]
+position = Vector2(160, 52)
+
 [node name="Player" parent="Objects" instance=ExtResource("1_player")]
-position = Vector2(80, 64)
+position = Vector2(48, 64)

@@ -42,6 +42,16 @@ Limitações também definem o jogo. As decisões abaixo podem ser revistas depo
 - **Correr demais tem custo.** Inspirado no jeito da Nintendo de punir o exagero, como rodar no Mario Kart ao segurar a curva demais. Depois de um tempo correndo, o personagem perde o equilíbrio e cambaleia. Apertar a direção oposta o equilibra de novo, como no equilíbrio do Tony Hawk's Pro Skater. Sem reação, ele tropeça e cai, e fica alguns instantes sem se mover. A ideia é correr pouco e ficar atento. Soltar e dar dois toques de novo reinicia o tempo de corrida, o que já cria uma técnica natural para quem domina o ritmo.
 - **Andar de lado (strafe).** Manter a frente enquanto se move. Em teste: segurar um botão (Shift no teclado, L ou R no controle) trava a frente.
 
+## Física
+
+Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento e inércia em tempo real.
+
+- **Ação e reação.** Toda batida troca momento entre os dois corpos. Contra uma parede ou algo mais pesado, o personagem volta. Contra algo mais leve, o objeto vai embora e o personagem segue mais devagar.
+- **Momento.** Um impulso externo, como uma batida ou um golpe, desloca o personagem até o atrito pará-lo. Nesse intervalo, o controle fica suspenso.
+- **Limite de velocidade para o ricochete.** Abaixo de uma velocidade mínima, a batida é inelástica: andando contra uma parede, o personagem só para, e andando contra um objeto, ele o empurra (rápido se for leve, devagar se for pesado). Acima dela, como correndo, há ricochete. Sem esse limite, encostar numa parede jogaria o personagem para trás o tempo todo.
+- **Uso estratégico.** Bater na parede correndo vira uma fuga rápida numa luta. Bater numa parede durante o desequilíbrio também evita a queda. Isso abre espaço para técnicas que os jogadores vão descobrir.
+- **Física própria.** A física das batidas é nossa (`physics/momentum_body.gd`) e roda em passo fixo, para que todo truque descoberto funcione sempre da mesma forma.
+
 ## Combate
 
 - **Curta distância.** O ataque principal é corpo a corpo.
@@ -68,7 +78,8 @@ Limitações também definem o jogo. As decisões abaixo podem ser revistas depo
 - **Autoria da arte** para o lançamento.
 - **Sensação do andar e da corrida.** Arranque e parada instantâneos ou com inércia, velocidade da corrida, janela do duplo toque, tempo até o desequilíbrio, tempo para reagir e tempo caído. Todos esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: andar a 90 px/s, correr a 150 px/s, duplo toque em até 0,25 s, 1 s de corrida até o desequilíbrio, 0,5 s para reagir, 0,8 s caído.
 - **Equilíbrio recuperado.** Hoje, ao se equilibrar, o personagem para de correr. A alternativa é continuar correndo com o tempo reiniciado, mais próximo do Tony Hawk's Pro Skater, o que permite corridas longas para quem tem ritmo.
-- **Corrida como esquiva.** Decidir se a corrida dá alguns instantes de invulnerabilidade ou só velocidade.
+- **Invencibilidade.** Proposta: só depois de tomar dano, com o personagem piscando, para evitar dano em sequência. Na corrida, nenhuma. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade e dá sentido ao custo do desequilíbrio.
+- **Valores da física.** Massa, restituição, velocidade mínima de ricochete e atrito do personagem e dos objetos. Valores iniciais: personagem com massa 1, restituição 1 e ricochete acima de 120 px/s, caixa leve com massa 0,5 e bloco pesado com massa 4.
 - **Strafe.** Botão que trava a frente (em teste) ou L e R para andar de lado. Uma terceira opção é a frente ficar travada enquanto o ataque giratório carrega, o que daria o strafe sem botão extra.
 - **Armas.** Quais armas existem, como se alternam e quais servem de chave.
 - **Primeira área do protótipo.** Quais 4 ferramentas e o que cada uma destrava.

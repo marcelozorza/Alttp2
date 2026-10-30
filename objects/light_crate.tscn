@@ -1,0 +1,33 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://objects/pushable.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
+size = Vector2(14, 10)
+
+[node name="LightCrate" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_script")
+mass = 0.5
+restitution = 0.8
+bounce_threshold = 30.0
+friction = 250.0
+
+[node name="TopFace" type="ColorRect" parent="."]
+offset_left = -7.0
+offset_top = -16.0
+offset_right = 7.0
+offset_bottom = -8.0
+mouse_filter = 2
+color = Color(0.78, 0.6, 0.38, 1)
+
+[node name="FrontFace" type="ColorRect" parent="."]
+offset_left = -7.0
+offset_top = -8.0
+offset_right = 7.0
+mouse_filter = 2
+color = Color(0.58, 0.42, 0.25, 1)
+
+[node name="Base" type="CollisionShape2D" parent="."]
+position = Vector2(0, -5)
+shape = SubResource("RectangleShape2D_base")

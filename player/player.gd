@@ -1,5 +1,5 @@
 class_name Player
-extends CharacterBody2D
+extends MomentumBody
 ## Personagem controlado pelo jogador.
 ##
 ## O movimento roda em _physics_process, que o Godot executa em passo fixo
@@ -14,15 +14,20 @@ extends CharacterBody2D
 ## O corpo desenhado se estende para cima, o que permite passar por trás de
 ## objetos na perspectiva 3/4.
 ##
+## Batidas seguem a física de MomentumBody. Uma batida forte, como correr
+## contra uma parede, arremessa o personagem para trás, e ele só recupera o
+## controle quando o atrito reduz a velocidade abaixo de recover_speed.
+##
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
 
-enum State { WALK, RUN, WOBBLE, FALLEN }
+enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK }
 
 ## Cores provisórias do corpo em cada estado.
 const RUN_COLOR := Color(0.95, 0.62, 0.2, 1.0)
 const WOBBLE_COLOR := Color(1.0, 0.15, 0.15, 1.0)
 const FALLEN_COLOR := Color(0.45, 0.4, 0.4, 1.0)
+const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 
 @export_group("Andar")
 ## Velocidade máxima, em pixels por segundo.
@@ -50,6 +55,11 @@ const FALLEN_COLOR := Color(0.45, 0.4, 0.4, 1.0)
 ## Segundos caído no chão, sem poder se mover.
 @export_range(0.0, 3.0, 0.05) var fall_time := 0.8
 
+@export_group("Batidas")
+## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
+## controle depois de arremessado.
+@export_range(0.0, 200.0, 1.0) var recover_speed := 30.0
+
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
 ## parede andando em linha reta. Zero desliga.
@@ -76,6 +86,29 @@ var _last_press_tick := 0
 func _physics_process(delta: float) -> void:
 	var direction := _read_direction()
 	_update_state(direction)
+	if _state == State.KNOCKBACK:
+		# Arremessado, sem controle, até o atrito parar o personagem.
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+	else:
+		_steer(direction, delta)
+	move_with_impacts()
+	_update_visuals()
+
+
+## Recebe a batida de outro corpo. Uma batida forte arremessa o personagem.
+func add_impact_velocity(delta_velocity: Vector2) -> void:
+	velocity += delta_velocity
+	if delta_velocity.length() > recover_speed:
+		_enter(State.KNOCKBACK)
+
+
+func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
+	velocity = new_velocity
+	if rebound > recover_speed:
+		_enter(State.KNOCKBACK)
+
+
+func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
 	var speed := walk_speed
 	match _state:
@@ -93,8 +126,6 @@ func _physics_process(delta: float) -> void:
 	var nudge := _corner_nudge(move_direction, speed, delta)
 	if nudge != Vector2.ZERO:
 		velocity = nudge
-	move_and_slide()
-	_update_visuals()
 
 
 ## Lê a entrada e a reduz a uma das 8 direções, com as diagonais normalizadas.
@@ -107,7 +138,8 @@ func _read_direction() -> Vector2:
 
 
 ## Andar vira corrida com o duplo toque. A corrida longa demais leva ao
-## desequilíbrio, e o desequilíbrio sem reação leva à queda.
+## desequilíbrio, e o desequilíbrio sem reação leva à queda. O arremesso por
+## batida interrompe qualquer estado e termina em andar.
 func _update_state(direction: Vector2) -> void:
 	var pressed := _previous_direction == Vector2.ZERO and direction != Vector2.ZERO
 	_previous_direction = direction
@@ -130,6 +162,9 @@ func _update_state(direction: Vector2) -> void:
 				_enter(State.FALLEN)
 		State.FALLEN:
 			if _ticks_in_state() >= _ticks(fall_time):
+				_enter(State.WALK)
+		State.KNOCKBACK:
+			if velocity.length() <= recover_speed:
 				_enter(State.WALK)
 
 
@@ -219,6 +254,8 @@ func _update_visuals() -> void:
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 		State.FALLEN:
 			color = FALLEN_COLOR
+		State.KNOCKBACK:
+			color = KNOCKBACK_COLOR
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var body_center := Vector2(0.0, -4.0)

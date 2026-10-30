@@ -19,7 +19,17 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 ## Estrutura
 
 - `player/` personagem do jogador, cena e script.
-- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita e uma coluna para testar o andar.
+- `physics/` física de massa e momento usada pelo personagem e pelos objetos.
+- `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
+- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita, uma coluna, uma caixa leve e um bloco pesado.
+
+## Cores provisórias do personagem
+
+- **Vermelho:** andando.
+- **Laranja:** correndo.
+- **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
+- **Cinza:** caído.
+- **Branco:** arremessado por uma batida, sem controle.
 
 ## Ajustar a sensação do andar
 
