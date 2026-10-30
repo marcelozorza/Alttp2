@@ -12,7 +12,9 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 
 ## Controles
 
-- **Mover:** WASD, setas, analógico esquerdo ou direcional do controle.
+- **Mover:** WASD, setas, analógico esquerdo ou direcional do controle. Sempre em 8 direções.
+- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
+- **Andar de lado:** segure Shift, ou L ou R no controle, para manter a direção de frente.
 
 ## Estrutura
 
