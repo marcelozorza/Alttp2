@@ -17,5 +17,9 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 ## Estrutura
 
 - `player/` personagem do jogador, cena e script.
-- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual.
+- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita e uma coluna para testar o andar.
+
+## Ajustar a sensação do andar
+
+Com o jogo rodando (F5), abra a aba **Remoto** no painel de cena do editor, selecione `Player` e altere os valores no Inspetor. O efeito é imediato. Para guardar um valor, altere também em `player/player.tscn`.
 - `docs/` documentação de design.

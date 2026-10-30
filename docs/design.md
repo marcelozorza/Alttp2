@@ -48,6 +48,6 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 - **Proporção da tela.** O SNES mostrava uma área quase quadrada, de 16 por 14 tiles. Em 16:9 a área fica mais larga e mais baixa, o que muda a sensação de diorama. Define o tamanho de toda a arte.
 - **Autoria da arte** para o lançamento.
 - **Ação básica.** Ainda não está decidido se haverá espada ou outro tipo de ataque.
-- **Sensação do andar.** Arranque e parada instantâneos ou com inércia, deslizar em quinas, número de direções.
+- **Sensação do andar.** Arranque e parada instantâneos ou com inércia, tolerância para deslizar em quinas, 8 direções fixas ou analógico livre. Todos esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: arranque e parada instantâneos, 8 direções, 6 pixels de tolerância na quina, frente em 4 direções.
 - **Primeira área do protótipo.** Quais 4 ferramentas e o que cada uma destrava.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.
