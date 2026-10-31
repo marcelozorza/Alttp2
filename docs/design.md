@@ -59,7 +59,7 @@ As ferramentas ficam num botão próprio, e outro botão troca a ferramenta esco
 
 - **Bomba.** Fica no chão um pouco à frente do personagem e explode depois de 1,5 s, num raio de 26 px. Abre paredes rachadas, causa dano, empurra os corpos pela física e machuca o próprio personagem. No máximo 2 no chão ao mesmo tempo. O personagem atravessa as próprias bombas, e a espada as empurra, o que permite chutá-las. Fogo e outras explosões acendem o pavio na hora, o que permite reações em cadeia.
 - **Chama.** Lança uma bola de fogo reta na direção da frente, com alcance de 120 px, uma de cada vez. Derrete gelo, acende bombas e queima inimigos. Qualquer coisa sólida apaga a bola.
-- **Mola.** Pulo vertical, inspirado na pena de Link's Awakening. O personagem sobe no eixo da câmera e cresce na tela, porque fica mais perto dela, e a sombra fica no chão. Ele não ganha distância: o controle no ar é o mesmo do chão. O pulo dura 0,5 s e chega a 22 px de altura. Serve para subir degraus altos e para escapar das ondas de choque do chefe. Pular correndo mantém a velocidade da corrida, sem ganho extra. Saltos longos sobre buracos, como pena e botas no Link's Awakening, ficam para depois.
+- **Mola.** Pulo vertical, inspirado na pena de Link's Awakening. O personagem sobe no eixo da câmera e cresce na tela, porque fica mais perto dela, e a sombra fica no chão. Ele não ganha distância: o controle no ar é o mesmo do chão. O pulo dura 0,5 s e sobe cerca de 20 px, acima dos 16 px de um degrau. Serve para subir degraus altos e para escapar das ondas de choque do chefe. Pular correndo mantém a velocidade da corrida, sem ganho extra. Saltos longos sobre buracos, como pena e botas no Link's Awakening, ficam para depois.
 
 ## Bloqueios
 

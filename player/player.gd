@@ -91,8 +91,9 @@ const VISUAL_CATCH_UP := 1.5
 @export_range(0.0, 3.0, 0.05) var invincibility_time := 1.0
 
 @export_group("Ferramentas")
-## Altura máxima do pulo da mola, em pixels. Precisa passar da altura dos
-## degraus, que é de 16 pixels.
+## Altura do pulo da mola, em pixels. Com o passo fixo, o pico real fica um
+## pouco abaixo (20,5 px para 22). Precisa passar da altura dos degraus, que é
+## de 16 pixels.
 @export_range(8.0, 48.0, 1.0) var jump_height := 22.0
 ## Tempo no ar do pulo, em segundos.
 @export_range(0.2, 1.5, 0.05) var jump_time := 0.5
