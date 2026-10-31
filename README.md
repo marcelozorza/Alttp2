@@ -8,25 +8,54 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 
 1. Instale o [Godot 4.7](https://godotengine.org/download), na versão padrão (a versão .NET não é necessária).
 2. No gerenciador de projetos do Godot, clique em **Importar** e selecione o arquivo `project.godot` desta pasta.
-3. Pressione **F5** para rodar.
+3. Pressione **F5** para rodar. O jogo abre no menu.
+
+## Menu
+
+- **Capítulo 1: linear.** A distribuição pensada para aprender: bomba, chama e mola, nessa ordem.
+- **Capítulo 1: seed aleatória.** Sorteia uma seed de seis dígitos, mostrada no alto da tela. Os itens trocam de baú, e sempre há caminho até o chefe.
+- **Sala de teste.** A sala da física e do combate, com todas as ferramentas desde o início, um degrau alto, uma parede rachada e um bloco de gelo.
+
+No menu, use as setas ou o direcional para escolher e Enter, Espaço ou o botão de baixo do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
 
 ## Controles
 
 - **Mover:** WASD, setas, analógico esquerdo ou direcional do controle. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
 - **Andar de lado:** segure Shift, ou L ou R no controle, para manter a direção de frente.
-- **Atacar:** J, Z ou Espaço no teclado, botão de baixo ou da esquerda no controle (A ou X no padrão Xbox).
+- **Atacar:** J, Z ou Espaço no teclado, botão de baixo no controle (A no padrão Xbox). O golpe de espada também abre os baús.
+- **Usar a ferramenta:** K ou X no teclado, botão da esquerda no controle (X no padrão Xbox).
+- **Trocar de ferramenta:** L ou C no teclado, botão de cima no controle (Y no padrão Xbox).
+
+## Ferramentas
+
+- **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. A espada empurra a bomba.
+- **Chama:** bola de fogo reta. Derrete gelo e acende bombas.
+- **Mola:** pulo vertical, sem ganhar distância. Encostado na face de um degrau alto, no alto do pulo e apertando para cima, o personagem sobe. Para descer, basta andar contra a face vindo de cima.
 
 ## Estrutura
 
-- `player/` personagem do jogador, cena e script.
+- `player/` personagem do jogador e a espada.
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
+- `combat/` tipos de golpe, que decidem o que cada ferramenta afeta.
+- `items/` itens e ferramentas: baú, bomba, bola de fogo e a relíquia do fim.
+- `obstacles/` bloqueios: parede rachada, gelo e a face do degrau alto.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
-- `enemies/` inimigos de teste, um pesado e um leve.
-- `ui/` interface, por enquanto só a vida no canto da tela.
+- `enemies/` inimigos: pesado, leve, de gelo e o chefe com a onda de choque.
+- `progression/` lógica de alcance, gerador de seeds e as escolhas da partida.
+- `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita, uma coluna, uma caixa leve, um bloco pesado e os dois inimigos.
+- `world/` salas e mapas. `chapter_one/` tem o capítulo 1, com o mapa em texto e as distribuições separadas do mapa. `test_room.tscn` é a sala de teste.
+- `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
 - `docs/` documentação de design.
+
+## Conferir um capítulo sem o Godot
+
+```
+python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
+```
+
+Confere a geometria das salas e das portas, garante que a distribuição linear é vencível e que nenhuma combinação de ferramentas prende o jogador, e conta quantas distribuições embaralhadas são vencíveis.
 
 ## Cores provisórias do personagem
 
@@ -36,6 +65,7 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - **Cinza e deitado:** caído, se arrastando até parar.
 - **Branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
+- **Maior, com uma sombra embaixo:** no ar, pulando com a mola.
 
 ## Cores provisórias dos inimigos
 
@@ -43,6 +73,17 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - **Vermelho:** dando o bote. Só aqui ele causa dano.
 - **Escuro:** parado e vulnerável depois do bote.
 - **Branco:** acabou de levar um golpe.
+- **Cinza:** o golpe não o afeta. Falta outra ferramenta.
+- **Azul claro:** de gelo. Só o fogo funciona.
+- **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
+
+## Cores provisórias do mundo
+
+- **Parede escura com rachaduras claras:** abre com a bomba.
+- **Bloco azul claro com brilhos:** derrete com a chama.
+- **Faixa marrom listrada com chão mais claro acima:** degrau alto. Sobe com a mola.
+- **Baú marrom com faixa dourada:** abre com a espada.
+- **Losango dourado:** relíquia que o chefe deixa. Tocar nela encerra o capítulo.
 
 ## Ajustar a sensação do andar
 

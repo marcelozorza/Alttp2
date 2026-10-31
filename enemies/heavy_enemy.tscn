@@ -20,6 +20,9 @@ lunge_speed = 170.0
 lunge_time = 0.3
 recover_time = 1.0
 damage = 2
+sword_factor = 1
+fire_factor = 1
+blast_factor = 3
 
 [node name="Body" type="ColorRect" parent="."]
 offset_left = -10.0

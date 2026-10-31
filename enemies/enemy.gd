@@ -10,6 +10,10 @@ extends MomentumBody
 ## A massa decide o resto pela física. O inimigo pesado arremessa o personagem
 ## no bote e quase não se move com a espada. O leve voa longe com a espada e
 ## empurra pouco.
+##
+## Cada tipo de golpe tem um multiplicador de dano, que é a parte de pedra,
+## papel e tesoura do combate. Multiplicador zero torna o inimigo imune: o
+## golpe só o empurra, e ele pisca em cinza.
 
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, STAGGER, DEAD }
 
@@ -17,6 +21,7 @@ enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, STAGGER, DEAD }
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
 const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -26,8 +31,15 @@ const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## Segundos atordoado e sem controle ao ser atingido. Zero significa que o
 ## golpe não interrompe o que ele estiver fazendo.
 @export_range(0.0, 2.0, 0.05) var stagger_time := 0.3
-## Segundos até reaparecer no ponto inicial depois de derrotado. Só para testes.
+## Segundos até reaparecer no ponto inicial depois de derrotado. Zero desliga.
+## No capítulo, os inimigos só voltam quando o personagem entra de novo na sala.
 @export_range(0.0, 10.0, 0.1) var respawn_time := 3.0
+## Multiplicador do dano da espada.
+@export_range(0, 10, 1) var sword_factor := 1
+## Multiplicador do dano do fogo.
+@export_range(0, 10, 1) var fire_factor := 1
+## Multiplicador do dano da explosão.
+@export_range(0, 10, 1) var blast_factor := 1
 
 @export_group("Comportamento")
 ## Distância, em pixels, a partir da qual percebe o personagem.
@@ -56,6 +68,7 @@ var _lunge_direction := Vector2.ZERO
 var _look_direction := Vector2.DOWN
 var _lunge_landed := false
 var _hit_tick := -1000
+var _immune_tick := -1000
 var _hurt_shape := RectangleShape2D.new()
 
 @onready var _home := global_position
@@ -73,15 +86,38 @@ func _ready() -> void:
 
 
 ## Recebe um golpe. O empurrão vem separado, pela física.
-func take_hit(amount: int, _direction: Vector2) -> void:
+func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD:
 		return
-	health -= amount
+	var factor := _factor(kind)
+	if factor == 0:
+		_immune_tick = Engine.get_physics_frames()
+		return
+	health -= amount * factor
 	_hit_tick = Engine.get_physics_frames()
 	if health <= 0:
 		_die()
 	elif stagger_time > 0.0:
 		_enter(State.STAGGER)
+
+
+## Volta ao ponto inicial, com a vida cheia e parado.
+func reset() -> void:
+	health = max_health
+	global_position = _home
+	velocity = Vector2.ZERO
+	visible = true
+	_base.set_deferred("disabled", false)
+	_enter(State.IDLE)
+
+
+## Liga ou desliga o inimigo quando o personagem entra ou sai da sala dele.
+## Nos dois casos ele volta ao ponto inicial. Desligado, ele não bloqueia nada.
+func set_active(active: bool) -> void:
+	reset()
+	visible = active
+	process_mode = Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
+	_base.set_deferred("disabled", not active)
 
 
 func _physics_process(delta: float) -> void:
@@ -134,8 +170,8 @@ func _update_state() -> void:
 			if elapsed >= GameMath.ticks(stagger_time):
 				_enter(State.APPROACH)
 		State.DEAD:
-			if elapsed >= GameMath.ticks(respawn_time):
-				_revive()
+			if respawn_time > 0.0 and elapsed >= GameMath.ticks(respawn_time):
+				reset()
 
 
 ## Durante o bote, procura o personagem numa área um pouco maior que a base.
@@ -167,18 +203,20 @@ func _die() -> void:
 	_base.set_deferred("disabled", true)
 
 
-func _revive() -> void:
-	health = max_health
-	global_position = _home
-	velocity = Vector2.ZERO
-	visible = true
-	_base.set_deferred("disabled", false)
-	_enter(State.IDLE)
+func _factor(kind: Hit.Kind) -> int:
+	match kind:
+		Hit.Kind.FIRE:
+			return fire_factor
+		Hit.Kind.BLAST:
+			return blast_factor
+		Hit.Kind.SHOCKWAVE:
+			return 0
+	return sword_factor
 
 
 ## Visual provisório: amarelo piscando na preparação, vermelho no bote, mais
-## escuro na recuperação e branco ao ser atingido. O olho mostra para onde ele
-## vai e a barra acima mostra a vida.
+## escuro na recuperação, branco ao ser atingido e cinza quando o golpe não o
+## afeta. O olho mostra para onde ele vai e a barra acima mostra a vida.
 func _update_visuals() -> void:
 	var elapsed := Engine.get_physics_frames() - _state_tick
 	var color := _body_color
@@ -194,6 +232,8 @@ func _update_visuals() -> void:
 			color = _body_color.darkened(0.35)
 	if Engine.get_physics_frames() - _hit_tick < GameMath.ticks(hit_flash_time):
 		color = HIT_COLOR
+	elif Engine.get_physics_frames() - _immune_tick < GameMath.ticks(hit_flash_time):
+		color = IMMUNE_COLOR
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0

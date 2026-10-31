@@ -20,7 +20,8 @@ O jogo deve ser original. A inspiração vem da sensação e da estrutura, sem c
 
 ## Estrutura de progressão
 
-- **Capítulos.** Áreas pequenas, como uma dungeon com cerca de 4 ferramentas-chave. O jogador primeiro joga a área na forma linear e aprende o vocabulário. Depois a mesma área, ou uma nova, aparece embaralhada.
+- **Capítulos.** Áreas pequenas, como uma dungeon com poucas ferramentas-chave. O jogador primeiro joga a área na forma linear e aprende o vocabulário. Depois a mesma área, ou uma nova, aparece embaralhada.
+- **Pedra, papel e tesoura.** Cada bloqueio mostra pela aparência qual ferramenta falta, e cada ferramenta é forte contra uma coisa e inútil contra outra. Sem a ferramenta certa, o jogador não passa e precisa encontrá-la. O golpe errado só faz o bloqueio tremer, o que confirma que ali falta outra coisa. A mesma regra vale no combate (ver Inimigos).
 
 ## Direção visual (em discussão)
 
@@ -35,7 +36,7 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 
 Limitações também definem o jogo. As decisões abaixo podem ser revistas depois de jogadas.
 
-- **Sem pulo.** O personagem não pula. Desníveis viram bloqueios naturais, o que reforça a ideia de ver o prêmio antes de alcançá-lo.
+- **Sem pulo no movimento base.** O personagem não pula sozinho. Desníveis viram bloqueios naturais, o que reforça a ideia de ver o prêmio antes de alcançá-lo. O pulo existe como ferramenta, a mola, que destrava esses desníveis (ver Ferramentas).
 - **8 direções fixas.** Norte, sul, leste, oeste e as quatro diagonais, inclusive no analógico. Não há movimento livre em ângulo.
 - **Frente em 4 direções.** Na diagonal, o personagem mantém a frente atual quando ela faz parte da diagonal.
 - **Corrida com dois toques.** Dois toques rápidos na mesma direção fazem o personagem correr enquanto a direção estiver pressionada. Serve para esquivar de ataques e adiciona uma camada de habilidade. Correndo, dá para mudar para os lados e para as diagonais à frente. Apertar uma direção com componente para trás cancela a corrida na hora, como uma freada. Ele nunca corre de volta.
@@ -52,6 +53,23 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 - **Uso estratégico.** Bater na parede correndo vira uma fuga rápida numa luta. Bater numa parede durante o desequilíbrio também evita a queda. Isso abre espaço para técnicas que os jogadores vão descobrir.
 - **Física própria.** A física das batidas é nossa (`physics/momentum_body.gd`) e roda em passo fixo, para que todo truque descoberto funcione sempre da mesma forma.
 
+## Ferramentas
+
+As ferramentas ficam num botão próprio, e outro botão troca a ferramenta escolhida. A escolhida aparece numa moldura no alto da tela, com as outras ao lado. Uma ferramenta nova já entra escolhida. No ar, só a espada funciona.
+
+- **Bomba.** Fica no chão um pouco à frente do personagem e explode depois de 1,5 s, num raio de 26 px. Abre paredes rachadas, causa dano, empurra os corpos pela física e machuca o próprio personagem. No máximo 2 no chão ao mesmo tempo. O personagem atravessa as próprias bombas, e a espada as empurra, o que permite chutá-las. Fogo e outras explosões acendem o pavio na hora, o que permite reações em cadeia.
+- **Chama.** Lança uma bola de fogo reta na direção da frente, com alcance de 120 px, uma de cada vez. Derrete gelo, acende bombas e queima inimigos. Qualquer coisa sólida apaga a bola.
+- **Mola.** Pulo vertical, inspirado na pena de Link's Awakening. O personagem sobe no eixo da câmera e cresce na tela, porque fica mais perto dela, e a sombra fica no chão. Ele não ganha distância: o controle no ar é o mesmo do chão. O pulo dura 0,5 s e chega a 22 px de altura. Serve para subir degraus altos e para escapar das ondas de choque do chefe. Pular correndo mantém a velocidade da corrida, sem ganho extra. Saltos longos sobre buracos, como pena e botas no Link's Awakening, ficam para depois.
+
+## Bloqueios
+
+Cada bloqueio tem uma aparência fixa, que se repete em todos os capítulos e seeds.
+
+- **Parede rachada.** Escura, com rachaduras claras. Só a explosão da bomba abre.
+- **Gelo.** Azul claro, com brilhos. Só o fogo derrete, em 0,25 s. O mesmo azul marca o inimigo de gelo e a casca do chefe, que também só cedem ao fogo.
+- **Degrau alto.** A face de um desnível de 16 px, marrom com listras, com o chão de cima mais claro. Ninguém atravessa a face andando. Com a mola, o personagem sobe se estiver alto o bastante ao encostar nela vindo de baixo. De cima, ele desce num salto ao andar contra ela, sem ferramenta. Sem a mola o degrau é de mão única, o que cria atalhos de volta.
+- **Como o degrau funciona.** A altura do chão não é simulada. A face é uma parede, e a travessia leva o personagem de um lado ao outro de uma vez, trocando posição por altura. O desenho alcança a nova posição em poucos ticks, o que esconde o salto.
+
 ## Combate
 
 - **Curta distância.** O ataque principal é corpo a corpo.
@@ -60,19 +78,37 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 - **Ataque giratório.** Segurar o botão de ataque carrega um golpe de 360 graus.
 - **Armas também são ferramentas.** Como entram na distribuição da seed, a forma de cada ataque pode servir de chave. Por exemplo, o alcance da lança pode atingir um interruptor do outro lado de um vão. Ainda é só ideia.
 - **Espada de estocada, a primeira arma.** Inspirada na espada do primeiro Zelda. Golpeia na direção da frente e entrega o golpe no mesmo instante do aperto, com a lâmina toda estendida. Não há espera pela animação: um novo aperto cancela o recolhimento e golpeia de novo. O dano vale em toda a lâmina que sai do corpo, cada golpe acerta cada alvo uma vez e empurra o alvo conforme a massa dele. O personagem fica parado por um instante (0,1 s) a cada golpe, mas pode virar para o próximo.
+- **Golpe no plano do chão.** A área de dano parte dos pés do personagem, então o golpe acerta o que está encostado e não muda durante o pulo, quando a lâmina desenhada sobe junto com o corpo.
+- **Fraquezas.** Cada inimigo tem um multiplicador de dano para espada, fogo e explosão. Multiplicador zero torna o inimigo imune: o golpe só o empurra, e ele pisca em cinza.
+- **Baús.** Abrem com um golpe de espada, e o item vai direto para o personagem. Fogo e explosões não abrem baús, para que nenhum baú seja aberto do outro lado de uma parede.
 - **Sem dano por contato.** Encostar num inimigo não machuca. Só o ataque do inimigo causa dano, e cada inimigo tem um padrão de ataque que o jogador precisa observar.
-- **Vida e invencibilidade.** O personagem tem 6 pontos de vida, mostrados no canto da tela. Depois de tomar dano, fica 1 s invencível, piscando. No protótipo, ao perder toda a vida ele volta ao início.
+- **Vida e invencibilidade.** O personagem começa com 6 pontos de vida, mostrados no canto da tela. Depois de tomar dano, fica 1 s invencível, piscando. Cada coração de baú dá 2 pontos de vida máxima e enche a vida. Ao perder toda a vida, ele volta à entrada da sala com a vida cheia e mantém ferramentas e baús abertos. Ainda não há tela de derrota.
 
-## Inimigos de teste
+## Inimigos
 
-Dois inimigos com o mesmo padrão e massas diferentes, um mais pesado e um mais leve que o personagem. O padrão é: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e treme, com a direção já travada), dá o bote em linha reta e fica parado e vulnerável. Quem sai da linha durante a preparação escapa.
+Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e treme, com a direção já travada), dá o bote em linha reta e fica parado e vulnerável. Quem sai da linha durante a preparação escapa. Eles só agem na sala do personagem e voltam ao ponto inicial quando ele entra ou sai da sala, ou quando reaparece.
 
-- **Pesado (massa 3, 6 de vida).** Lento, prepara o bote por 0,7 s, causa 2 de dano e arremessa o personagem. A espada quase não o move e não interrompe o que ele está fazendo.
-- **Leve (massa 0,5, 2 de vida).** Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante.
+- **Pesado (massa 3, 6 de vida).** Lento, prepara o bote por 0,7 s, causa 2 de dano e arremessa o personagem. A espada quase não o move e não interrompe o que ele está fazendo. A bomba causa o triplo do dano.
+- **Leve (massa 0,5, 2 de vida).** Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante. Fogo e bomba causam o dobro do dano.
+- **De gelo (massa 1, 3 de vida).** Azul claro, como o bloco de gelo. Imune à espada e à bomba. Uma bola de fogo o derrete. No capítulo 1 ele aparece primeiro na sala da chama, antes de o jogador ter como vencê-lo.
+- **Chefe, o guardião de gelo (massa 8, 12 de vida).** O exame das três ferramentas. Coberto pela casca de gelo, ignora espada e bomba. A chama quebra a casca, que volta depois de 6 s e pisca antes de voltar. Sem a casca, o núcleo apanha da espada e o triplo da bomba. Alterna dois ataques avisados em amarelo: uma pancada no chão que solta uma onda de choque, que só se evita no ar com a mola, e uma investida de 2 de dano em linha reta, na direção travada durante o aviso. Ele não sai da sala.
+
+## Capítulo 1
+
+- **Mapa.** 8 salas de uma tela (20 por 10 casas de 16 px), numa grade de 3 por 4, com portas de duas casas no meio das paredes. A câmera desliza de sala em sala, e uma barra no alto da tela mostra a vida, as ferramentas, o modo e o cronômetro.
+- **Baús.** 6 baús: as 3 ferramentas e 3 corações.
+- **Ordem linear.** A bomba fica na sala a leste do início, com uma parede rachada ao lado escondendo um coração. A chama fica a oeste, atrás de uma parede rachada, na sala do primeiro inimigo de gelo. A mola fica a nordeste, atrás do gelo, com um degrau ao lado e um coração em cima dele. O chefe fica ao norte, atrás de um degrau alto, de um bloco de gelo e de uma parede rachada, nessa ordem. Cada bloqueio aparece antes da ferramenta que o resolve, e cada ferramenta nova tem um uso por perto.
+- **Seeds.** O menu oferece a linear e uma seed aleatória de seis dígitos. A seed embaralha os itens entre os mesmos 6 baús, e o gerador só aceita a distribuição se a lógica do mapa garante caminho até o chefe com as ferramentas que ele exige. A mesma seed gera sempre a mesma distribuição, em qualquer máquina. Das 120 distribuições distintas, 64 são vencíveis.
+- **Lógica.** Parede rachada passa com a bomba, gelo com a chama, e o degrau sobe com a mola e desce sempre. Um baú conta como alcançado se alguma casa vizinha for alcançada.
+- **Regra dos baús.** Todo baú tem chão logo ao sul. A estocada para cima é a única que passa um pouco além de uma parede de uma casa, e a regra impede abrir um baú através dela.
+- **Fim.** Derrotado o chefe, aparece uma relíquia. Tocar nela encerra o capítulo e mostra o tempo, o modo e os baús abertos, com as opções de jogar de novo, nova seed ou voltar ao menu.
 
 ## Princípios técnicos
 
 - **Dados separados do mapa.** Ferramentas, locais de item e bloqueios são registrados como dados, por exemplo "este bloqueio exige a ferramenta X". A versão linear é uma distribuição fixa desses dados. Randomizar é gerar outra distribuição válida, sem refazer o mapa.
+- **Como os dados ficam.** O mapa do capítulo é texto, um caractere por casa, só com a geometria e as vagas de baús, bloqueios e inimigos (`world/chapter_one/chapter_one_data.gd`). O tipo de cada bloqueio e o item de cada baú ficam em tabelas à parte, e a versão linear é uma dessas tabelas. A lógica de alcance (`progression/chapter_map.gd`) e o gerador de seeds (`progression/randomizer.gd`) só leem esses dados.
+- **Conferência fora do Godot.** `tools/check_chapter.py` lê os mesmos dados, confere a geometria das salas e das portas, repete a lógica de alcance, garante que a linear é vencível e que nenhuma combinação de ferramentas prende o jogador num lugar sem volta, e conta as distribuições vencíveis.
+- **Tipos de golpe.** Espada, fogo, explosão e onda de choque (`combat/hit.gd`). Cada alvo decide como reage a cada tipo, e é isso que faz cada ferramenta servir para umas coisas e não para outras.
 - **Passo fixo de física.** Movimento e física rodam a 60 ticks por segundo, independentes da taxa de quadros. Técnicas de precisão precisam funcionar do mesmo jeito em qualquer máquina.
 
 ## Plataforma
@@ -94,5 +130,11 @@ Dois inimigos com o mesmo padrão e massas diferentes, um mais pesado e um mais 
 - **Armas.** Quais armas existem, como se alternam e quais servem de chave.
 - **Detalhes da espada.** Dano em toda a lâmina ou só na ponta. Recuo no personagem ao acertar uma parede ou algo pesado. Golpe durante a corrida como ataque especial em vez de encerrar a corrida.
 - **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
-- **Primeira área do protótipo.** Quais 4 ferramentas e o que cada uma destrava.
+- **Quarta ferramenta.** A ideia inicial era cerca de 4 ferramentas por capítulo. O capítulo 1 tem 3.
+- **Bomba.** Hoje ela machuca o próprio personagem, como no ALttP, é infinita e tem limite de 2 no chão. Bombas contadas mudariam o ritmo.
+- **Pulo e ataques.** Hoje o pulo só evita as ondas de choque. Os botes dos inimigos acertam no ar.
+- **Pulo correndo contra o degrau.** Correndo, um pulo que começa perto demais da face bate nela e ricocheteia, porque o personagem chega antes de estar alto o bastante. É coerente com a física, mas pode frustrar.
+- **Ajuste do chefe.** Vida, tempo da casca e ritmo dos ataques ainda não foram jogados.
+- **Texto no menu e no HUD.** O princípio de não ter dicas escritas vale para o mundo. O menu, o cronômetro e a tela de fim usam texto por enquanto.
+- **Voltar ao menu.** Esc, ou o botão Back do controle, volta ao menu na hora e perde a partida, sem confirmação.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.

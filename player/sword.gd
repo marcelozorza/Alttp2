@@ -6,11 +6,17 @@ extends Node2D
 ## toda estendida na direção da frente. Um novo aperto cancela o recolhimento
 ## e golpeia de novo, sem esperar a animação. Cada golpe acerta cada alvo uma
 ## vez, causa dano em quem tem take_hit e empurra corpos com massa.
+##
+## O dano é calculado no plano do chão, a partir dos pés de quem empunha. Assim
+## o golpe acerta o que está encostado e não muda durante o pulo, quando o
+## desenho da lâmina sobe junto com o corpo.
 
 ## Centro e meia extensão do corpo desenhado do personagem, a partir da origem
 ## nos pés. A lâmina sai da borda do corpo.
 const BODY_CENTER := Vector2(0.0, -4.0)
 const BODY_HALF_EXTENTS := Vector2(6.0, 8.0)
+## Meia extensão dos pés, a colisão do personagem.
+const FEET_HALF_EXTENTS := Vector2(6.0, 4.0)
 ## Espessura desenhada da lâmina, em pixels.
 const BLADE_THICKNESS := 4.0
 
@@ -35,7 +41,7 @@ var _already_hit: Array[Object] = []
 var _hit_shape := RectangleShape2D.new()
 
 @onready var _blade: ColorRect = $Blade
-@onready var _wielder: CollisionObject2D = get_parent()
+@onready var _wielder := owner as CollisionObject2D
 
 
 ## Golpeia na direção dada, uma das 4 direções retas.
@@ -58,11 +64,11 @@ func _elapsed() -> int:
 
 
 func _apply_hits() -> void:
-	var area := _blade_rect(reach, hit_width)
+	var area := _hit_rect()
 	_hit_shape.size = area.size
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = _hit_shape
-	query.transform = Transform2D(0.0, global_position + area.get_center())
+	query.transform = Transform2D(0.0, _wielder.global_position + area.get_center())
 	var excluded: Array[RID] = [_wielder.get_rid()]
 	query.exclude = excluded
 	query.collide_with_areas = true
@@ -72,7 +78,7 @@ func _apply_hits() -> void:
 			continue
 		_already_hit.append(target)
 		if target.has_method("take_hit"):
-			target.call("take_hit", damage, _direction)
+			target.call("take_hit", damage, _direction, Hit.Kind.SWORD)
 		var body := target as MomentumBody
 		if body:
 			body.add_impact_velocity(_direction * impulse / body.mass)
@@ -94,8 +100,21 @@ func _update_blade() -> void:
 		_blade.size = rect.size
 
 
-## Retângulo da lâmina, que começa na borda do corpo e se estende na direção
-## do golpe.
+## Área de dano no chão, relativa aos pés. Vai da borda dos pés até a ponta da
+## lâmina desenhada. Para cima, a lâmina sai do alto do corpo, então a área
+## também cobre o trecho entre os pés e a cabeça.
+func _hit_rect() -> Rect2:
+	var horizontal := _direction.x != 0.0
+	var edge := BODY_HALF_EXTENTS.x if horizontal else BODY_HALF_EXTENTS.y
+	var tip := BODY_CENTER + _direction * (edge + reach)
+	var near := _direction * (FEET_HALF_EXTENTS.x if horizontal else FEET_HALF_EXTENTS.y)
+	if horizontal:
+		return Rect2(minf(near.x, tip.x), -hit_width / 2.0, absf(tip.x - near.x), hit_width)
+	return Rect2(-hit_width / 2.0, minf(near.y, tip.y), hit_width, absf(tip.y - near.y))
+
+
+## Retângulo da lâmina desenhada, que começa na borda do corpo e se estende na
+## direção do golpe.
 func _blade_rect(length: float, thickness: float) -> Rect2:
 	var horizontal := _direction.x != 0.0
 	var edge := BODY_HALF_EXTENTS.x if horizontal else BODY_HALF_EXTENTS.y
