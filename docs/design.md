@@ -31,6 +31,45 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 3. **Mundo manipulável.** Objetos que se levantam, empurram e jogam. Isso dá a sensação de brinquedo.
 4. **Camadas de altura.** Penhascos, pontes e plataformas que permitem ver um item antes de conseguir alcançá-lo. Ver o prêmio do outro lado de um bloqueio ensina o jogador a voltar quando tiver a ferramenta certa.
 
+## Movimento
+
+Limitações também definem o jogo. As decisões abaixo podem ser revistas depois de jogadas.
+
+- **Sem pulo.** O personagem não pula. Desníveis viram bloqueios naturais, o que reforça a ideia de ver o prêmio antes de alcançá-lo.
+- **8 direções fixas.** Norte, sul, leste, oeste e as quatro diagonais, inclusive no analógico. Não há movimento livre em ângulo.
+- **Frente em 4 direções.** Na diagonal, o personagem mantém a frente atual quando ela faz parte da diagonal.
+- **Corrida com dois toques.** Dois toques rápidos na mesma direção fazem o personagem correr enquanto a direção estiver pressionada. Serve para esquivar de ataques e adiciona uma camada de habilidade. Correndo, dá para mudar para os lados e para as diagonais à frente. Apertar uma direção com componente para trás cancela a corrida na hora, como uma freada. Ele nunca corre de volta.
+- **Correr demais tem custo.** Inspirado no jeito da Nintendo de punir o exagero, como rodar no Mario Kart ao segurar a curva demais. Depois de um tempo correndo, o personagem perde o equilíbrio e cambaleia. Apertar a direção oposta o equilibra de novo, como no equilíbrio do Tony Hawk's Pro Skater. Sem reação, ele tropeça e cai, se arrasta pelo chão com o embalo da corrida, sem controle, e só se levanta depois de parar. A ideia é correr pouco e ficar atento. Soltar e dar dois toques de novo reinicia o tempo de corrida, o que já cria uma técnica natural para quem domina o ritmo.
+- **Andar de lado (strafe).** Manter a frente enquanto se move. Em teste: segurar um botão (Shift no teclado, L ou R no controle) trava a frente.
+
+## Física
+
+Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento e inércia em tempo real.
+
+- **Ação e reação.** Toda batida troca momento entre os dois corpos. Contra uma parede ou algo mais pesado, o personagem volta. Contra algo mais leve, o objeto vai embora e o personagem segue mais devagar.
+- **Momento.** Um impulso externo, como uma batida ou um golpe, desloca o personagem até o atrito pará-lo. Nesse intervalo, o controle fica suspenso.
+- **Limite de velocidade para o ricochete.** Abaixo de uma velocidade mínima, a batida é inelástica: andando contra uma parede, o personagem só para, e andando contra um objeto, ele o empurra (rápido se for leve, devagar se for pesado). Acima dela, como correndo, há ricochete. Sem esse limite, encostar numa parede jogaria o personagem para trás o tempo todo.
+- **Uso estratégico.** Bater na parede correndo vira uma fuga rápida numa luta. Bater numa parede durante o desequilíbrio também evita a queda. Isso abre espaço para técnicas que os jogadores vão descobrir.
+- **Física própria.** A física das batidas é nossa (`physics/momentum_body.gd`) e roda em passo fixo, para que todo truque descoberto funcione sempre da mesma forma.
+
+## Combate
+
+- **Curta distância.** O ataque principal é corpo a corpo.
+- **Um só botão de ataque.** Sem divisão entre ataque fraco e forte.
+- **A arma define a forma do ataque.** Ideias até agora: uma lança que ataca só para frente, com alcance maior, e uma espada que ataca em leque à frente.
+- **Ataque giratório.** Segurar o botão de ataque carrega um golpe de 360 graus.
+- **Armas também são ferramentas.** Como entram na distribuição da seed, a forma de cada ataque pode servir de chave. Por exemplo, o alcance da lança pode atingir um interruptor do outro lado de um vão. Ainda é só ideia.
+- **Espada de estocada, a primeira arma.** Inspirada na espada do primeiro Zelda. Golpeia na direção da frente e entrega o golpe no mesmo instante do aperto, com a lâmina toda estendida. Não há espera pela animação: um novo aperto cancela o recolhimento e golpeia de novo. O dano vale em toda a lâmina que sai do corpo, cada golpe acerta cada alvo uma vez e empurra o alvo conforme a massa dele. O personagem fica parado por um instante (0,1 s) a cada golpe, mas pode virar para o próximo.
+- **Sem dano por contato.** Encostar num inimigo não machuca. Só o ataque do inimigo causa dano, e cada inimigo tem um padrão de ataque que o jogador precisa observar.
+- **Vida e invencibilidade.** O personagem tem 6 pontos de vida, mostrados no canto da tela. Depois de tomar dano, fica 1 s invencível, piscando. No protótipo, ao perder toda a vida ele volta ao início.
+
+## Inimigos de teste
+
+Dois inimigos com o mesmo padrão e massas diferentes, um mais pesado e um mais leve que o personagem. O padrão é: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e treme, com a direção já travada), dá o bote em linha reta e fica parado e vulnerável. Quem sai da linha durante a preparação escapa.
+
+- **Pesado (massa 3, 6 de vida).** Lento, prepara o bote por 0,7 s, causa 2 de dano e arremessa o personagem. A espada quase não o move e não interrompe o que ele está fazendo.
+- **Leve (massa 0,5, 2 de vida).** Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante.
+
 ## Princípios técnicos
 
 - **Dados separados do mapa.** Ferramentas, locais de item e bloqueios são registrados como dados, por exemplo "este bloqueio exige a ferramenta X". A versão linear é uma distribuição fixa desses dados. Randomizar é gerar outra distribuição válida, sem refazer o mapa.
@@ -47,7 +86,13 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 
 - **Proporção da tela.** O SNES mostrava uma área quase quadrada, de 16 por 14 tiles. Em 16:9 a área fica mais larga e mais baixa, o que muda a sensação de diorama. Define o tamanho de toda a arte.
 - **Autoria da arte** para o lançamento.
-- **Ação básica.** Ainda não está decidido se haverá espada ou outro tipo de ataque.
-- **Sensação do andar.** Arranque e parada instantâneos ou com inércia, deslizar em quinas, número de direções.
+- **Sensação do andar e da corrida.** Arranque e parada instantâneos ou com inércia, velocidade da corrida, janela do duplo toque, tempo até o desequilíbrio, tempo para reagir e tempo caído. Todos esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: andar a 90 px/s, correr a 150 px/s, duplo toque em até 0,25 s, 0,6 s de corrida até o desequilíbrio, 0,5 s para reagir, no mínimo 0,8 s caído.
+- **Equilíbrio recuperado.** Hoje, ao se equilibrar, o personagem para de correr. A alternativa é continuar correndo com o tempo reiniciado, mais próximo do Tony Hawk's Pro Skater, o que permite corridas longas para quem tem ritmo.
+- **Invencibilidade na corrida.** Hoje não há. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade e dá sentido ao custo do desequilíbrio.
+- **Valores da física.** Massa, restituição, velocidade mínima de ricochete e atrito do personagem e dos objetos. Valores iniciais: personagem com massa 1, restituição 1 e ricochete acima de 120 px/s, caixa leve com massa 0,5 e bloco pesado com massa 4.
+- **Strafe.** Botão que trava a frente (em teste) ou L e R para andar de lado. Uma terceira opção é a frente ficar travada enquanto o ataque giratório carrega, o que daria o strafe sem botão extra.
+- **Armas.** Quais armas existem, como se alternam e quais servem de chave.
+- **Detalhes da espada.** Dano em toda a lâmina ou só na ponta. Recuo no personagem ao acertar uma parede ou algo pesado. Golpe durante a corrida como ataque especial em vez de encerrar a corrida.
+- **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
 - **Primeira área do protótipo.** Quais 4 ferramentas e o que cada uma destrava.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.
