@@ -63,7 +63,7 @@ const VISUAL_CATCH_UP := 1.5
 @export var run_can_steer := true
 ## Segundos de corrida contínua até o personagem perder o equilíbrio. Zero
 ## desliga o tropeço.
-@export_range(0.0, 5.0, 0.05) var balance_time := 0.6
+@export_range(0.0, 5.0, 0.05) var balance_time := 0.4
 ## Segundos de desequilíbrio para reagir antes de cair. Para se equilibrar,
 ## aperte a direção oposta à da corrida.
 @export_range(0.05, 2.0, 0.05) var wobble_time := 0.5
