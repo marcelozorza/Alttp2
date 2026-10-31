@@ -15,13 +15,17 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - **Mover:** WASD, setas, analógico esquerdo ou direcional do controle. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
 - **Andar de lado:** segure Shift, ou L ou R no controle, para manter a direção de frente.
+- **Atacar:** J, Z ou Espaço no teclado, botão de baixo ou da esquerda no controle (A ou X no padrão Xbox).
 
 ## Estrutura
 
 - `player/` personagem do jogador, cena e script.
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
-- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita, uma coluna, uma caixa leve e um bloco pesado.
+- `enemies/` inimigos de teste, um pesado e um leve.
+- `ui/` interface, por enquanto só a vida no canto da tela.
+- `util/` funções compartilhadas, como a conversão de segundos em ticks.
+- `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita, uma coluna, uma caixa leve, um bloco pesado e os dois inimigos.
 - `docs/` documentação de design.
 
 ## Cores provisórias do personagem
@@ -31,6 +35,14 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
 - **Cinza e deitado:** caído, se arrastando até parar.
 - **Branco:** arremessado por uma batida, sem controle.
+- **Transparente piscando:** invencível depois de tomar dano.
+
+## Cores provisórias dos inimigos
+
+- **Amarelo piscando e tremendo:** preparando o bote. Saia da linha.
+- **Vermelho:** dando o bote. Só aqui ele causa dano.
+- **Escuro:** parado e vulnerável depois do bote.
+- **Branco:** acabou de levar um golpe.
 
 ## Ajustar a sensação do andar
 

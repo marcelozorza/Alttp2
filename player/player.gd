@@ -66,6 +66,17 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## controle depois de arremessado.
 @export_range(0.0, 200.0, 1.0) var recover_speed := 30.0
 
+@export_group("Ataque")
+## Segundos em que o personagem fica parado a cada golpe. Zero permite andar
+## enquanto ataca.
+@export_range(0.0, 0.5, 0.01) var attack_freeze_time := 0.1
+
+@export_group("Vida")
+## Pontos de vida.
+@export_range(1, 20, 1) var max_health := 6
+## Segundos de invencibilidade depois de tomar dano, com o personagem piscando.
+@export_range(0.0, 3.0, 0.05) var invincibility_time := 1.0
+
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
 ## parede andando em linha reta. Zero desliga.
@@ -75,6 +86,7 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## Define, no futuro, para onde as ferramentas são usadas. Segurar a ação
 ## lock_facing mantém a frente, o que permite andar de lado.
 var facing := Vector2.DOWN
+var health := 0
 
 var _state := State.WALK
 var _state_tick := 0
@@ -82,17 +94,33 @@ var _run_direction := Vector2.ZERO
 var _previous_direction := Vector2.ZERO
 var _last_press_direction := Vector2.ZERO
 var _last_press_tick := 0
+var _freeze_until_tick := 0
+var _invincible_until_tick := 0
 
 @onready var _body: ColorRect = $Body
 @onready var _walk_color: Color = _body.color
 @onready var _body_rest_position: Vector2 = _body.position
 @onready var _body_rest_size: Vector2 = _body.size
 @onready var _facing_marker: ColorRect = $FacingMarker
+@onready var _sword: Sword = $Sword
+@onready var _spawn_position := global_position
+
+
+func _ready() -> void:
+	add_to_group("player")
+	health = max_health
 
 
 func _physics_process(delta: float) -> void:
 	var direction := _read_direction()
 	_update_state(direction)
+	var in_control := _state == State.WALK or _state == State.RUN
+	if in_control:
+		# A frente se atualiza antes do golpe, para que direção e ataque
+		# apertados no mesmo tick golpeiem na nova direção.
+		_update_facing(direction)
+	if in_control and Input.is_action_just_pressed("attack"):
+		_attack()
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
@@ -119,6 +147,33 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 		_enter(State.KNOCKBACK)
 
 
+## Recebe um ataque. Durante a invencibilidade, ataques são ignorados. O
+## empurrão vem separado, pela física da batida.
+func take_hit(amount: int, _direction: Vector2) -> void:
+	if Engine.get_physics_frames() < _invincible_until_tick:
+		return
+	health -= amount
+	_invincible_until_tick = Engine.get_physics_frames() + GameMath.ticks(invincibility_time)
+	if health <= 0:
+		_respawn()
+
+
+## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
+func _attack() -> void:
+	if _state == State.RUN:
+		_enter(State.WALK)
+	_sword.attack(facing)
+	_freeze_until_tick = Engine.get_physics_frames() + GameMath.ticks(attack_freeze_time)
+
+
+## Protótipo: sem tela de derrota, o personagem volta ao início com a vida cheia.
+func _respawn() -> void:
+	health = max_health
+	global_position = _spawn_position
+	velocity = Vector2.ZERO
+	_enter(State.WALK)
+
+
 func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
 	var speed := walk_speed
@@ -129,8 +184,9 @@ func _steer(direction: Vector2, delta: float) -> void:
 			# Desequilibrado, segue em frente sem controle.
 			move_direction = _run_direction
 			speed = run_speed
-	if _state == State.WALK or _state == State.RUN:
-		_update_facing(direction)
+	if Engine.get_physics_frames() < _freeze_until_tick:
+		# Parado durante o golpe, mas ainda pode virar para o próximo.
+		move_direction = Vector2.ZERO
 	_update_velocity(move_direction, speed, delta)
 	var nudge := _corner_nudge(move_direction, speed, delta)
 	if nudge != Vector2.ZERO:
@@ -140,10 +196,7 @@ func _steer(direction: Vector2, delta: float) -> void:
 ## Lê a entrada e a reduz a uma das 8 direções, com as diagonais normalizadas.
 func _read_direction() -> Vector2:
 	var raw := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if raw == Vector2.ZERO:
-		return raw
-	var angle := snappedf(raw.angle(), PI / 4.0)
-	return Vector2(roundf(cos(angle)), roundf(sin(angle))).normalized()
+	return GameMath.snap_8(raw)
 
 
 ## Andar vira corrida com o duplo toque. A corrida longa demais leva ao
@@ -166,15 +219,15 @@ func _update_state(direction: Vector2) -> void:
 				_enter(State.WALK)
 			else:
 				_run_direction = direction
-				if balance_time > 0.0 and _ticks_in_state() >= _ticks(balance_time):
+				if balance_time > 0.0 and _ticks_in_state() >= GameMath.ticks(balance_time):
 					_enter(State.WOBBLE)
 		State.WOBBLE:
 			if direction.dot(_run_direction) < 0.0:
 				_enter(State.WALK)
-			elif _ticks_in_state() >= _ticks(wobble_time):
+			elif _ticks_in_state() >= GameMath.ticks(wobble_time):
 				_enter(State.FALLEN)
 		State.FALLEN:
-			if _ticks_in_state() >= _ticks(fall_time) and velocity == Vector2.ZERO:
+			if _ticks_in_state() >= GameMath.ticks(fall_time) and velocity == Vector2.ZERO:
 				_enter(State.WALK)
 		State.KNOCKBACK:
 			if velocity.length() <= recover_speed:
@@ -185,7 +238,7 @@ func _update_state(direction: Vector2) -> void:
 ## double_tap_window. Depois de reconhecido, o duplo toque é consumido.
 func _is_double_tap(direction: Vector2) -> bool:
 	var now := Engine.get_physics_frames()
-	var window := _ticks(double_tap_window)
+	var window := GameMath.ticks(double_tap_window)
 	if direction == _last_press_direction and now - _last_press_tick <= window:
 		_last_press_direction = Vector2.ZERO
 		return true
@@ -201,10 +254,6 @@ func _enter(state: State) -> void:
 
 func _ticks_in_state() -> int:
 	return Engine.get_physics_frames() - _state_tick
-
-
-func _ticks(seconds: float) -> int:
-	return roundi(seconds * Engine.physics_ticks_per_second)
 
 
 func _update_facing(direction: Vector2) -> void:
@@ -279,6 +328,9 @@ func _update_visuals() -> void:
 	_body.position = body_position + shake
 	_body.size = body_size
 	_facing_marker.visible = _state != State.FALLEN
+	var invincible := Engine.get_physics_frames() < _invincible_until_tick
+	var blink := posmod(Engine.get_physics_frames(), 6) < 3
+	modulate.a = 0.3 if invincible and blink else 1.0
 	var body_center := Vector2(0.0, -4.0)
 	var center := body_center + facing * Vector2(4.0, 6.0)
 	_facing_marker.position = center - _facing_marker.size / 2.0

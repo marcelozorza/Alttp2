@@ -59,6 +59,16 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 - **A arma define a forma do ataque.** Ideias até agora: uma lança que ataca só para frente, com alcance maior, e uma espada que ataca em leque à frente.
 - **Ataque giratório.** Segurar o botão de ataque carrega um golpe de 360 graus.
 - **Armas também são ferramentas.** Como entram na distribuição da seed, a forma de cada ataque pode servir de chave. Por exemplo, o alcance da lança pode atingir um interruptor do outro lado de um vão. Ainda é só ideia.
+- **Espada de estocada, a primeira arma.** Inspirada na espada do primeiro Zelda. Golpeia na direção da frente e entrega o golpe no mesmo instante do aperto, com a lâmina toda estendida. Não há espera pela animação: um novo aperto cancela o recolhimento e golpeia de novo. O dano vale em toda a lâmina que sai do corpo, cada golpe acerta cada alvo uma vez e empurra o alvo conforme a massa dele. O personagem fica parado por um instante (0,1 s) a cada golpe, mas pode virar para o próximo.
+- **Sem dano por contato.** Encostar num inimigo não machuca. Só o ataque do inimigo causa dano, e cada inimigo tem um padrão de ataque que o jogador precisa observar.
+- **Vida e invencibilidade.** O personagem tem 6 pontos de vida, mostrados no canto da tela. Depois de tomar dano, fica 1 s invencível, piscando. No protótipo, ao perder toda a vida ele volta ao início.
+
+## Inimigos de teste
+
+Dois inimigos com o mesmo padrão e massas diferentes, um mais pesado e um mais leve que o personagem. O padrão é: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e treme, com a direção já travada), dá o bote em linha reta e fica parado e vulnerável. Quem sai da linha durante a preparação escapa.
+
+- **Pesado (massa 3, 6 de vida).** Lento, prepara o bote por 0,7 s, causa 2 de dano e arremessa o personagem. A espada quase não o move e não interrompe o que ele está fazendo.
+- **Leve (massa 0,5, 2 de vida).** Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante.
 
 ## Princípios técnicos
 
@@ -78,9 +88,11 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 - **Autoria da arte** para o lançamento.
 - **Sensação do andar e da corrida.** Arranque e parada instantâneos ou com inércia, velocidade da corrida, janela do duplo toque, tempo até o desequilíbrio, tempo para reagir e tempo caído. Todos esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: andar a 90 px/s, correr a 150 px/s, duplo toque em até 0,25 s, 0,6 s de corrida até o desequilíbrio, 0,5 s para reagir, no mínimo 0,8 s caído.
 - **Equilíbrio recuperado.** Hoje, ao se equilibrar, o personagem para de correr. A alternativa é continuar correndo com o tempo reiniciado, mais próximo do Tony Hawk's Pro Skater, o que permite corridas longas para quem tem ritmo.
-- **Invencibilidade.** Proposta: só depois de tomar dano, com o personagem piscando, para evitar dano em sequência. Na corrida, nenhuma. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade e dá sentido ao custo do desequilíbrio.
+- **Invencibilidade na corrida.** Hoje não há. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade e dá sentido ao custo do desequilíbrio.
 - **Valores da física.** Massa, restituição, velocidade mínima de ricochete e atrito do personagem e dos objetos. Valores iniciais: personagem com massa 1, restituição 1 e ricochete acima de 120 px/s, caixa leve com massa 0,5 e bloco pesado com massa 4.
 - **Strafe.** Botão que trava a frente (em teste) ou L e R para andar de lado. Uma terceira opção é a frente ficar travada enquanto o ataque giratório carrega, o que daria o strafe sem botão extra.
 - **Armas.** Quais armas existem, como se alternam e quais servem de chave.
+- **Detalhes da espada.** Dano em toda a lâmina ou só na ponta. Recuo no personagem ao acertar uma parede ou algo pesado. Golpe durante a corrida como ataque especial em vez de encerrar a corrida.
+- **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
 - **Primeira área do protótipo.** Quais 4 ferramentas e o que cada uma destrava.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.

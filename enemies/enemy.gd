@@ -1,0 +1,202 @@
+class_name Enemy
+extends MomentumBody
+## Inimigo com um padrão de ataque legível.
+##
+## Encostar no inimigo não causa dano. Ele só machuca durante o bote. O ciclo
+## é: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e
+## treme, com a direção já travada), dá o bote em linha reta e fica um tempo
+## parado e vulnerável. Quem desvia durante a preparação escapa.
+##
+## A massa decide o resto pela física. O inimigo pesado arremessa o personagem
+## no bote e quase não se move com a espada. O leve voa longe com a espada e
+## empurra pouco.
+
+enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, STAGGER, DEAD }
+
+## Cores provisórias dos estados.
+const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
+const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
+const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+
+@export_group("Vida")
+## Pontos de vida.
+@export_range(1, 50, 1) var max_health := 3
+## Segundos piscando em branco ao ser atingido.
+@export_range(0.0, 0.5, 0.01) var hit_flash_time := 0.1
+## Segundos atordoado e sem controle ao ser atingido. Zero significa que o
+## golpe não interrompe o que ele estiver fazendo.
+@export_range(0.0, 2.0, 0.05) var stagger_time := 0.3
+## Segundos até reaparecer no ponto inicial depois de derrotado. Só para testes.
+@export_range(0.0, 10.0, 0.1) var respawn_time := 3.0
+
+@export_group("Comportamento")
+## Distância, em pixels, a partir da qual percebe o personagem.
+@export_range(0.0, 400.0, 1.0) var sight_range := 200.0
+## Distância, em pixels, em que para de se aproximar e prepara o bote.
+@export_range(0.0, 200.0, 1.0) var attack_range := 44.0
+## Velocidade de aproximação, em pixels por segundo.
+@export_range(0.0, 200.0, 1.0) var walk_speed := 40.0
+## Segundos preparando o bote. É o aviso para o jogador.
+@export_range(0.0, 3.0, 0.05) var windup_time := 0.6
+## Velocidade do bote, em pixels por segundo.
+@export_range(0.0, 600.0, 1.0) var lunge_speed := 180.0
+## Duração do bote, em segundos.
+@export_range(0.0, 1.0, 0.01) var lunge_time := 0.25
+## Segundos parado e vulnerável depois do bote.
+@export_range(0.0, 3.0, 0.05) var recover_time := 0.8
+## Dano do bote.
+@export_range(1, 10, 1) var damage := 1
+
+var health := 0
+
+var _state := State.IDLE
+var _state_tick := 0
+var _approach_direction := Vector2.ZERO
+var _lunge_direction := Vector2.ZERO
+var _look_direction := Vector2.DOWN
+var _lunge_landed := false
+var _hit_tick := -1000
+var _hurt_shape := RectangleShape2D.new()
+
+@onready var _home := global_position
+@onready var _base: CollisionShape2D = $Base
+@onready var _body: ColorRect = $Body
+@onready var _body_color: Color = _body.color
+@onready var _body_rest_position: Vector2 = _body.position
+@onready var _eye: ColorRect = $Eye
+@onready var _health_bar: ColorRect = $HealthBar
+@onready var _health_bar_width: float = _health_bar.size.x
+
+
+func _ready() -> void:
+	health = max_health
+
+
+## Recebe um golpe. O empurrão vem separado, pela física.
+func take_hit(amount: int, _direction: Vector2) -> void:
+	if _state == State.DEAD:
+		return
+	health -= amount
+	_hit_tick = Engine.get_physics_frames()
+	if health <= 0:
+		_die()
+	elif stagger_time > 0.0:
+		_enter(State.STAGGER)
+
+
+func _physics_process(delta: float) -> void:
+	_update_state()
+	if _state != State.DEAD:
+		match _state:
+			State.APPROACH:
+				velocity = _approach_direction * walk_speed
+			State.LUNGE:
+				# O bote segue pela física: só batidas mudam a velocidade.
+				pass
+			_:
+				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		move_with_impacts()
+		if _state == State.LUNGE and not _lunge_landed:
+			_check_lunge_hit()
+	_update_visuals()
+
+
+func _update_state() -> void:
+	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var to_player := (player.global_position - global_position) if player else Vector2.ZERO
+	var in_sight := player != null and to_player.length() <= sight_range
+	var elapsed := Engine.get_physics_frames() - _state_tick
+	match _state:
+		State.IDLE:
+			if in_sight:
+				_enter(State.APPROACH)
+		State.APPROACH:
+			_approach_direction = GameMath.snap_8(to_player)
+			_look_direction = _approach_direction
+			if not in_sight:
+				_enter(State.IDLE)
+			elif to_player.length() <= attack_range:
+				_lunge_direction = GameMath.snap_8(to_player)
+				_look_direction = _lunge_direction
+				_enter(State.WINDUP)
+		State.WINDUP:
+			if elapsed >= GameMath.ticks(windup_time):
+				_lunge_landed = false
+				velocity = _lunge_direction * lunge_speed
+				_enter(State.LUNGE)
+		State.LUNGE:
+			if elapsed >= GameMath.ticks(lunge_time):
+				_enter(State.RECOVER)
+		State.RECOVER:
+			if elapsed >= GameMath.ticks(recover_time):
+				_enter(State.APPROACH)
+		State.STAGGER:
+			if elapsed >= GameMath.ticks(stagger_time):
+				_enter(State.APPROACH)
+		State.DEAD:
+			if elapsed >= GameMath.ticks(respawn_time):
+				_revive()
+
+
+## Durante o bote, procura o personagem numa área um pouco maior que a base.
+## Um bote acerta no máximo uma vez.
+func _check_lunge_hit() -> void:
+	var base_shape := _base.shape as RectangleShape2D
+	_hurt_shape.size = base_shape.size + Vector2(4.0, 4.0)
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = _hurt_shape
+	query.transform = Transform2D(0.0, _base.global_position)
+	var excluded: Array[RID] = [get_rid()]
+	query.exclude = excluded
+	for result: Dictionary in get_world_2d().direct_space_state.intersect_shape(query):
+		var target := result["collider"] as Player
+		if target:
+			target.take_hit(damage, _lunge_direction)
+			_lunge_landed = true
+
+
+func _enter(state: State) -> void:
+	_state = state
+	_state_tick = Engine.get_physics_frames()
+
+
+func _die() -> void:
+	_enter(State.DEAD)
+	velocity = Vector2.ZERO
+	visible = false
+	_base.set_deferred("disabled", true)
+
+
+func _revive() -> void:
+	health = max_health
+	global_position = _home
+	velocity = Vector2.ZERO
+	visible = true
+	_base.set_deferred("disabled", false)
+	_enter(State.IDLE)
+
+
+## Visual provisório: amarelo piscando na preparação, vermelho no bote, mais
+## escuro na recuperação e branco ao ser atingido. O olho mostra para onde ele
+## vai e a barra acima mostra a vida.
+func _update_visuals() -> void:
+	var elapsed := Engine.get_physics_frames() - _state_tick
+	var color := _body_color
+	var shake := Vector2.ZERO
+	match _state:
+		State.WINDUP:
+			var blink := posmod(elapsed, 8) < 4
+			color = WINDUP_COLOR if blink else _body_color
+			shake = Vector2(1.0 if blink else -1.0, 0.0)
+		State.LUNGE:
+			color = LUNGE_COLOR
+		State.RECOVER:
+			color = _body_color.darkened(0.35)
+	if Engine.get_physics_frames() - _hit_tick < GameMath.ticks(hit_flash_time):
+		color = HIT_COLOR
+	_body.color = color
+	_body.position = _body_rest_position + shake
+	var half := (_body.size - _eye.size) / 2.0
+	var body_center := _body.position + _body.size / 2.0
+	_eye.position = body_center + _look_direction * half - _eye.size / 2.0
+	_health_bar.size.x = _health_bar_width * float(maxi(health, 0)) / max_health
