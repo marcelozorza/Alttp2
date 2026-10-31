@@ -48,12 +48,16 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 @export var run_can_steer := true
 ## Segundos de corrida contínua até o personagem perder o equilíbrio. Zero
 ## desliga o tropeço.
-@export_range(0.0, 5.0, 0.05) var balance_time := 0.8
+@export_range(0.0, 5.0, 0.05) var balance_time := 0.6
 ## Segundos de desequilíbrio para reagir antes de cair. Para se equilibrar,
 ## aperte a direção oposta à da corrida.
 @export_range(0.05, 2.0, 0.05) var wobble_time := 0.5
-## Segundos caído no chão, sem poder se mover.
+## Tempo mínimo caído, em segundos. Ele só se levanta depois disso e depois
+## de parar de se arrastar.
 @export_range(0.0, 3.0, 0.05) var fall_time := 0.8
+## Desaceleração do personagem caído, que se arrasta pelo chão sem controle,
+## em pixels por segundo ao quadrado. Quanto menor, mais longe ele vai.
+@export_range(0.0, 3000.0, 10.0) var fall_friction := 400.0
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -80,6 +84,7 @@ var _last_press_tick := 0
 @onready var _body: ColorRect = $Body
 @onready var _walk_color: Color = _body.color
 @onready var _body_rest_position: Vector2 = _body.position
+@onready var _body_rest_size: Vector2 = _body.size
 @onready var _facing_marker: ColorRect = $FacingMarker
 
 
@@ -89,22 +94,26 @@ func _physics_process(delta: float) -> void:
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+	elif _state == State.FALLEN:
+		# Caído, se arrasta pelo chão com o embalo da corrida.
+		velocity = velocity.move_toward(Vector2.ZERO, fall_friction * delta)
 	else:
 		_steer(direction, delta)
 	move_with_impacts()
 	_update_visuals()
 
 
-## Recebe a batida de outro corpo. Uma batida forte arremessa o personagem.
+## Recebe a batida de outro corpo. Uma batida forte arremessa o personagem,
+## a menos que ele esteja caído, caso em que só muda de embalo.
 func add_impact_velocity(delta_velocity: Vector2) -> void:
 	velocity += delta_velocity
-	if delta_velocity.length() > recover_speed:
+	if delta_velocity.length() > recover_speed and _state != State.FALLEN:
 		_enter(State.KNOCKBACK)
 
 
 func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 	velocity = new_velocity
-	if rebound > recover_speed:
+	if rebound > recover_speed and _state != State.FALLEN:
 		_enter(State.KNOCKBACK)
 
 
@@ -118,8 +127,6 @@ func _steer(direction: Vector2, delta: float) -> void:
 			# Desequilibrado, segue em frente sem controle.
 			move_direction = _run_direction
 			speed = run_speed
-		State.FALLEN:
-			move_direction = Vector2.ZERO
 	if _state == State.WALK or _state == State.RUN:
 		_update_facing(direction)
 	_update_velocity(move_direction, speed, delta)
@@ -161,7 +168,7 @@ func _update_state(direction: Vector2) -> void:
 			elif _ticks_in_state() >= _ticks(wobble_time):
 				_enter(State.FALLEN)
 		State.FALLEN:
-			if _ticks_in_state() >= _ticks(fall_time):
+			if _ticks_in_state() >= _ticks(fall_time) and velocity == Vector2.ZERO:
 				_enter(State.WALK)
 		State.KNOCKBACK:
 			if velocity.length() <= recover_speed:
@@ -241,10 +248,13 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 
 
 ## Visual provisório: a cor do corpo indica o estado, o corpo treme no
-## desequilíbrio e um quadrado na borda mostra para onde o personagem olha.
+## desequilíbrio, fica deitado na queda e um quadrado na borda mostra para
+## onde o personagem olha.
 func _update_visuals() -> void:
 	var color := _walk_color
 	var shake := Vector2.ZERO
+	var body_position := _body_rest_position
+	var body_size := _body_rest_size
 	match _state:
 		State.RUN:
 			color = RUN_COLOR
@@ -254,10 +264,15 @@ func _update_visuals() -> void:
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 		State.FALLEN:
 			color = FALLEN_COLOR
+			# Deitado: um retângulo baixo e largo na altura dos pés.
+			body_position = Vector2(-8.0, -4.0)
+			body_size = Vector2(16.0, 8.0)
 		State.KNOCKBACK:
 			color = KNOCKBACK_COLOR
 	_body.color = color
-	_body.position = _body_rest_position + shake
+	_body.position = body_position + shake
+	_body.size = body_size
+	_facing_marker.visible = _state != State.FALLEN
 	var body_center := Vector2(0.0, -4.0)
 	var center := body_center + facing * Vector2(4.0, 6.0)
 	_facing_marker.position = center - _facing_marker.size / 2.0

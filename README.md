@@ -22,16 +22,16 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
 - `world/` salas e mapas. `test_room.tscn` é a sala de teste atual, com uma porta estreita, uma coluna, uma caixa leve e um bloco pesado.
+- `docs/` documentação de design.
 
 ## Cores provisórias do personagem
 
 - **Vermelho:** andando.
 - **Laranja:** correndo.
 - **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
-- **Cinza:** caído.
+- **Cinza e deitado:** caído, se arrastando até parar.
 - **Branco:** arremessado por uma batida, sem controle.
 
 ## Ajustar a sensação do andar
 
 Com o jogo rodando (F5), abra a aba **Remoto** no painel de cena do editor, selecione `Player` e altere os valores no Inspetor. O efeito é imediato. Para guardar um valor, altere também em `player/player.tscn`.
-- `docs/` documentação de design.
