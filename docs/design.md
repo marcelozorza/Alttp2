@@ -38,7 +38,7 @@ Limitações também definem o jogo. As decisões abaixo podem ser revistas depo
 - **Sem pulo.** O personagem não pula. Desníveis viram bloqueios naturais, o que reforça a ideia de ver o prêmio antes de alcançá-lo.
 - **8 direções fixas.** Norte, sul, leste, oeste e as quatro diagonais, inclusive no analógico. Não há movimento livre em ângulo.
 - **Frente em 4 direções.** Na diagonal, o personagem mantém a frente atual quando ela faz parte da diagonal.
-- **Corrida com dois toques.** Dois toques rápidos na mesma direção fazem o personagem correr enquanto a direção estiver pressionada. Serve para esquivar de ataques e adiciona uma camada de habilidade.
+- **Corrida com dois toques.** Dois toques rápidos na mesma direção fazem o personagem correr enquanto a direção estiver pressionada. Serve para esquivar de ataques e adiciona uma camada de habilidade. Correndo, dá para mudar para os lados e para as diagonais à frente. Apertar uma direção com componente para trás cancela a corrida na hora, como uma freada. Ele nunca corre de volta.
 - **Correr demais tem custo.** Inspirado no jeito da Nintendo de punir o exagero, como rodar no Mario Kart ao segurar a curva demais. Depois de um tempo correndo, o personagem perde o equilíbrio e cambaleia. Apertar a direção oposta o equilibra de novo, como no equilíbrio do Tony Hawk's Pro Skater. Sem reação, ele tropeça e cai, se arrasta pelo chão com o embalo da corrida, sem controle, e só se levanta depois de parar. A ideia é correr pouco e ficar atento. Soltar e dar dois toques de novo reinicia o tempo de corrida, o que já cria uma técnica natural para quem domina o ritmo.
 - **Andar de lado (strafe).** Manter a frente enquanto se move. Em teste: segurar um botão (Shift no teclado, L ou R no controle) trava a frente.
 

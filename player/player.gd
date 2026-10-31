@@ -43,8 +43,10 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## Tempo máximo, em segundos, entre os dois toques na mesma direção para
 ## começar a correr. A corrida dura enquanto a direção estiver pressionada.
 @export_range(0.1, 0.5, 0.01) var double_tap_window := 0.25
-## Ligado, dá para mudar de direção correndo. Desligado, a corrida é em linha
-## reta e termina ao mudar de direção.
+## Ligado, dá para mudar de direção correndo, para os lados ou em diagonal.
+## Desligado, a corrida é em linha reta e termina ao mudar de direção. Em
+## qualquer caso, apertar uma direção com componente para trás cancela a
+## corrida, como uma freada.
 @export var run_can_steer := true
 ## Segundos de corrida contínua até o personagem perder o equilíbrio. Zero
 ## desliga o tropeço.
@@ -156,7 +158,11 @@ func _update_state(direction: Vector2) -> void:
 				_run_direction = direction
 				_enter(State.RUN)
 		State.RUN:
-			if direction == Vector2.ZERO or (direction != _run_direction and not run_can_steer):
+			if (
+				direction == Vector2.ZERO
+				or direction.dot(_run_direction) < 0.0
+				or (direction != _run_direction and not run_can_steer)
+			):
 				_enter(State.WALK)
 			else:
 				_run_direction = direction
