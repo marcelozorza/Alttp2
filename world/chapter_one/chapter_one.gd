@@ -19,8 +19,8 @@ const RELIC_SCENE := preload("res://items/relic.tscn")
 const CRACKED_WALL_SCENE := preload("res://obstacles/cracked_wall.tscn")
 const ICE_BLOCK_SCENE := preload("res://obstacles/ice_block.tscn")
 const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
-const LIGHT_ENEMY_SCENE := preload("res://enemies/light_enemy.tscn")
-const HEAVY_ENEMY_SCENE := preload("res://enemies/heavy_enemy.tscn")
+const MINION_SCENE := preload("res://enemies/minion.tscn")
+const UGLY_SCENE := preload("res://enemies/ugly.tscn")
 const ICE_SLIME_SCENE := preload("res://enemies/ice_slime.tscn")
 const BOSS_SCENE := preload("res://enemies/boss.tscn")
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
@@ -147,10 +147,10 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 			_player = PLAYER_SCENE.instantiate() as Player
 			_player.position = center
 			_objects.add_child(_player)
-		"l":
-			_add_enemy(LIGHT_ENEMY_SCENE, cell)
-		"h":
-			_add_enemy(HEAVY_ENEMY_SCENE, cell)
+		"m":
+			_add_enemy(MINION_SCENE, cell)
+		"u":
+			_add_enemy(UGLY_SCENE, cell)
 		"i":
 			_add_enemy(ICE_SLIME_SCENE, cell)
 		"*":

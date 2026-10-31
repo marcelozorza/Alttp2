@@ -41,7 +41,7 @@ No menu, use as setas ou o direcional para escolher e Enter, Espaço ou o botão
 - `items/` itens e ferramentas: baú, bomba, bola de fogo e a relíquia do fim.
 - `obstacles/` bloqueios: parede rachada, gelo e a face do degrau alto.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
-- `enemies/` inimigos: pesado, leve, de gelo e o chefe com a onda de choque.
+- `enemies/` inimigos: o minion, o ugly com a granada, o de gelo e o chefe com a onda de choque.
 - `progression/` lógica de alcance, gerador de seeds e as escolhas da partida.
 - `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
@@ -66,10 +66,13 @@ Confere a geometria das salas e das portas, garante que a distribuição linear 
 - **Branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola.
+- **Barra magenta acima da cabeça:** espada travada pela granada do ugly. A barra encolhe até a trava acabar, e as ferramentas seguem funcionando.
 
 ## Cores provisórias dos inimigos
 
 - **Amarelo piscando e tremendo:** preparando o bote. Saia da linha.
+- **Amarelo piscando com uma bola magenta acima da cabeça:** o ugly vai jogar a granada.
+- **Área magenta de 3 por 3 casas no chão:** onde a granada vai cair. Saia antes de o quadrado de dentro encher a área.
 - **Vermelho:** dando o bote. Só aqui ele causa dano.
 - **Escuro:** parado e vulnerável depois do bote.
 - **Branco:** acabou de levar um golpe.

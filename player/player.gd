@@ -23,6 +23,10 @@ extends MomentumBody
 ## cresce na tela e mantém o mesmo controle do chão, sem ganhar distância. Com
 ## ela, ele sobe degraus altos (ver obstacles/ledge.gd).
 ##
+## A espada pode ficar travada por um tempo, como faz a granada do ugly. Uma
+## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
+## funcionando.
+##
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
 
@@ -35,6 +39,12 @@ const RUN_COLOR := Color(0.95, 0.62, 0.2, 1.0)
 const WOBBLE_COLOR := Color(1.0, 0.15, 0.15, 1.0)
 const FALLEN_COLOR := Color(0.45, 0.4, 0.4, 1.0)
 const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Cor da espada travada. A granada do ugly usa a mesma cor.
+const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
+## Cor da barra da trava ao apertar o ataque com a espada travada.
+const SWORD_DENIED_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Ticks em que a barra da trava fica branca depois de um aperto sem efeito.
+const SWORD_DENIED_TICKS := 6
 const BOMB_SCENE := preload("res://items/bomb.tscn")
 const FIREBALL_SCENE := preload("res://items/fireball.tscn")
 ## Desvios laterais, em pixels, tentados ao cruzar um degrau desalinhado.
@@ -134,6 +144,9 @@ var _z := 0.0
 var _z_velocity := 0.0
 var _visual_offset := 0.0
 var _drawn_height := 0.0
+var _sword_lock_until_tick := 0
+var _sword_lock_ticks := 1
+var _sword_denied_tick := -1000
 
 @onready var _visual: Node2D = $Visual
 @onready var _body: ColorRect = $Visual/Body
@@ -142,6 +155,8 @@ var _drawn_height := 0.0
 @onready var _body_rest_size: Vector2 = _body.size
 @onready var _facing_marker: ColorRect = $Visual/FacingMarker
 @onready var _sword: Sword = $Visual/Sword
+@onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
+@onready var _sword_lock_width: float = _sword_lock_bar.size.x
 @onready var _shadow: ColorRect = $Shadow
 @onready var _feet: CollisionShape2D = $Feet
 
@@ -243,8 +258,28 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 		_respawn()
 
 
+## Trava a espada por alguns segundos. Durante a invencibilidade, nada
+## acontece. Uma trava nova nunca encurta a que já existe.
+func lock_sword(seconds: float) -> void:
+	var now := Engine.get_physics_frames()
+	if now < _invincible_until_tick:
+		return
+	var until := now + GameMath.ticks(seconds)
+	if until > _sword_lock_until_tick:
+		_sword_lock_until_tick = until
+		_sword_lock_ticks = maxi(until - now, 1)
+
+
+func is_sword_locked() -> bool:
+	return Engine.get_physics_frames() < _sword_lock_until_tick
+
+
 ## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
+## Com a espada travada, o aperto só faz a barra da trava piscar.
 func _attack() -> void:
+	if is_sword_locked():
+		_sword_denied_tick = Engine.get_physics_frames()
+		return
 	if _state == State.RUN:
 		_enter(State.WALK)
 	_sword.attack(facing)
@@ -261,6 +296,7 @@ func _respawn() -> void:
 	_z_velocity = 0.0
 	_visual_offset = 0.0
 	_drawn_height = 0.0
+	_sword_lock_until_tick = 0
 	_enter(State.WALK)
 	respawned.emit()
 
@@ -495,7 +531,8 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 
 ## Visual provisório: a cor do corpo indica o estado, o corpo treme no
 ## desequilíbrio, fica deitado na queda e um quadrado na borda mostra para
-## onde o personagem olha.
+## onde o personagem olha. Com a espada travada, uma barra acima da cabeça
+## encolhe até a trava acabar.
 func _update_visuals() -> void:
 	var color := _walk_color
 	var shake := Vector2.ZERO
@@ -531,3 +568,16 @@ func _update_visuals() -> void:
 	var body_center := Vector2(0.0, -4.0)
 	var center := body_center + facing * Vector2(4.0, 6.0)
 	_facing_marker.position = center - _facing_marker.size / 2.0
+	_update_sword_lock_bar()
+
+
+func _update_sword_lock_bar() -> void:
+	var now := Engine.get_physics_frames()
+	var left := _sword_lock_until_tick - now
+	_sword_lock_bar.visible = left > 0
+	if left <= 0:
+		return
+	_sword_lock_bar.size.x = _sword_lock_width * left / _sword_lock_ticks
+	_sword_lock_bar.position.x = -_sword_lock_bar.size.x / 2.0
+	var denied := now - _sword_denied_tick < SWORD_DENIED_TICKS
+	_sword_lock_bar.color = SWORD_DENIED_COLOR if denied else SWORD_LOCK_COLOR

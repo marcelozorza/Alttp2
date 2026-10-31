@@ -83,13 +83,15 @@ Cada bloqueio tem uma aparência fixa, que se repete em todos os capítulos e se
 - **Baús.** Abrem com um golpe de espada, e o item vai direto para o personagem. Fogo e explosões não abrem baús, para que nenhum baú seja aberto do outro lado de uma parede.
 - **Sem dano por contato.** Encostar num inimigo não machuca. Só o ataque do inimigo causa dano, e cada inimigo tem um padrão de ataque que o jogador precisa observar.
 - **Vida e invencibilidade.** O personagem começa com 6 pontos de vida, mostrados no canto da tela. Depois de tomar dano, fica 1 s invencível, piscando. Cada coração de baú dá 2 pontos de vida máxima e enche a vida. Ao perder toda a vida, ele volta à entrada da sala com a vida cheia e mantém ferramentas e baús abertos. Ainda não há tela de derrota.
+- **Espada travada.** A granada do ugly trava a espada por 3 s. Uma barra magenta acima da cabeça encolhe até a trava acabar, e apertar o ataque só faz a barra piscar em branco. As ferramentas seguem funcionando. A invencibilidade depois de tomar dano também protege da trava, e perder toda a vida acaba com ela.
 
 ## Inimigos
 
 Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, prepara o bote (pisca em amarelo e treme, com a direção já travada), dá o bote em linha reta e fica parado e vulnerável. Quem sai da linha durante a preparação escapa. Eles só agem na sala do personagem e voltam ao ponto inicial quando ele entra ou sai da sala, ou quando reaparece.
 
-- **Pesado (massa 3, 6 de vida).** Lento, prepara o bote por 0,7 s, causa 2 de dano e arremessa o personagem. A espada quase não o move e não interrompe o que ele está fazendo. A bomba causa o triplo do dano.
-- **Leve (massa 0,5, 2 de vida).** Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante. Fogo e bomba causam o dobro do dano.
+- **Ugly (massa 3, 8 de vida).** O grande, lento e perigoso. Prepara o bote por 0,7 s, em qualquer uma das 8 direções, causa 2 de dano e arremessa o personagem. A forma de vencê-lo é esperar ele escolher a direção, sair da linha e atacar enquanto ele se recupera. Morre com 8 golpes de espada. A espada quase não o move e não interrompe o que ele está fazendo, e a bomba causa o triplo do dano, então 3 bombas bastam.
+- **Granada do ugly.** O ataque de longe. Com o personagem entre 64 e 160 px, ele para, ergue uma granada magenta acima da cabeça e pisca em amarelo por 0,6 s. A granada sai da mão e cai 0,7 s depois no centro da casa onde o personagem estava ao ser jogada. A área de 3 por 3 casas aparece no chão assim que ela sai da mão, e um quadrado cresce dentro da área até o estouro. Quem estiver com os pés na área no estouro fica com a espada travada por 3 s. Ela não causa dano nem empurra. Ele espera 2,5 s entre uma granada e outra, e 1 s depois de o personagem entrar na sala antes da primeira. Andando, sair da área a partir do centro leva cerca de 0,33 s, e correndo, 0,2 s. A granada pune quem fica parado de longe, e o bote pune quem fica parado de perto.
+- **Minion (massa 0,5, 2 de vida).** O pequeno. Rápido, prepara o bote por 0,35 s, causa 1 de dano e empurra pouco. A espada o arremessa longe e o deixa atordoado por um instante. Fogo e bomba causam o dobro do dano.
 - **De gelo (massa 1, 3 de vida).** Azul claro, como o bloco de gelo. Imune à espada e à bomba. Uma bola de fogo o derrete. No capítulo 1 ele aparece primeiro na sala da chama, antes de o jogador ter como vencê-lo.
 - **Chefe, o guardião de gelo (massa 8, 12 de vida).** O exame das três ferramentas. Coberto pela casca de gelo, ignora espada e bomba. A chama quebra a casca, que volta depois de 6 s e pisca antes de voltar. Sem a casca, o núcleo apanha da espada e o triplo da bomba. Alterna dois ataques avisados em amarelo: uma pancada no chão que solta uma onda de choque, que só se evita no ar com a mola, e uma investida de 2 de dano em linha reta, na direção travada durante o aviso. Ele não sai da sala.
 
@@ -132,7 +134,10 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
 - **Quarta ferramenta.** A ideia inicial era cerca de 4 ferramentas por capítulo. O capítulo 1 tem 3.
 - **Bomba.** Hoje ela machuca o próprio personagem, como no ALttP, é infinita e tem limite de 2 no chão. Bombas contadas mudariam o ritmo.
-- **Pulo e ataques.** Hoje o pulo só evita as ondas de choque. Os botes dos inimigos acertam no ar.
+- **Pulo e ataques.** Hoje o pulo só evita as ondas de choque. Os botes dos inimigos e a granada do ugly acertam no ar.
+- **Ataques só em quatro direções.** Em espera desde 2026-10-31. A ideia era que todos os inimigos atacassem só em norte, sul, leste e oeste. Hoje o bote segue em 8 direções, e o ugly ficou bom assim.
+- **Minion com lança.** Em espera desde 2026-10-31. Uma lança na mão apontando para onde ele vai atacar, e um bote que trava a direção e passa direto pelo personagem. A forma ideal de matá-lo seria esperar a direção travar, sair da linha e acertá-lo de lado enquanto ele passa.
+- **Dano do bote do ugly.** Hoje são 2 de 6 pontos de vida. A ideia inicial era tirar metade da barra.
 - **Pulo correndo contra o degrau.** Correndo, um pulo que começa perto demais da face bate nela e ricocheteia, porque o personagem chega antes de estar alto o bastante. É coerente com a física, mas pode frustrar.
 - **Ajuste do chefe.** Vida, tempo da casca e ritmo dos ataques ainda não foram jogados.
 - **Texto no menu e no HUD.** O princípio de não ter dicas escritas vale para o mundo. O menu, o cronômetro e a tela de fim usam texto por enquanto.

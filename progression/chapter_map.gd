@@ -9,7 +9,7 @@ extends RefCounted
 ## - "A" a "Z" baús. O conteúdo vem da distribuição, nunca do mapa.
 ## - "1" a "9" bloqueios. O tipo de cada um vem dos dados do capítulo. Casas
 ##   com o mesmo número formam um só bloqueio.
-## - "l" inimigo leve, "h" pesado, "i" de gelo, "*" chefe, "c" caixa leve.
+## - "m" minion, "u" ugly, "i" inimigo de gelo, "*" chefe, "c" caixa leve.
 ##
 ## As regras de alcance são as mesmas do jogo: parede rachada passa com a
 ## bomba, gelo passa com a chama, e a face de degrau passa de baixo para cima

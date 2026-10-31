@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(10, 6)
 
-[node name="LightEnemy" type="CharacterBody2D"]
+[node name="Minion" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_script")
 mass = 0.5

@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" path="res://player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://objects/light_crate.tscn" id="2_crate"]
 [ext_resource type="PackedScene" path="res://objects/heavy_block.tscn" id="3_block"]
-[ext_resource type="PackedScene" path="res://enemies/heavy_enemy.tscn" id="4_heavy_enemy"]
-[ext_resource type="PackedScene" path="res://enemies/light_enemy.tscn" id="5_light_enemy"]
+[ext_resource type="PackedScene" path="res://enemies/ugly.tscn" id="4_ugly"]
+[ext_resource type="PackedScene" path="res://enemies/minion.tscn" id="5_minion"]
 [ext_resource type="Script" path="res://ui/hud.gd" id="6_hud"]
 [ext_resource type="Script" path="res://world/test_room.gd" id="7_script"]
 [ext_resource type="PackedScene" path="res://obstacles/ledge.tscn" id="8_ledge"]
@@ -120,6 +120,8 @@ size = Vector2(16, 36)
 position = Vector2(248, 128)
 size = Vector2(16, 36)
 
+[node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
+
 [node name="Objects" type="Node2D" parent="."]
 y_sort_enabled = true
 
@@ -155,10 +157,10 @@ position = Vector2(160, 52)
 position = Vector2(48, 64)
 starting_tools = 7
 
-[node name="HeavyEnemy" parent="Objects" instance=ExtResource("4_heavy_enemy")]
+[node name="Ugly" parent="Objects" instance=ExtResource("4_ugly")]
 position = Vector2(270, 100)
 
-[node name="LightEnemy" parent="Objects" instance=ExtResource("5_light_enemy")]
+[node name="Minion" parent="Objects" instance=ExtResource("5_minion")]
 position = Vector2(272, 40)
 
 [node name="HUD" type="CanvasLayer" parent="."]

@@ -17,7 +17,7 @@ from collections import Counter
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 SLOTS = "123456789"
-ACTORS = "lhi*c@"
+ACTORS = "mui*c@"
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 TOOLS = ["BOMB", "FIRE", "SPRING"]
 ITEM_BITS = {"NONE": 0, "BOMB": 1, "FIRE": 2, "SPRING": 3, "HEART": 4}
