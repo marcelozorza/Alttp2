@@ -219,7 +219,7 @@ func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
 		max_health += heart_bonus
 		health = max_health
-	elif Item.is_tool(id):
+	elif id in Item.TOOLS:
 		_tools |= Item.bit(id)
 		selected_tool = id
 

@@ -149,7 +149,7 @@ func is_beatable(distribution: Dictionary, goal: String, goal_tools: int) -> boo
 			collected[location] = true
 			progressed = true
 			var item: int = distribution.get(location, Item.Id.NONE)
-			if Item.is_tool(item):
+			if item in Item.TOOLS:
 				tools |= Item.bit(item)
 	return reached.has(find(goal)) and (tools & goal_tools) == goal_tools
 
