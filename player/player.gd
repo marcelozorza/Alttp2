@@ -18,8 +18,23 @@ extends MomentumBody
 ## contra uma parede, arremessa o personagem para trás, e ele só recupera o
 ## controle quando o atrito reduz a velocidade abaixo de recover_speed.
 ##
+## O jogo é feito para o controle, com a espada e cada ferramenta no seu
+## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
+## ferramenta não faz nada antes de o personagem tê-la. A chama e a bomba têm
+## cargas, que voltam todas juntas depois de um tempo sem uso (ver
+## player/tool_charges.gd). A espada e a mola não têm limite. A mola dá um pulo
+## vertical: o personagem sobe no eixo da câmera, cresce na tela e mantém o
+## mesmo controle do chão, sem ganhar distância. Com ela, ele sobe degraus altos
+## (ver obstacles/ledge.gd).
+##
+## A espada pode ficar travada por um tempo, como faz a granada do ugly. Uma
+## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
+## funcionando.
+##
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
+
+signal respawned
 
 enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK }
 
@@ -28,6 +43,18 @@ const RUN_COLOR := Color(0.95, 0.62, 0.2, 1.0)
 const WOBBLE_COLOR := Color(1.0, 0.15, 0.15, 1.0)
 const FALLEN_COLOR := Color(0.45, 0.4, 0.4, 1.0)
 const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Cor da espada travada. A granada do ugly usa a mesma cor.
+const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
+## Cor da barra da trava ao apertar o ataque com a espada travada.
+const SWORD_DENIED_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Ticks em que a barra da trava fica branca depois de um aperto sem efeito.
+const SWORD_DENIED_TICKS := 6
+const BOMB_SCENE := preload("res://items/bomb.tscn")
+const FIREBALL_SCENE := preload("res://items/fireball.tscn")
+## Desvios laterais, em pixels, tentados ao cruzar um degrau desalinhado.
+const LEDGE_SEARCH := [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6]
+## Quanto o desenho alcança a posição real por tick depois de cruzar um degrau.
+const VISUAL_CATCH_UP := 1.5
 
 @export_group("Andar")
 ## Velocidade máxima, em pixels por segundo.
@@ -50,7 +77,7 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 @export var run_can_steer := true
 ## Segundos de corrida contínua até o personagem perder o equilíbrio. Zero
 ## desliga o tropeço.
-@export_range(0.0, 5.0, 0.05) var balance_time := 0.6
+@export_range(0.0, 5.0, 0.05) var balance_time := 0.4
 ## Segundos de desequilíbrio para reagir antes de cair. Para se equilibrar,
 ## aperte a direção oposta à da corrida.
 @export_range(0.05, 2.0, 0.05) var wobble_time := 0.5
@@ -77,16 +104,42 @@ const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## Segundos de invencibilidade depois de tomar dano, com o personagem piscando.
 @export_range(0.0, 3.0, 0.05) var invincibility_time := 1.0
 
+@export_group("Ferramentas")
+## Altura do pulo da mola, em pixels. Com o passo fixo, o pico real fica um
+## pouco abaixo (20,5 px para 22). Precisa passar da altura dos degraus, que é
+## de 16 pixels.
+@export_range(8.0, 48.0, 1.0) var jump_height := 22.0
+## Tempo no ar do pulo, em segundos.
+@export_range(0.2, 1.5, 0.05) var jump_time := 0.5
+## Quanto o personagem cresce no alto do pulo, por estar mais perto da câmera.
+@export_range(0.0, 1.0, 0.05) var jump_growth := 0.25
+## Bolas de fogo seguidas antes de a chama precisar recarregar.
+@export_range(1, 10, 1) var fire_charges := 5
+## Segundos sem usar a chama até todas as cargas voltarem.
+@export_range(0.5, 10.0, 0.5) var fire_recharge_time := 3.0
+## Bombas seguidas antes de a bomba precisar recarregar.
+@export_range(1, 10, 1) var bomb_charges := 2
+## Segundos sem usar a bomba até todas as cargas voltarem.
+@export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 5.0
+## Bombas no chão ao mesmo tempo, além do limite das cargas.
+@export_range(1, 5, 1) var max_bombs := 2
+## Pontos de vida ganhos com cada coração.
+@export_range(1, 6, 1) var heart_bonus := 2
+## Ferramentas desde o início. Útil na sala de teste.
+@export_flags("Bomba", "Chama", "Mola") var starting_tools := 0
+
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
 ## parede andando em linha reta. Zero desliga.
 @export_range(0, 12, 1) var corner_tolerance := 6
 
 ## Direção para onde o personagem olha, sempre uma das 4 direções retas.
-## Define, no futuro, para onde as ferramentas são usadas. Segurar a ação
+## Define para onde vão o golpe, a chama e a bomba. Segurar a ação
 ## lock_facing mantém a frente, o que permite andar de lado.
 var facing := Vector2.DOWN
 var health := 0
+## Onde o personagem reaparece ao perder toda a vida.
+var spawn_position := Vector2.ZERO
 
 var _state := State.WALK
 var _state_tick := 0
@@ -96,22 +149,39 @@ var _last_press_direction := Vector2.ZERO
 var _last_press_tick := 0
 var _freeze_until_tick := 0
 var _invincible_until_tick := 0
+var _tools := 0
+var _z := 0.0
+var _z_velocity := 0.0
+var _visual_offset := 0.0
+var _drawn_height := 0.0
+var _sword_lock_until_tick := 0
+var _sword_lock_ticks := 1
+var _sword_denied_tick := -1000
+var _fire_charges := ToolCharges.new()
+var _bomb_charges := ToolCharges.new()
 
-@onready var _body: ColorRect = $Body
+@onready var _visual: Node2D = $Visual
+@onready var _body: ColorRect = $Visual/Body
 @onready var _walk_color: Color = _body.color
 @onready var _body_rest_position: Vector2 = _body.position
 @onready var _body_rest_size: Vector2 = _body.size
-@onready var _facing_marker: ColorRect = $FacingMarker
-@onready var _sword: Sword = $Sword
-@onready var _spawn_position := global_position
+@onready var _facing_marker: ColorRect = $Visual/FacingMarker
+@onready var _sword: Sword = $Visual/Sword
+@onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
+@onready var _sword_lock_width: float = _sword_lock_bar.size.x
+@onready var _shadow: ColorRect = $Shadow
+@onready var _feet: CollisionShape2D = $Feet
 
 
 func _ready() -> void:
 	add_to_group("player")
 	health = max_health
+	spawn_position = global_position
+	_tools = starting_tools << 1
 
 
 func _physics_process(delta: float) -> void:
+	_recharge_tools()
 	var direction := _read_direction()
 	_update_state(direction)
 	var in_control := _state == State.WALK or _state == State.RUN
@@ -119,8 +189,9 @@ func _physics_process(delta: float) -> void:
 		# A frente se atualiza antes do golpe, para que direção e ataque
 		# apertados no mesmo tick golpeiem na nova direção.
 		_update_facing(direction)
-	if in_control and Input.is_action_just_pressed("attack"):
-		_attack()
+		if Input.is_action_just_pressed("attack"):
+			_attack()
+		_use_tools()
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
@@ -129,8 +200,55 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.move_toward(Vector2.ZERO, fall_friction * delta)
 	else:
 		_steer(direction, delta)
+	_try_ledge(direction, delta)
 	move_with_impacts()
+	_update_height(delta)
 	_update_visuals()
+
+
+## Diz se o personagem tem a ferramenta. Recebe um Item.Id.
+func has_tool(id: int) -> bool:
+	return Item.has(_tools, id)
+
+
+## Cargas que restam da ferramenta, ou -1 se ela não usa cargas. Recebe um
+## Item.Id.
+func charges_left(id: int) -> int:
+	match id:
+		Item.Id.FIRE:
+			return _fire_charges.left(fire_charges)
+		Item.Id.BOMB:
+			return _bomb_charges.left(bomb_charges)
+	return -1
+
+
+## Cargas da ferramenta cheia, ou 0 se ela não usa cargas. Recebe um Item.Id.
+func max_charges(id: int) -> int:
+	match id:
+		Item.Id.FIRE:
+			return fire_charges
+		Item.Id.BOMB:
+			return bomb_charges
+	return 0
+
+
+## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, e
+## um coração aumenta a vida máxima e enche a vida.
+func give_item(id: int) -> void:
+	if id == Item.Id.HEART:
+		max_health += heart_bonus
+		health = max_health
+	elif id in Item.TOOLS:
+		_tools |= Item.bit(id)
+
+
+## Altura dos pés acima do chão, em pixels.
+func get_height() -> float:
+	return _z
+
+
+func is_airborne() -> bool:
+	return _z > 0.0 or _z_velocity > 0.0
 
 
 ## Recebe a batida de outro corpo. Uma batida forte arremessa o personagem,
@@ -149,7 +267,7 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 
 ## Recebe um ataque. Durante a invencibilidade, ataques são ignorados. O
 ## empurrão vem separado, pela física da batida.
-func take_hit(amount: int, _direction: Vector2) -> void:
+func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
 	if Engine.get_physics_frames() < _invincible_until_tick:
 		return
 	health -= amount
@@ -158,20 +276,154 @@ func take_hit(amount: int, _direction: Vector2) -> void:
 		_respawn()
 
 
+## Trava a espada por alguns segundos. Durante a invencibilidade, nada
+## acontece. Uma trava nova nunca encurta a que já existe.
+func lock_sword(seconds: float) -> void:
+	var now := Engine.get_physics_frames()
+	if now < _invincible_until_tick:
+		return
+	var until := now + GameMath.ticks(seconds)
+	if until > _sword_lock_until_tick:
+		_sword_lock_until_tick = until
+		_sword_lock_ticks = maxi(until - now, 1)
+
+
+func is_sword_locked() -> bool:
+	return Engine.get_physics_frames() < _sword_lock_until_tick
+
+
 ## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
+## Com a espada travada, o aperto só faz a barra da trava piscar.
 func _attack() -> void:
+	if is_sword_locked():
+		_sword_denied_tick = Engine.get_physics_frames()
+		return
 	if _state == State.RUN:
 		_enter(State.WALK)
 	_sword.attack(facing)
 	_freeze_until_tick = Engine.get_physics_frames() + GameMath.ticks(attack_freeze_time)
 
 
-## Protótipo: sem tela de derrota, o personagem volta ao início com a vida cheia.
+## Protótipo: sem tela de derrota, o personagem volta ao ponto de reaparecer
+## com a vida cheia e as cargas cheias, e mantém as ferramentas.
 func _respawn() -> void:
 	health = max_health
-	global_position = _spawn_position
+	_fire_charges.refill()
+	_bomb_charges.refill()
+	global_position = spawn_position
 	velocity = Vector2.ZERO
+	_z = 0.0
+	_z_velocity = 0.0
+	_visual_offset = 0.0
+	_drawn_height = 0.0
+	_sword_lock_until_tick = 0
 	_enter(State.WALK)
+	respawned.emit()
+
+
+func _recharge_tools() -> void:
+	var now := Engine.get_physics_frames()
+	_fire_charges.recharge(now, GameMath.ticks(fire_recharge_time))
+	_bomb_charges.recharge(now, GameMath.ticks(bomb_recharge_time))
+
+
+## Cada ferramenta responde ao seu botão. No ar, só a espada funciona.
+func _use_tools() -> void:
+	if is_airborne():
+		return
+	if Input.is_action_just_pressed("use_fire") and has_tool(Item.Id.FIRE):
+		_shoot_fire()
+	if Input.is_action_just_pressed("use_bomb") and has_tool(Item.Id.BOMB):
+		_place_bomb()
+	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
+		_z_velocity = 4.0 * jump_height / jump_time
+
+
+## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
+## atravessa as próprias bombas, mas pode empurrá-las com a espada.
+func _place_bomb() -> void:
+	if _bomb_charges.left(bomb_charges) <= 0:
+		return
+	if get_tree().get_nodes_in_group("bombs").size() >= max_bombs:
+		return
+	var bomb := BOMB_SCENE.instantiate() as Bomb
+	bomb.position = position + facing * 6.0
+	get_parent().add_child(bomb)
+	bomb.add_collision_exception_with(self)
+	add_collision_exception_with(bomb)
+	_bomb_charges.spend(Engine.get_physics_frames())
+
+
+## Lança uma bola de fogo na direção da frente, se houver carga. Uma de cada
+## vez: a próxima só sai depois que a anterior some.
+func _shoot_fire() -> void:
+	if _fire_charges.left(fire_charges) <= 0:
+		return
+	if not get_tree().get_nodes_in_group("fireballs").is_empty():
+		return
+	var fireball := FIREBALL_SCENE.instantiate() as Fireball
+	fireball.direction = facing
+	fireball.shooter = self
+	fireball.position = position + facing * 9.0
+	get_parent().add_child(fireball)
+	_fire_charges.spend(Engine.get_physics_frames())
+
+
+## Gravidade do pulo, calculada para que a altura e o tempo no ar sejam os
+## exportados.
+func _update_height(delta: float) -> void:
+	if not is_airborne():
+		return
+	_z_velocity -= 8.0 * jump_height / (jump_time * jump_time) * delta
+	_z += _z_velocity * delta
+	if _z <= 0.0:
+		_z = 0.0
+		_z_velocity = 0.0
+
+
+## Degraus altos. Encostado na face vindo do sul, com a mola e alto o bastante,
+## o personagem sobe. Encostado vindo do norte, ele desce num salto. Nos dois
+## casos ele cruza a face de uma vez, trocando posição por altura, e o desenho
+## alcança a nova posição em poucos ticks.
+func _try_ledge(direction: Vector2, delta: float) -> void:
+	if direction.y == 0.0:
+		return
+	var vertical := Vector2(0.0, signf(direction.y))
+	var probe := vertical * maxf(2.0, absf(velocity.y) * delta + 1.0)
+	var collision := KinematicCollision2D.new()
+	if not test_move(global_transform, probe, collision):
+		return
+	var ledge := collision.get_collider() as Ledge
+	if not ledge:
+		return
+	var feet_half := (_feet.shape as RectangleShape2D).size.y / 2.0
+	if vertical.y < 0.0:
+		if has_tool(Item.Id.SPRING) and _z >= ledge.step_height():
+			_cross_ledge(ledge.top() - feet_half - 1.0, -ledge.step_height())
+	else:
+		_cross_ledge(ledge.bottom() + feet_half + 1.0, ledge.step_height())
+
+
+func _cross_ledge(target_y: float, height_change: float) -> void:
+	for offset: int in LEDGE_SEARCH:
+		var target := Vector2(global_position.x + offset, target_y)
+		if _is_free_at(target):
+			var drawn_before := global_position.y - _z
+			global_position = target
+			_z = maxf(_z + height_change, 0.0)
+			_visual_offset = drawn_before - (global_position.y - _z)
+			return
+
+
+## Diz se os pés caberiam na posição, sem encostar em nada.
+func _is_free_at(target: Vector2) -> bool:
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = _feet.shape
+	query.transform = Transform2D(0.0, target + _feet.position)
+	query.collision_mask = collision_mask
+	var excluded: Array[RID] = [get_rid()]
+	query.exclude = excluded
+	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 
 func _steer(direction: Vector2, delta: float) -> void:
@@ -304,7 +556,8 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 
 ## Visual provisório: a cor do corpo indica o estado, o corpo treme no
 ## desequilíbrio, fica deitado na queda e um quadrado na borda mostra para
-## onde o personagem olha.
+## onde o personagem olha. Com a espada travada, uma barra acima da cabeça
+## encolhe até a trava acabar.
 func _update_visuals() -> void:
 	var color := _walk_color
 	var shake := Vector2.ZERO
@@ -329,8 +582,27 @@ func _update_visuals() -> void:
 	_body.size = body_size
 	_facing_marker.visible = _state != State.FALLEN
 	var invincible := Engine.get_physics_frames() < _invincible_until_tick
-	var blink := posmod(Engine.get_physics_frames(), 6) < 3
-	modulate.a = 0.3 if invincible and blink else 1.0
+	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
+	modulate.a = 0.3 if invincible and flicker else 1.0
+	# No ar, o corpo sobe e cresce, e a sombra fica no chão.
+	_visual_offset = move_toward(_visual_offset, 0.0, VISUAL_CATCH_UP)
+	_drawn_height = move_toward(_drawn_height, _z, 4.0)
+	_visual.position = Vector2(0.0, _visual_offset - _z)
+	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
+	_shadow.visible = is_airborne()
 	var body_center := Vector2(0.0, -4.0)
 	var center := body_center + facing * Vector2(4.0, 6.0)
 	_facing_marker.position = center - _facing_marker.size / 2.0
+	_update_sword_lock_bar()
+
+
+func _update_sword_lock_bar() -> void:
+	var now := Engine.get_physics_frames()
+	var left := _sword_lock_until_tick - now
+	_sword_lock_bar.visible = left > 0
+	if left <= 0:
+		return
+	_sword_lock_bar.size.x = _sword_lock_width * left / _sword_lock_ticks
+	_sword_lock_bar.position.x = -_sword_lock_bar.size.x / 2.0
+	var denied := now - _sword_denied_tick < SWORD_DENIED_TICKS
+	_sword_lock_bar.color = SWORD_DENIED_COLOR if denied else SWORD_LOCK_COLOR

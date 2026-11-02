@@ -1,17 +1,18 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://enemies/enemy.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://enemies/grenade.tscn" id="2_grenade"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(18, 10)
 
-[node name="HeavyEnemy" type="CharacterBody2D"]
+[node name="Ugly" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_script")
 mass = 3.0
 restitution = 0.5
 friction = 900.0
-max_health = 6
+max_health = 8
 stagger_time = 0.0
 attack_range = 40.0
 walk_speed = 35.0
@@ -20,6 +21,10 @@ lunge_speed = 170.0
 lunge_time = 0.3
 recover_time = 1.0
 damage = 2
+sword_factor = 1
+fire_factor = 1
+blast_factor = 3
+grenade_scene = ExtResource("2_grenade")
 
 [node name="Body" type="ColorRect" parent="."]
 offset_left = -10.0
