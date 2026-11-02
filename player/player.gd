@@ -20,7 +20,9 @@ extends MomentumBody
 ##
 ## O jogo é feito para o controle, com a espada e cada ferramenta no seu
 ## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
-## ferramenta não faz nada antes de o personagem tê-la. A mola dá um pulo
+## ferramenta não faz nada antes de o personagem tê-la. A chama e a bomba têm
+## cargas, que voltam todas juntas depois de um tempo sem uso (ver
+## player/tool_charges.gd). A espada e a mola não têm limite. A mola dá um pulo
 ## vertical: o personagem sobe no eixo da câmera, cresce na tela e mantém o
 ## mesmo controle do chão, sem ganhar distância. Com ela, ele sobe degraus altos
 ## (ver obstacles/ledge.gd).
@@ -111,7 +113,15 @@ const VISUAL_CATCH_UP := 1.5
 @export_range(0.2, 1.5, 0.05) var jump_time := 0.5
 ## Quanto o personagem cresce no alto do pulo, por estar mais perto da câmera.
 @export_range(0.0, 1.0, 0.05) var jump_growth := 0.25
-## Bombas no chão ao mesmo tempo.
+## Bolas de fogo seguidas antes de a chama precisar recarregar.
+@export_range(1, 10, 1) var fire_charges := 5
+## Segundos sem usar a chama até todas as cargas voltarem.
+@export_range(0.5, 10.0, 0.5) var fire_recharge_time := 3.0
+## Bombas seguidas antes de a bomba precisar recarregar.
+@export_range(1, 10, 1) var bomb_charges := 2
+## Segundos sem usar a bomba até todas as cargas voltarem.
+@export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 5.0
+## Bombas no chão ao mesmo tempo, além do limite das cargas.
 @export_range(1, 5, 1) var max_bombs := 2
 ## Pontos de vida ganhos com cada coração.
 @export_range(1, 6, 1) var heart_bonus := 2
@@ -147,6 +157,8 @@ var _drawn_height := 0.0
 var _sword_lock_until_tick := 0
 var _sword_lock_ticks := 1
 var _sword_denied_tick := -1000
+var _fire_charges := ToolCharges.new()
+var _bomb_charges := ToolCharges.new()
 
 @onready var _visual: Node2D = $Visual
 @onready var _body: ColorRect = $Visual/Body
@@ -169,6 +181,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_recharge_tools()
 	var direction := _read_direction()
 	_update_state(direction)
 	var in_control := _state == State.WALK or _state == State.RUN
@@ -196,6 +209,27 @@ func _physics_process(delta: float) -> void:
 ## Diz se o personagem tem a ferramenta. Recebe um Item.Id.
 func has_tool(id: int) -> bool:
 	return Item.has(_tools, id)
+
+
+## Cargas que restam da ferramenta, ou -1 se ela não usa cargas. Recebe um
+## Item.Id.
+func charges_left(id: int) -> int:
+	match id:
+		Item.Id.FIRE:
+			return _fire_charges.left(fire_charges)
+		Item.Id.BOMB:
+			return _bomb_charges.left(bomb_charges)
+	return -1
+
+
+## Cargas da ferramenta cheia, ou 0 se ela não usa cargas. Recebe um Item.Id.
+func max_charges(id: int) -> int:
+	match id:
+		Item.Id.FIRE:
+			return fire_charges
+		Item.Id.BOMB:
+			return bomb_charges
+	return 0
 
 
 ## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, e
@@ -271,9 +305,11 @@ func _attack() -> void:
 
 
 ## Protótipo: sem tela de derrota, o personagem volta ao ponto de reaparecer
-## com a vida cheia e mantém as ferramentas.
+## com a vida cheia e as cargas cheias, e mantém as ferramentas.
 func _respawn() -> void:
 	health = max_health
+	_fire_charges.refill()
+	_bomb_charges.refill()
 	global_position = spawn_position
 	velocity = Vector2.ZERO
 	_z = 0.0
@@ -283,6 +319,12 @@ func _respawn() -> void:
 	_sword_lock_until_tick = 0
 	_enter(State.WALK)
 	respawned.emit()
+
+
+func _recharge_tools() -> void:
+	var now := Engine.get_physics_frames()
+	_fire_charges.recharge(now, GameMath.ticks(fire_recharge_time))
+	_bomb_charges.recharge(now, GameMath.ticks(bomb_recharge_time))
 
 
 ## Cada ferramenta responde ao seu botão. No ar, só a espada funciona.
@@ -297,9 +339,11 @@ func _use_tools() -> void:
 		_z_velocity = 4.0 * jump_height / jump_time
 
 
-## Solta uma bomba aos pés, um pouco à frente. O personagem atravessa as
-## próprias bombas, mas pode empurrá-las com a espada.
+## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
+## atravessa as próprias bombas, mas pode empurrá-las com a espada.
 func _place_bomb() -> void:
+	if _bomb_charges.left(bomb_charges) <= 0:
+		return
 	if get_tree().get_nodes_in_group("bombs").size() >= max_bombs:
 		return
 	var bomb := BOMB_SCENE.instantiate() as Bomb
@@ -307,10 +351,14 @@ func _place_bomb() -> void:
 	get_parent().add_child(bomb)
 	bomb.add_collision_exception_with(self)
 	add_collision_exception_with(bomb)
+	_bomb_charges.spend(Engine.get_physics_frames())
 
 
-## Lança uma bola de fogo na direção da frente. Uma de cada vez.
+## Lança uma bola de fogo na direção da frente, se houver carga. Uma de cada
+## vez: a próxima só sai depois que a anterior some.
 func _shoot_fire() -> void:
+	if _fire_charges.left(fire_charges) <= 0:
+		return
 	if not get_tree().get_nodes_in_group("fireballs").is_empty():
 		return
 	var fireball := FIREBALL_SCENE.instantiate() as Fireball
@@ -318,6 +366,7 @@ func _shoot_fire() -> void:
 	fireball.shooter = self
 	fireball.position = position + facing * 9.0
 	get_parent().add_child(fireball)
+	_fire_charges.spend(Engine.get_physics_frames())
 
 
 ## Gravidade do pulo, calculada para que a altura e o tempo no ar sejam os

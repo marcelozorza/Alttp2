@@ -56,6 +56,7 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 ## Ferramentas
 
 - **Um botão para cada coisa.** O jogo é feito para o controle, e o teclado serve para testes. Trocar de ferramenta ficou pesado demais ao jogar, então cada botão de face tem uma coisa só: espada embaixo, pulo à direita, chama à esquerda e bomba em cima. Por isso a ideia é fechar com 3 itens, um por botão, além da espada (decisão de 2026-11-02). O botão de uma ferramenta não faz nada antes de o personagem tê-la. No alto da tela, um losango repete a posição dos quatro botões, com o botão vazio e apagado até a ferramenta aparecer, e a lâmina da espada fica magenta enquanto está travada. No ar, só a espada funciona.
+- **Cargas.** A chama tem 5 cargas e a bomba tem 2. Cada uso gasta uma, e todas voltam juntas quando a ferramenta passa um tempo sem uso: 3 s para a chama e 5 s para a bomba. Depois de gastar todas, é preciso esperar, então cada uso pede cálculo. A chama tem mais cargas porque alguns inimigos pedem vários disparos. A espada e a mola não têm limite. No HUD, uma coluna de pontos ao lado do botão mostra as cargas, e o botão escurece quando elas acabam (decisão de 2026-11-02).
 
 - **Bomba.** Fica no chão um pouco à frente do personagem e explode depois de 1,5 s, num raio de 26 px. Abre paredes rachadas, causa dano, empurra os corpos pela física e machuca o próprio personagem. No máximo 2 no chão ao mesmo tempo. O personagem atravessa as próprias bombas, e a espada as empurra, o que permite chutá-las. Fogo e outras explosões acendem o pavio na hora, o que permite reações em cadeia.
 - **Chama.** Lança uma bola de fogo reta na direção da frente, com alcance de 120 px, uma de cada vez. Derrete gelo, acende bombas e queima inimigos. Qualquer coisa sólida apaga a bola.
@@ -140,7 +141,8 @@ Ideias que Marcelo quer ver mais para frente, sem implementar agora.
 - **Detalhes da espada.** Dano em toda a lâmina ou só na ponta. Recuo no personagem ao acertar uma parede ou algo pesado. Golpe durante a corrida como ataque especial em vez de encerrar a corrida.
 - **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
 - **Arsenal com 3 itens.** Com um botão por item, a ideia é fechar com 3. A visão original falava de um arsenal que cresce, então falta decidir como os capítulos seguintes variam: novos usos para os mesmos itens, versões melhoradas deles ou outra coisa.
-- **Bomba.** Hoje ela machuca o próprio personagem, como no ALttP, é infinita e tem limite de 2 no chão. Bombas contadas mudariam o ritmo.
+- **Bomba no personagem.** Hoje ela machuca o próprio personagem, como no ALttP.
+- **Recarga das cargas.** Hoje todas voltam juntas depois de um tempo sem uso, e o HUD não mostra quanto falta. A alternativa é voltarem uma por vez, o que permite usar a ferramenta num ritmo constante.
 - **Pulo e ataques.** Hoje o pulo só evita as ondas de choque. Os botes dos inimigos e a granada do ugly acertam no ar.
 - **Ataques só em quatro direções.** Em espera desde 2026-10-31. A ideia era que todos os inimigos atacassem só em norte, sul, leste e oeste. Hoje o bote segue em 8 direções, e o ugly ficou bom assim.
 - **Minion com lança.** Em espera desde 2026-10-31. Uma lança na mão apontando para onde ele vai atacar, e um bote que trava a direção e passa direto pelo personagem. A forma ideal de matá-lo seria esperar a direção travar, sair da linha e acertá-lo de lado enquanto ele passa.
