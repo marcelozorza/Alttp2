@@ -55,11 +55,11 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 
 ## Ferramentas
 
-As ferramentas ficam num botão próprio, e outro botão troca a ferramenta escolhida. A escolhida aparece numa moldura no alto da tela, com as outras ao lado. Uma ferramenta nova já entra escolhida. No ar, só a espada funciona.
+- **Um botão para cada coisa.** O jogo é feito para o controle, e o teclado serve para testes. Trocar de ferramenta ficou pesado demais ao jogar, então cada botão de face tem uma coisa só: espada embaixo, pulo à direita, chama à esquerda e bomba em cima. Por isso a ideia é fechar com 3 itens, um por botão, além da espada (decisão de 2026-11-02). O botão de uma ferramenta não faz nada antes de o personagem tê-la. No alto da tela, um losango repete a posição dos quatro botões, com o botão vazio e apagado até a ferramenta aparecer, e a lâmina da espada fica magenta enquanto está travada. No ar, só a espada funciona.
 
 - **Bomba.** Fica no chão um pouco à frente do personagem e explode depois de 1,5 s, num raio de 26 px. Abre paredes rachadas, causa dano, empurra os corpos pela física e machuca o próprio personagem. No máximo 2 no chão ao mesmo tempo. O personagem atravessa as próprias bombas, e a espada as empurra, o que permite chutá-las. Fogo e outras explosões acendem o pavio na hora, o que permite reações em cadeia.
 - **Chama.** Lança uma bola de fogo reta na direção da frente, com alcance de 120 px, uma de cada vez. Derrete gelo, acende bombas e queima inimigos. Qualquer coisa sólida apaga a bola.
-- **Mola.** Pulo vertical, inspirado na pena de Link's Awakening. O personagem sobe no eixo da câmera e cresce na tela, porque fica mais perto dela, e a sombra fica no chão. Ele não ganha distância: o controle no ar é o mesmo do chão. O pulo dura 0,5 s e sobe cerca de 20 px, acima dos 16 px de um degrau. Serve para subir degraus altos e para escapar das ondas de choque do chefe. Pular correndo mantém a velocidade da corrida, sem ganho extra. Saltos longos sobre buracos, como pena e botas no Link's Awakening, ficam para depois.
+- **Mola.** Pulo vertical, inspirado na pena de Link's Awakening. O personagem sobe no eixo da câmera e cresce na tela, porque fica mais perto dela, e a sombra fica no chão. Ele não ganha distância: o controle no ar é o mesmo do chão. O pulo dura 0,5 s e sobe cerca de 20 px, acima dos 16 px de um degrau. Serve para subir degraus altos e para escapar das ondas de choque do chefe. Pular correndo mantém a velocidade da corrida, sem ganho extra. Saltos longos sobre buracos, como pena e botas no Link's Awakening, ficam para depois. Marcelo aprovou o pulo ao jogar, em especial o crescimento em direção à câmera, e quer trabalhar mais nele depois.
 
 ## Bloqueios
 
@@ -97,7 +97,7 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 
 ## Capítulo 1
 
-- **Mapa.** 8 salas de uma tela (20 por 10 casas de 16 px), numa grade de 3 por 4, com portas de duas casas no meio das paredes. A câmera desliza de sala em sala, e uma barra no alto da tela mostra a vida, as ferramentas, o modo e o cronômetro.
+- **Mapa.** 8 salas de uma tela (20 por 10 casas de 16 px), numa grade de 3 por 4, com portas de duas casas no meio das paredes. A câmera desliza de sala em sala, e uma barra no alto da tela mostra a vida, os botões do controle, o modo e o cronômetro.
 - **Baús.** 6 baús: as 3 ferramentas e 3 corações.
 - **Ordem linear.** A bomba fica na sala a leste do início, com uma parede rachada ao lado escondendo um coração. A chama fica a oeste, atrás de uma parede rachada, na sala do primeiro inimigo de gelo. A mola fica a nordeste, atrás do gelo, com um degrau ao lado e um coração em cima dele. O chefe fica ao norte, atrás de um degrau alto, de um bloco de gelo e de uma parede rachada, nessa ordem. Cada bloqueio aparece antes da ferramenta que o resolve, e cada ferramenta nova tem um uso por perto.
 - **Seeds.** O menu oferece a linear e uma seed aleatória de seis dígitos. A seed embaralha os itens entre os mesmos 6 baús, e o gerador só aceita a distribuição se a lógica do mapa garante caminho até o chefe com as ferramentas que ele exige. A mesma seed gera sempre a mesma distribuição, em qualquer máquina. Das 120 distribuições distintas, 64 são vencíveis.
@@ -112,6 +112,7 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Conferência fora do Godot.** `tools/check_chapter.py` lê os mesmos dados, confere a geometria das salas e das portas, repete a lógica de alcance, garante que a linear é vencível e que nenhuma combinação de ferramentas prende o jogador num lugar sem volta, e conta as distribuições vencíveis.
 - **Tipos de golpe.** Espada, fogo, explosão e onda de choque (`combat/hit.gd`). Cada alvo decide como reage a cada tipo, e é isso que faz cada ferramenta servir para umas coisas e não para outras.
 - **Passo fixo de física.** Movimento e física rodam a 60 ticks por segundo, independentes da taxa de quadros. Técnicas de precisão precisam funcionar do mesmo jeito em qualquer máquina.
+- **Botões num lugar só.** O que cada botão faz fica só no mapa de entrada do projeto (`project.godot`). O HUD lê dali a posição de cada ação no losango, então uma troca de botões feita no editor muda também o HUD.
 
 ## Plataforma
 
@@ -119,6 +120,12 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Meta:** Steam e consoles.
 - **Renderizador:** Compatibility. Exige menos do hardware e permite exportar para navegador, o que ajuda em testes rápidos. A troca para outro renderizador é simples, se necessária.
 - **Resolução base:** 320x180 com escala inteira (4x em 720p, 6x em 1080p, 12x em 4K). Provisória, ver questões em aberto.
+
+## Ideias guardadas
+
+Ideias que Marcelo quer ver mais para frente, sem implementar agora.
+
+- **Cena de cerco.** Inspirada no controle de multidão de Resident Evil 4. Uma cena dramática em que um círculo de inimigos se fecha aos poucos. O personagem bate para afastá-los, pode se esconder num canto e pode ser encurralado. A física de massa já dá o empurrão e o efeito dominó entre inimigos, e o ataque giratório planejado serviria para abrir espaço. A corrida tira do cerco, com o risco da queda. Como não há dano por contato, a ameaça precisa vir de vários ataques avisados ao mesmo tempo.
 
 ## Questões em aberto
 
@@ -132,14 +139,14 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Armas.** Quais armas existem, como se alternam e quais servem de chave.
 - **Detalhes da espada.** Dano em toda a lâmina ou só na ponta. Recuo no personagem ao acertar uma parede ou algo pesado. Golpe durante a corrida como ataque especial em vez de encerrar a corrida.
 - **Invencibilidade dos inimigos.** Hoje cada aperto acerta de novo, sem pausa entre golpes no mesmo inimigo.
-- **Quarta ferramenta.** A ideia inicial era cerca de 4 ferramentas por capítulo. O capítulo 1 tem 3.
+- **Arsenal com 3 itens.** Com um botão por item, a ideia é fechar com 3. A visão original falava de um arsenal que cresce, então falta decidir como os capítulos seguintes variam: novos usos para os mesmos itens, versões melhoradas deles ou outra coisa.
 - **Bomba.** Hoje ela machuca o próprio personagem, como no ALttP, é infinita e tem limite de 2 no chão. Bombas contadas mudariam o ritmo.
 - **Pulo e ataques.** Hoje o pulo só evita as ondas de choque. Os botes dos inimigos e a granada do ugly acertam no ar.
 - **Ataques só em quatro direções.** Em espera desde 2026-10-31. A ideia era que todos os inimigos atacassem só em norte, sul, leste e oeste. Hoje o bote segue em 8 direções, e o ugly ficou bom assim.
 - **Minion com lança.** Em espera desde 2026-10-31. Uma lança na mão apontando para onde ele vai atacar, e um bote que trava a direção e passa direto pelo personagem. A forma ideal de matá-lo seria esperar a direção travar, sair da linha e acertá-lo de lado enquanto ele passa.
 - **Dano do bote do ugly.** Hoje são 2 de 6 pontos de vida. A ideia inicial era tirar metade da barra.
 - **Pulo correndo contra o degrau.** Correndo, um pulo que começa perto demais da face bate nela e ricocheteia, porque o personagem chega antes de estar alto o bastante. É coerente com a física, mas pode frustrar.
-- **Ajuste do chefe.** Vida, tempo da casca e ritmo dos ataques ainda não foram jogados.
+- **Ajuste do chefe.** Marcelo enfrentou o chefe em 2026-11-02 e gostou de precisar da chama e do pulo. Vida, tempo da casca e ritmo dos ataques ainda não foram ajustados.
 - **Texto no menu e no HUD.** O princípio de não ter dicas escritas vale para o mundo. O menu, o cronômetro e a tela de fim usam texto por enquanto.
 - **Voltar ao menu.** Esc, ou o botão Back do controle, volta ao menu na hora e perde a partida, sem confirmação.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.

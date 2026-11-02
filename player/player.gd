@@ -18,10 +18,12 @@ extends MomentumBody
 ## contra uma parede, arremessa o personagem para trás, e ele só recupera o
 ## controle quando o atrito reduz a velocidade abaixo de recover_speed.
 ##
-## As ferramentas ficam num botão próprio, e outro botão troca a ferramenta
-## escolhida. A mola dá um pulo vertical: o personagem sobe no eixo da câmera,
-## cresce na tela e mantém o mesmo controle do chão, sem ganhar distância. Com
-## ela, ele sobe degraus altos (ver obstacles/ledge.gd).
+## O jogo é feito para o controle, com a espada e cada ferramenta no seu
+## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
+## ferramenta não faz nada antes de o personagem tê-la. A mola dá um pulo
+## vertical: o personagem sobe no eixo da câmera, cresce na tela e mantém o
+## mesmo controle do chão, sem ganhar distância. Com ela, ele sobe degraus altos
+## (ver obstacles/ledge.gd).
 ##
 ## A espada pode ficar travada por um tempo, como faz a granada do ugly. Uma
 ## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
@@ -122,12 +124,10 @@ const VISUAL_CATCH_UP := 1.5
 @export_range(0, 12, 1) var corner_tolerance := 6
 
 ## Direção para onde o personagem olha, sempre uma das 4 direções retas.
-## Define, no futuro, para onde as ferramentas são usadas. Segurar a ação
+## Define para onde vão o golpe, a chama e a bomba. Segurar a ação
 ## lock_facing mantém a frente, o que permite andar de lado.
 var facing := Vector2.DOWN
 var health := 0
-## Ferramenta usada pelo botão de ferramenta. Um Item.Id.
-var selected_tool: int = Item.Id.NONE
 ## Onde o personagem reaparece ao perder toda a vida.
 var spawn_position := Vector2.ZERO
 
@@ -166,9 +166,6 @@ func _ready() -> void:
 	health = max_health
 	spawn_position = global_position
 	_tools = starting_tools << 1
-	var owned := owned_tools()
-	if not owned.is_empty():
-		selected_tool = owned[0]
 
 
 func _physics_process(delta: float) -> void:
@@ -181,10 +178,7 @@ func _physics_process(delta: float) -> void:
 		_update_facing(direction)
 		if Input.is_action_just_pressed("attack"):
 			_attack()
-		if Input.is_action_just_pressed("use_tool"):
-			_use_tool()
-	if Input.is_action_just_pressed("switch_tool"):
-		_switch_tool()
+		_use_tools()
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
@@ -204,24 +198,14 @@ func has_tool(id: int) -> bool:
 	return Item.has(_tools, id)
 
 
-## Ferramentas que o personagem tem, na ordem do botão de troca.
-func owned_tools() -> Array[int]:
-	var owned: Array[int] = []
-	for id: int in Item.TOOLS:
-		if has_tool(id):
-			owned.append(id)
-	return owned
-
-
-## Recebe o item de um baú. Uma ferramenta nova já fica escolhida, e um
-## coração aumenta a vida máxima e enche a vida.
+## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, e
+## um coração aumenta a vida máxima e enche a vida.
 func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
 		max_health += heart_bonus
 		health = max_health
 	elif id in Item.TOOLS:
 		_tools |= Item.bit(id)
-		selected_tool = id
 
 
 ## Altura dos pés acima do chão, em pixels.
@@ -301,24 +285,16 @@ func _respawn() -> void:
 	respawned.emit()
 
 
-## Usa a ferramenta escolhida. No ar, só a espada funciona.
-func _use_tool() -> void:
+## Cada ferramenta responde ao seu botão. No ar, só a espada funciona.
+func _use_tools() -> void:
 	if is_airborne():
 		return
-	match selected_tool:
-		Item.Id.BOMB:
-			_place_bomb()
-		Item.Id.FIRE:
-			_shoot_fire()
-		Item.Id.SPRING:
-			_z_velocity = 4.0 * jump_height / jump_time
-
-
-func _switch_tool() -> void:
-	var owned := owned_tools()
-	if owned.is_empty():
-		return
-	selected_tool = owned[(owned.find(selected_tool) + 1) % owned.size()]
+	if Input.is_action_just_pressed("use_fire") and has_tool(Item.Id.FIRE):
+		_shoot_fire()
+	if Input.is_action_just_pressed("use_bomb") and has_tool(Item.Id.BOMB):
+		_place_bomb()
+	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
+		_z_velocity = 4.0 * jump_height / jump_time
 
 
 ## Solta uma bomba aos pés, um pouco à frente. O personagem atravessa as
@@ -557,8 +533,8 @@ func _update_visuals() -> void:
 	_body.size = body_size
 	_facing_marker.visible = _state != State.FALLEN
 	var invincible := Engine.get_physics_frames() < _invincible_until_tick
-	var blink := posmod(Engine.get_physics_frames(), 6) < 3
-	modulate.a = 0.3 if invincible and blink else 1.0
+	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
+	modulate.a = 0.3 if invincible and flicker else 1.0
 	# No ar, o corpo sobe e cresce, e a sombra fica no chão.
 	_visual_offset = move_toward(_visual_offset, 0.0, VISUAL_CATCH_UP)
 	_drawn_height = move_toward(_drawn_height, _z, 4.0)

@@ -48,8 +48,9 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 	queue_redraw()
 
 
+## Redesenha enquanto o item aparece e mais uma vez depois, para apagá-lo.
 func _physics_process(_delta: float) -> void:
-	if is_open and Engine.get_physics_frames() - _open_tick <= SHOW_ITEM_TICKS:
+	if is_open and Engine.get_physics_frames() - _open_tick <= SHOW_ITEM_TICKS + 1:
 		queue_redraw()
 
 

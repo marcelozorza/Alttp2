@@ -20,12 +20,17 @@ No menu, use as setas ou o direcional para escolher e Enter, Espaço ou o botão
 
 ## Controles
 
-- **Mover:** WASD, setas, analógico esquerdo ou direcional do controle. Sempre em 8 direções.
+O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no alto da tela repete a posição dos quatro botões.
+
+- **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
-- **Andar de lado:** segure Shift, ou L ou R no controle, para manter a direção de frente.
-- **Atacar:** J, Z ou Espaço no teclado, botão de baixo no controle (A no padrão Xbox). O golpe de espada também abre os baús.
-- **Usar a ferramenta:** K ou X no teclado, botão da esquerda no controle (X no padrão Xbox).
-- **Trocar de ferramenta:** L ou C no teclado, botão de cima no controle (Y no padrão Xbox).
+- **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
+- **Espada:** botão de baixo (A no padrão Xbox). No teclado, J ou Z. O golpe também abre os baús.
+- **Pulo, com a mola:** botão da direita (B no padrão Xbox). No teclado, Espaço ou V.
+- **Chama:** botão da esquerda (X no padrão Xbox). No teclado, K ou X.
+- **Bomba:** botão de cima (Y no padrão Xbox). No teclado, L ou C.
+
+O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
 ## Ferramentas
 
