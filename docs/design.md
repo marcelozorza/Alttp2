@@ -25,7 +25,7 @@ O jogo deve ser original. A inspiração vem da sensação e da estrutura, sem c
 
 ## Personagem
 
-- **Giorgio.** O personagem principal é um cachorro, inspirado no Jorginho, o cachorro de Marcelo (decisão de 2026-11-05). Vira-lata esguio, corpo branco com pintinhas cinza, cabeça preta com reflexo tigrado, faixa branca no meio da testa, focinho branco com sardas e nariz preto, uma orelha em pé e a outra dobrada, duas manchas pretas nas costas e rabo fino e branco. A orelha assimétrica é a marca dele. Usa uma coleira rosa.
+- **Giorgio.** O personagem principal é um cachorro, inspirado no Jorginho, o cachorro de Marcelo (decisão de 2026-11-05). Vira-lata esguio, corpo branco com pintinhas cinza, cabeça preta com reflexo tigrado, faixa branca no meio da testa, focinho branco com sardas e nariz preto, uma orelha em pé e a outra dobrada, duas manchas pretas nas costas e rabo fino e branco. A orelha assimétrica é a marca dele. Usa uma coleira rosa. Marcelo aprovou o desenho em pixel art em 2026-11-05.
 
 ## Direção visual (em discussão)
 
