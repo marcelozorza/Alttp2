@@ -17,7 +17,7 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 - **Capítulo 2: linear e seed aleatória.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Na seed, as chaves também trocam de baú, e nenhuma ordem de abrir portas prende o jogador.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas desde o início, um degrau alto, uma parede rachada e um bloco de gelo.
 
-No menu, use as setas ou o direcional para escolher e Enter, Espaço ou o botão de baixo do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
+No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
 
 ## Controles
 
@@ -27,9 +27,9 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
 - **Espada:** botão de baixo (A no padrão Xbox). No teclado, J ou Z. O golpe também abre os baús.
-- **Pulo, com a mola:** botão da direita (B no padrão Xbox). No teclado, Espaço ou V.
+- **Bomba:** botão da direita (B no padrão Xbox). No teclado, L ou C.
 - **Chama:** botão da esquerda (X no padrão Xbox). No teclado, K ou X.
-- **Bomba:** botão de cima (Y no padrão Xbox). No teclado, L ou C.
+- **Pulo, com a mola:** botão de cima (Y no padrão Xbox). No teclado, Espaço ou V.
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
@@ -37,7 +37,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 
 ## Ferramentas
 
-- **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. A espada empurra a bomba. Dá para soltar 2 seguidas, e as duas voltam 5 s depois da última.
+- **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. A espada empurra a bomba. Dá para soltar 2 seguidas, e as duas voltam 3 s depois da última.
 - **Chama:** bola de fogo reta. Derrete gelo e acende bombas. Dá para lançar 5 seguidas, uma de cada vez na tela, e todas voltam 3 s depois da última.
 - **Mola:** pulo vertical, sem limite e sem ganhar distância. Encostado na face de um degrau alto, no alto do pulo e apertando para cima, o personagem sobe. Para descer, basta andar contra a face vindo de cima.
 - **Cargas:** os pontos ao lado do botão, no alto da tela, mostram quantas bombas e chamas restam. O botão escurece quando acabam.

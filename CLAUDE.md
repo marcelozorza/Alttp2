@@ -14,3 +14,4 @@ Jogo de aventura top-down em Godot 4.7 com GDScript. Visão, princípios e decis
 ## Verificação
 
 - Rode `gdformat --check .` e `gdlint .` (pacote `gdtoolkit` no PyPI) em todo script alterado.
+- Com o Godot disponível, rode também o teste de fumaça descrito no topo de `tools/smoke_test.gd`. Nenhuma linha com `SCRIPT ERROR` ou `ERROR` pode aparecer.

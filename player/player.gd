@@ -146,7 +146,7 @@ const VISUAL_CATCH_UP := 1.5
 ## Bombas seguidas antes de a bomba precisar recarregar.
 @export_range(1, 10, 1) var bomb_charges := 2
 ## Segundos sem usar a bomba até todas as cargas voltarem.
-@export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 5.0
+@export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 3.0
 ## Bombas no chão ao mesmo tempo, além do limite das cargas.
 @export_range(1, 5, 1) var max_bombs := 2
 ## Pontos de vida ganhos com cada coração.
