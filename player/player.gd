@@ -49,6 +49,13 @@ const ART_DOWN := preload("res://art/giorgio_down.svg")
 const ART_UP := preload("res://art/giorgio_up.svg")
 const ART_SIDE := preload("res://art/giorgio_side.svg")
 const ART_FALLEN := preload("res://art/giorgio_fallen.svg")
+## Segundo passo da caminhada de cada direção.
+const ART_DOWN_STEP := preload("res://art/giorgio_down_step.svg")
+const ART_UP_STEP := preload("res://art/giorgio_up_step.svg")
+const ART_SIDE_STEP := preload("res://art/giorgio_side_step.svg")
+## Ticks de cada passo, andando e correndo.
+const WALK_STEP_TICKS := 10
+const RUN_STEP_TICKS := 6
 ## Cor da espada travada. A granada do ugly usa a mesma cor.
 const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
 ## Cor da barra da trava ao apertar o ataque com a espada travada.
@@ -601,17 +608,24 @@ func _update_visuals() -> void:
 
 
 ## Escolhe o desenho pela frente. O de lado espelha para olhar à esquerda.
+## Andando ou correndo, alterna os dois passos da caminhada, mais rápido na
+## corrida.
 func _update_art(shake: Vector2) -> void:
 	_art.flip_h = false
+	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
+	var step_ticks := RUN_STEP_TICKS if _state == State.RUN else WALK_STEP_TICKS
+	var second_step := (
+		moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1
+	)
 	if _state == State.FALLEN:
 		_art.texture = ART_FALLEN
 		_art.flip_h = facing.x < 0.0
 	elif facing.y < 0.0:
-		_art.texture = ART_UP
+		_art.texture = ART_UP_STEP if second_step else ART_UP
 	elif facing.y > 0.0:
-		_art.texture = ART_DOWN
+		_art.texture = ART_DOWN_STEP if second_step else ART_DOWN
 	else:
-		_art.texture = ART_SIDE
+		_art.texture = ART_SIDE_STEP if second_step else ART_SIDE
 		_art.flip_h = facing.x < 0.0
 	_art.position = shake
 

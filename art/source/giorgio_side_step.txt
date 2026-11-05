@@ -1,0 +1,34 @@
+# Giorgio de lado, segundo passo: as patas trocam de lugar.
+paleta
+o #2a2230
+k #2a2329
+b #5c4232
+w #f4f1ea
+s #c7c1cf
+g #8f8a99
+n #141016
+p #e49aa4
+r #d9578a
+e #0e0b0d
+
+pixels
+................
+................
+................
+................
+...........o....
+..........oko...
+.........okbo...
+........okkkko..
+.......okkkekko.
+.......okkkkwwwo
+.o.....oookkwwno
+ow......orwwwwo.
+.ow.oooooorwwo..
+..owwwwwwwwwwo..
+..owkkwwwwgwwo..
+..okkkwwwwwwso..
+..owkwswwwwsso..
+..owwowwwwowo...
+...owoow.owo....
+...opo.oo.opo...

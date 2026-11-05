@@ -1,0 +1,34 @@
+# Giorgio de frente, segundo passo da caminhada: a pata esquerda no ar.
+paleta
+o #2a2230
+k #2a2329
+b #5c4232
+w #f4f1ea
+s #c7c1cf
+g #8f8a99
+n #141016
+p #e49aa4
+r #d9578a
+e #0e0b0d
+
+pixels
+..........oo....
+.........okko...
+.........okbo...
+....oooooobko...
+..ookkkkwkkkko..
+ookkkkkkwkkkbo..
+kkbokekkwkekko..
+kko.okkwwwkkko..
+oo..okwwwwwkko..
+....owwwnnwwo...
+....owgwnnwgo...
+.....owwwwwo....
+....orrrrrrro...
+...owwwwwwwwwo..
+...owwswwwswwo..
+...owwswwgswwo..
+...owswowowswo..
+...opwoowoowwo..
+....oo..o.owpo..
+...........oo...

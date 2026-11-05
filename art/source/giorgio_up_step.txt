@@ -1,0 +1,34 @@
+# Giorgio de costas, segundo passo: a pata direita no ar e o rabo abanando.
+paleta
+o #2a2230
+k #2a2329
+b #5c4232
+w #f4f1ea
+s #c7c1cf
+g #8f8a99
+n #141016
+p #e49aa4
+r #d9578a
+e #0e0b0d
+
+pixels
+..........oo....
+.........okko...
+.........okko...
+...ooo...okko...
+..okkkooookkko..
+..okkkkkkkkbko..
+...okbkkkkkkko..
+....okkkkkkko...
+....orrrrrrro...
+...owwwwwwwwwo..
+...owwwwwwgwwo..
+...owkkwwwwwwo..
+...okkkkwwwwwo..
+...owkkwwwkkwo..
+...owwwwwkkkko..
+...owwswwwkkwo..
+...owsowwowswo..
+...owwoowooopo..
+....oo.owo..o...
+........wo......
