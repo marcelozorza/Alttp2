@@ -80,8 +80,8 @@ O Godot reimporta os SVG ao voltar para o editor.
 
 ## Tons do Giorgio
 
-- **Sem tom:** andando.
-- **Alaranjado:** correndo.
+- **De pé, sem tom:** andando, com a espada e os itens na pata.
+- **Nas 4 patas, alaranjado:** correndo. Atacar faz ele ficar de pé e encerra a corrida.
 - **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
 - **Deitado e acinzentado:** caído, se arrastando até parar.
 - **Clarão branco:** arremessado por uma batida, sem controle.

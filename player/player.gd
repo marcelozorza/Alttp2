@@ -43,16 +43,29 @@ const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
 const WOBBLE_TINT := Color(1.0, 0.35, 0.35, 1.0)
 const FALLEN_TINT := Color(0.8, 0.78, 0.8, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
-## Desenhos do Giorgio. O de lado olha para a direita, e o jogo espelha para a
-## esquerda.
-const ART_DOWN := preload("res://art/giorgio_down.svg")
-const ART_UP := preload("res://art/giorgio_up.svg")
-const ART_SIDE := preload("res://art/giorgio_side.svg")
+## Desenhos do Giorgio, nesta ordem: de frente, de costas e de lado, cada um
+## com o segundo passo logo depois. O de lado olha para a direita, e o jogo
+## espelha para a esquerda. Andando, ele fica de pé, com a espada e os itens na
+## pata. Correndo, desce para as 4 patas, e atacar o põe de pé de novo.
+const ART_STANDING := [
+	preload("res://art/giorgio_stand_down.svg"),
+	preload("res://art/giorgio_stand_down_step.svg"),
+	preload("res://art/giorgio_stand_up.svg"),
+	preload("res://art/giorgio_stand_up_step.svg"),
+	preload("res://art/giorgio_stand_side.svg"),
+	preload("res://art/giorgio_stand_side_step.svg"),
+]
+const ART_ON_ALL_FOURS := [
+	preload("res://art/giorgio_down.svg"),
+	preload("res://art/giorgio_down_step.svg"),
+	preload("res://art/giorgio_up.svg"),
+	preload("res://art/giorgio_up_step.svg"),
+	preload("res://art/giorgio_side.svg"),
+	preload("res://art/giorgio_side_step.svg"),
+]
 const ART_FALLEN := preload("res://art/giorgio_fallen.svg")
-## Segundo passo da caminhada de cada direção.
-const ART_DOWN_STEP := preload("res://art/giorgio_down_step.svg")
-const ART_UP_STEP := preload("res://art/giorgio_up_step.svg")
-const ART_SIDE_STEP := preload("res://art/giorgio_side_step.svg")
+## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
+const ART_BELOW_FEET := 4.0
 ## Ticks de cada passo, andando e correndo.
 const WALK_STEP_TICKS := 10
 const RUN_STEP_TICKS := 6
@@ -607,26 +620,29 @@ func _update_visuals() -> void:
 	_update_sword_lock_bar()
 
 
-## Escolhe o desenho pela frente. O de lado espelha para olhar à esquerda.
-## Andando ou correndo, alterna os dois passos da caminhada, mais rápido na
-## corrida.
+## Escolhe o desenho pela postura e pela frente. Correndo e desequilibrado,
+## ele está nas 4 patas, caído, deitado, e no resto, de pé. Andando ou
+## correndo, alterna os dois passos, mais rápido na corrida. O desenho sempre
+## termina ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
 func _update_art(shake: Vector2) -> void:
-	_art.flip_h = false
+	var on_all_fours := _state == State.RUN or _state == State.WOBBLE
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
-	var step_ticks := RUN_STEP_TICKS if _state == State.RUN else WALK_STEP_TICKS
-	var second_step := (
-		moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1
-	)
-	if _state == State.FALLEN:
-		_art.texture = ART_FALLEN
-		_art.flip_h = facing.x < 0.0
+	var step_ticks := RUN_STEP_TICKS if on_all_fours else WALK_STEP_TICKS
+	var step := 0
+	if moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1:
+		step = 1
+	var direction := 2
+	if facing.y > 0.0:
+		direction = 0
 	elif facing.y < 0.0:
-		_art.texture = ART_UP_STEP if second_step else ART_UP
-	elif facing.y > 0.0:
-		_art.texture = ART_DOWN_STEP if second_step else ART_DOWN
-	else:
-		_art.texture = ART_SIDE_STEP if second_step else ART_SIDE
-		_art.flip_h = facing.x < 0.0
+		direction = 1
+	var frames: Array = ART_ON_ALL_FOURS if on_all_fours else ART_STANDING
+	var texture: Texture2D = frames[direction * 2 + step]
+	if _state == State.FALLEN:
+		texture = ART_FALLEN
+	_art.texture = texture
+	_art.flip_h = facing.x < 0.0 and (direction == 2 or _state == State.FALLEN)
+	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
 	_art.position = shake
 
 
