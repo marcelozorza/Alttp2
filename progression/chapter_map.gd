@@ -229,7 +229,7 @@ func _touches(reached: Dictionary, nodes: Array) -> bool:
 func _state_key(opened: Dictionary) -> String:
 	var slots: Array = opened.keys()
 	slots.sort()
-	return "".join(slots)
+	return "".join(PackedStringArray(slots))
 
 
 ## Casa onde dá para ficar: chão ou bloqueio que não seja face de degrau.

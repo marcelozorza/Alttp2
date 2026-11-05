@@ -106,14 +106,14 @@ func _find_button_center(action: StringName) -> void:
 
 
 func _draw_health(player: Player) -> void:
-	var size := PIP_SIZE
+	var pip_size := PIP_SIZE
 	if player.max_health > HEALTH_ROW:
-		size.y = (PIP_SIZE.y - 1.0) / 2.0
+		pip_size.y = (PIP_SIZE.y - 1.0) / 2.0
 	for i: int in player.max_health:
 		var row := floori(float(i) / HEALTH_ROW)
 		var column := i % HEALTH_ROW
-		var pip_position := Vector2(column * (size.x + PIP_GAP), row * (size.y + 1.0))
-		draw_rect(Rect2(pip_position, size), FULL_COLOR if i < player.health else EMPTY_COLOR)
+		var pip_position := Vector2(column * (pip_size.x + PIP_GAP), row * (pip_size.y + 1.0))
+		draw_rect(Rect2(pip_position, pip_size), FULL_COLOR if i < player.health else EMPTY_COLOR)
 
 
 ## Uma chave pequena por ícone, até 4, e um número quando passam disso. A chave

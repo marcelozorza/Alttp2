@@ -13,9 +13,9 @@ extends Boss
 ## com a mola, e a investida em linha reta. O ritmo fica nos parâmetros da
 ## cena.
 
-const SHELL_TEXTURE := preload("res://art/sentinel_shell.svg")
+const ARMOR_TEXTURE := preload("res://art/sentinel_shell.svg")
 const FROST_TEXTURE := preload("res://art/sentinel_frost.svg")
-const CORE_TEXTURE := preload("res://art/sentinel_core.svg")
+const HOT_CORE_TEXTURE := preload("res://art/sentinel_core.svg")
 ## Canto do desenho em relação à origem, nos pés.
 const TEXTURE_OFFSET := Vector2(-14.0, -27.0)
 
@@ -80,12 +80,12 @@ func _draw() -> void:
 		tint = HIT_TINT
 	elif now - _immune_tick < FLASH_TICKS:
 		tint = IMMUNE_COLOR
-	var texture := SHELL_TEXTURE
+	var texture := ARMOR_TEXTURE
 	if not _shell:
-		texture = FROST_TEXTURE if _frost else CORE_TEXTURE
+		texture = FROST_TEXTURE if _frost else HOT_CORE_TEXTURE
 		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
-			texture = SHELL_TEXTURE
+			texture = ARMOR_TEXTURE
 	draw_texture(texture, TEXTURE_OFFSET + shake, tint)
 	var width := float(texture.get_width())
 	var bar_width := width * float(maxi(health, 0)) / max_health
