@@ -1,0 +1,24 @@
+# Variação do chão, para quebrar a repetição.
+paleta
+s #2b2838
+c #36334a
+a #423e58
+b #4f4b68
+x #3a3750
+pixels
+bbbbbbbbbbbsbbbb
+baaaaaaxaaacbaaa
+baaaaaaaaaacbaax
+bxaaaaaaaaacbaaa
+baaaaaaaaxacbaaa
+baaaaaaaaaacbaaa
+bccccccccccccccc
+ssssssssssssssss
+bbbbbsbbbbbbbbbs
+baaaacbaaaaaaxac
+baxaacbaaaaaaaac
+baaaacbaaaaaaaac
+baaaacbaaxaaaaac
+baaaacbaaaaaaaac
+bccccccccccccccc
+ssssssssssssssss

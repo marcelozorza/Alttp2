@@ -7,10 +7,10 @@ extends StaticBody2D
 
 signal opened(chest: Chest)
 
-const BODY_COLOR := Color(0.55, 0.34, 0.16, 1.0)
-const LID_COLOR := Color(0.68, 0.44, 0.21, 1.0)
-const BAND_COLOR := Color(0.92, 0.75, 0.3, 1.0)
-const INSIDE_COLOR := Color(0.16, 0.1, 0.06, 1.0)
+const CLOSED_TEXTURE := preload("res://art/chest.svg")
+const OPEN_TEXTURE := preload("res://art/chest_open.svg")
+## Canto do desenho em relação à origem, no centro da base.
+const TEXTURE_OFFSET := Vector2(-8.0, -15.0)
 const SIZE := Vector2(14.0, 10.0)
 ## Ticks em que o item fica flutuando sobre o baú aberto.
 const SHOW_ITEM_TICKS := 60
@@ -55,14 +55,10 @@ func _physics_process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	var half := SIZE.x / 2.0
-	draw_rect(Rect2(Vector2(-half, -SIZE.y), SIZE), BODY_COLOR)
 	if not is_open:
-		draw_rect(Rect2(Vector2(-half, -SIZE.y - 3.0), Vector2(SIZE.x, 4.0)), LID_COLOR)
-		draw_rect(Rect2(Vector2(-1.0, -SIZE.y), Vector2(2.0, 4.0)), BAND_COLOR)
+		draw_texture(CLOSED_TEXTURE, TEXTURE_OFFSET)
 		return
-	draw_rect(Rect2(Vector2(-half + 1.0, -SIZE.y), Vector2(SIZE.x - 2.0, 3.0)), INSIDE_COLOR)
-	draw_rect(Rect2(Vector2(-half, -SIZE.y - 5.0), Vector2(SIZE.x, 3.0)), LID_COLOR.darkened(0.2))
+	draw_texture(OPEN_TEXTURE, TEXTURE_OFFSET)
 	var elapsed := Engine.get_physics_frames() - _open_tick
 	if elapsed <= SHOW_ITEM_TICKS:
 		var rise := minf(elapsed, 20.0) * 0.5

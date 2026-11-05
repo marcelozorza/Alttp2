@@ -38,11 +38,17 @@ signal respawned
 
 enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK }
 
-## Cores provisórias do corpo em cada estado.
-const RUN_COLOR := Color(0.95, 0.62, 0.2, 1.0)
-const WOBBLE_COLOR := Color(1.0, 0.15, 0.15, 1.0)
-const FALLEN_COLOR := Color(0.45, 0.4, 0.4, 1.0)
-const KNOCKBACK_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Tons sobre o desenho do Giorgio em cada estado. Acima de 1, o tom clareia.
+const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
+const WOBBLE_TINT := Color(1.0, 0.35, 0.35, 1.0)
+const FALLEN_TINT := Color(0.8, 0.78, 0.8, 1.0)
+const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
+## Desenhos do Giorgio. O de lado olha para a direita, e o jogo espelha para a
+## esquerda.
+const ART_DOWN := preload("res://art/giorgio_down.svg")
+const ART_UP := preload("res://art/giorgio_up.svg")
+const ART_SIDE := preload("res://art/giorgio_side.svg")
+const ART_FALLEN := preload("res://art/giorgio_fallen.svg")
 ## Cor da espada travada. A granada do ugly usa a mesma cor.
 const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
 ## Cor da barra da trava ao apertar o ataque com a espada travada.
@@ -138,6 +144,8 @@ const VISUAL_CATCH_UP := 1.5
 ## lock_facing mantém a frente, o que permite andar de lado.
 var facing := Vector2.DOWN
 var health := 0
+## Chaves pequenas guardadas. Cada porta trancada gasta uma.
+var keys := 0
 ## Onde o personagem reaparece ao perder toda a vida.
 var spawn_position := Vector2.ZERO
 
@@ -161,11 +169,7 @@ var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
 
 @onready var _visual: Node2D = $Visual
-@onready var _body: ColorRect = $Visual/Body
-@onready var _walk_color: Color = _body.color
-@onready var _body_rest_position: Vector2 = _body.position
-@onready var _body_rest_size: Vector2 = _body.size
-@onready var _facing_marker: ColorRect = $Visual/FacingMarker
+@onready var _art: Sprite2D = $Visual/Art
 @onready var _sword: Sword = $Visual/Sword
 @onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
 @onready var _sword_lock_width: float = _sword_lock_bar.size.x
@@ -232,14 +236,25 @@ func max_charges(id: int) -> int:
 	return 0
 
 
-## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, e
-## um coração aumenta a vida máxima e enche a vida.
+## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, um
+## coração aumenta a vida máxima e enche a vida, a chave pequena vai para o
+## chaveiro e a chave grande fica para sempre, como uma ferramenta sem botão.
 func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
 		max_health += heart_bonus
 		health = max_health
-	elif id in Item.TOOLS:
+	elif id == Item.Id.KEY:
+		keys += 1
+	elif id in Item.PERMANENT:
 		_tools |= Item.bit(id)
+
+
+## Gasta uma chave pequena, se houver. Diz se gastou.
+func use_key() -> bool:
+	if keys <= 0:
+		return false
+	keys -= 1
+	return true
 
 
 ## Altura dos pés acima do chão, em pixels.
@@ -554,33 +569,25 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 	return Vector2.ZERO
 
 
-## Visual provisório: a cor do corpo indica o estado, o corpo treme no
-## desequilíbrio, fica deitado na queda e um quadrado na borda mostra para
-## onde o personagem olha. Com a espada travada, uma barra acima da cabeça
-## encolhe até a trava acabar.
+## O desenho do Giorgio segue a frente, e um tom sobre ele indica o estado: o
+## corpo treme no desequilíbrio e fica deitado na queda. Com a espada travada,
+## uma barra acima da cabeça encolhe até a trava acabar.
 func _update_visuals() -> void:
-	var color := _walk_color
+	var tint := Color.WHITE
 	var shake := Vector2.ZERO
-	var body_position := _body_rest_position
-	var body_size := _body_rest_size
 	match _state:
 		State.RUN:
-			color = RUN_COLOR
+			tint = RUN_TINT
 		State.WOBBLE:
 			var blink := posmod(_ticks_in_state(), 8) < 4
-			color = WOBBLE_COLOR if blink else RUN_COLOR
+			tint = WOBBLE_TINT if blink else RUN_TINT
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 		State.FALLEN:
-			color = FALLEN_COLOR
-			# Deitado: um retângulo baixo e largo na altura dos pés.
-			body_position = Vector2(-8.0, -4.0)
-			body_size = Vector2(16.0, 8.0)
+			tint = FALLEN_TINT
 		State.KNOCKBACK:
-			color = KNOCKBACK_COLOR
-	_body.color = color
-	_body.position = body_position + shake
-	_body.size = body_size
-	_facing_marker.visible = _state != State.FALLEN
+			tint = KNOCKBACK_TINT
+	_update_art(shake)
+	_art.modulate = tint
 	var invincible := Engine.get_physics_frames() < _invincible_until_tick
 	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
 	modulate.a = 0.3 if invincible and flicker else 1.0
@@ -590,10 +597,23 @@ func _update_visuals() -> void:
 	_visual.position = Vector2(0.0, _visual_offset - _z)
 	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
 	_shadow.visible = is_airborne()
-	var body_center := Vector2(0.0, -4.0)
-	var center := body_center + facing * Vector2(4.0, 6.0)
-	_facing_marker.position = center - _facing_marker.size / 2.0
 	_update_sword_lock_bar()
+
+
+## Escolhe o desenho pela frente. O de lado espelha para olhar à esquerda.
+func _update_art(shake: Vector2) -> void:
+	_art.flip_h = false
+	if _state == State.FALLEN:
+		_art.texture = ART_FALLEN
+		_art.flip_h = facing.x < 0.0
+	elif facing.y < 0.0:
+		_art.texture = ART_UP
+	elif facing.y > 0.0:
+		_art.texture = ART_DOWN
+	else:
+		_art.texture = ART_SIDE
+		_art.flip_h = facing.x < 0.0
+	_art.position = shake
 
 
 func _update_sword_lock_bar() -> void:

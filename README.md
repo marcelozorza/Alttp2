@@ -14,6 +14,7 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 
 - **Capítulo 1: linear.** A distribuição pensada para aprender: bomba, chama e mola, nessa ordem.
 - **Capítulo 1: seed aleatória.** Sorteia uma seed de seis dígitos, mostrada no alto da tela. Os itens trocam de baú, e sempre há caminho até o chefe.
+- **Capítulo 2: linear e seed aleatória.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Na seed, as chaves também trocam de baú, e nenhuma ordem de abrir portas prende o jogador.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas desde o início, um degrau alto, uma parede rachada e um bloco de gelo.
 
 No menu, use as setas ou o direcional para escolher e Enter, Espaço ou o botão de baixo do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
@@ -31,6 +32,8 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 - **Bomba:** botão de cima (Y no padrão Xbox). No teclado, L ou C.
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
+
+- **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. As chaves guardadas aparecem à direita do losango.
 
 ## Ferramentas
 
@@ -51,7 +54,8 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `progression/` lógica de alcance, gerador de seeds e as escolhas da partida.
 - `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `chapter_one/` tem o capítulo 1, com o mapa em texto e as distribuições separadas do mapa. `test_room.tscn` é a sala de teste.
+- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/` e `chapter_two/` têm os dados de cada capítulo, com o mapa em texto e as distribuições separadas do mapa. `test_room.tscn` é a sala de teste.
+- `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
 - `docs/` documentação de design.
 
@@ -59,22 +63,36 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 
 ```
 python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
+python3 tools/check_chapter.py world/chapter_two/chapter_two_data.gd
 ```
 
-Confere a geometria das salas e das portas, garante que a distribuição linear é vencível e que nenhuma combinação de ferramentas prende o jogador, e conta quantas distribuições embaralhadas são vencíveis.
+Confere a geometria das salas e das portas, garante que a distribuição linear é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador, e conta quantas distribuições embaralhadas são vencíveis.
 
-## Cores provisórias do personagem
+## Editar a pixel art
 
-- **Vermelho:** andando.
-- **Laranja:** correndo.
+Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e uma grade com uma letra por pixel, em que `.` é transparente. Depois de editar, gere os SVG:
+
+```
+python3 tools/pixel_svg.py
+```
+
+O Godot reimporta os SVG ao voltar para o editor.
+
+## Tons do Giorgio
+
+- **Sem tom:** andando.
+- **Alaranjado:** correndo.
 - **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
-- **Cinza e deitado:** caído, se arrastando até parar.
-- **Branco:** arremessado por uma batida, sem controle.
+- **Deitado e acinzentado:** caído, se arrastando até parar.
+- **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola.
 - **Barra magenta acima da cabeça:** espada travada pela granada do ugly. A barra encolhe até a trava acabar, e as ferramentas seguem funcionando.
 
-## Cores provisórias dos inimigos
+## Cores dos inimigos
+
+Nos inimigos com desenho, as cores viram um tom sobre ele.
+
 
 - **Amarelo piscando e tremendo:** preparando o bote. Saia da linha.
 - **Amarelo piscando com uma bola magenta acima da cabeça:** o ugly vai jogar a granada.
@@ -85,13 +103,16 @@ Confere a geometria das salas e das portas, garante que a distribuição linear 
 - **Cinza:** o golpe não o afeta. Falta outra ferramenta.
 - **Azul claro:** de gelo. Só o fogo funciona.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
+- **Sentinela de pedra rachada:** a bomba abre a armadura. O núcleo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A armadura volta 8 s depois da explosão.
 
-## Cores provisórias do mundo
+## Cores do mundo
 
 - **Parede escura com rachaduras claras:** abre com a bomba.
 - **Bloco azul claro com brilhos:** derrete com a chama.
 - **Faixa marrom listrada com chão mais claro acima:** degrau alto. Sobe com a mola.
 - **Baú marrom com faixa dourada:** abre com a espada.
+- **Porta de madeira com faixas de ferro e fechadura:** gasta uma chave pequena.
+- **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.
 - **Losango dourado:** relíquia que o chefe deixa. Tocar nela encerra o capítulo.
 
 ## Ajustar a sensação do andar

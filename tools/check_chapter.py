@@ -3,24 +3,45 @@
 Lê o arquivo de dados em GDScript (MAP, BLOCKS, LINEAR, GOAL e GOAL_TOOLS),
 confere a geometria das salas e repete a lógica de alcance de
 progression/chapter_map.gd para garantir que a distribuição linear é
-vencível, que nenhuma combinação de ferramentas prende o jogador e quantas
+vencível em qualquer ordem de abrir as portas trancadas, que nenhuma
+combinação de ferramentas e portas abertas prende o jogador e quantas
 distribuições embaralhadas são válidas.
+
+A lógica anda pelo grafo de regiões, como no jogo. Para conferir o próprio
+grafo, o alcance também é calculado casa por casa, e os dois precisam dar o
+mesmo resultado em todas as combinações.
 
 Uso: python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
 """
 
 import itertools
+import math
+import random
 import re
 import sys
 from collections import Counter
 
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-SLOTS = "123456789"
-ACTORS = "mui*c@"
+SLOTS = "123456789abdefghjklnopqrstvwxyz"
+ACTORS = "muic*&@"
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-TOOLS = ["BOMB", "FIRE", "SPRING"]
-ITEM_BITS = {"NONE": 0, "BOMB": 1, "FIRE": 2, "SPRING": 3, "HEART": 4}
+UP, DOWN = (0, -1), (0, 1)
+PERMANENT = ["BOMB", "FIRE", "SPRING", "BOSS_KEY"]
+ITEM_BITS = {
+    "NONE": 0,
+    "BOMB": 1,
+    "FIRE": 2,
+    "SPRING": 3,
+    "HEART": 4,
+    "KEY": 5,
+    "BOSS_KEY": 6,
+}
+# Sorteios usados para estimar a taxa de distribuições vencíveis quando há
+# permutações demais para contar todas.
+SAMPLES = 3000
+# Limite de permutações distintas contadas uma a uma.
+EXACT_LIMIT = 20000
 
 
 def bit(name):
@@ -31,7 +52,7 @@ def parse(path):
     text = open(path, encoding="utf-8").read()
     map_block = re.search(r"const MAP := \[(.*?)\n\]", text, re.S).group(1)
     rows = re.findall(r'^\t"(.*)",$', map_block, re.M)
-    blocks = dict(re.findall(r'"(\d)": ChapterMap\.Block\.(\w+)', text))
+    blocks = dict(re.findall(r'"(\w)": ChapterMap\.Block\.(\w+)', text))
     linear_block = re.search(r"const LINEAR := \{(.*?)\n\}", text, re.S).group(1)
     linear = dict(re.findall(r'"(\w)": Item\.Id\.(\w+)', linear_block))
     goal = re.search(r'const GOAL := "(.)"', text).group(1)
@@ -48,6 +69,8 @@ class Map:
         self.blocks = blocks
         self.height = len(rows)
         self.width = max(len(r) for r in rows)
+        self.locked = sorted(s for s, t in blocks.items() if t == "LOCKED")
+        self.build_graph()
 
     def tile(self, cell):
         x, y = cell
@@ -65,70 +88,180 @@ class Map:
     def block_at(self, cell):
         return self.blocks.get(self.tile(cell))
 
-    def is_walkable(self, cell, tools):
+    def is_space(self, cell):
         character = self.tile(cell)
         if character in "# " or character in LOCATIONS:
             return False
-        block = self.block_at(cell)
-        if block == "CRACKED":
-            return bool(tools & bit("BOMB"))
-        if block == "ICE":
-            return bool(tools & bit("FIRE"))
-        if block == "LEDGE":
-            return False
-        return True
+        return self.block_at(cell) != "LEDGE"
 
-    def step(self, cell, step, tools):
+    def slot_of(self, cell):
+        character = self.tile(cell)
+        return character if character in SLOTS else ""
+
+    def can_enter_slot(self, slot, tools, opened):
+        if slot == "":
+            return True
+        kind = self.blocks.get(slot)
+        if kind == "CRACKED":
+            return bool(tools & bit("BOMB"))
+        if kind == "ICE":
+            return bool(tools & bit("FIRE"))
+        if kind == "LOCKED":
+            return slot in opened
+        if kind == "BOSS_DOOR":
+            return bool(tools & bit("BOSS_KEY"))
+        return False
+
+    def step_target(self, cell, step):
+        """Casa de chegada e se exige a mola, ou None."""
         nxt = (cell[0] + step[0], cell[1] + step[1])
         if self.block_at(nxt) != "LEDGE":
-            return nxt if self.is_walkable(nxt, tools) else None
-        climbing = step == (0, -1) and bool(tools & bit("SPRING"))
-        if not climbing and step != (0, 1):
+            return (nxt, False) if self.is_space(nxt) else None
+        if step not in (UP, DOWN):
             return None
         beyond = (nxt[0] + step[0], nxt[1] + step[1])
-        return beyond if self.is_walkable(beyond, tools) else None
+        if not self.is_space(beyond):
+            return None
+        return (beyond, step == UP)
 
-    def reachable(self, start, tools):
+    # Grafo de regiões, o mesmo de chapter_map.gd.
+
+    def build_graph(self):
+        self.node_of = {}
+        self.node_slot = []
+        for y, row in enumerate(self.rows):
+            for x in range(len(row)):
+                cell = (x, y)
+                if not self.is_space(cell) or cell in self.node_of:
+                    continue
+                node = len(self.node_slot)
+                slot = self.slot_of(cell)
+                self.node_slot.append(slot)
+                self.node_of[cell] = node
+                frontier = [cell]
+                while frontier:
+                    c = frontier.pop()
+                    for dx, dy in STEPS:
+                        n = (c[0] + dx, c[1] + dy)
+                        if n in self.node_of or not self.is_space(n):
+                            continue
+                        if self.slot_of(n) != slot:
+                            continue
+                        self.node_of[n] = node
+                        frontier.append(n)
+        edges = set()
+        for cell, node in self.node_of.items():
+            for step in STEPS:
+                target = self.step_target(cell, step)
+                if target is None:
+                    continue
+                to = self.node_of[target[0]]
+                if to != node:
+                    edges.add((node, to, target[1]))
+        self.edges = sorted(edges)
+        self.location_nodes = {}
+        for y, row in enumerate(self.rows):
+            for x, character in enumerate(row):
+                if character in LOCATIONS:
+                    self.location_nodes[character] = [
+                        self.node_of[(x + dx, y + dy)]
+                        for dx, dy in STEPS
+                        if (x + dx, y + dy) in self.node_of
+                    ]
+
+    def can_pass(self, edge, tools, opened):
+        if edge[2] and not tools & bit("SPRING"):
+            return False
+        return self.can_enter_slot(self.node_slot[edge[1]], tools, opened)
+
+    def reachable_nodes(self, start, tools, opened):
+        reached = {start}
+        frontier = [start]
+        while frontier:
+            node = frontier.pop()
+            for edge in self.edges:
+                if edge[0] == node and edge[1] not in reached:
+                    if self.can_pass(edge, tools, opened):
+                        reached.add(edge[1])
+                        frontier.append(edge[1])
+        return reached
+
+    def reachable_cells(self, start, tools, opened):
+        """Alcance casa por casa, só para conferir o grafo."""
         reached = {start}
         frontier = [start]
         while frontier:
             cell = frontier.pop()
             for step in STEPS:
-                nxt = self.step(cell, step, tools)
-                if nxt is not None and nxt not in reached:
-                    reached.add(nxt)
-                    frontier.append(nxt)
+                target = self.step_target(cell, step)
+                if target is None or target[0] in reached:
+                    continue
+                if target[1] and not tools & bit("SPRING"):
+                    continue
+                if not self.can_enter_slot(self.slot_of(target[0]), tools, opened):
+                    continue
+                reached.add(target[0])
+                frontier.append(target[0])
         return reached
 
-    def reached_locations(self, reached):
-        found = []
-        for y, row in enumerate(self.rows):
-            for x, character in enumerate(row):
-                if character in LOCATIONS and any(
-                    (x + dx, y + dy) in reached for dx, dy in STEPS
-                ):
-                    found.append(character)
-        return found
-
-    def spheres(self, distribution):
-        """Devolve as esferas (baús abertos a cada rodada) e o estado final."""
-        start = self.find("@")
-        tools, collected, spheres = 0, set(), []
+    def settle(self, distribution, opened):
+        start = self.node_of[self.find("@")]
+        tools, keys, collected = 0, 0, set()
+        order = []
         while True:
-            reached = self.reachable(start, tools)
-            new = [l for l in self.reached_locations(reached) if l not in collected]
+            reached = self.reachable_nodes(start, tools, opened)
+            new = [
+                loc
+                for loc, nodes in sorted(self.location_nodes.items())
+                if loc not in collected and any(n in reached for n in nodes)
+            ]
             if not new:
-                return spheres, tools, reached
-            spheres.append(new)
+                return reached, tools, keys, order
+            order.append(new)
             collected.update(new)
             for location in new:
                 item = distribution.get(location, "NONE")
-                if item in TOOLS:
+                if item == "KEY":
+                    keys += 1
+                elif item in PERMANENT:
                     tools |= bit(item)
 
-    def is_beatable(self, distribution, goal, goal_mask):
-        _, tools, reached = self.spheres(distribution)
-        return self.find(goal) in reached and (tools & goal_mask) == goal_mask
+    def doors_in_reach(self, reached, tools, opened):
+        doors = []
+        for edge in self.edges:
+            slot = self.node_slot[edge[1]]
+            if edge[0] not in reached or slot in doors or slot in opened:
+                continue
+            if self.blocks.get(slot) != "LOCKED":
+                continue
+            if edge[2] and not tools & bit("SPRING"):
+                continue
+            doors.append(slot)
+        return doors
+
+    def is_beatable(self, distribution, goal, goal_mask, stuck=None):
+        """Vencível em qualquer ordem de abrir portas. Em stuck, se dado, ficam
+        as portas abertas do primeiro estado sem saída."""
+        goal_node = self.node_of.get(self.find(goal))
+        seen = set()
+        stack = [frozenset()]
+        while stack:
+            opened = stack.pop()
+            if opened in seen:
+                continue
+            seen.add(opened)
+            reached, tools, keys, _ = self.settle(distribution, opened)
+            doors = []
+            if keys - len(opened) > 0:
+                doors = self.doors_in_reach(reached, tools, opened)
+            if not doors:
+                if goal_node not in reached or tools & goal_mask != goal_mask:
+                    if stuck is not None:
+                        stuck.extend(sorted(opened))
+                    return False
+            for door in doors:
+                stack.append(opened | {door})
+        return True
 
 
 def check_geometry(m, blocks, linear, goal, errors):
@@ -137,7 +270,7 @@ def check_geometry(m, blocks, linear, goal, errors):
     if m.height % ROOM_H:
         errors.append("altura do mapa não é múltipla de %d" % ROOM_H)
     counts = Counter("".join(m.rows))
-    for character, total in counts.items():
+    for character in counts:
         allowed = "#.: " + LOCATIONS + SLOTS + ACTORS
         if character not in allowed:
             errors.append("caractere desconhecido %r" % character)
@@ -175,7 +308,7 @@ def check_geometry(m, blocks, linear, goal, errors):
                         other = (cell[0], cell[1] + 1)
                     if m.tile(other) in "# ":
                         errors.append("porta sem continuação em %s" % (cell,))
-    # Vagas: cada número forma um retângulo cheio, e o tipo existe.
+    # Vagas: cada caractere forma um retângulo cheio, e o tipo existe.
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
         xs = [c[0] for c in cells]
@@ -207,32 +340,65 @@ def check_geometry(m, blocks, linear, goal, errors):
         if counts[location] != 1:
             errors.append("baú %s aparece mais de uma vez" % location)
     if map_locations != set(linear):
-        errors.append("baús do mapa %s e de LINEAR %s diferem" % (sorted(map_locations), sorted(linear)))
+        errors.append(
+            "baús do mapa %s e de LINEAR %s diferem" % (sorted(map_locations), sorted(linear))
+        )
     return present
 
 
 def check_logic(m, linear, goal, goal_mask, errors):
     start = m.find("@")
-    # Nenhuma combinação de ferramentas pode prender o jogador: de toda casa
-    # alcançável, tem de dar para voltar ao início.
-    for count in range(len(TOOLS) + 1):
-        for combo in itertools.combinations(TOOLS, count):
-            tools = sum(bit(t) for t in combo)
-            for cell in m.reachable(start, tools):
-                if start not in m.reachable(cell, tools):
-                    errors.append("armadilha em %s com %s" % (cell, combo or "nada"))
-                    break
-    spheres, _, _ = m.spheres(linear)
-    if not m.is_beatable(linear, goal, goal_mask):
-        errors.append("a distribuição linear não é vencível")
+    start_node = m.node_of[start]
+    permanent_bits = [bit(t) for t in PERMANENT]
+    # Para toda combinação de ferramentas e portas abertas: o grafo concorda
+    # com o alcance casa por casa, e de toda casa alcançável dá para voltar ao
+    # início, ou seja, nada prende o jogador.
+    trap_found = False
+    for count in range(len(PERMANENT) + 1):
+        for combo in itertools.combinations(permanent_bits, count):
+            tools = sum(combo)
+            for size in range(len(m.locked) + 1):
+                for opened in itertools.combinations(m.locked, size):
+                    opened = set(opened)
+                    cells = m.reachable_cells(start, tools, opened)
+                    nodes = m.reachable_nodes(start_node, tools, opened)
+                    if {m.node_of[c] for c in cells} != nodes:
+                        errors.append("grafo e casas discordam com %s %s" % (tools, opened))
+                    if trap_found:
+                        continue
+                    for node in nodes:
+                        if start_node not in m.reachable_nodes(node, tools, opened):
+                            cell = next(c for c, n in m.node_of.items() if n == node)
+                            errors.append(
+                                "armadilha perto de %s com ferramentas %d e portas %s"
+                                % (cell, tools, sorted(opened))
+                            )
+                            trap_found = True
+                            break
+    _, _, _, order = m.settle(linear, frozenset(m.locked))
+    stuck = []
+    if not m.is_beatable(linear, goal, goal_mask, stuck):
+        errors.append("a distribuição linear não é vencível, presa com as portas %s" % stuck)
     items = sorted(linear.values())
-    total, valid = 0, 0
-    for perm in set(itertools.permutations(items)):
-        total += 1
-        distribution = dict(zip(sorted(linear), perm))
-        if m.is_beatable(distribution, goal, goal_mask):
+    locations = sorted(linear)
+    counts = Counter(items)
+    total = math.factorial(len(items))
+    for amount in counts.values():
+        total //= math.factorial(amount)
+    if total <= EXACT_LIMIT:
+        valid = 0
+        for perm in set(itertools.permutations(items)):
+            if m.is_beatable(dict(zip(locations, perm)), goal, goal_mask):
+                valid += 1
+        return order, total, valid, None
+    rng = random.Random(1)
+    valid = 0
+    for _ in range(SAMPLES):
+        perm = items[:]
+        rng.shuffle(perm)
+        if m.is_beatable(dict(zip(locations, perm)), goal, goal_mask):
             valid += 1
-    return spheres, total, valid
+    return order, total, valid, SAMPLES
 
 
 def main(path):
@@ -240,12 +406,20 @@ def main(path):
     m = Map(rows, blocks)
     errors = []
     present = check_geometry(m, blocks, linear, goal, errors)
-    spheres, total, valid = check_logic(m, linear, goal, goal_mask, errors)
+    order, total, valid, samples = check_logic(m, linear, goal, goal_mask, errors)
     print("salas:", len(present), sorted(present))
-    print("esferas da linear:")
-    for i, sphere in enumerate(spheres):
+    print("regiões: %d, passagens: %d, portas trancadas: %d" % (
+        len(m.node_slot), len(m.edges), len(m.locked)))
+    print("esferas da linear, com todas as portas abertas:")
+    for i, sphere in enumerate(order):
         print("  %d: %s" % (i, ", ".join("%s=%s" % (l, linear[l]) for l in sorted(sphere))))
-    print("distribuições distintas: %d, vencíveis: %d" % (total, valid))
+    if samples is None:
+        print("distribuições distintas: %d, vencíveis: %d" % (total, valid))
+    else:
+        print(
+            "distribuições distintas: %d, vencíveis em %d sorteios: %d (%.1f%%)"
+            % (total, samples, valid, 100.0 * valid / samples)
+        )
     for error in errors:
         print("ERRO:", error)
     return 1 if errors else 0

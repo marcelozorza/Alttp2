@@ -1,0 +1,24 @@
+# Minion: diabrete verde de chifres curtos, pequeno e rápido.
+paleta
+o #1d2a14
+d #3d6b26
+g #5f9a38
+l #8cc456
+h #d8c890
+e #f4f0d0
+k #101010
+pixels
+..h.......h.
+..oh.....ho.
+...oooooo...
+..oglllllgo.
+.oglllllllgo
+.ogleklleklo
+.ogllllllllo
+..ogllkkllo.
+...oggggoo..
+..odgggggdo.
+.ogdggggggdo
+.od.oggggo.o
+...odo..odo.
+...oo....oo.

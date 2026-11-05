@@ -1,0 +1,22 @@
+# Topo da parede, visto de cima: blocos escuros encaixados.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+pixels
+mmmmmmmommmmmmmo
+mddddddommdddddo
+mddddddomddddddo
+mddddddomddddddo
+mddddddomddddddo
+oooooooooooooooo
+mmmommmmmmmmommm
+mddommddddddomdd
+mddomdddddddomdd
+mddomdddddddomdd
+mddomdddddddomdd
+oooooooooooooooo
+mmmmmmommmmmmmmo
+mddddddomddddddo
+mddddddomddddddo
+oooooooooooooooo

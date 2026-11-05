@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/chapter_one/chapter_one.gd" id="1_script"]
+[ext_resource type="Script" path="res://world/chapter/chapter.gd" id="1_script"]
 [ext_resource type="Script" path="res://world/map_view.gd" id="2_map_view"]
 [ext_resource type="Script" path="res://ui/hud.gd" id="3_hud"]
 [ext_resource type="PackedScene" path="res://ui/end_screen.tscn" id="4_end_screen"]
 
-[node name="ChapterOne" type="Node2D"]
+[node name="Chapter" type="Node2D"]
 script = ExtResource("1_script")
 
 [node name="MapView" type="Node2D" parent="."]

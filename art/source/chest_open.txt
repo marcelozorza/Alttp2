@@ -1,0 +1,25 @@
+# Baú aberto: a tampa erguida para trás e o fundo escuro.
+paleta
+o #23160c
+d #4f3016
+w #7a4a22
+x #a06a34
+g #f0c050
+k #120b06
+pixels
+................
+.oooooooooooooo.
+.oxxxxxxxxxxxxo.
+.odwwwwwwwwwwdo.
+.oooooooooooooo.
+.okkkkkkkkkkkko.
+.okkkkkkkkkkkko.
+.oooooooooooooo.
+.oxxxxxxxxxxxwo.
+.oxwwwwwwwwwwdo.
+.oxwwwwwwwwwwdo.
+.ogggggggggggdo.
+.oxwwwwwwwwwwdo.
+.owdddddddddddo.
+.oooooooooooooo.
+................

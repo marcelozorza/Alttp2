@@ -23,6 +23,10 @@ O jogo deve ser original. A inspiração vem da sensação e da estrutura, sem c
 - **Capítulos.** Áreas pequenas, como uma dungeon com poucas ferramentas-chave. O jogador primeiro joga a área na forma linear e aprende o vocabulário. Depois a mesma área, ou uma nova, aparece embaralhada.
 - **Pedra, papel e tesoura.** Cada bloqueio mostra pela aparência qual ferramenta falta, e cada ferramenta é forte contra uma coisa e inútil contra outra. Sem a ferramenta certa, o jogador não passa e precisa encontrá-la. O golpe errado só faz o bloqueio tremer, o que confirma que ali falta outra coisa. A mesma regra vale no combate (ver Inimigos).
 
+## Personagem
+
+- **Giorgio.** O personagem principal é um cachorro, inspirado no Jorginho, o cachorro de Marcelo (decisão de 2026-11-05). Vira-lata esguio, corpo branco com pintinhas cinza, cabeça preta com reflexo tigrado, faixa branca no meio da testa, focinho branco com sardas e nariz preto, uma orelha em pé e a outra dobrada, duas manchas pretas nas costas e rabo fino e branco. A orelha assimétrica é a marca dele. Usa uma coleira rosa.
+
 ## Direção visual (em discussão)
 
 Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elementos identificados até agora:
@@ -31,6 +35,11 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 2. **Mundo compacto e denso.** Tudo perto, cada tela com algo a fazer, um mapa que cabe na cabeça.
 3. **Mundo manipulável.** Objetos que se levantam, empurram e jogam. Isso dá a sensação de brinquedo.
 4. **Camadas de altura.** Penhascos, pontes e plataformas que permitem ver um item antes de conseguir alcançá-lo. Ver o prêmio do outro lado de um bloqueio ensina o jogador a voltar quando tiver a ferramenta certa.
+
+- **Pixel art do fim do ciclo do Super Nintendo** (decisão de 2026-11-05). Paleta curta por objeto, contorno escuro colorido em vez de preto, luz vindo do alto à esquerda e sombreado em 3 ou 4 tons. Tiles de 16 por 16 pixels.
+- **Arquivos em SVG.** Cada desenho é escrito como uma grade de letras em `art/source/`, uma letra por pixel, e `tools/pixel_svg.py` converte em SVG em `art/`, com cada pixel como um quadrado. O Godot importa o SVG uma vez, no tamanho original, e durante o jogo desenha a imagem pronta, como o Super Nintendo copiava tiles da memória de vídeo. Não há custo de desempenho. Uma linha `usa` reaproveita os pixels de outro desenho com outra paleta, como a troca de paleta do Super Nintendo, e é assim que o chão alto reaproveita o chão comum.
+- **Estado por tom.** Com desenho, as cores de estado de sempre (amarelo no aviso, vermelho no bote, branco ao levar dano, cinza imune, laranja na corrida, vermelho no desequilíbrio) viram um tom sobre o desenho.
+- **Já desenhados:** Giorgio de frente, de costas, de lado e caído, chão, chão alto, parede, parede com face, parede rachada, gelo, degrau, porta trancada, porta do chefe, baú fechado e aberto, minion, ugly, inimigo de gelo e as três camadas da sentinela. Ainda provisórios: o guardião de gelo, a espada, a bomba, a bola de fogo, a onda, a granada, a relíquia e os ícones do HUD.
 
 ## Movimento
 
@@ -56,6 +65,7 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 ## Ferramentas
 
 - **Um botão para cada coisa.** O jogo é feito para o controle, e o teclado serve para testes. Trocar de ferramenta ficou pesado demais ao jogar, então cada botão de face tem uma coisa só: espada embaixo, pulo à direita, chama à esquerda e bomba em cima. Por isso a ideia é fechar com 3 itens, um por botão, além da espada (decisão de 2026-11-02). O botão de uma ferramenta não faz nada antes de o personagem tê-la. No alto da tela, um losango repete a posição dos quatro botões, com o botão vazio e apagado até a ferramenta aparecer, e a lâmina da espada fica magenta enquanto está travada. No ar, só a espada funciona.
+- **Chaves.** A chave pequena abre uma porta trancada e some. A chave grande abre a porta do chefe e fica. As duas saem de baús e entram na seed como qualquer item. No HUD, à direita do losango, um ícone por chave pequena, até 4, e um número quando passam disso, e depois a chave grande. Com mais de 12 pontos de vida, a vida passa a ocupar duas linhas.
 - **Cargas.** A chama tem 5 cargas e a bomba tem 2. Cada uso gasta uma, e todas voltam juntas quando a ferramenta passa um tempo sem uso: 3 s para a chama e 5 s para a bomba. Depois de gastar todas, é preciso esperar, então cada uso pede cálculo. A chama tem mais cargas porque alguns inimigos pedem vários disparos. A espada e a mola não têm limite. No HUD, uma coluna de pontos ao lado do botão mostra as cargas, e o botão escurece quando elas acabam (decisão de 2026-11-02).
 
 - **Bomba.** Fica no chão um pouco à frente do personagem e explode depois de 1,5 s, num raio de 26 px. Abre paredes rachadas, causa dano, empurra os corpos pela física e machuca o próprio personagem. No máximo 2 no chão ao mesmo tempo. O personagem atravessa as próprias bombas, e a espada as empurra, o que permite chutá-las. Fogo e outras explosões acendem o pavio na hora, o que permite reações em cadeia.
@@ -65,6 +75,9 @@ Algo raro em ALttP e central aqui: o personagem e os objetos têm massa, momento
 ## Bloqueios
 
 Cada bloqueio tem uma aparência fixa, que se repete em todos os capítulos e seeds.
+
+- **Porta trancada.** Madeira com faixas de ferro e fechadura. Abre ao encostar com uma chave pequena, que se gasta. Sem chave, a porta treme. Ao abrir, afunda no chão.
+- **Porta do chefe.** Pedra vermelha com selo dourado. Abre ao encostar com a chave grande, que nunca se gasta.
 
 - **Parede rachada.** Escura, com rachaduras claras. Só a explosão da bomba abre.
 - **Gelo.** Azul claro, com brilhos. Só o fogo derrete, em 0,25 s. O mesmo azul marca o inimigo de gelo e a casca do chefe, que também só cedem ao fogo.
@@ -96,6 +109,8 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **De gelo (massa 1, 3 de vida).** Azul claro, como o bloco de gelo. Imune à espada e à bomba. Uma bola de fogo o derrete. No capítulo 1 ele aparece primeiro na sala da chama, antes de o jogador ter como vencê-lo.
 - **Chefe, o guardião de gelo (massa 8, 12 de vida).** O exame das três ferramentas. Coberto pela casca de gelo, ignora espada e bomba. A chama quebra a casca, que volta depois de 6 s e pisca antes de voltar. Sem a casca, o núcleo apanha da espada e o triplo da bomba. Alterna dois ataques avisados em amarelo: uma pancada no chão que solta uma onda de choque, que só se evita no ar com a mola, e uma investida de 2 de dano em linha reta, na direção travada durante o aviso. Ele não sai da sala.
 
+- **Sentinela, o chefe do capítulo 2 (massa 10, 14 de vida).** Uma estátua de pedra. A armadura tem as rachaduras claras da parede rachada e só cede à bomba. Por baixo, o núcleo congelado tem o azul do gelo e só cede à chama. Só então o núcleo quente apanha da espada e o triplo da bomba. A armadura e o gelo voltam juntos 8 s depois da explosão, então bomba, chama e espada precisam vir em sequência. Os ataques são os do guardião de gelo: a pancada com a onda, que se evita com a mola, e a investida. É o exame das três ferramentas, numa ordem que o jogador lê pelo próprio desenho.
+
 ## Capítulo 1
 
 - **Mapa.** 8 salas de uma tela (20 por 10 casas de 16 px), numa grade de 3 por 4, com portas de duas casas no meio das paredes. A câmera desliza de sala em sala, e uma barra no alto da tela mostra a vida, os botões do controle, o modo e o cronômetro.
@@ -106,11 +121,22 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Regra dos baús.** Todo baú tem chão logo ao sul. A estocada para cima é a única que passa um pouco além de uma parede de uma casa, e a regra impede abrir um baú através dela.
 - **Fim.** Derrotado o chefe, aparece uma relíquia. Tocar nela encerra o capítulo e mostra o tempo, o modo e os baús abertos, com as opções de jogar de novo, nova seed ou voltar ao menu.
 
+## Capítulo 2, a dungeon grande
+
+- **Mapa.** 17 salas de uma tela numa grade de 5 por 5, com 15 baús: as 3 ferramentas, 6 chaves pequenas, a chave grande e 5 corações. Tem 5 portas trancadas e a porta do chefe.
+- **Ordem linear.** Na entrada, uma chave abre a porta do arsenal, onde está a bomba. A bomba abre o salão central e uma câmara escondida com um coração. Com a chave do salão central, o jogador escolhe entre a porta leste, da chama, e a porta oeste, da ala com mais uma chave. A chama derrete o caminho para a sala dos dois níveis, que guarda mais uma chave. Mais uma porta leva ao salão de cima, com a mola. A mola alcança o cofre com a chave grande, o estrado do salão central e o mirante. A porta do chefe leva a uma antessala com parede rachada e gelo, e dali à arena da sentinela.
+- **Ideias do guia do randomizer de ALttP.** Prêmios à vista antes de alcançáveis (o baú no estrado do salão central, o do cofre e o do nicho de gelo), salas com mais de um baú, segredos que o jogador costuma esquecer (a câmara atrás da parede rachada no arsenal e o depósito na sala dos dois níveis) e atalhos de volta (o gelo entre a galeria e o salão oeste).
+- **Seeds.** As 15 posições se embaralham com a mesma regra do capítulo 1. Cerca de 3% das distribuições são vencíveis em qualquer ordem de abrir portas, o que basta: o gerador acha uma em poucas dezenas de tentativas.
+
 ## Princípios técnicos
 
+- **Um modelo para todos os capítulos.** A cena `world/chapter/chapter.tscn` monta qualquer capítulo. Cada capítulo é só um arquivo de dados em `world/<capítulo>/`, com o mapa em texto, os tipos de bloqueio, a distribuição linear, o alvo e as ferramentas que o alvo exige. `progression/chapter_data.gd` lê esses arquivos, e um capítulo novo precisa só de um arquivo de dados e de uma linha nessa lista.
+- **Lógica das chaves.** A chave pequena se gasta, então a ordem de abrir as portas importa: um jogador pode gastar a chave na porta errada. Por isso o gerador testa todas as ordens. Cada estado é o conjunto de portas abertas. Em cada estado, o jogador abre todos os baús que alcança, porque abrir um baú nunca atrapalha, e depois pode gastar uma chave em qualquer porta que alcança. A distribuição só vale se todo estado sem saída já tiver o chefe alcançado com as ferramentas que ele exige. Assim nenhum jogador fica preso, em nenhuma ordem.
+- **Grafo de regiões.** Como o NES guardava o mapa em blocos e não em pixels, a lógica não anda casa por casa. Ao ler o mapa, as casas livres ligadas entre si viram uma região, e cada bloqueio vira uma região própria. A lógica anda por esse grafo, de poucas dezenas de nós, e testa todas as ordens de portas num instante. O conferidor fora do Godot calcula o alcance também casa por casa e exige que os dois deem o mesmo resultado.
+
 - **Dados separados do mapa.** Ferramentas, locais de item e bloqueios são registrados como dados, por exemplo "este bloqueio exige a ferramenta X". A versão linear é uma distribuição fixa desses dados. Randomizar é gerar outra distribuição válida, sem refazer o mapa.
-- **Como os dados ficam.** O mapa do capítulo é texto, um caractere por casa, só com a geometria e as vagas de baús, bloqueios e inimigos (`world/chapter_one/chapter_one_data.gd`). O tipo de cada bloqueio e o item de cada baú ficam em tabelas à parte, e a versão linear é uma dessas tabelas. A lógica de alcance (`progression/chapter_map.gd`) e o gerador de seeds (`progression/randomizer.gd`) só leem esses dados.
-- **Conferência fora do Godot.** `tools/check_chapter.py` lê os mesmos dados, confere a geometria das salas e das portas, repete a lógica de alcance, garante que a linear é vencível e que nenhuma combinação de ferramentas prende o jogador num lugar sem volta, e conta as distribuições vencíveis.
+- **Como os dados ficam.** O mapa do capítulo é texto, um caractere por casa, só com a geometria e as vagas de baús, bloqueios e inimigos (`world/chapter_one/chapter_one_data.gd` e `world/chapter_two/chapter_two_data.gd`). As vagas de bloqueio são os algarismos de 1 a 9 e as letras minúsculas que não são inimigos. O tipo de cada bloqueio e o item de cada baú ficam em tabelas à parte, e a versão linear é uma dessas tabelas. A lógica de alcance (`progression/chapter_map.gd`) e o gerador de seeds (`progression/randomizer.gd`) só leem esses dados.
+- **Conferência fora do Godot.** `tools/check_chapter.py` lê os mesmos dados, confere a geometria das salas e das portas, repete a lógica de alcance, garante que a linear é vencível em qualquer ordem de abrir portas e que nenhuma combinação de ferramentas e portas abertas prende o jogador num lugar sem volta, e conta as distribuições vencíveis. Quando há permutações demais para contar, como no capítulo 2, estima a taxa por sorteio.
 - **Tipos de golpe.** Espada, fogo, explosão e onda de choque (`combat/hit.gd`). Cada alvo decide como reage a cada tipo, e é isso que faz cada ferramenta servir para umas coisas e não para outras.
 - **Passo fixo de física.** Movimento e física rodam a 60 ticks por segundo, independentes da taxa de quadros. Técnicas de precisão precisam funcionar do mesmo jeito em qualquer máquina.
 - **Botões num lugar só.** O que cada botão faz fica só no mapa de entrada do projeto (`project.godot`). O HUD lê dali a posição de cada ação no losango, então uma troca de botões feita no editor muda também o HUD.
@@ -151,4 +177,5 @@ Ideias que Marcelo quer ver mais para frente, sem implementar agora.
 - **Ajuste do chefe.** Marcelo enfrentou o chefe em 2026-11-02 e gostou de precisar da chama e do pulo. Vida, tempo da casca e ritmo dos ataques ainda não foram ajustados.
 - **Texto no menu e no HUD.** O princípio de não ter dicas escritas vale para o mundo. O menu, o cronômetro e a tela de fim usam texto por enquanto.
 - **Voltar ao menu.** Esc, ou o botão Back do controle, volta ao menu na hora e perde a partida, sem confirmação.
+- **Corações do capítulo 2.** São 5, que levam a vida a 16. Pode ser demais, e uma alternativa é trocar alguns por chaves extras ou por baús vazios.
 - **Nome do jogo.** O nome Alttp2 é provisório. Ele remete a uma marca registrada e não deve ser usado no lançamento.

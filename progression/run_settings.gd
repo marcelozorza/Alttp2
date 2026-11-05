@@ -1,6 +1,8 @@
 class_name RunSettings
 ## Escolhas da partida, guardadas entre a tela de título e o capítulo.
 
+## Capítulo escolhido no menu, a partir de 1.
+static var chapter := 1
 ## Ligado, os baús seguem a seed. Desligado, seguem a distribuição linear.
 static var randomized := false
 ## Seed da partida aleatória.

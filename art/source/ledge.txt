@@ -1,0 +1,26 @@
+# Face do degrau alto, vista de frente. Repete na horizontal. A borda clara é a
+# beira do chão de cima.
+paleta
+l #b3a582
+t #8c7f60
+o #2a2219
+f #5e4b38
+g #6e5942
+d #4a3a2b
+pixels
+llllllllllllllll
+tttttttttttttttt
+oooooooooooooooo
+ggfgggggfggggfgg
+gdfggggdfgggddfg
+gdfggggdfggggdfg
+fdfggfgdfgfggdfg
+gdfggdgdfgdggdfg
+gdffgdgdfgdgfdfg
+gdgfgdgdffdggdff
+gdgdgdgdgfdggdgf
+fdgdgdfdgdfggdgd
+gdgdfdddgdfdgdgd
+dddddddddddddddd
+dddddddddddddddd
+oooooooooooooooo

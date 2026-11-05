@@ -10,6 +10,8 @@ const FLAME_OUTER_COLOR := Color(1.0, 0.45, 0.1, 1.0)
 const FLAME_INNER_COLOR := Color(1.0, 0.9, 0.4, 1.0)
 const SPRING_COLOR := Color(0.55, 0.85, 0.45, 1.0)
 const HEART_COLOR := Color(0.9, 0.2, 0.25, 1.0)
+const KEY_COLOR := Color(0.85, 0.8, 0.7, 1.0)
+const BOSS_KEY_COLOR := Color(0.95, 0.4, 0.3, 1.0)
 const BLADE_COLOR := Color(0.86, 0.9, 0.95, 1.0)
 const HILT_COLOR := Color(0.55, 0.34, 0.16, 1.0)
 const FLAME := [Vector2(0, -6), Vector2(4, 0), Vector2(3, 4), Vector2(-3, 4), Vector2(-4, 0)]
@@ -39,6 +41,10 @@ static func draw(canvas: CanvasItem, id: int, center: Vector2, factor := 1.0) ->
 			canvas.draw_circle(center + Vector2(-2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)
 			canvas.draw_circle(center + Vector2(2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)
 			canvas.draw_colored_polygon(_points(HEART_TIP, center, factor), HEART_COLOR)
+		Item.Id.KEY:
+			_draw_key(canvas, center, factor * 0.8, KEY_COLOR)
+		Item.Id.BOSS_KEY:
+			_draw_key(canvas, center, factor, BOSS_KEY_COLOR)
 
 
 ## Desenha a espada centrada em center, no mesmo tamanho dos itens. A lâmina
@@ -52,6 +58,16 @@ static func draw_sword(
 	canvas.draw_rect(blade, blade_color)
 	canvas.draw_rect(guard, HILT_COLOR)
 	canvas.draw_rect(grip, HILT_COLOR)
+
+
+## Chave de pé: argola em cima, haste e dois dentes. A chave grande usa a mesma
+## forma maior e vermelha, a cor da porta do chefe.
+static func _draw_key(canvas: CanvasItem, center: Vector2, factor: float, color: Color) -> void:
+	canvas.draw_circle(center + Vector2(0.0, -3.0) * factor, 2.5 * factor, color)
+	var shaft := Rect2(center + Vector2(-0.75, -1.0) * factor, Vector2(1.5, 7.0) * factor)
+	canvas.draw_rect(shaft, color)
+	canvas.draw_rect(Rect2(center + Vector2(0.75, 3.0) * factor, Vector2(2.0, 1.2) * factor), color)
+	canvas.draw_rect(Rect2(center + Vector2(0.75, 5.0) * factor, Vector2(1.5, 1.0) * factor), color)
 
 
 static func _points(shape: Array, center: Vector2, factor: float) -> PackedVector2Array:

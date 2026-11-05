@@ -6,10 +6,16 @@ extends Control
 ## ferramenta com cargas, do lado de fora do losango, uma coluna de pontos
 ## mostra as cargas, que se apagam de cima para baixo, e o botão escurece
 ## quando elas acabam. No capítulo, mostra também o modo da partida e o
-## cronômetro numa barra no alto da tela.
+## cronômetro numa barra no alto da tela. À direita do losango ficam as chaves
+## pequenas guardadas e, depois de encontrada, a chave grande. Com mais de
+## HEALTH_ROW pontos de vida, a vida passa a ocupar duas linhas mais baixas.
 
 const PIP_SIZE := Vector2(6.0, 6.0)
 const PIP_GAP := 2.0
+## Pontos de vida que cabem numa linha, antes do losango dos botões.
+const HEALTH_ROW := 12
+## Onde começam as chaves, à direita do losango.
+const KEYS_POSITION := Vector2(146.0, 1.0)
 const FULL_COLOR := Color(0.9, 0.2, 0.25, 1.0)
 const EMPTY_COLOR := Color(0.25, 0.1, 0.12, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
@@ -71,6 +77,7 @@ func _draw() -> void:
 	if player:
 		_draw_health(player)
 		_draw_buttons(player)
+		_draw_keys(player)
 	var chapter := get_tree().get_first_node_in_group("chapter")
 	if chapter:
 		var text := "%s   %s" % [chapter.call("mode_text"), chapter.call("time_text")]
@@ -99,9 +106,34 @@ func _find_button_center(action: StringName) -> void:
 
 
 func _draw_health(player: Player) -> void:
+	var size := PIP_SIZE
+	if player.max_health > HEALTH_ROW:
+		size.y = (PIP_SIZE.y - 1.0) / 2.0
 	for i: int in player.max_health:
-		var pip_position := Vector2(i * (PIP_SIZE.x + PIP_GAP), 0.0)
-		draw_rect(Rect2(pip_position, PIP_SIZE), FULL_COLOR if i < player.health else EMPTY_COLOR)
+		var row := floori(float(i) / HEALTH_ROW)
+		var column := i % HEALTH_ROW
+		var pip_position := Vector2(column * (size.x + PIP_GAP), row * (size.y + 1.0))
+		draw_rect(Rect2(pip_position, size), FULL_COLOR if i < player.health else EMPTY_COLOR)
+
+
+## Uma chave pequena por ícone, até 4, e um número quando passam disso. A chave
+## grande vem depois.
+func _draw_keys(player: Player) -> void:
+	var x := KEYS_POSITION.x
+	var shown := mini(player.keys, 4)
+	for i: int in shown:
+		ToolIcons.draw(self, Item.Id.KEY, Vector2(x + 3.0, KEYS_POSITION.y + 4.0), ICON_FACTOR)
+		x += 5.0
+	if player.keys > shown:
+		var font := ThemeDB.fallback_font
+		var text := "+%d" % (player.keys - shown)
+		draw_string(
+			font, Vector2(x + 1.0, 9.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, TEXT_COLOR
+		)
+		x += 14.0
+	if player.has_tool(Item.Id.BOSS_KEY):
+		var center := Vector2(x + 6.0, KEYS_POSITION.y + 4.0)
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, center, ICON_FACTOR)
 
 
 func _draw_buttons(player: Player) -> void:

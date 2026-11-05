@@ -1,17 +1,20 @@
 class_name MapView
 extends Node2D
-## Desenha o chão e as paredes de um ChapterMap. O desenho é feito uma vez e
-## fica guardado. Os bloqueios e os objetos se desenham sozinhos por cima.
+## Desenha o chão e as paredes de um ChapterMap com os tiles de art/. O
+## desenho é feito uma vez e fica guardado, como o mapa de tiles na memória de
+## vídeo do Super Nintendo. Os bloqueios e os objetos se desenham sozinhos por
+## cima.
+##
+## A parede com chão logo ao sul usa o tile com a face de tijolos, que dá o
+## volume da perspectiva 3/4. O chão alterna entre duas variações, como um
+## tabuleiro, para quebrar a repetição.
 
-const FLOOR_COLOR := Color(0.33, 0.35, 0.3, 1.0)
-const FLOOR_ALT_COLOR := Color(0.31, 0.33, 0.28, 1.0)
-const HIGH_COLOR := Color(0.48, 0.5, 0.42, 1.0)
-const HIGH_ALT_COLOR := Color(0.46, 0.48, 0.4, 1.0)
-const WALL_COLOR := Color(0.17, 0.17, 0.22, 1.0)
-const WALL_FACE_COLOR := Color(0.25, 0.25, 0.31, 1.0)
-## Altura da faixa clara da parede onde ela encontra o chão ao sul, que dá o
-## volume da perspectiva 3/4.
-const WALL_FACE_HEIGHT := 4.0
+const FLOOR := preload("res://art/floor.svg")
+const FLOOR_ALT := preload("res://art/floor_alt.svg")
+const HIGH_FLOOR := preload("res://art/high_floor.svg")
+const HIGH_FLOOR_ALT := preload("res://art/high_floor_alt.svg")
+const WALL := preload("res://art/wall.svg")
+const WALL_FACE := preload("res://art/wall_face.svg")
 
 var map: ChapterMap
 
@@ -26,18 +29,14 @@ func _draw() -> void:
 			var character := map.tile(cell)
 			if character == " ":
 				continue
-			var rect := Rect2(Vector2(cell) * tile, Vector2(tile, tile))
+			var origin := Vector2(cell) * tile
 			if character == "#":
-				draw_rect(rect, WALL_COLOR)
 				var below := map.tile(cell + Vector2i.DOWN)
-				if below != "#" and below != " ":
-					var face_position := rect.position + Vector2(0.0, tile - WALL_FACE_HEIGHT)
-					draw_rect(
-						Rect2(face_position, Vector2(tile, WALL_FACE_HEIGHT)), WALL_FACE_COLOR
-					)
+				var faces_floor := below != "#" and below != " "
+				draw_texture(WALL_FACE if faces_floor else WALL, origin)
 				continue
 			var alternate := (x + y) % 2 == 0
 			if map.is_high(cell):
-				draw_rect(rect, HIGH_ALT_COLOR if alternate else HIGH_COLOR)
+				draw_texture(HIGH_FLOOR_ALT if alternate else HIGH_FLOOR, origin)
 			else:
-				draw_rect(rect, FLOOR_ALT_COLOR if alternate else FLOOR_COLOR)
+				draw_texture(FLOOR_ALT if alternate else FLOOR, origin)

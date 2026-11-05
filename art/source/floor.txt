@@ -1,0 +1,24 @@
+# Chão da dungeon: lajotas de pedra, luz do alto à esquerda.
+paleta
+s #2b2838
+c #36334a
+a #423e58
+b #4f4b68
+x #3a3750
+pixels
+bbbbbbbsbbbbbbbs
+baaaaaacbaaaaxac
+baaxaaacbaaaaaac
+baaaaaacbaaaaaac
+baaaaxacbxaaaaac
+baaaaaacbaaaaaac
+bcccccccbccccccc
+ssssssssssssssss
+bbbsbbbbbbbbsbbb
+baacbaaaaaxacbaa
+baacbaaaaaaacbaa
+bxacbaaaxaaacbaa
+baacbaaaaaaacbxa
+baacbaaaaaaacbaa
+bcccbcccccccccbc
+ssssssssssssssss

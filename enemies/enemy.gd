@@ -26,6 +26,10 @@ const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
 const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
+## Tons sobre o desenho do inimigo, quando a cena tem um. Acima de 1, o tom
+## clareia.
+const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
+const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -102,6 +106,9 @@ var _hurt_shape := RectangleShape2D.new()
 @onready var _eye: ColorRect = $Eye
 @onready var _health_bar: ColorRect = $HealthBar
 @onready var _health_bar_width: float = _health_bar.size.x
+## Desenho do inimigo, opcional. Sem ele, o corpo e o olho provisórios
+## aparecem no lugar.
+@onready var _art: Sprite2D = get_node_or_null("Art")
 
 
 func _ready() -> void:
@@ -282,27 +289,39 @@ func _factor(kind: Hit.Kind) -> int:
 	return sword_factor
 
 
-## Visual provisório: amarelo piscando na preparação do bote e da granada,
-## vermelho no bote, mais escuro parado depois de atacar, branco ao ser atingido
-## e cinza quando o golpe não o afeta. O olho mostra para onde ele vai e a
-## barra acima mostra a vida.
+## Amarelo piscando na preparação do bote e da granada, vermelho no bote, mais
+## escuro parado depois de atacar, branco ao ser atingido e cinza quando o golpe
+## não o afeta. Com desenho, as cores viram tons sobre ele. Sem desenho, o
+## corpo provisório muda de cor e o olho mostra para onde ele vai. A barra
+## acima mostra a vida.
 func _update_visuals() -> void:
 	var elapsed := Engine.get_physics_frames() - _state_tick
 	var color := _body_color
+	var tint := Color.WHITE
 	var shake := Vector2.ZERO
 	match _state:
 		State.WINDUP, State.THROW_WINDUP:
 			var blink := posmod(elapsed, 8) < 4
 			color = WINDUP_COLOR if blink else _body_color
+			tint = WINDUP_COLOR if blink else Color.WHITE
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 		State.LUNGE:
 			color = LUNGE_COLOR
+			tint = LUNGE_COLOR
 		State.RECOVER, State.THROW_RECOVER:
 			color = _body_color.darkened(0.35)
+			tint = RECOVER_TINT
 	if Engine.get_physics_frames() - _hit_tick < GameMath.ticks(hit_flash_time):
 		color = HIT_COLOR
+		tint = HIT_TINT
 	elif Engine.get_physics_frames() - _immune_tick < GameMath.ticks(hit_flash_time):
 		color = IMMUNE_COLOR
+		tint = IMMUNE_COLOR
+	if _art:
+		_body.visible = false
+		_eye.visible = false
+		_art.modulate = tint
+		_art.position = shake
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0

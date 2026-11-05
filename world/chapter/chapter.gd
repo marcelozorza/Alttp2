@@ -1,7 +1,9 @@
 extends Node2D
-## Capítulo 1. Monta o mapa a partir dos dados, distribui os itens pela seed
-## escolhida no menu, move a câmera de sala em sala e encerra o capítulo quando
-## o personagem toca a relíquia que o chefe deixa.
+## Cena de qualquer capítulo. Lê os dados do capítulo escolhido no menu, monta
+## o mapa, distribui os itens pela seed, move a câmera de sala em sala e
+## encerra o capítulo quando o personagem toca a relíquia que o chefe deixa.
+## Os dados de cada capítulo ficam em world/<capítulo>/ (ver
+## progression/chapter_data.gd).
 ##
 ## Os inimigos só agem na sala em que o personagem está. Ao entrar ou sair de
 ## uma sala, os inimigos dela voltam ao ponto inicial, e as ondas do chefe que
@@ -18,16 +20,20 @@ const CHEST_SCENE := preload("res://items/chest.tscn")
 const RELIC_SCENE := preload("res://items/relic.tscn")
 const CRACKED_WALL_SCENE := preload("res://obstacles/cracked_wall.tscn")
 const ICE_BLOCK_SCENE := preload("res://obstacles/ice_block.tscn")
+const LOCKED_DOOR_SCENE := preload("res://obstacles/locked_door.tscn")
+const BOSS_DOOR_SCENE := preload("res://obstacles/boss_door.tscn")
 const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
 const MINION_SCENE := preload("res://enemies/minion.tscn")
 const UGLY_SCENE := preload("res://enemies/ugly.tscn")
 const ICE_SLIME_SCENE := preload("res://enemies/ice_slime.tscn")
 const BOSS_SCENE := preload("res://enemies/boss.tscn")
+const SENTINEL_SCENE := preload("res://enemies/sentinel.tscn")
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 
 ## Ticks de jogo desde o início do capítulo, para o cronômetro.
 var elapsed_ticks := 0
 var finished := false
+var data: ChapterData
 var map: ChapterMap
 ## Item de cada baú nesta partida.
 var distribution := {}
@@ -48,11 +54,12 @@ var _chests: Array[Chest] = []
 
 func _ready() -> void:
 	add_to_group("chapter")
-	map = ChapterMap.new(ChapterOneData.MAP, ChapterOneData.BLOCKS)
-	distribution = ChapterOneData.LINEAR
+	data = ChapterData.load_number(RunSettings.chapter)
+	map = ChapterMap.new(data.rows, data.blocks)
+	distribution = data.linear
 	if RunSettings.randomized:
 		distribution = Randomizer.shuffled(
-			map, ChapterOneData.LINEAR, RunSettings.run_seed, ChapterOneData.GOAL, _goal_tools()
+			map, data.linear, RunSettings.run_seed, data.goal, data.goal_tools
 		)
 	_map_view.map = map
 	_map_view.queue_redraw()
@@ -81,7 +88,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Texto do modo da partida, para o HUD e para a tela de fim.
 func mode_text() -> String:
-	return "Seed %d" % RunSettings.run_seed if RunSettings.randomized else "Linear"
+	var mode := "Seed %d" % RunSettings.run_seed if RunSettings.randomized else "Linear"
+	return "Cap. %d  %s" % [data.number, mode]
 
 
 ## Cronômetro no formato minutos:segundos.centésimos.
@@ -89,13 +97,6 @@ func time_text() -> String:
 	var seconds := float(elapsed_ticks) / Engine.physics_ticks_per_second
 	var minutes := floori(seconds / 60.0)
 	return "%02d:%05.2f" % [minutes, seconds - minutes * 60.0]
-
-
-func _goal_tools() -> int:
-	var tools := 0
-	for id: int in ChapterOneData.GOAL_TOOLS:
-		tools |= Item.bit(id)
-	return tools
 
 
 ## Junta as paredes de cada linha em trechos contínuos, uma forma de colisão
@@ -154,17 +155,25 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		"i":
 			_add_enemy(ICE_SLIME_SCENE, cell)
 		"*":
-			var boss := BOSS_SCENE.instantiate() as Boss
-			boss.position = center + Vector2(0.0, 6.0)
-			boss.arena = _room_interior(_room_of_cell(cell))
-			boss.defeated.connect(_on_boss_defeated.bind(_room_of_cell(cell)))
-			_objects.add_child(boss)
-			boss.set_active(false)
-			_register(boss, cell)
+			_add_boss(BOSS_SCENE, cell)
+		"&":
+			_add_boss(SENTINEL_SCENE, cell)
 		"c":
 			var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
 			crate.position = center + Vector2(0.0, 5.0)
 			_objects.add_child(crate)
+
+
+## O chefe nasce desligado, preso à sala dele. Todo chefe tem a propriedade
+## arena, o sinal defeated e a função set_active.
+func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
+	var boss := scene.instantiate() as Node2D
+	boss.position = _cell_center(cell) + Vector2(0.0, 6.0)
+	boss.set("arena", _room_interior(_room_of_cell(cell)))
+	boss.connect("defeated", _on_boss_defeated.bind(_room_of_cell(cell)))
+	_objects.add_child(boss)
+	boss.call("set_active", false)
+	_register(boss, cell)
 
 
 ## Os inimigos nascem desligados. Só a sala do personagem fica ligada.
@@ -195,6 +204,10 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 			scene = ICE_BLOCK_SCENE
 		ChapterMap.Block.LEDGE:
 			scene = LEDGE_SCENE
+		ChapterMap.Block.LOCKED:
+			scene = LOCKED_DOOR_SCENE
+		ChapterMap.Block.BOSS_DOOR:
+			scene = BOSS_DOOR_SCENE
 		_:
 			push_error("Vaga %s sem tipo de bloqueio." % slot)
 			return

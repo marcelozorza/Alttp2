@@ -1,0 +1,25 @@
+# Baú fechado. A base fica na última linha. Abre com a espada.
+paleta
+o #23160c
+d #4f3016
+w #7a4a22
+x #a06a34
+g #f0c050
+y #fae49a
+pixels
+................
+................
+................
+.oooooooooooooo.
+.oxxxxxxxxxxxxo.
+.oxwwwwwwwwwwxo.
+.oxwwwwyywwwwwo.
+.ooooooggoooooo.
+.oxxxxxggxxxxwo.
+.oxwwwwwwwwwwdo.
+.oxwwwwwwwwwwdo.
+.ogggggggggggdo.
+.oxwwwwwwwwwwdo.
+.owdddddddddddo.
+.oooooooooooooo.
+................
