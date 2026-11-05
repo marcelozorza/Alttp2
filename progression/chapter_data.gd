@@ -8,8 +8,12 @@ extends RefCounted
 ## para todos. Para criar um capítulo novo, basta um arquivo de dados com as
 ## mesmas constantes e uma linha em SOURCES.
 
-## Arquivo de dados de cada capítulo, na ordem do menu.
-const SOURCES := [ChapterOneData, ChapterTwoData]
+## Arquivo de dados de cada capítulo, na ordem do menu. Precisa ser preload: o
+## nome da classe não vale como constante dentro de uma lista.
+const SOURCES := [
+	preload("res://world/chapter_one/chapter_one_data.gd"),
+	preload("res://world/chapter_two/chapter_two_data.gd"),
+]
 
 ## Número do capítulo, a partir de 1.
 var number := 1
