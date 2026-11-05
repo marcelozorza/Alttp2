@@ -7,7 +7,7 @@ extends MomentumBody
 ##
 ## O personagem atravessa as próprias bombas, para poder soltá-las aos pés.
 
-const BODY_COLOR := Color(0.12, 0.12, 0.17, 1.0)
+const TEXTURE := preload("res://art/bomb.svg")
 const WARNING_COLOR := Color(0.95, 0.25, 0.2, 1.0)
 const SPARK_COLOR := Color(1.0, 0.75, 0.25, 1.0)
 const BLAST_COLOR := Color(1.0, 0.85, 0.5, 1.0)
@@ -100,6 +100,8 @@ func _draw() -> void:
 		return
 	var remaining := GameMath.ticks(fuse_time) - (now - _spawn_tick)
 	var warning := remaining <= GameMath.ticks(WARNING_TIME) and posmod(remaining, 6) < 3
-	draw_circle(CENTER, 4.0, WARNING_COLOR if warning else BODY_COLOR)
+	# O desenho tem 10 por 10 pixels, com o corpo centrado em CENTER.
+	var tint := WARNING_COLOR if warning else Color.WHITE
+	draw_texture(TEXTURE, CENTER + Vector2(-5.0, -6.0), tint)
 	if posmod(now, 4) < 2:
-		draw_rect(Rect2(CENTER + Vector2(1.0, -6.0), Vector2(1.0, 2.0)), SPARK_COLOR)
+		draw_rect(Rect2(CENTER + Vector2(2.0, -7.0), Vector2(1.0, 1.0)), SPARK_COLOR)

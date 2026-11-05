@@ -5,8 +5,7 @@ extends Node2D
 ##
 ## A posição é a do chão. O desenho fica um pouco acima, com a sombra embaixo.
 
-const OUTER_COLOR := Color(1.0, 0.45, 0.1, 1.0)
-const INNER_COLOR := Color(1.0, 0.9, 0.4, 1.0)
+const TEXTURE := preload("res://art/fireball.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Altura do desenho acima do chão, em pixels.
 const DRAW_HEIGHT := 6.0
@@ -58,7 +57,10 @@ func _hit_something() -> bool:
 
 
 func _draw() -> void:
-	var flicker := 0.5 if posmod(Engine.get_physics_frames(), 4) < 2 else 0.0
+	# A chama tremula alternando o desenho espelhado.
+	var flicker := posmod(Engine.get_physics_frames(), 4) < 2
 	draw_rect(Rect2(Vector2(-2.0, -1.0), Vector2(4.0, 2.0)), SHADOW_COLOR)
-	draw_circle(Vector2(0.0, -DRAW_HEIGHT), 3.5 + flicker, OUTER_COLOR)
-	draw_circle(Vector2(0.0, -DRAW_HEIGHT), 1.8, INNER_COLOR)
+	var rect := Rect2(Vector2(-4.0, -DRAW_HEIGHT - 4.0), Vector2(8.0, 8.0))
+	if flicker:
+		rect = Rect2(rect.end.x, rect.position.y, -rect.size.x, rect.size.y)
+	draw_texture_rect(TEXTURE, rect, false)

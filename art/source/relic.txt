@@ -1,0 +1,19 @@
+# Relíquia do fim do capítulo: o losango dourado.
+paleta
+o #5a3a08
+g #c89020
+y #f0c040
+w #fff4b0
+pixels
+.....oo.....
+....oywo....
+...oywyyo...
+..oywyyygo..
+.oywyyyyygo.
+oyyyyyyyyygo
+oyyyyyyyyggo
+.ogyyyyyggo.
+..ogyyyggo..
+...oggggo...
+....oggo....
+.....oo.....

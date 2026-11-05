@@ -25,13 +25,15 @@ enum State {
 }
 
 const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
-const SHELL_COLOR := Color(0.62, 0.86, 1.0, 1.0)
-const SHINE_COLOR := Color(0.92, 0.98, 1.0, 1.0)
-const CORE_COLOR := Color(0.6, 0.2, 0.3, 1.0)
+const SHELL_TEXTURE := preload("res://art/guardian_shell.svg")
+const CORE_TEXTURE := preload("res://art/guardian_core.svg")
+## Canto do desenho em relação à origem, nos pés.
+const GUARDIAN_OFFSET := Vector2(-14.0, -24.0)
+## Tons sobre o desenho. Acima de 1, o tom clareia.
+const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
+const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
-const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
-const EYE_COLOR := Color(0.1, 0.1, 0.15, 1.0)
 const HEALTH_COLOR := Color(0.9, 0.3, 0.35, 1.0)
 const BODY_SIZE := Vector2(28.0, 26.0)
 ## Segundos antes de a casca voltar em que ela pisca, como aviso.
@@ -270,38 +272,32 @@ func _die() -> void:
 	defeated.emit()
 
 
-## Visual provisório: azul claro com a casca, vinho sem ela. Amarelo piscando
-## no aviso de cada ataque, mais escuro parado depois de atacar, branco ao
-## levar dano e cinza quando o golpe não o afeta. A casca pisca antes de voltar.
+## O desenho mostra a casca de gelo ou o núcleo vinho. Amarelo piscando no
+## aviso de cada ataque, mais escuro parado depois de atacar, branco ao levar
+## dano e cinza quando o golpe não o afeta. A casca pisca antes de voltar.
 func _draw() -> void:
 	var now := Engine.get_physics_frames()
 	var elapsed := now - _state_tick
-	var color := SHELL_COLOR if _shell else CORE_COLOR
+	var tint := Color.WHITE
 	var shake := Vector2.ZERO
 	match _state:
 		State.SLAM_WINDUP, State.CHARGE_WINDUP:
 			var blink := posmod(elapsed, 8) < 4
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 			if blink:
-				color = WINDUP_COLOR
+				tint = WINDUP_COLOR
 		State.SLAM_RECOVER, State.CHARGE_RECOVER:
-			color = color.darkened(0.3)
+			tint = RECOVER_TINT
 	if now - _hit_tick < FLASH_TICKS:
-		color = HIT_COLOR
+		tint = HIT_TINT
 	elif now - _immune_tick < FLASH_TICKS:
-		color = IMMUNE_COLOR
-	var body := Rect2(Vector2(-BODY_SIZE.x / 2.0, -BODY_SIZE.y) + shake, BODY_SIZE)
-	draw_rect(body, color)
-	if _shell:
-		draw_rect(Rect2(body.position + Vector2(4.0, 4.0), Vector2(3.0, 9.0)), SHINE_COLOR)
-		draw_rect(Rect2(body.position + Vector2(9.0, 4.0), Vector2(2.0, 4.0)), SHINE_COLOR)
-	else:
+		tint = IMMUNE_COLOR
+	var texture := SHELL_TEXTURE if _shell else CORE_TEXTURE
+	if not _shell:
 		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
-			draw_rect(body, SHELL_COLOR, false, 2.0)
-	var looking := _charge_direction if _state == State.CHARGE_WINDUP else _look
-	var eyes := body.get_center() + Vector2(0.0, -4.0) + looking * 3.0
-	for side: float in [-1.0, 1.0]:
-		draw_rect(Rect2(eyes + Vector2(side * 5.0 - 1.5, -1.5), Vector2(3.0, 3.0)), EYE_COLOR)
+			texture = SHELL_TEXTURE
+	var origin := GUARDIAN_OFFSET + shake
+	draw_texture(texture, origin, tint)
 	var bar_width := BODY_SIZE.x * float(maxi(health, 0)) / max_health
-	draw_rect(Rect2(body.position + Vector2(0.0, -4.0), Vector2(bar_width, 2.0)), HEALTH_COLOR)
+	draw_rect(Rect2(origin + Vector2(0.0, -4.0), Vector2(bar_width, 2.0)), HEALTH_COLOR)

@@ -5,8 +5,7 @@ extends Area2D
 
 signal collected
 
-const COLOR := Color(1.0, 0.84, 0.3, 1.0)
-const SHINE_COLOR := Color(1.0, 1.0, 0.85, 1.0)
+const TEXTURE := preload("res://art/relic.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 
 var _collected := false
@@ -36,13 +35,4 @@ func _draw() -> void:
 	var bob := sin(Engine.get_physics_frames() * 0.08) * 2.0
 	var center := Vector2(0.0, -12.0 + bob)
 	draw_rect(Rect2(Vector2(-4.0, -1.0), Vector2(8.0, 2.0)), SHADOW_COLOR)
-	var gem := PackedVector2Array(
-		[
-			center + Vector2(0.0, -7.0),
-			center + Vector2(5.0, 0.0),
-			center + Vector2(0.0, 7.0),
-			center + Vector2(-5.0, 0.0),
-		]
-	)
-	draw_colored_polygon(gem, COLOR)
-	draw_rect(Rect2(center + Vector2(-2.0, -3.0), Vector2(1.0, 3.0)), SHINE_COLOR)
+	draw_texture(TEXTURE, (center - Vector2(6.0, 6.0)).round())

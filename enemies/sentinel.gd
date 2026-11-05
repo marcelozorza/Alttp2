@@ -18,8 +18,6 @@ const FROST_TEXTURE := preload("res://art/sentinel_frost.svg")
 const CORE_TEXTURE := preload("res://art/sentinel_core.svg")
 ## Canto do desenho em relação à origem, nos pés.
 const TEXTURE_OFFSET := Vector2(-14.0, -27.0)
-const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
-const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 
 ## Ligado enquanto o núcleo está congelado, depois que a armadura caiu.
 var _frost := true

@@ -1,0 +1,34 @@
+# Guardião de gelo, o chefe do capítulo 1, coberto pela casca de gelo. Só a
+# chama quebra a casca.
+paleta
+o #2d5a86
+e #5f97c8
+a #9fd2f4
+b #c4e6fa
+w #f4fbff
+k #14304a
+pixels
+......o......oo......o......
+.....owo....owbo....oao.....
+.....owbo..owbbao..obao.....
+....owbbaooawbbbaooabbao....
+...oawbbbbbbbbbbbbbbbbbaeo..
+...owbbbbbbbbbbbbbbbbbbaeo..
+..oawbbbkkkbbbbbbkkkbbbbaeo.
+..owbbbbkkkbbbbbbkkkbbbbaeo.
+..obbwbbbbbbbbbbbbbbbbbbaeo.
+.oabbbwbbbbbbbbbbbbbbbbbbaeo
+.owbbbbwbbbbbbbbbbbbbbbbbaeo
+.obbbbbbbbbbbbbbbbbbbbbbbaeo
+.obbbbbbbbbbbbbbbbbbabbbbaeo
+.obbbbbbbbbbbbbbbbbabbbbbaeo
+.obabbbbbbbbbbbbbbabbbbbaaeo
+.obbbbbbbbbbbbbbbabbbbbbaaeo
+.oabbbbbbabbbbbbbbbbbbbaaaeo
+.oaabbbbbbabbbbbbbbbbbbaaeeo
+.oaaabbbbbbbbbbbbbbbbbaaaeeo
+..oaaaaabbbbbbbbbbbaaaaaeeo.
+..oeaaaaaaaaaaaaaaaaaaaaeeo.
+...oeeaaaaaaaaaaaaaaaaeeeo..
+....oeeeeeeeeeeeeeeeeeeeo...
+.....oooooooooooooooooooo...

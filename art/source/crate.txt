@@ -1,0 +1,23 @@
+# Caixa leve de madeira: tampa clara em cima e frente mais escura.
+paleta
+o #2a1a0c
+t #c89a60
+u #a87a44
+f #8a5e30
+d #6a4420
+n #4a2e14
+pixels
+.oooooooooooooo.
+otttttttttttttuo
+otuuuuuuuuuuuuuo
+otuttttttttttuuo
+otuuuuuuuuuuuuuo
+otttttttttttttuo
+oooooooooooooooo
+ofddddddddddddno
+ofdfnffffffnfdno
+ofdnfffffffnfdno
+ofdfnfffffnffdno
+ofdffnfffnfffdno
+ofddddddddddddno
+.oooooooooooooo.
