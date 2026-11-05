@@ -82,6 +82,7 @@ func _area() -> Rect2:
 
 func _burst() -> void:
 	_burst_tick = Engine.get_physics_frames()
+	Sfx.play(&"grenade_burst")
 	_ball.visible = false
 	_area_shape.size = _area().size
 	var query := PhysicsShapeQueryParameters2D.new()

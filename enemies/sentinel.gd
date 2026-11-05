@@ -30,7 +30,7 @@ func reset() -> void:
 
 ## Fechada, a armadura só cede à explosão. Aberta, o gelo do núcleo só cede ao
 ## fogo. Depois disso, cada golpe causa dano conforme o multiplicador.
-func take_hit(amount: int, direction: Vector2, kind := Hit.Kind.SWORD) -> void:
+func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD:
 		return
 	var now := Engine.get_physics_frames()
@@ -40,17 +40,21 @@ func take_hit(amount: int, direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 			_frost = true
 			_shell_break_tick = now
 			_hit_tick = now
+			Sfx.play(&"armor_break")
 		else:
 			_immune_tick = now
+			Sfx.play(&"immune")
 		return
 	if _frost:
 		if kind == Hit.Kind.FIRE:
 			_frost = false
 			_hit_tick = now
+			Sfx.play(&"ice_melt")
 		else:
 			_immune_tick = now
+			Sfx.play(&"immune")
 		return
-	super(amount, direction, kind)
+	_take_damage(amount, kind)
 
 
 func _update_state() -> void:

@@ -123,12 +123,16 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	var factor := _factor(kind)
 	if factor == 0:
 		_immune_tick = Engine.get_physics_frames()
+		Sfx.play(&"immune")
 		return
 	health -= amount * factor
 	_hit_tick = Engine.get_physics_frames()
 	if health <= 0:
+		Sfx.play(&"enemy_die")
 		_die()
-	elif stagger_time > 0.0:
+		return
+	Sfx.play(&"enemy_hit")
+	if stagger_time > 0.0:
 		_enter(State.STAGGER)
 
 
@@ -249,6 +253,7 @@ func _can_throw(distance: float) -> bool:
 ## Ela fica com os efeitos do chão, que somem ao trocar de sala.
 func _throw(target: Vector2) -> void:
 	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(throw_cooldown)
+	Sfx.play(&"grenade_throw")
 	var grenade := grenade_scene.instantiate() as Grenade
 	var layer := get_tree().get_first_node_in_group("floor_effects")
 	if layer:
@@ -266,7 +271,15 @@ func _held_grenade_rect() -> Rect2:
 	return Rect2(Vector2(center_x - size.x / 2.0, bottom - size.y), size)
 
 
+## Troca de estado. A preparação do bote e da granada e o bote têm som, para
+## o jogador ouvir o aviso mesmo olhando para outro lado.
 func _enter(state: State) -> void:
+	if state != _state:
+		match state:
+			State.WINDUP, State.THROW_WINDUP:
+				Sfx.play(&"enemy_windup")
+			State.LUNGE:
+				Sfx.play(&"enemy_lunge")
 	_state = state
 	_state_tick = Engine.get_physics_frames()
 

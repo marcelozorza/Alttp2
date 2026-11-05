@@ -65,6 +65,7 @@ func _physics_process(delta: float) -> void:
 
 func _explode() -> void:
 	_blast_tick = Engine.get_physics_frames()
+	Sfx.play(&"explosion")
 	remove_from_group("bombs")
 	_base.set_deferred("disabled", true)
 	for body: PhysicsBody2D in get_collision_exceptions():

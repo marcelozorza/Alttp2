@@ -187,6 +187,8 @@ var _sword_lock_ticks := 1
 var _sword_denied_tick := -1000
 var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
+## Passo mostrado no último tick, para o som de cada passo tocar uma vez.
+var _last_step := 0
 
 @onready var _visual: Node2D = $Visual
 @onready var _art: Sprite2D = $Visual/Art
@@ -263,10 +265,13 @@ func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
 		max_health += heart_bonus
 		health = max_health
+		Sfx.play(&"item_heart")
 	elif id == Item.Id.KEY:
 		keys += 1
+		Sfx.play(&"item_key")
 	elif id in Item.PERMANENT:
 		_tools |= Item.bit(id)
+		Sfx.play(&"item_tool")
 
 
 ## Gasta uma chave pequena, se houver. Diz se gastou.
@@ -308,7 +313,10 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 	health -= amount
 	_invincible_until_tick = Engine.get_physics_frames() + GameMath.ticks(invincibility_time)
 	if health <= 0:
+		Sfx.play(&"down")
 		_respawn()
+	else:
+		Sfx.play(&"hurt")
 
 
 ## Trava a espada por alguns segundos. Durante a invencibilidade, nada
@@ -321,6 +329,7 @@ func lock_sword(seconds: float) -> void:
 	if until > _sword_lock_until_tick:
 		_sword_lock_until_tick = until
 		_sword_lock_ticks = maxi(until - now, 1)
+		Sfx.play(&"sword_lock")
 
 
 func is_sword_locked() -> bool:
@@ -332,10 +341,12 @@ func is_sword_locked() -> bool:
 func _attack() -> void:
 	if is_sword_locked():
 		_sword_denied_tick = Engine.get_physics_frames()
+		Sfx.play(&"sword_denied")
 		return
 	if _state == State.RUN:
 		_enter(State.WALK)
 	_sword.attack(facing)
+	Sfx.play(&"sword_swing")
 	_freeze_until_tick = Engine.get_physics_frames() + GameMath.ticks(attack_freeze_time)
 
 
@@ -372,6 +383,7 @@ func _use_tools() -> void:
 		_place_bomb()
 	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
 		_z_velocity = 4.0 * jump_height / jump_time
+		Sfx.play(&"jump")
 
 
 ## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
@@ -387,6 +399,7 @@ func _place_bomb() -> void:
 	bomb.add_collision_exception_with(self)
 	add_collision_exception_with(bomb)
 	_bomb_charges.spend(Engine.get_physics_frames())
+	Sfx.play(&"bomb_place")
 
 
 ## Lança uma bola de fogo na direção da frente, se houver carga. Uma de cada
@@ -402,6 +415,7 @@ func _shoot_fire() -> void:
 	fireball.position = position + facing * 9.0
 	get_parent().add_child(fireball)
 	_fire_charges.spend(Engine.get_physics_frames())
+	Sfx.play(&"fire_shoot")
 
 
 ## Gravidade do pulo, calculada para que a altura e o tempo no ar sejam os
@@ -414,6 +428,7 @@ func _update_height(delta: float) -> void:
 	if _z <= 0.0:
 		_z = 0.0
 		_z_velocity = 0.0
+		Sfx.play(&"land")
 
 
 ## Degraus altos. Encostado na face vindo do sul, com a mola e alto o bastante,
@@ -447,6 +462,8 @@ func _cross_ledge(target_y: float, height_change: float) -> void:
 			global_position = target
 			_z = maxf(_z + height_change, 0.0)
 			_visual_offset = drawn_before - (global_position.y - _z)
+			if height_change > 0.0:
+				Sfx.play(&"ledge_drop")
 			return
 
 
@@ -534,7 +551,16 @@ func _is_double_tap(direction: Vector2) -> bool:
 	return false
 
 
+## Troca de estado. A corrida, o desequilíbrio e a queda têm som próprio.
 func _enter(state: State) -> void:
+	if state != _state:
+		match state:
+			State.RUN:
+				Sfx.play(&"dash")
+			State.WOBBLE:
+				Sfx.play(&"wobble")
+			State.FALLEN:
+				Sfx.play(&"fall")
 	_state = state
 	_state_tick = Engine.get_physics_frames()
 
@@ -631,6 +657,10 @@ func _update_art(shake: Vector2) -> void:
 	var step := 0
 	if moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1:
 		step = 1
+	# Um passo soa a cada troca de pata, quando o segundo passo aparece.
+	if step == 1 and _last_step == 0 and not is_airborne():
+		Sfx.play(&"step")
+	_last_step = step
 	var direction := 2
 	if facing.y > 0.0:
 		direction = 0

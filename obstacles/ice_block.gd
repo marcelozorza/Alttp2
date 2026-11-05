@@ -16,6 +16,10 @@ func _open_delay() -> int:
 	return MELT_TICKS
 
 
+func _clear_sound() -> StringName:
+	return &"ice_melt"
+
+
 func _draw() -> void:
 	var height := size.y
 	if cleared:

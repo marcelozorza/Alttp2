@@ -42,6 +42,13 @@ Referência: o mundo de ALttP como uma caixa de brinquedos, um diorama. Elemento
 - **Estado por tom.** Com desenho, as cores de estado de sempre (amarelo no aviso, vermelho no bote, branco ao levar dano, cinza imune, laranja na corrida, vermelho no desequilíbrio) viram um tom sobre o desenho.
 - **Já desenhados:** Giorgio de pé e nas 4 patas, de frente, de costas e de lado, com dois passos em cada direção (mais rápidos na corrida), e caído, chão, chão alto, parede, parede com face, parede rachada, gelo, degrau, porta trancada, porta do chefe, baú fechado e aberto, minion, ugly, inimigo de gelo, guardião de gelo com e sem a casca, as três camadas da sentinela, caixa leve, bomba, bola de fogo e relíquia. Ainda provisórios: a lâmina da espada, a onda, a granada, o bloco pesado da sala de teste e os ícones do HUD, que são pequenos demais (7 pixels) para reduzir a pixel art sem deformar e precisam de desenhos próprios.
 
+## Som
+
+- **Estilo do Super Nintendo do fim do ciclo** (decisão de 2026-11-05, junto com a pixel art). Efeitos a 32 kHz, a taxa do chip de som do console, com o leve abafado da interpolação dele, eco curto nos sons musicais e 8 vozes ao mesmo tempo. Com as 8 ocupadas, o som novo corta o mais antigo.
+- **Efeitos originais, feitos de receitas.** Cada efeito é uma receita curta de ruído, osciladores e filtros em `tools/sfx.py`, como a pixel art é texto em `art/source/`. Nada vem de banco de sons. São 46: passos com as unhas do Giorgio no chão, corrida, desequilíbrio, queda, ganido ao levar dano, pulo de mola, aterrissagem, descida de degrau, espada, espada travada, golpe que não afeta, chama, bomba, explosão, baú, item, coração, chave, porta trancada, porta abrindo, parede rachada, gelo derretendo, inimigos (aviso do bote, bote, dano, morte, granada), chefes (despertar, aviso, pancada, investida, dano, casca de gelo, armadura de pedra, casca voltando, derrota), relíquia e menus.
+- **Som como aviso.** Os avisos de ataque dos inimigos e dos chefes têm som próprio, para o jogador perceber o perigo mesmo olhando para outro lado.
+- **Música provisória.** Marcelo escolheu uma trilha de outro jogo como provisória em 2026-11-05. Ela toca em loop em todas as telas, mas não entra no repositório, que é público, e precisa ser trocada por música original antes de qualquer lançamento.
+
 ## Movimento
 
 Limitações também definem o jogo. As decisões abaixo podem ser revistas depois de jogadas.
@@ -159,6 +166,7 @@ Ideias que Marcelo quer ver mais para frente, sem implementar agora.
 
 - **Proporção da tela.** O SNES mostrava uma área quase quadrada, de 16 por 14 tiles. Em 16:9 a área fica mais larga e mais baixa, o que muda a sensação de diorama. Define o tamanho de toda a arte.
 - **Autoria da arte** para o lançamento.
+- **Música original.** Quem compõe a trilha do lançamento e em que estilo. A provisória dá o clima que Marcelo quer como ponto de partida.
 - **Sensação do andar e da corrida.** Arranque e parada instantâneos ou com inércia, velocidade da corrida, janela do duplo toque, tempo até o desequilíbrio, tempo para reagir e tempo caído. Todos esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: andar a 90 px/s, correr a 150 px/s, duplo toque em até 0,25 s, 0,4 s de corrida até o desequilíbrio, 0,5 s para reagir, no mínimo 0,8 s caído. Com esses valores, quem sai correndo encostado numa parede começa a cair no meio da tela.
 - **Equilíbrio recuperado.** Hoje, ao se equilibrar, o personagem para de correr. A alternativa é continuar correndo com o tempo reiniciado, mais próximo do Tony Hawk's Pro Skater, o que permite corridas longas para quem tem ritmo.
 - **Invencibilidade na corrida.** Hoje não há. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade e dá sentido ao custo do desequilíbrio.

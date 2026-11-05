@@ -10,12 +10,23 @@ static func label(text: String, font_size: int) -> Label:
 	return result
 
 
+## Botão de menu. Soa ao confirmar e ao receber o foco pelo direcional. O foco
+## inicial da tela fica em silêncio.
 static func button(text: String, action: Callable) -> Button:
 	var result := Button.new()
 	result.text = text
 	result.add_theme_font_size_override("font_size", 10)
+	result.pressed.connect(Sfx.play.bind(&"menu_confirm"))
 	result.pressed.connect(action)
+	result.focus_entered.connect(_on_focus)
 	return result
+
+
+static func _on_focus() -> void:
+	for action: StringName in [&"ui_up", &"ui_down", &"ui_left", &"ui_right"]:
+		if Input.is_action_pressed(action):
+			Sfx.play(&"menu_move")
+			return
 
 
 ## Fundo de cor sólida e uma coluna centralizada para os itens do menu.

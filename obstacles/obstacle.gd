@@ -37,8 +37,10 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 	if kind == _weakness():
 		cleared = true
 		_clear_tick = Engine.get_physics_frames()
+		Sfx.play(_clear_sound())
 	else:
 		_shake_tick = Engine.get_physics_frames()
+		Sfx.play(&"deny")
 	queue_redraw()
 
 
@@ -54,6 +56,11 @@ func _physics_process(_delta: float) -> void:
 ## Tipo de golpe que remove o bloqueio.
 func _weakness() -> Hit.Kind:
 	return Hit.Kind.BLAST
+
+
+## Som do golpe certo.
+func _clear_sound() -> StringName:
+	return &"wall_break"
 
 
 ## Ticks entre o golpe certo e a passagem abrir.

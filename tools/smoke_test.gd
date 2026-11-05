@@ -1,10 +1,15 @@
-extends SceneTree
+extends Node
 ## Teste de fumaça, rodado pelo Godot sem tela:
 ##
 ##     godot --headless --path . --import
-##     godot --headless --path . -s res://tools/smoke_test.gd
+##     godot --headless --path . res://tools/smoke_test.tscn
 ##
-## Confere o menu com o botão A e o Start do controle, o tempo do sorteio de
+## Roda como cena, e não com -s, porque só assim os autoloads Music e Sfx
+## existem. O teste fica na raiz e põe outro nó como cena atual, para que as
+## trocas de cena não o apaguem.
+##
+## Confere o áudio (barramentos, os arquivos de cada efeito e a música local,
+## se houver), o menu com o botão A e o Start do controle, o tempo do sorteio de
 ## seeds e cada capítulo, linear e com seed: abre os baús, ganha todas as
 ## ferramentas, encosta nas portas, entra em cada sala usando os botões, vence
 ## o chefe e toca a relíquia. Qualquer erro de script aparece na saída como
@@ -15,13 +20,14 @@ const ACTIONS := [
 ]
 
 
-func _initialize() -> void:
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_run.call_deferred()
 
 
 func _frames(n: int) -> void:
 	for _i: int in n:
-		await physics_frame
+		await get_tree().physics_frame
 
 
 func _joy(button: int) -> void:
@@ -38,22 +44,27 @@ func _joy(button: int) -> void:
 
 
 func _scene_path() -> String:
-	return current_scene.scene_file_path if current_scene else "<nenhuma>"
+	return get_tree().current_scene.scene_file_path if get_tree().current_scene else "<nenhuma>"
 
 
 func _run() -> void:
+	var placeholder := Node.new()
+	get_tree().root.add_child(placeholder)
+	get_tree().current_scene = placeholder
 	# Menu: o A do controle precisa iniciar o capítulo 1 linear.
-	change_scene_to_file("res://ui/title_screen.tscn")
+	get_tree().change_scene_to_file("res://ui/title_screen.tscn")
 	await _frames(10)
 	await _joy(JOY_BUTTON_A)
 	await _frames(10)
 	print("MENU: depois do A -> ", _scene_path())
 	# Start também confirma.
-	change_scene_to_file("res://ui/title_screen.tscn")
+	get_tree().change_scene_to_file("res://ui/title_screen.tscn")
 	await _frames(10)
 	await _joy(JOY_BUTTON_START)
 	await _frames(10)
 	print("MENU: depois do Start -> ", _scene_path())
+
+	_check_audio()
 
 	# Tempo do sorteio de seeds.
 	for chapter: int in [1, 2]:
@@ -86,16 +97,21 @@ func _run() -> void:
 		for randomized: bool in [false, true]:
 			await _play(chapter, randomized)
 	print("FIM DO TESTE")
-	quit()
+	# Sons tocando no fechamento deixam o Godot acusar recurso preso.
+	get_tree().root.get_node("Music").get("_player").stop()
+	for voice: Node in get_tree().root.get_node("Sfx").get_children():
+		(voice as AudioStreamPlayer).stop()
+	await _frames(10)
+	get_tree().quit()
 
 
 func _play(chapter_number: int, randomized: bool) -> void:
 	RunSettings.chapter = chapter_number
 	RunSettings.randomized = randomized
 	RunSettings.run_seed = 424242 + chapter_number
-	change_scene_to_file("res://world/chapter/chapter.tscn")
+	get_tree().change_scene_to_file("res://world/chapter/chapter.tscn")
 	await _frames(20)
-	var chapter: Node = current_scene
+	var chapter: Node = get_tree().current_scene
 	print(
 		(
 			"--- capítulo %d %s: %s"
@@ -159,7 +175,7 @@ func _play(chapter_number: int, randomized: bool) -> void:
 		player.global_position = relic.global_position
 		await _frames(20)
 	print("terminou: %s  fim: %s" % [chapter.get("finished"), chapter.get("_end_screen").visible])
-	paused = false
+	get_tree().paused = false
 
 
 func _beat_boss(boss: Boss) -> void:
@@ -182,3 +198,25 @@ func _floor_cell(map: ChapterMap, room: Vector2i) -> Vector2i:
 				if map.tile(cell) == "." or map.tile(cell) == ":":
 					return cell
 	return Vector2i(-1, -1)
+
+
+## Barramentos, um arquivo para cada efeito da tabela, nenhum arquivo sobrando
+## e a música local, se houver.
+func _check_audio() -> void:
+	var buses := [AudioServer.get_bus_index(&"Music"), AudioServer.get_bus_index(&"Sfx")]
+	print("ÁUDIO: barramentos Music e Sfx em ", buses)
+	var sfx: Node = get_tree().root.get_node("Sfx")
+	var sounds: Dictionary = sfx.get("SOUNDS")
+	var streams: Dictionary = sfx.get("_streams")
+	var missing := []
+	for sound: StringName in sounds:
+		if streams.get(sound) == null:
+			missing.append(sound)
+	var extra := []
+	for file: String in ResourceLoader.list_directory("res://audio/sfx"):
+		if file.ends_with(".wav") and not sounds.has(StringName(file.get_basename())):
+			extra.append(file)
+	print("ÁUDIO: %d efeitos, sem arquivo: %s, sem uso: %s" % [sounds.size(), missing, extra])
+	var music: AudioStreamPlayer = get_tree().root.get_node("Music").get("_player")
+	var track := music.stream.resource_path if music.stream else "<nenhuma>"
+	print("ÁUDIO: música %s, tocando: %s" % [track, music.playing])

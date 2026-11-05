@@ -71,8 +71,10 @@ func _try_open(player: Player, now: int) -> void:
 		opened = true
 		_open_tick = now
 		_shape.set_deferred("disabled", true)
+		Sfx.play(&"door_unlock")
 	elif now - _shake_tick > SHAKE_COOLDOWN_TICKS:
 		_shake_tick = now
+		Sfx.play(&"door_locked")
 
 
 ## Desenha a porta casa por casa. Ao abrir, ela afunda no chão.

@@ -41,6 +41,7 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 		return
 	is_open = true
 	_open_tick = Engine.get_physics_frames()
+	Sfx.play(&"chest_open")
 	var player := get_tree().get_first_node_in_group("player") as Player
 	if player:
 		player.give_item(item)

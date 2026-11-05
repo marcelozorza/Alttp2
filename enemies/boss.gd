@@ -134,17 +134,29 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 			_shell = false
 			_shell_break_tick = now
 			_hit_tick = now
+			Sfx.play(&"shell_break")
 		else:
 			_immune_tick = now
+			Sfx.play(&"immune")
 		return
+	_take_damage(amount, kind)
+
+
+## Dano no chefe já sem proteção, conforme o multiplicador de cada golpe.
+func _take_damage(amount: int, kind: Hit.Kind) -> void:
+	var now := Engine.get_physics_frames()
 	var factor := _factor(kind)
 	if factor == 0:
 		_immune_tick = now
+		Sfx.play(&"immune")
 		return
 	health -= amount * factor
 	_hit_tick = now
 	if health <= 0:
+		Sfx.play(&"boss_die")
 		_die()
+	else:
+		Sfx.play(&"boss_hit")
 
 
 func _physics_process(delta: float) -> void:
@@ -170,6 +182,7 @@ func _update_state() -> void:
 	var now := Engine.get_physics_frames()
 	if not _shell and now - _shell_break_tick >= GameMath.ticks(shell_regrow_time):
 		_shell = true
+		Sfx.play(&"shell_regrow")
 	var to_player := _to_player()
 	if to_player != Vector2.ZERO:
 		_look = GameMath.snap_8(to_player)
@@ -221,6 +234,7 @@ func _to_player() -> Vector2:
 
 ## Pancada no chão: a onda nasce nos pés do chefe e corre pela sala.
 func _slam() -> void:
+	Sfx.play(&"boss_slam")
 	var wave := SHOCKWAVE_SCENE.instantiate() as Shockwave
 	var layer := get_tree().get_first_node_in_group("floor_effects")
 	if layer:
@@ -258,7 +272,17 @@ func _factor(kind: Hit.Kind) -> int:
 	return sword_factor
 
 
+## Troca de estado. O despertar, os avisos e a investida têm som.
 func _enter(state: State) -> void:
+	if state != _state:
+		match state:
+			State.APPROACH:
+				if _state == State.DORMANT:
+					Sfx.play(&"boss_wake")
+			State.SLAM_WINDUP, State.CHARGE_WINDUP:
+				Sfx.play(&"boss_windup")
+			State.CHARGE:
+				Sfx.play(&"boss_charge")
 	_state = state
 	_state_tick = Engine.get_physics_frames()
 

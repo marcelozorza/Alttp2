@@ -55,6 +55,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
 - `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/` e `chapter_two/` têm os dados de cada capítulo, com o mapa em texto e as distribuições separadas do mapa. `test_room.tscn` é a sala de teste.
+- `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/local/` recebe a trilha provisória, fora do Git.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
 - `docs/` documentação de design.
@@ -77,6 +78,20 @@ python3 tools/pixel_svg.py
 ```
 
 O Godot reimporta os SVG ao voltar para o editor.
+
+## Som
+
+**Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
+
+**Efeitos.** Os 46 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
+
+```
+python3 tools/sfx.py              todos os sons
+python3 tools/sfx.py jump land    só os nomes dados
+python3 tools/sfx.py --reel x.wav todos num arquivo só, para ouvir em sequência
+```
+
+O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio/sfx.gd`. O volume geral dos efeitos fica no barramento Sfx. Os sons tocam em 8 vozes, como no Super Nintendo, e com as 8 ocupadas o som novo corta o mais antigo.
 
 ## Tons do Giorgio
 

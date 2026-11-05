@@ -28,6 +28,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if _collected or not (body is Player):
 		return
 	_collected = true
+	Sfx.play(&"relic")
 	collected.emit()
 
 

@@ -53,7 +53,10 @@ func _hit_something() -> bool:
 		var target: Object = result["collider"]
 		if target.has_method("take_hit"):
 			target.call("take_hit", damage, direction, Hit.Kind.FIRE)
-	return not results.is_empty()
+	if results.is_empty():
+		return false
+	Sfx.play(&"fire_hit")
+	return true
 
 
 func _draw() -> void:

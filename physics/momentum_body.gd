@@ -9,7 +9,12 @@ extends CharacterBody2D
 ## só para, e contra outro corpo os dois seguem juntos, o que permite empurrar.
 ## Acima, a restituição devolve parte da velocidade, e o corpo ricocheteia.
 ## Contra algo mais leve, o outro corpo vai embora. Contra algo mais pesado ou
-## uma parede, o corpo volta.
+## uma parede, o corpo volta. Um ricochete acima de BUMP_SOUND_SPEED faz o
+## som da batida.
+
+## Velocidade de afastamento, em pixels por segundo, a partir da qual a batida
+## soa.
+const BUMP_SOUND_SPEED := 50.0
 
 @export_group("Física")
 ## Massa. O personagem tem massa 1, e os objetos são medidos em relação a ele.
@@ -86,6 +91,8 @@ func move_with_impacts() -> void:
 		change += deltas[0]
 		rebound = maxf(rebound, (pre_velocity + deltas[0]).dot(normal))
 	if not handled.is_empty():
+		if rebound > BUMP_SOUND_SPEED:
+			Sfx.play(&"bump")
 		_on_impacts(pre_velocity + change, rebound)
 
 
