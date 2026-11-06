@@ -33,10 +33,10 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
-- **Espada:** botão de baixo (A no padrão Xbox). No teclado, J ou Z. O golpe também abre os baús.
-- **Bomba:** botão da direita (B no padrão Xbox). No teclado, L ou C.
-- **Chama:** botão da esquerda (X no padrão Xbox). No teclado, K ou X.
-- **Pulo, com a mola:** botão de cima (Y no padrão Xbox). No teclado, Espaço ou V.
+- **Espada:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. O golpe também abre os baús.
+- **Bomba:** botão de cima (Y no padrão Xbox, X no SNES). No teclado, L ou C.
+- **Chama:** botão da esquerda (X no padrão Xbox, Y no SNES). No teclado, K ou X.
+- **Pulo, com a mola:** botão da direita (B no padrão Xbox, A no SNES). No teclado, Espaço ou V.
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
