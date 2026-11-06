@@ -237,8 +237,12 @@ class Map:
         numa região vizinha da grade. Sem ele, a grade nunca abre."""
         self.gate_source = {}
         self.gate_switches = {}
+        self.gate_cells = {}
         for slot in self.gates:
             cells = self.cells_of(slot)
+            if not cells:
+                continue
+            self.gate_cells[slot] = cells
             room = self.room_of_cell(cells[0])
             neighbors = set()
             for cell in cells:
@@ -300,7 +304,7 @@ class Map:
             for slot in self.gates:
                 if self.gate_source.get(slot) not in nodes:
                     continue
-                for cell in self.cells_of(slot):
+                for cell in self.gate_cells[slot]:
                     if cell in reached:
                         continue
                     for dx, dy in STEPS:
@@ -527,7 +531,7 @@ def check_switches(m, errors):
         if slot not in m.gate_source:
             errors.append("grade %s sem interruptor numa região vizinha, na mesma sala" % slot)
             continue
-        room = m.room_of_cell(m.cells_of(slot)[0])
+        room = m.room_of_cell(m.gate_cells[slot][0])
         blocks = [b for b in m.cells_of("0") if m.room_of_cell(b) == room]
         solved = False
         for switch in m.gate_switches[slot]:

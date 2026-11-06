@@ -9,17 +9,14 @@ extends Node2D
 
 
 func _ready() -> void:
-	for node: Node in $FloorEffects.get_children():
+	for node: Node in $Switches.get_children():
 		if node is FloorSwitch:
 			(node as FloorSwitch).changed.connect(_on_switch_changed)
 
 
-## A grade abre enquanto algum interruptor da sala estiver pressionado.
 func _on_switch_changed(_pressed: bool) -> void:
-	var any_pressed := false
-	for node: Node in $FloorEffects.get_children():
-		if node is FloorSwitch and (node as FloorSwitch).pressed:
-			any_pressed = true
+	var gates: Array = []
 	for node: Node in $Obstacles.get_children():
 		if node is SwitchDoor:
-			(node as SwitchDoor).set_open(any_pressed)
+			gates.append(node)
+	FloorSwitch.sync_gates($Switches.get_children(), gates)

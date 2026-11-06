@@ -6,7 +6,8 @@ extends CanvasLayer
 ## capítulo. No mundo e na sala de teste, sair leva ao menu de título.
 ##
 ## Não abre enquanto outra tela, como a de fim ou a de derrota, estiver com o
-## jogo parado.
+## jogo parado, nem com o personagem sem vida, para a tela de derrota poder
+## aparecer.
 
 ## Texto do botão de sair.
 @export var exit_text := "Sair do capítulo"
@@ -33,7 +34,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if visible:
 		resume()
-	elif not get_tree().paused:
+	elif not get_tree().paused and not _player_is_dead():
 		open()
 
 
@@ -42,6 +43,11 @@ func open() -> void:
 	visible = true
 	Sfx.play(&"menu_confirm")
 	_buttons[0].grab_focus()
+
+
+func _player_is_dead() -> bool:
+	var player := get_tree().get_first_node_in_group("player") as Player
+	return player != null and player.is_dead()
 
 
 func resume() -> void:

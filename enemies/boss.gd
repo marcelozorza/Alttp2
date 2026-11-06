@@ -277,31 +277,14 @@ func _slam() -> void:
 ## Durante a investida, procura o personagem numa área um pouco maior que a
 ## base. Uma investida acerta no máximo uma vez.
 func _check_charge_hit() -> void:
-	var base_shape := _base.shape as RectangleShape2D
-	_hurt_shape.size = base_shape.size + Vector2(4.0, 4.0)
-	var query := PhysicsShapeQueryParameters2D.new()
-	query.shape = _hurt_shape
-	query.transform = Transform2D(0.0, _base.global_position)
-	var excluded: Array[RID] = [get_rid()]
-	query.exclude = excluded
-	for result: Dictionary in get_world_2d().direct_space_state.intersect_shape(query):
-		var target := result["collider"] as Player
-		if target:
-			target.take_hit(charge_damage, _charge_direction)
-			_charge_landed = true
+	var target := Hit.player_in_reach(self, _base, _hurt_shape)
+	if target:
+		target.take_hit(charge_damage, _charge_direction)
+		_charge_landed = true
 
 
 func _factor(kind: Hit.Kind) -> int:
-	match kind:
-		Hit.Kind.FIRE:
-			return fire_factor
-		Hit.Kind.STRONG_FIRE:
-			return strong_fire_factor
-		Hit.Kind.BLAST:
-			return blast_factor
-		Hit.Kind.SHOCKWAVE:
-			return 0
-	return sword_factor
+	return Hit.factor(kind, sword_factor, fire_factor, strong_fire_factor, blast_factor)
 
 
 ## Desenho da casca: de gelo comum, de gelo grosso ou de pedra.

@@ -2,7 +2,15 @@ extends Node
 ## Teste de fumaça, rodado pelo Godot sem tela:
 ##
 ##     godot --headless --path . --import
-##     godot --headless --path . res://tools/smoke_test.tscn
+##     godot --headless --fixed-fps 60 --path . res://tools/smoke_test.tscn
+##
+## Ou, com as mesmas conferências de erro que o GitHub faz a cada push:
+##
+##     sh tools/run_smoke_test.sh [caminho do godot]
+##
+## O --fixed-fps 60 avança o tempo do jogo sem esperar o relógio: o teste
+## leva uns 10 s em vez de 10 min, com o mesmo resultado, porque tudo roda
+## em ticks de física.
 ##
 ## Roda como cena, e não com -s, porque só assim os autoloads Music e Sfx
 ## existem. O teste fica na raiz e põe outro nó como cena atual, para que as

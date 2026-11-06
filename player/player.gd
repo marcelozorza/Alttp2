@@ -328,6 +328,11 @@ func is_airborne() -> bool:
 	return _z > 0.0 or _z_velocity > 0.0
 
 
+## Sem vida, caído, à espera da tela de derrota.
+func is_dead() -> bool:
+	return _state == State.DEAD
+
+
 ## Recebe a batida de outro corpo. Uma batida forte arremessa o personagem,
 ## a menos que ele esteja caído, caso em que só muda de embalo.
 func add_impact_velocity(delta_velocity: Vector2) -> void:

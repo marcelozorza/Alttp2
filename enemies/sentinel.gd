@@ -63,35 +63,16 @@ func _update_state() -> void:
 		_frost = true
 
 
-## O desenho mostra a camada de fora: armadura, gelo ou núcleo quente. Amarelo
-## piscando no aviso de cada ataque, mais escuro parado depois de atacar, branco
-## ao levar dano e cinza quando o golpe não o afeta. Antes de a armadura voltar,
-## ela pisca por cima do núcleo.
-func _draw() -> void:
-	var now := Engine.get_physics_frames()
-	var elapsed := now - _state_tick
-	var tint := Color.WHITE
-	var shake := Vector2.ZERO
-	match _state:
-		State.SLAM_WINDUP, State.CHARGE_WINDUP:
-			var blink := posmod(elapsed, 8) < 4
-			shake = Vector2(1.0 if blink else -1.0, 0.0)
-			if blink:
-				tint = WINDUP_COLOR
-		State.SLAM_RECOVER, State.CHARGE_RECOVER:
-			tint = RECOVER_TINT
-	if now - _hit_tick < FLASH_TICKS:
-		tint = HIT_TINT
-	elif now - _immune_tick < FLASH_TICKS:
-		tint = IMMUNE_COLOR
-	var texture := ARMOR_TEXTURE
-	if not _shell:
-		texture = FROST_TEXTURE if _frost else HOT_CORE_TEXTURE
-		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)
-		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
-			texture = ARMOR_TEXTURE
-	draw_texture(texture, TEXTURE_OFFSET + shake, tint)
-	var width := float(texture.get_width())
-	var bar_width := width * float(maxi(health, 0)) / max_health
-	var bar_position := TEXTURE_OFFSET + shake + Vector2(0.0, -4.0)
-	draw_rect(Rect2(bar_position, Vector2(bar_width, 2.0)), HEALTH_COLOR)
+## O desenho mostra a camada de fora: a armadura enquanto fechada, e por
+## baixo o gelo ou o núcleo quente. O resto do desenho (avisos, dano, a
+## armadura piscando antes de voltar) é o do chefe comum.
+func _shell_texture() -> Texture2D:
+	return ARMOR_TEXTURE
+
+
+func _core_texture() -> Texture2D:
+	return FROST_TEXTURE if _frost else HOT_CORE_TEXTURE
+
+
+func _texture_offset(_texture: Texture2D) -> Vector2:
+	return TEXTURE_OFFSET

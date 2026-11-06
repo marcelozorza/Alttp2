@@ -7,8 +7,6 @@ extends StaticBody2D
 ## tamanho antes de adicionar o bloqueio à cena. Como as paredes, o bloqueio
 ## projeta uma sombra curta no chão ao sul.
 
-## Ticks em que o bloqueio treme ao receber um golpe que não o afeta.
-const SHAKE_TICKS := 8
 ## Ticks de animação depois que o bloqueio é removido.
 const CLEAR_ANIMATION_TICKS := 30
 ## Sombra no chão ao sul, a mesma das paredes.
@@ -52,7 +50,7 @@ func _physics_process(_delta: float) -> void:
 	if cleared and not _opened and _ticks_since_clear() >= _open_delay():
 		_opened = true
 		_shape.set_deferred("disabled", true)
-	var shaking := Engine.get_physics_frames() - _shake_tick <= SHAKE_TICKS
+	var shaking := Engine.get_physics_frames() - _shake_tick <= DoorArt.SHAKE_TICKS
 	if shaking or (cleared and _ticks_since_clear() <= CLEAR_ANIMATION_TICKS):
 		queue_redraw()
 
@@ -74,10 +72,7 @@ func _open_delay() -> int:
 
 ## Deslocamento do tremor, para os desenhos das subclasses.
 func _shake_offset() -> Vector2:
-	var elapsed := Engine.get_physics_frames() - _shake_tick
-	if elapsed >= SHAKE_TICKS:
-		return Vector2.ZERO
-	return Vector2(1.0 if posmod(elapsed, 4) < 2 else -1.0, 0.0)
+	return DoorArt.shake_offset(_shake_tick)
 
 
 func _ticks_since_clear() -> int:

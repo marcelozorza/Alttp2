@@ -89,6 +89,7 @@ var _chests: Array[Chest] = []
 @onready var _map_view: MapView = $MapView
 @onready var _walls: StaticBody2D = $Walls
 @onready var _obstacles: Node2D = $Obstacles
+@onready var _switches: Node2D = $Switches
 @onready var _floor_effects: Node2D = $FloorEffects
 @onready var _objects: Node2D = $Objects
 @onready var _camera: Camera2D = $Camera
@@ -113,8 +114,10 @@ func _ready() -> void:
 			if Progress.was_opened(data.number, chest.location_id):
 				chest.open_silently()
 	else:
+		var tools := 0
 		for id: int in data.starting_tools:
-			_player.give_item(id)
+			tools |= Item.bit(id)
+		_player.restore(tools, _player.max_health)
 	_player.respawned.connect(_on_player_respawned)
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
@@ -188,7 +191,7 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		switch.position = center
 		var room := _room_of_cell(cell)
 		switch.changed.connect(_on_switch_changed.bind(room))
-		_floor_effects.add_child(switch)
+		_switches.add_child(switch)
 		var switches: Array = _room_switches.get(room, [])
 		switches.append(switch)
 		_room_switches[room] = switches
@@ -245,11 +248,7 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 ## As grades de uma sala abrem enquanto algum interruptor dela está
 ## pressionado.
 func _on_switch_changed(_pressed: bool, room: Rect2i) -> void:
-	var any_pressed := false
-	for switch: FloorSwitch in _room_switches.get(room, []):
-		any_pressed = any_pressed or switch.pressed
-	for gate: SwitchDoor in _room_gates.get(room, []):
-		gate.set_open(any_pressed)
+	FloorSwitch.sync_gates(_room_switches.get(room, []), _room_gates.get(room, []))
 
 
 func _register(actor: Node, cell: Vector2i) -> void:
@@ -277,11 +276,10 @@ func _activate_room(room: Rect2i, active: bool) -> void:
 		actor.call("set_active", active)
 
 
-## Apaga as marcas no chão, como a área da granada. Os interruptores ficam.
+## Apaga as marcas no chão, como a área da granada.
 func _clear_floor_effects() -> void:
 	for effect: Node in _floor_effects.get_children():
-		if not effect is FloorSwitch:
-			effect.queue_free()
+		effect.queue_free()
 
 
 func _on_player_respawned() -> void:

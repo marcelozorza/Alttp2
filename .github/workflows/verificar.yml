@@ -1,0 +1,41 @@
+# Verificação a cada push e a cada pull request: formatação e lint dos
+# scripts, conferidor dos capítulos e o teste de fumaça no Godot sem tela,
+# as mesmas três conferências descritas no CLAUDE.md. O resultado aparece na
+# aba Actions do GitHub e na marca ao lado de cada commit.
+name: Verificar
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  scripts:
+    name: Formato, lint e conferidor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar o gdtoolkit
+        run: pip install "gdtoolkit==4.5.0"
+      - name: Formatação
+        run: gdformat --check .
+      - name: Lint
+        run: gdlint .
+      - name: Conferir os capítulos
+        run: |
+          for dados in world/chapter_*/chapter_*_data.gd; do
+            echo "== $dados"
+            python3 tools/check_chapter.py "$dados"
+          done
+
+  godot:
+    name: Teste de fumaça no Godot
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.7.2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar o teste de fumaça
+        run: sh tools/run_smoke_test.sh godot

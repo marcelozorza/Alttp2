@@ -9,7 +9,6 @@ extends StaticBody2D
 ## A origem fica no canto superior esquerdo. O construtor do mapa define o
 ## tamanho antes de adicionar a porta à cena.
 
-const SHAKE_TICKS := 8
 ## Ticks entre duas tremidas, para a porta não tremer sem parar com o
 ## personagem encostado.
 const SHAKE_COOLDOWN_TICKS := 30
@@ -56,7 +55,7 @@ func _physics_process(_delta: float) -> void:
 			var player := body as Player
 			if player:
 				_try_open(player, now)
-	var shaking := now - _shake_tick <= SHAKE_TICKS
+	var shaking := now - _shake_tick <= DoorArt.SHAKE_TICKS
 	if shaking or (opened and now - _open_tick <= OPEN_TICKS):
 		queue_redraw()
 
@@ -85,15 +84,4 @@ func _draw() -> void:
 		sink = 1.0 - float(Engine.get_physics_frames() - _open_tick) / OPEN_TICKS
 		if sink <= 0.0:
 			return
-	var offset := Vector2.ZERO
-	var elapsed := Engine.get_physics_frames() - _shake_tick
-	if elapsed < SHAKE_TICKS:
-		offset.x = 1.0 if posmod(elapsed, 4) < 2 else -1.0
-	var tile := float(ChapterMap.TILE)
-	for y: int in int(size.y / tile):
-		for x: int in int(size.x / tile):
-			var cell := Vector2(x, y) * tile + offset
-			var visible_height := tile * sink
-			var source := Rect2(0.0, 0.0, tile, visible_height)
-			var target := Rect2(cell + Vector2(0.0, tile - visible_height), source.size)
-			draw_texture_rect_region(texture, target, source)
+	DoorArt.draw_sunk(self, texture, size, sink, DoorArt.shake_offset(_shake_tick))

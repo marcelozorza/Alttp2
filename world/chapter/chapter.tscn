@@ -17,6 +17,8 @@ script = ExtResource("2_map_view")
 
 [node name="Obstacles" type="Node2D" parent="."]
 
+[node name="Switches" type="Node2D" parent="."]
+
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
 [node name="Objects" type="Node2D" parent="."]

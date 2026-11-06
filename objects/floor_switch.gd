@@ -5,8 +5,8 @@ extends Area2D
 ## bloco pesado para em cima dele: o bloco trava no lugar e o losango acende.
 ## É o mecanismo do bloco pesado sobre o interruptor.
 ##
-## A origem fica no centro da casa. Ele fica na camada dos efeitos do chão
-## (FloorEffects), acima do chão e abaixo dos objetos.
+## A origem fica no centro da casa. Ele fica numa camada própria (Switches),
+## acima do chão e abaixo dos objetos. Pular por cima não o pressiona.
 
 signal changed(pressed: bool)
 
@@ -35,7 +35,7 @@ func _physics_process(_delta: float) -> void:
 	var now_pressed := false
 	for body: Node2D in get_overlapping_bodies():
 		if body is Player:
-			now_pressed = true
+			now_pressed = now_pressed or not (body as Player).is_airborne()
 		elif body is HeavyBlock:
 			var block := body as HeavyBlock
 			var seat := global_position + BLOCK_OFFSET
@@ -52,3 +52,13 @@ func _physics_process(_delta: float) -> void:
 
 func _draw() -> void:
 	draw_texture(PRESSED_TEXTURE if pressed else TEXTURE, Vector2(-8.0, -8.0))
+
+
+## As grades de uma sala abrem enquanto algum interruptor dela está
+## pressionado. Recebe os interruptores e as grades da sala.
+static func sync_gates(switches: Array, gates: Array) -> void:
+	var any_pressed := false
+	for switch: FloorSwitch in switches:
+		any_pressed = any_pressed or switch.pressed
+	for gate: SwitchDoor in gates:
+		gate.set_open(any_pressed)

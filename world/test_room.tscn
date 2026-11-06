@@ -135,10 +135,12 @@ size = Vector2(32, 32)
 position = Vector2(152, 112)
 size = Vector2(16, 16)
 
-[node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
+[node name="Switches" type="Node2D" parent="."]
 
-[node name="FloorSwitch" parent="FloorEffects" instance=ExtResource("16_floor_switch")]
+[node name="FloorSwitch" parent="Switches" instance=ExtResource("16_floor_switch")]
 position = Vector2(160, 96)
+
+[node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
 [node name="Objects" type="Node2D" parent="."]
 y_sort_enabled = true

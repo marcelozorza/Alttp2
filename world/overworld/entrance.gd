@@ -19,7 +19,6 @@ const SIZE := Vector2(32.0, 16.0)
 ## Quanto o desenho sobe acima da origem.
 const ART_ABOVE := 8.0
 const GATE_OFFSET := Vector2(10.0, 7.0)
-const SHAKE_TICKS := 8
 const SHAKE_COOLDOWN_TICKS := 30
 const TOUCH_MARGIN := 2.0
 
@@ -55,7 +54,7 @@ func _physics_process(_delta: float) -> void:
 		for body: Node2D in _touch.get_overlapping_bodies():
 			if body is Player:
 				_touched(now)
-	if now - _shake_tick <= SHAKE_TICKS or mode == Mode.DONE:
+	if now - _shake_tick <= DoorArt.SHAKE_TICKS or mode == Mode.DONE:
 		queue_redraw()
 
 
@@ -76,10 +75,7 @@ func exit_position() -> Vector2:
 
 
 func _draw() -> void:
-	var offset := Vector2(0.0, -ART_ABOVE)
-	var elapsed := Engine.get_physics_frames() - _shake_tick
-	if elapsed < SHAKE_TICKS:
-		offset.x = 1.0 if posmod(elapsed, 4) < 2 else -1.0
+	var offset := Vector2(0.0, -ART_ABOVE) + DoorArt.shake_offset(_shake_tick)
 	draw_texture(TEXTURE, offset)
 	if mode == Mode.LOCKED:
 		draw_texture(GATE_TEXTURE, offset + GATE_OFFSET)

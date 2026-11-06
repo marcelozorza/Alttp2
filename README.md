@@ -80,6 +80,19 @@ python3 tools/check_chapter.py world/chapter_four/chapter_four_data.gd
 
 Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face, altura do chão que fecha em todo o mapa, e grade com um interruptor na mesma sala e um bloco pesado alinhado com ele) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.
 
+## Verificação automática
+
+A cada push e a cada pull request, o GitHub roda as três conferências do projeto (`.github/workflows/verificar.yml`): formatação e lint dos scripts com o gdtoolkit, o conferidor dos quatro capítulos e o teste de fumaça no Godot 4.7.2 sem tela. O resultado aparece na aba **Actions** do repositório e na marca ao lado de cada commit: verde passou, vermelho falhou, e a página da falha mostra qual conferência quebrou e a linha do erro.
+
+Para rodar o teste de fumaça no seu computador, com o Godot no PATH ou com o caminho dele:
+
+```
+sh tools/run_smoke_test.sh
+sh tools/run_smoke_test.sh "C:/caminho/do/Godot_v4.7.2-stable_win64_console.exe"
+```
+
+Ele importa o projeto, roda `tools/smoke_test.gd` e falha se aparecer `SCRIPT ERROR`, erro do motor ou se o teste não chegar ao fim.
+
 ## Editar a pixel art
 
 Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e uma grade com uma letra por pixel, em que `.` é transparente. Depois de editar, gere os SVG:
