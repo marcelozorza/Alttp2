@@ -129,8 +129,7 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 
 ## Cores dos inimigos
 
-Nos inimigos com desenho, as cores viram um tom sobre ele.
-
+Nos inimigos com desenho, as cores viram um tom sobre ele. O minion, o gatinho laranja de listras, tem um quadro para cada momento: dois passos ao andar, de costas ao subir, agachado preparando o bote, esticado no bote, recuperando e apanhando.
 
 - **Amarelo piscando e tremendo:** preparando o bote. Saia da linha.
 - **Amarelo piscando com uma bola magenta acima da cabeça:** o ugly vai jogar a granada.

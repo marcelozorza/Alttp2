@@ -1,0 +1,25 @@
+# Minion apanhando.
+paleta
+o #2a2230
+r #b8521c
+d #7a2e12
+l #dd7a32
+c #f1dcb8
+p #e49aa4
+y #f2c443
+
+pixels
+............
+oo........oo
+opoooooooopo
+orlrdrrdrrro
+orrrddrrrrro
+oroorrrrooro
+orrccppccrro
+.orcoppocro.
+..orrccrro..
+.odrrccrrdo.
+.orrrccrrro.
+.orrorrorro.
+.orro..orro.
+.occo..occo.

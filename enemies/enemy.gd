@@ -42,6 +42,8 @@ const WEAVE_RATE := 0.2
 ## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
 ## segundo.
 const ROOT_PULL := 8.0
+## Ticks de cada passo da caminhada, quando há quadros de passo.
+const WALK_FRAME_TICKS := 8
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -63,6 +65,24 @@ const ROOT_PULL := 8.0
 @export_range(0, 20, 1) var strong_fire_factor := 2
 ## Multiplicador do dano da explosão.
 @export_range(0, 10, 1) var blast_factor := 1
+
+@export_group("Desenhos")
+## Quadros opcionais do desenho (nó Art). Com eles, o desenho acompanha o
+## estado: os passos alternam ao andar, e cada ataque tem o seu quadro. O
+## primeiro passo é também o quadro parado. Sem quadros, o desenho fica fixo.
+## Primeiro inimigo com quadros: o minion, desenhado por Marcelo em
+## 2026-11-06.
+@export var walk_frames: Array[Texture2D] = []
+## Quadros de costas, usados ao andar para cima. Vazio usa os de frente.
+@export var back_frames: Array[Texture2D] = []
+## Preparando o bote.
+@export var windup_frame: Texture2D
+## No bote.
+@export var lunge_frame: Texture2D
+## Recuperando depois do bote.
+@export var recover_frame: Texture2D
+## Atordoado por um golpe.
+@export var hit_frame: Texture2D
 
 @export_group("Comportamento")
 ## Distância, em pixels, a partir da qual percebe o personagem.
@@ -371,6 +391,9 @@ func _update_visuals() -> void:
 		_eye.visible = false
 		_art.modulate = tint
 		_art.position = shake + Vector2(0.0, -_hover_height()).round()
+		var frame := _frame_for_state()
+		if frame:
+			_art.texture = frame
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
@@ -379,6 +402,34 @@ func _update_visuals() -> void:
 	_health_bar.size.x = _health_bar_width * float(maxi(health, 0)) / max_health
 	if grenade_scene or hover:
 		queue_redraw()
+
+
+## Escolhe o quadro do desenho pelo estado. Sem quadros, devolve nulo e o
+## desenho fica como está. Andando, alterna os passos. De costas quando olha
+## para cima e há quadros de costas.
+func _frame_for_state() -> Texture2D:
+	if walk_frames.is_empty():
+		return null
+	match _state:
+		State.STAGGER:
+			if hit_frame:
+				return hit_frame
+		State.WINDUP, State.THROW_WINDUP:
+			if windup_frame:
+				return windup_frame
+		State.LUNGE:
+			if lunge_frame:
+				return lunge_frame
+		State.RECOVER, State.THROW_RECOVER:
+			if recover_frame:
+				return recover_frame
+	var frames := walk_frames
+	if _look_direction.y < 0.0 and not back_frames.is_empty():
+		frames = back_frames
+	var step := 0
+	if _state == State.APPROACH and velocity.length() > 1.0:
+		step = posmod(floori(float(Clock.tick) / WALK_FRAME_TICKS), frames.size())
+	return frames[step]
 
 
 ## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
