@@ -131,7 +131,8 @@ func _physics_process(_delta: float) -> void:
 	var room := _room_of(_player.global_position)
 	if room != _room:
 		_enter_room(room)
-	_camera.position = _camera_target()
+	else:
+		_camera.position = _camera_target(true)
 
 
 ## Nome do capítulo, para o HUD e para a tela de fim.
@@ -335,13 +336,17 @@ func _room_interior(room: Rect2i) -> Rect2:
 
 
 ## Centro da câmera. Numa sala de uma tela, é o centro dela, deslocado para
-## cima pela barra do HUD. Numa sala maior, a câmera segue o personagem, presa
-## aos limites da sala, para nunca mostrar a sala vizinha.
-func _camera_target() -> Vector2:
+## cima pela barra do HUD. Numa sala maior, a câmera segue o personagem com
+## zona morta (CameraFollow), presa aos limites da sala, para nunca mostrar a
+## sala vizinha. Ao entrar na sala, a câmera parte centrada no personagem.
+func _camera_target(pushed := false) -> Vector2:
 	var pixels := _room_pixels(_room)
 	var low := pixels.position + Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
 	var high := pixels.end - HALF_SCREEN
-	return _player.global_position.clamp(low, high)
+	var target := _player.global_position
+	if pushed:
+		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT)
+	return CameraFollow.centered(target, low, high)
 
 
 func _cell_center(cell: Vector2i) -> Vector2:

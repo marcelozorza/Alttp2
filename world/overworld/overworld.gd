@@ -41,7 +41,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	_camera.position = _camera_target()
+	_camera.position = _camera_target(true)
 
 
 func _build_cells() -> void:
@@ -93,13 +93,17 @@ func _on_entrance_entered(chapter: int) -> void:
 	get_tree().change_scene_to_file.call_deferred(Flow.CHAPTER_SCENE)
 
 
-## A câmera segue o personagem, presa às bordas do mapa, com a barra do HUD
-## descontada no alto.
-func _camera_target() -> Vector2:
+## A câmera segue o personagem com zona morta (CameraFollow), presa às bordas
+## do mapa, com a barra do HUD descontada no alto. No primeiro quadro, parte
+## centrada no personagem.
+func _camera_target(pushed := false) -> Vector2:
 	var tile := float(ChapterMap.TILE)
 	var low := Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
 	var high := Vector2(map.width, map.height) * tile - HALF_SCREEN
-	return _player.global_position.clamp(low, high)
+	var target := _player.global_position
+	if pushed:
+		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT)
+	return CameraFollow.centered(target, low, high)
 
 
 func _cell_center(cell: Vector2i) -> Vector2:
