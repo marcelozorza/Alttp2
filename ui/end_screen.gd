@@ -1,13 +1,13 @@
 class_name EndScreen
 extends CanvasLayer
 ## Tela de fim do capítulo, com o tempo, o capítulo e os baús abertos.
-## Funciona com o jogo pausado.
+## Funciona com o jogo pausado. No jogo contínuo, o primeiro botão volta ao
+## mundo, na entrada da dungeon. No treino, volta ao menu de título.
 ##
 ## Os botões só respondem depois de um instante, para que o botão de ataque,
 ## que no teclado e no controle também confirma, não reinicie o capítulo por
 ## acidente.
 
-const TITLE_SCENE := "res://ui/title_screen.tscn"
 ## Segundos com os botões desligados depois que a tela aparece.
 const INPUT_DELAY := 0.8
 
@@ -23,8 +23,12 @@ func _ready() -> void:
 	column.add_child(MenuKit.label("Capítulo concluído", 16))
 	_summary = MenuKit.label("", 10)
 	column.add_child(_summary)
-	_buttons.append(MenuKit.button("Jogar de novo", _on_replay))
-	_buttons.append(MenuKit.button("Menu", _on_menu))
+	if Progress.active:
+		_buttons.append(MenuKit.button("Voltar ao mundo", _on_leave))
+		_buttons.append(MenuKit.button("Jogar de novo", _on_replay))
+	else:
+		_buttons.append(MenuKit.button("Jogar de novo", _on_replay))
+		_buttons.append(MenuKit.button("Menu", _on_leave))
 	for button: Button in _buttons:
 		column.add_child(button)
 
@@ -45,6 +49,5 @@ func _on_replay() -> void:
 	get_tree().reload_current_scene()
 
 
-func _on_menu() -> void:
-	get_tree().paused = false
-	get_tree().change_scene_to_file(TITLE_SCENE)
+func _on_leave() -> void:
+	Flow.leave_chapter(get_tree())

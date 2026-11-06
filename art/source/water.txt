@@ -1,0 +1,23 @@
+# Água do lago: azul profundo com reflexos claros.
+paleta
+d #1f4e8a
+b #2a66a8
+l #3f84c4
+w #8fc4e8
+pixels
+bbbbbbbbbbbbbbbb
+bblwwlbbbbbbbbbb
+bbbbbbbbbbbblwwl
+bbbbbbbbbbbbbbbb
+bbbbbbblwwlbbbbb
+bbbbbbbbbbbbbbbb
+bdbbbbbbbbbbbbbb
+bbbbbbbbbbbbdbbb
+bbblwwlbbbbbbbbb
+bbbbbbbbbbbbbbbb
+bbbbbbbbbblwwlbb
+bbbbbbbbbbbbbbbb
+bbbbbbdbbbbbbbbb
+bblwwlbbbbbbbbbb
+bbbbbbbbbbbbbdbb
+bbbbbbbbbbbbbbbb

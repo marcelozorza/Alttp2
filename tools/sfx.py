@@ -600,6 +600,15 @@ def relic():
     return finish(echo(mix(melody, grains(1.1, 18, sparkle, 1.0)), 0.13, 0.45, 0.35, 4))
 
 
+@recipe
+def save():
+    """Pedra de salvamento: um arpejo curto que sobe, com um brilho por cima."""
+    notes = (659.25, 783.99, 987.77, 1318.5)
+    melody = mix(*(at(0.8 * bell(f, 0.6, 0.2), i * 0.08) for i, f in enumerate(notes)))
+    shimmer = tone(ramp(2000.0, 4000.0, 0.5), 0.5) * hump(0.5, 0.3) * 0.15
+    return finish(echo(mix(melody, shimmer), 0.12, 0.4, 0.3, 3))
+
+
 # Menus --------------------------------------------------------------------------
 
 

@@ -4,6 +4,8 @@
 [ext_resource type="Script" path="res://world/map_view.gd" id="2_map_view"]
 [ext_resource type="Script" path="res://ui/hud.gd" id="3_hud"]
 [ext_resource type="PackedScene" path="res://ui/end_screen.tscn" id="4_end_screen"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="5_pause_menu"]
+[ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="6_defeat_screen"]
 
 [node name="Chapter" type="Node2D"]
 script = ExtResource("1_script")
@@ -38,3 +40,7 @@ script = ExtResource("3_hud")
 show_bar = true
 
 [node name="EndScreen" parent="." instance=ExtResource("4_end_screen")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("5_pause_menu")]
+
+[node name="DefeatScreen" parent="." instance=ExtResource("6_defeat_screen")]

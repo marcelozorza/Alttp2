@@ -1,0 +1,23 @@
+# Grama do mundo: verde com tufos, luz do alto à esquerda.
+paleta
+d #2f6a33
+g #3d883d
+l #52a047
+h #6cb854
+pixels
+gggggggggggggggg
+gglhggggggggglhg
+gggdgggggggggggd
+gggggggglhgggggg
+ggggggggggdggggg
+glhggggggggggggg
+gggdgggggggglhgg
+ggggggggggggggdg
+gggggglhgggggggg
+ggggggggdggggggg
+gglhgggggggggggg
+gggdggggggglhggg
+ggggggggggggdggg
+ggggggglhggggggg
+ggggggggdggggggg
+gggggggggggggggg

@@ -1,6 +1,6 @@
 # Alttp2 (nome provisório)
 
-Aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim.
+Aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim. Um mundo pequeno liga as dungeons, e o progresso fica salvo.
 
 Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O estudo das dungeons de referência e as regras tiradas dele estão em [docs/referencias.md](docs/referencias.md).
 
@@ -12,13 +12,19 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 
 ## Menu
 
+- **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
+- **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
+- **Treino.** Cada capítulo avulso, com as ferramentas dos dados dele e sem gravar nada, e a sala de teste.
+
+Os capítulos:
+
 - **Capítulo 1.** A dungeon de aprendizado, com 8 salas: bomba, chama e mola, nessa ordem, e o guardião de gelo no fim.
 - **Capítulo 2.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Nenhuma ordem de abrir portas prende o jogador.
 - **Capítulo 3.** A geleira, com 15 salas. O personagem chega com as três ferramentas e encontra a primeira melhoria, a chama forte, que derrete o gelo grosso. No fim, o guardião antigo.
 - **Capítulo 4.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras.
 
-No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
+No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo o devolve à entrada da sala com a vida cheia e com tudo o que já conseguiu.
 
 ## Controles
 
@@ -54,10 +60,10 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `obstacles/` bloqueios: parede rachada, gelo, gelo grosso, portas e a face do degrau alto, comum ou duplo.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
 - `enemies/` inimigos: o minion, o ugly com a granada, o de gelo, a morsa de gelo, o atirador de pedras e os chefes com a onda de choque.
-- `progression/` leitura dos dados de cada capítulo, o mapa em texto e as escolhas da partida.
-- `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
+- `progression/` leitura dos dados de cada capítulo, o mapa em texto, as escolhas da partida, o progresso salvo (`progress.gd`) e o caminho entre as telas (`flow.gd`).
+- `ui/` menu de título, treino, HUD, menu de pausa, tela de derrota, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/`, `chapter_two/`, `chapter_three/` e `chapter_four/` têm os dados de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `test_room.tscn` é a sala de teste.
+- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/`, `chapter_two/`, `chapter_three/` e `chapter_four/` têm os dados de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
 - `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/local/` recebe a trilha provisória, fora do Git.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
@@ -88,7 +94,7 @@ O Godot reimporta os SVG ao voltar para o editor.
 
 **Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
 
-**Efeitos.** Os 47 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
+**Efeitos.** Os 48 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
 
 ```
 python3 tools/sfx.py              todos os sons
@@ -141,6 +147,8 @@ Nos inimigos com desenho, as cores viram um tom sobre ele.
 - **Porta de madeira com faixas de ferro e fechadura:** gasta uma chave pequena.
 - **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.
 - **Losango dourado:** relíquia que o chefe deixa. Tocar nela encerra o capítulo.
+- **Portal de pedra na mata, no mundo:** entrada de uma dungeon. Com grade, ainda fechada: abre ao vencer o capítulo anterior. Com a relíquia em cima, capítulo vencido.
+- **Estela azulada com um losango, no mundo:** pedra de salvamento. Encostar grava o progresso e enche a vida.
 
 ## Ajustar a sensação do andar
 

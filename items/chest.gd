@@ -35,6 +35,13 @@ func _ready() -> void:
 	add_child(shape)
 
 
+## Começa aberto e vazio, num capítulo já vencido em que o item deste baú
+## ficou com o personagem.
+func open_silently() -> void:
+	is_open = true
+	queue_redraw()
+
+
 ## Só a espada abre o baú. Fogo e explosões não abrem, para que nenhum baú
 ## seja aberto do outro lado de uma parede ou de um bloqueio.
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:

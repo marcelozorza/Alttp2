@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" path="res://obstacles/thick_ice.tscn" id="11_thick_ice"]
 [ext_resource type="PackedScene" path="res://enemies/walrus.tscn" id="12_walrus"]
 [ext_resource type="PackedScene" path="res://enemies/slinger.tscn" id="13_slinger"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="14_pause_menu"]
+[ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="15_defeat_screen"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -185,3 +187,11 @@ offset_right = 4.0
 offset_bottom = 4.0
 mouse_filter = 2
 script = ExtResource("6_hud")
+
+[node name="PauseMenu" parent="." instance=ExtResource("14_pause_menu")]
+exit_text = "Menu principal"
+exit_to_title = true
+
+[node name="DefeatScreen" parent="." instance=ExtResource("15_defeat_screen")]
+exit_text = "Menu principal"
+exit_to_title = true

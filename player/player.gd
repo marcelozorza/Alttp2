@@ -33,17 +33,23 @@ extends MomentumBody
 ## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
 ## funcionando.
 ##
+## Sem vida, o personagem cai e fica no chão (DEAD) até a tela de derrota
+## chamar respawn(), que o devolve ao ponto de reaparecer com a vida cheia.
+##
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
 
 signal respawned
+## Perdeu toda a vida. A cena mostra a tela de derrota e depois chama respawn().
+signal died
 
-enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK }
+enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK, DEAD }
 
 ## Tons sobre o desenho do Giorgio em cada estado. Acima de 1, o tom clareia.
 const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
 const WOBBLE_TINT := Color(1.0, 0.35, 0.35, 1.0)
 const FALLEN_TINT := Color(0.8, 0.78, 0.8, 1.0)
+const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
 ## Desenhos do Giorgio, nesta ordem: de frente, de costas e de lado, cada um
 ## com o segundo passo logo depois. O de lado olha para a direita, e o jogo
@@ -128,7 +134,10 @@ const VISUAL_CATCH_UP := 1.5
 
 @export_group("Vida")
 ## Pontos de vida.
-@export_range(1, 20, 1) var max_health := 6
+@export_range(1, 40, 1) var max_health := 6
+## Teto da vida máxima. Passado o teto, um coração só enche a vida. Duas
+## linhas de HEALTH_ROW pontos no HUD.
+@export_range(6, 40, 1) var max_health_cap := 24
 ## Segundos de invencibilidade depois de tomar dano, com o personagem piscando.
 @export_range(0.0, 3.0, 0.05) var invincibility_time := 1.0
 
@@ -235,7 +244,7 @@ func _physics_process(delta: float) -> void:
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-	elif _state == State.FALLEN:
+	elif _is_down():
 		# Caído, se arrasta pelo chão com o embalo da corrida.
 		velocity = velocity.move_toward(Vector2.ZERO, fall_friction * delta)
 	else:
@@ -249,6 +258,19 @@ func _physics_process(delta: float) -> void:
 ## Diz se o personagem tem a ferramenta. Recebe um Item.Id.
 func has_tool(id: int) -> bool:
 	return Item.has(_tools, id)
+
+
+## Ferramentas, melhorias e chave grande, nos bits de Item.
+func tool_bits() -> int:
+	return _tools
+
+
+## Devolve ao personagem o que o progresso salvo guarda, sem som: as
+## ferramentas e a vida máxima, cheia.
+func restore(tools: int, new_max_health: int) -> void:
+	_tools = tools
+	max_health = new_max_health
+	health = max_health
 
 
 ## Cargas que restam da ferramenta, ou -1 se ela não usa cargas. Recebe um
@@ -278,7 +300,7 @@ func max_charges(id: int) -> int:
 ## ferramenta sem botão.
 func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
-		max_health += heart_bonus
+		max_health = mini(max_health + heart_bonus, max_health_cap)
 		health = max_health
 		Sfx.play(&"item_heart")
 	elif id == Item.Id.KEY:
@@ -310,28 +332,36 @@ func is_airborne() -> bool:
 ## a menos que ele esteja caído, caso em que só muda de embalo.
 func add_impact_velocity(delta_velocity: Vector2) -> void:
 	velocity += delta_velocity
-	if delta_velocity.length() > recover_speed and _state != State.FALLEN:
+	if delta_velocity.length() > recover_speed and not _is_down():
 		_enter(State.KNOCKBACK)
 
 
 func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 	velocity = new_velocity
-	if rebound > recover_speed and _state != State.FALLEN:
+	if rebound > recover_speed and not _is_down():
 		_enter(State.KNOCKBACK)
 
 
 ## Recebe um ataque. Durante a invencibilidade, ataques são ignorados. O
-## empurrão vem separado, pela física da batida.
+## empurrão vem separado, pela física da batida. Sem vida, o personagem cai
+## e avisa a cena, que mostra a tela de derrota.
 func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
-	if Engine.get_physics_frames() < _invincible_until_tick:
+	if _state == State.DEAD or Engine.get_physics_frames() < _invincible_until_tick:
 		return
 	health -= amount
 	_invincible_until_tick = Engine.get_physics_frames() + GameMath.ticks(invincibility_time)
 	if health <= 0:
+		health = 0
 		Sfx.play(&"down")
-		_respawn()
+		_enter(State.DEAD)
+		died.emit()
 	else:
 		Sfx.play(&"hurt")
+
+
+## Caído por tropeço ou sem vida: deitado, sem controle e sem arremesso.
+func _is_down() -> bool:
+	return _state == State.FALLEN or _state == State.DEAD
 
 
 ## Trava a espada por alguns segundos. Durante a invencibilidade, nada
@@ -365,9 +395,10 @@ func _attack() -> void:
 	_freeze_until_tick = Engine.get_physics_frames() + GameMath.ticks(attack_freeze_time)
 
 
-## Protótipo: sem tela de derrota, o personagem volta ao ponto de reaparecer
-## com a vida cheia e as cargas cheias, e mantém as ferramentas.
-func _respawn() -> void:
+## Volta ao ponto de reaparecer com a vida cheia e as cargas cheias, e
+## mantém as ferramentas, as chaves e os baús abertos. A tela de derrota
+## chama isto ao tentar de novo.
+func respawn() -> void:
 	health = max_health
 	_fire_charges.refill()
 	_bomb_charges.refill()
@@ -559,6 +590,8 @@ func _update_state(direction: Vector2) -> void:
 		State.KNOCKBACK:
 			if velocity.length() <= recover_speed:
 				_enter(State.WALK)
+		State.DEAD:
+			pass
 
 
 ## Duas pressões na mesma direção, partindo do neutro, dentro de
@@ -653,6 +686,8 @@ func _update_visuals() -> void:
 			shake = Vector2(1.0 if blink else -1.0, 0.0)
 		State.FALLEN:
 			tint = FALLEN_TINT
+		State.DEAD:
+			tint = DEAD_TINT
 		State.KNOCKBACK:
 			tint = KNOCKBACK_TINT
 	_update_art(shake)
@@ -692,10 +727,10 @@ func _update_art(shake: Vector2) -> void:
 		direction = 1
 	var frames: Array = ART_ON_ALL_FOURS if on_all_fours else ART_STANDING
 	var texture: Texture2D = frames[direction * 2 + step]
-	if _state == State.FALLEN:
+	if _is_down():
 		texture = ART_FALLEN
 	_art.texture = texture
-	_art.flip_h = facing.x < 0.0 and (direction == 2 or _state == State.FALLEN)
+	_art.flip_h = facing.x < 0.0 and (direction == 2 or _is_down())
 	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
 	_art.position = shake
 

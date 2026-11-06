@@ -14,8 +14,12 @@ extends Node2D
 ## uma sala, os inimigos dela voltam ao ponto inicial, e as ondas do chefe que
 ## ainda correm pelo chão somem. Baús abertos e bloqueios removidos continuam
 ## assim até o fim do capítulo.
+##
+## No jogo contínuo (Progress.active), o personagem chega com as ferramentas
+## e a vida máxima salvas, os baús de coração e de ferramenta de um capítulo
+## já vencido começam abertos, e tocar a relíquia grava o progresso. No
+## treino, ele chega com as ferramentas dos dados do capítulo.
 
-const TITLE_SCENE := "res://ui/title_screen.tscn"
 ## Tamanho de uma sala de uma tela, em casas.
 const ROOM_TILES := Vector2i(20, 10)
 ## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
@@ -87,10 +91,16 @@ func _ready() -> void:
 				_room_rects[Vector2i(x, y)] = rect
 	_map_view.map = map
 	_map_view.queue_redraw()
-	_build_walls()
+	MapWalls.build(map, _walls)
 	_build_cells()
-	for id: int in data.starting_tools:
-		_player.give_item(id)
+	if Progress.active:
+		_player.restore(Progress.tools, Progress.max_health)
+		for chest: Chest in _chests:
+			if Progress.was_opened(data.number, chest.location_id):
+				chest.open_silently()
+	else:
+		for id: int in data.starting_tools:
+			_player.give_item(id)
 	_player.respawned.connect(_on_player_respawned)
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
@@ -107,12 +117,6 @@ func _physics_process(_delta: float) -> void:
 	_camera.position = _camera_target()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("back_to_menu"):
-		get_tree().paused = false
-		get_tree().change_scene_to_file(TITLE_SCENE)
-
-
 ## Nome do capítulo, para o HUD e para a tela de fim.
 func mode_text() -> String:
 	return "Cap. %d" % data.number
@@ -123,27 +127,6 @@ func time_text() -> String:
 	var seconds := float(elapsed_ticks) / Engine.physics_ticks_per_second
 	var minutes := floori(seconds / 60.0)
 	return "%02d:%05.2f" % [minutes, seconds - minutes * 60.0]
-
-
-## Junta as paredes de cada linha em trechos contínuos, uma forma de colisão
-## por trecho.
-func _build_walls() -> void:
-	var tile := float(ChapterMap.TILE)
-	for y: int in map.height:
-		var x := 0
-		while x < map.width:
-			if map.tile(Vector2i(x, y)) != "#":
-				x += 1
-				continue
-			var start := x
-			while x < map.width and map.tile(Vector2i(x, y)) == "#":
-				x += 1
-			var rectangle := RectangleShape2D.new()
-			rectangle.size = Vector2((x - start) * tile, tile)
-			var shape := CollisionShape2D.new()
-			shape.shape = rectangle
-			shape.position = Vector2((start + x) * tile / 2.0, (y + 0.5) * tile)
-			_walls.add_child(shape)
 
 
 ## Cria o personagem, os baús, os inimigos e os bloqueios de cada casa do mapa.
@@ -275,6 +258,8 @@ func _spawn_relic(room: Rect2i) -> void:
 func _finish() -> void:
 	finished = true
 	get_tree().paused = true
+	if Progress.active:
+		Progress.record_chapter(data.number, _player, _chests)
 	var opened := 0
 	for chest: Chest in _chests:
 		if chest.is_open:

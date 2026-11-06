@@ -14,6 +14,10 @@ extends Node2D
 ## volume, e não como uma faixa de outra cor. O chão alto e o chão mais alto
 ## são beiras de desnível, cada um mais claro que o de baixo: a face do degrau
 ## (obstacles/ledge.gd) projeta a sombra deles.
+##
+## No mundo (outdoor), a parede é a mata, o chão é grama, e há caminho de
+## terra e água. A árvore com chão ao sul mostra os troncos, como a parede
+## mostra a face. As sombras seguem as mesmas regras.
 
 const FLOOR := preload("res://art/floor.svg")
 const FLOOR_ALT := preload("res://art/floor_alt.svg")
@@ -23,9 +27,18 @@ const HIGHER_FLOOR := preload("res://art/higher_floor.svg")
 const HIGHER_FLOOR_ALT := preload("res://art/higher_floor_alt.svg")
 const WALL := preload("res://art/wall.svg")
 const WALL_FACE := preload("res://art/wall_face.svg")
+const GRASS := preload("res://art/grass.svg")
+const GRASS_ALT := preload("res://art/grass_alt.svg")
+const PATH := preload("res://art/path.svg")
+const WATER := preload("res://art/water.svg")
+const TREE := preload("res://art/tree.svg")
+const TREE_FACE := preload("res://art/tree_face.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
 ## Largura da sombra das paredes no chão, em pixels.
 const SHADOW_SIZE := 3.0
+
+## Ligado, desenha o mundo: mata, grama, caminho e água.
+@export var outdoor := false
 
 var map: ChapterMap
 
@@ -41,6 +54,9 @@ func _draw() -> void:
 			if character == " ":
 				continue
 			var origin := Vector2(cell) * tile
+			if outdoor:
+				_draw_outdoor(cell, character, origin)
+				continue
 			if character == "#":
 				var below := map.tile(cell + Vector2i.DOWN)
 				var faces_floor := below != "#" and below != " "
@@ -55,6 +71,25 @@ func _draw() -> void:
 				_:
 					draw_texture(FLOOR_ALT if alternate else FLOOR, origin)
 			_draw_wall_shadows(cell, origin)
+
+
+## Casa do mundo. A mata é a parede, e o resto é chão de grama, caminho ou
+## água, com a sombra da mata vizinha.
+func _draw_outdoor(cell: Vector2i, character: String, origin: Vector2) -> void:
+	match character:
+		"#":
+			var below := map.tile(cell + Vector2i.DOWN)
+			var faces_floor := below != "#" and below != " "
+			draw_texture(TREE_FACE if faces_floor else TREE, origin)
+			return
+		"~":
+			draw_texture(WATER, origin)
+		",":
+			draw_texture(PATH, origin)
+		_:
+			var alternate := (cell.x + cell.y) % 2 == 0
+			draw_texture(GRASS_ALT if alternate else GRASS, origin)
+	_draw_wall_shadows(cell, origin)
 
 
 ## Sombra no chão junto de uma parede ao norte ou a oeste.

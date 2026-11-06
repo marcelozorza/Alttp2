@@ -1,0 +1,22 @@
+# Grade de ferro que fecha a entrada de uma dungeon ainda trancada.
+paleta
+k #26222c
+i #4a4652
+l #6e6a78
+pixels
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+llllllllllll
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+.l.il.il.il.
+llllllllllll
+.l.il.il.il.
+.l.il.il.il.
+.k.ik.ik.ik.

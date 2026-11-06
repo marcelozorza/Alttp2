@@ -1,0 +1,26 @@
+# Árvore com chão logo ao sul: a copa em cima e os troncos na sombra embaixo.
+paleta
+o #142e18
+d #1e4a24
+g #2a6630
+l #3a8440
+h #4e9c4e
+k #3a2a1a
+m #5a4228
+pixels
+dgggdddgggddgggd
+glhgldglhgldglhg
+glgglddgggldgggl
+dggdddgggdddgggd
+ddglhgddglhgdddg
+gdglggldglggldgg
+ggddggddddgddddd
+dglhgdgglhgddglh
+dglggdddgggdddgl
+gdddgdgdddgdgddg
+dddddddddddddddd
+ookmkooookmkoooo
+ookmkooookmkoooo
+ookmkooookmkoooo
+ookmkooookmkoooo
+ookmkooookmkoooo

@@ -9,14 +9,20 @@ extends Node
 ## trocas de cena não o apaguem.
 ##
 ## Confere o áudio (barramentos, os arquivos de cada efeito e a música local,
-## se houver), o menu com o botão A e o Start do controle e cada capítulo:
-## abre os baús, ganha todas as ferramentas, encosta nas portas, entra em cada
-## sala usando os botões, vence o chefe e toca a relíquia. Qualquer erro de
-## script aparece na saída como SCRIPT ERROR. Não muda nada no projeto.
+## se houver), o menu com o botão A e o Start do controle, o mundo (entradas
+## trancadas e abertas, a pedra de salvamento) e cada capítulo no jogo
+## contínuo: abre os baús, ganha todas as ferramentas, encosta nas portas,
+## entra em cada sala usando os botões, vence o chefe, toca a relíquia e
+## volta ao mundo. Depois confere o rejogo de um capítulo vencido, o menu de
+## pausa, a tela de derrota, o treino, a sala de teste e o continuar do jogo
+## salvo. Qualquer erro de script aparece na saída como SCRIPT ERROR. Não
+## muda nada no projeto, e grava o progresso num arquivo próprio, que apaga
+## no fim.
 
 const ACTIONS := [
 	"attack", "use_fire", "use_bomb", "jump", "move_left", "move_right", "move_up", "move_down"
 ]
+const SAVE_PATH := "user://smoke_test_save.json"
 
 
 func _ready() -> void:
@@ -46,27 +52,63 @@ func _scene_path() -> String:
 	return get_tree().current_scene.scene_file_path if get_tree().current_scene else "<nenhuma>"
 
 
+func _scene_name() -> String:
+	return _scene_path().get_file()
+
+
+## Primeiro botão com o texto, em qualquer lugar da cena atual.
+func _button(text: String, root: Node = null) -> Button:
+	if root == null:
+		root = get_tree().current_scene
+	var button := root as Button
+	if button and button.text == text:
+		return button
+	for child: Node in root.get_children():
+		var found := _button(text, child)
+		if found:
+			return found
+	return null
+
+
+func _press(text: String) -> void:
+	var button := _button(text)
+	if not button:
+		print("BOTÃO NÃO ENCONTRADO: ", text)
+		return
+	button.pressed.emit()
+	await _frames(10)
+
+
 func _run() -> void:
 	var placeholder := Node.new()
 	get_tree().root.add_child(placeholder)
 	get_tree().current_scene = placeholder
-	# Menu: o A do controle precisa iniciar o capítulo 1.
-	get_tree().change_scene_to_file("res://ui/title_screen.tscn")
+	Progress.save_path = SAVE_PATH
+	Progress.clear_file()
+	# Menu: sem jogo salvo, o A do controle começa um jogo novo e abre o mundo.
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
 	await _frames(10)
 	await _joy(JOY_BUTTON_A)
 	await _frames(10)
-	print("MENU: depois do A -> ", _scene_path())
+	print("MENU: depois do A -> ", _scene_name(), " contínuo: ", Progress.active)
 	# Start também confirma.
-	get_tree().change_scene_to_file("res://ui/title_screen.tscn")
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
 	await _frames(10)
 	await _joy(JOY_BUTTON_START)
 	await _frames(10)
-	print("MENU: depois do Start -> ", _scene_path())
+	print("MENU: depois do Start -> ", _scene_name())
 
 	_check_audio()
+	await _check_overworld()
 
 	for chapter: int in range(1, ChapterData.count() + 1):
 		await _play(chapter)
+		await _check_after_chapter(chapter)
+	await _check_replay()
+	await _check_pause_and_defeat()
+	await _check_training()
+	await _check_continue()
+	Progress.clear_file()
 	print("FIM DO TESTE")
 	# Sons tocando no fechamento deixam o Godot acusar recurso preso.
 	get_tree().root.get_node("Music").get("_player").stop()
@@ -76,9 +118,188 @@ func _run() -> void:
 	get_tree().quit()
 
 
+func _entrance(chapter: int) -> DungeonEntrance:
+	for entrance: DungeonEntrance in get_tree().current_scene.get("_entrances"):
+		if entrance.chapter == chapter:
+			return entrance
+	return null
+
+
+## Anda para o norte a partir da frente da entrada, até encostar nela.
+func _walk_into(entrance: DungeonEntrance, player: Player) -> void:
+	player.global_position = entrance.exit_position()
+	Input.action_press("move_up")
+	await _frames(20)
+	Input.action_release("move_up")
+	await _frames(10)
+
+
+## O mundo: entradas na ordem dos capítulos, a trancada treme e segura o
+## personagem, a pedra de salvamento grava e enche a vida, e a entrada 1 leva
+## ao capítulo 1.
+func _check_overworld() -> void:
+	Progress.start_new()
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(10)
+	var world: Node = get_tree().current_scene
+	var player: Player = world.get("_player")
+	var modes := []
+	for chapter: int in range(1, ChapterData.count() + 1):
+		var entrance := _entrance(chapter)
+		modes.append(entrance.mode if entrance else -1)
+	print("MUNDO: modos das entradas %s (0 trancada, 1 aberta, 2 vencida)" % [modes])
+	var locked := _entrance(2)
+	await _walk_into(locked, player)
+	var shook: bool = locked.get("_shake_tick") > 0
+	print("MUNDO: entrada 2 trancada -> %s, tremeu: %s" % [_scene_name(), shook])
+	player.health = 1
+	var stone: SaveStone = null
+	for node: Node in world.get("_objects").get_children():
+		if node is SaveStone:
+			stone = node
+	player.global_position = stone.global_position + Vector2(0.0, 4.0)
+	await _frames(10)
+	print(
+		(
+			"MUNDO: pedra gravou: %s, vida %d/%d"
+			% [Progress.exists(), player.health, player.max_health]
+		)
+	)
+	await _walk_into(_entrance(1), player)
+	print("MUNDO: entrada 1 -> %s, capítulo %d" % [_scene_name(), RunSettings.chapter])
+
+
+## Depois da relíquia, no jogo contínuo: o capítulo conta, o primeiro botão
+## da tela de fim volta ao mundo, a entrada dele fica vencida, a seguinte
+## abre e o personagem aparece na entrada.
+func _check_after_chapter(chapter_number: int) -> void:
+	await _frames(60)
+	await _press("Voltar ao mundo")
+	var world: Node = get_tree().current_scene
+	var player: Player = world.get("_player")
+	var done := _entrance(chapter_number)
+	var next := _entrance(chapter_number + 1)
+	var at_entrance: bool = done != null and player.global_position == done.exit_position()
+	var text := "MUNDO: capítulo %d vencido %s, entrada %s, seguinte %s, "
+	text += "personagem na entrada %s, vida %d, ferramentas %d"
+	print(
+		(
+			text
+			% [
+				chapter_number,
+				Progress.is_done(chapter_number),
+				done.mode if done else -1,
+				next.mode if next else -1,
+				at_entrance,
+				player.max_health,
+				Progress.tools,
+			]
+		)
+	)
+
+
+## Rejogo do capítulo 1: os baús de coração e de ferramenta começam abertos,
+## os de chave fechados.
+func _check_replay() -> void:
+	RunSettings.chapter = 1
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
+	await _frames(20)
+	var chapter: Node = get_tree().current_scene
+	var open_items := []
+	var closed_items := []
+	for chest: Chest in chapter.get("_chests"):
+		var item_name: String = Item.Id.keys()[chest.item]
+		if chest.is_open:
+			open_items.append(item_name)
+		else:
+			closed_items.append(item_name)
+	var player: Player = chapter.get("_player")
+	print(
+		(
+			"REJOGO: abertos %s, fechados %s, vida %d/%d"
+			% [open_items, closed_items, player.health, player.max_health]
+		)
+	)
+
+
+## Start abre o menu de pausa e para o jogo, e Start de novo confirma
+## continuar. Sem vida, o personagem cai, a tela de derrota aparece e tentar
+## de novo o devolve à entrada da sala com a vida cheia.
+func _check_pause_and_defeat() -> void:
+	var chapter: Node = get_tree().current_scene
+	var pause: PauseMenu = chapter.get_node("PauseMenu")
+	await _joy(JOY_BUTTON_START)
+	print("PAUSA: aberta %s, jogo parado %s" % [pause.visible, get_tree().paused])
+	await _frames(10)
+	await _joy(JOY_BUTTON_START)
+	print("PAUSA: fechada %s, jogo parado %s" % [not pause.visible, get_tree().paused])
+	var player: Player = chapter.get("_player")
+	var defeat: DefeatScreen = chapter.get_node("DefeatScreen")
+	var spawn := player.spawn_position
+	player.global_position = spawn + Vector2(40.0, 0.0)
+	player.take_hit(99, Vector2.ZERO)
+	print("DERROTA: vida %d, caído %s" % [player.health, player.get("_state") == Player.State.DEAD])
+	await _frames(70)
+	print("DERROTA: tela %s, jogo parado %s" % [defeat.visible, get_tree().paused])
+	await _frames(60)
+	await _press("Tentar de novo")
+	print(
+		(
+			"DERROTA: de novo: vida %d/%d, na entrada da sala %s, jogo parado %s"
+			% [player.health, player.max_health, player.global_position == spawn, get_tree().paused]
+		)
+	)
+
+
+## Treino: capítulo avulso, sem gravar, com as ferramentas dos dados, e a
+## sala de teste.
+func _check_training() -> void:
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	await _frames(10)
+	await _press("Treino")
+	print("TREINO: -> ", _scene_name())
+	await _press("Capítulo 3")
+	await _frames(10)
+	var chapter: Node = get_tree().current_scene
+	var player: Player = chapter.get("_player")
+	print(
+		(
+			"TREINO: -> %s, contínuo %s, chama %s, chama forte %s, vida %d"
+			% [
+				_scene_name(),
+				Progress.active,
+				player.has_tool(Item.Id.FIRE),
+				player.has_tool(Item.Id.STRONG_FIRE),
+				player.max_health,
+			]
+		)
+	)
+	get_tree().change_scene_to_file(Flow.TEST_ROOM_SCENE)
+	await _frames(20)
+	print("TREINO: sala de teste -> ", _scene_name())
+
+
+## Continuar: o jogo salvo volta ao mundo com os capítulos vencidos.
+func _check_continue() -> void:
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	await _frames(10)
+	await _press("Continuar")
+	var modes := []
+	for chapter: int in range(1, ChapterData.count() + 1):
+		var entrance := _entrance(chapter)
+		modes.append(entrance.mode if entrance else -1)
+	print(
+		(
+			"CONTINUAR: -> %s, vencidos %d, modos %s, vida %d"
+			% [_scene_name(), Progress.chapters_done, modes, Progress.max_health]
+		)
+	)
+
+
 func _play(chapter_number: int) -> void:
+	get_tree().paused = false
 	RunSettings.chapter = chapter_number
-	get_tree().change_scene_to_file("res://world/chapter/chapter.tscn")
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
 	await _frames(20)
 	var chapter: Node = get_tree().current_scene
 	print("--- capítulo %d: %s" % [chapter_number, chapter.call("mode_text")])
@@ -139,7 +360,6 @@ func _play(chapter_number: int) -> void:
 		player.global_position = relic.global_position
 		await _frames(20)
 	print("terminou: %s  fim: %s" % [chapter.get("finished"), chapter.get("_end_screen").visible])
-	get_tree().paused = false
 
 
 func _beat_boss(boss: Boss) -> void:
