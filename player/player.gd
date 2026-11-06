@@ -6,7 +6,8 @@ extends MomentumBody
 ## (60 vezes por segundo, padrão de Physics > Common > Physics Ticks Per Second).
 ## Assim o movimento é idêntico em qualquer máquina e taxa de quadros, condição
 ## para que técnicas avançadas de precisão sejam reproduzíveis. Pelo mesmo
-## motivo, todos os tempos (duplo toque, equilíbrio, queda) são contados em ticks.
+## motivo, todos os tempos (duplo toque, pulo, trava da espada) são contados em
+## ticks.
 ##
 ## O movimento é sempre em 8 direções, inclusive no analógico.
 ##
@@ -43,12 +44,10 @@ signal respawned
 ## Perdeu toda a vida. A cena mostra a tela de derrota e depois chama respawn().
 signal died
 
-enum State { WALK, RUN, WOBBLE, FALLEN, KNOCKBACK, DEAD }
+enum State { WALK, RUN, KNOCKBACK, DEAD }
 
 ## Tons sobre o desenho do Giorgio em cada estado. Acima de 1, o tom clareia.
 const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
-const WOBBLE_TINT := Color(1.0, 0.35, 0.35, 1.0)
-const FALLEN_TINT := Color(0.8, 0.78, 0.8, 1.0)
 const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
 ## Desenhos do Giorgio, nesta ordem: de frente, de costas e de lado, cada um
@@ -71,6 +70,7 @@ const ART_ON_ALL_FOURS := [
 	preload("res://art/giorgio_side.svg"),
 	preload("res://art/giorgio_side_step.svg"),
 ]
+## Deitado, sem vida.
 const ART_FALLEN := preload("res://art/giorgio_fallen.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
 const ART_BELOW_FEET := 4.0
@@ -109,18 +109,6 @@ const VISUAL_CATCH_UP := 1.5
 ## qualquer caso, apertar uma direção com componente para trás cancela a
 ## corrida, como uma freada.
 @export var run_can_steer := true
-## Segundos de corrida contínua até o personagem perder o equilíbrio. Zero
-## desliga o tropeço.
-@export_range(0.0, 5.0, 0.05) var balance_time := 0.4
-## Segundos de desequilíbrio para reagir antes de cair. Para se equilibrar,
-## aperte a direção oposta à da corrida.
-@export_range(0.05, 2.0, 0.05) var wobble_time := 0.5
-## Tempo mínimo caído, em segundos. Ele só se levanta depois disso e depois
-## de parar de se arrastar.
-@export_range(0.0, 3.0, 0.05) var fall_time := 0.8
-## Desaceleração do personagem caído, que se arrasta pelo chão sem controle,
-## em pixels por segundo ao quadrado. Quanto menor, mais longe ele vai.
-@export_range(0.0, 3000.0, 10.0) var fall_friction := 400.0
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -245,8 +233,8 @@ func _physics_process(delta: float) -> void:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 	elif _is_down():
-		# Caído, se arrasta pelo chão com o embalo da corrida.
-		velocity = velocity.move_toward(Vector2.ZERO, fall_friction * delta)
+		# Sem vida, só perde o embalo que tinha.
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 	else:
 		_steer(direction, delta)
 	_try_ledge(direction, delta)
@@ -364,9 +352,9 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 		Sfx.play(&"hurt")
 
 
-## Caído por tropeço ou sem vida: deitado, sem controle e sem arremesso.
+## Sem vida: deitado, sem controle e sem arremesso.
 func _is_down() -> bool:
-	return _state == State.FALLEN or _state == State.DEAD
+	return _state == State.DEAD
 
 
 ## Trava a espada por alguns segundos. Durante a invencibilidade, nada
@@ -539,14 +527,7 @@ func _is_free_at(target: Vector2) -> bool:
 
 func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
-	var speed := walk_speed
-	match _state:
-		State.RUN:
-			speed = run_speed
-		State.WOBBLE:
-			# Desequilibrado, segue em frente sem controle.
-			move_direction = _run_direction
-			speed = run_speed
+	var speed := run_speed if _state == State.RUN else walk_speed
 	if Engine.get_physics_frames() < _freeze_until_tick:
 		# Parado durante o golpe, mas ainda pode virar para o próximo.
 		move_direction = Vector2.ZERO
@@ -562,9 +543,9 @@ func _read_direction() -> Vector2:
 	return GameMath.snap_8(raw)
 
 
-## Andar vira corrida com o duplo toque. A corrida longa demais leva ao
-## desequilíbrio, e o desequilíbrio sem reação leva à queda. O arremesso por
-## batida interrompe qualquer estado e termina em andar.
+## Andar vira corrida com o duplo toque, e a corrida dura enquanto a direção
+## estiver pressionada. O arremesso por batida interrompe qualquer estado e
+## termina em andar.
 func _update_state(direction: Vector2) -> void:
 	var pressed := _previous_direction == Vector2.ZERO and direction != Vector2.ZERO
 	_previous_direction = direction
@@ -582,16 +563,6 @@ func _update_state(direction: Vector2) -> void:
 				_enter(State.WALK)
 			else:
 				_run_direction = direction
-				if balance_time > 0.0 and _ticks_in_state() >= GameMath.ticks(balance_time):
-					_enter(State.WOBBLE)
-		State.WOBBLE:
-			if direction.dot(_run_direction) < 0.0:
-				_enter(State.WALK)
-			elif _ticks_in_state() >= GameMath.ticks(wobble_time):
-				_enter(State.FALLEN)
-		State.FALLEN:
-			if _ticks_in_state() >= GameMath.ticks(fall_time) and velocity == Vector2.ZERO:
-				_enter(State.WALK)
 		State.KNOCKBACK:
 			if velocity.length() <= recover_speed:
 				_enter(State.WALK)
@@ -612,16 +583,10 @@ func _is_double_tap(direction: Vector2) -> bool:
 	return false
 
 
-## Troca de estado. A corrida, o desequilíbrio e a queda têm som próprio.
+## Troca de estado. Começar a correr tem som próprio.
 func _enter(state: State) -> void:
-	if state != _state:
-		match state:
-			State.RUN:
-				Sfx.play(&"dash")
-			State.WOBBLE:
-				Sfx.play(&"wobble")
-			State.FALLEN:
-				Sfx.play(&"fall")
+	if state != _state and state == State.RUN:
+		Sfx.play(&"dash")
 	_state = state
 	_state_tick = Engine.get_physics_frames()
 
@@ -681,21 +646,14 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 ## uma barra acima da cabeça encolhe até a trava acabar.
 func _update_visuals() -> void:
 	var tint := Color.WHITE
-	var shake := Vector2.ZERO
 	match _state:
 		State.RUN:
 			tint = RUN_TINT
-		State.WOBBLE:
-			var blink := posmod(_ticks_in_state(), 8) < 4
-			tint = WOBBLE_TINT if blink else RUN_TINT
-			shake = Vector2(1.0 if blink else -1.0, 0.0)
-		State.FALLEN:
-			tint = FALLEN_TINT
 		State.DEAD:
 			tint = DEAD_TINT
 		State.KNOCKBACK:
 			tint = KNOCKBACK_TINT
-	_update_art(shake)
+	_update_art()
 	_art.modulate = tint
 	var invincible := Engine.get_physics_frames() < _invincible_until_tick
 	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
@@ -710,19 +668,20 @@ func _update_visuals() -> void:
 	_update_sword_lock_bar()
 
 
-## Escolhe o desenho pela postura e pela frente. Correndo e desequilibrado,
-## ele está nas 4 patas, caído, deitado, e no resto, de pé. Andando ou
+## Escolhe o desenho pela postura e pela frente. Correndo, ele está nas 4
+## patas, sem vida, deitado, e no resto, de pé. Andando ou
 ## correndo, alterna os dois passos, mais rápido na corrida. O desenho sempre
 ## termina ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
-func _update_art(shake: Vector2) -> void:
-	var on_all_fours := _state == State.RUN or _state == State.WOBBLE
+func _update_art() -> void:
+	var on_all_fours := _state == State.RUN
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
 	var step_ticks := RUN_STEP_TICKS if on_all_fours else WALK_STEP_TICKS
 	var step := 0
 	if moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1:
 		step = 1
-	# Um passo soa a cada troca de pata, quando o segundo passo aparece.
-	if step == 1 and _last_step == 0 and not is_airborne():
+	# Só a corrida soa, um passo a cada troca de pata, quando o segundo passo
+	# aparece. Andar é silencioso (pedido de Marcelo em 2026-11-06).
+	if step == 1 and _last_step == 0 and on_all_fours and not is_airborne():
 		Sfx.play(&"step")
 	_last_step = step
 	var direction := 2
@@ -737,7 +696,6 @@ func _update_art(shake: Vector2) -> void:
 	_art.texture = texture
 	_art.flip_h = facing.x < 0.0 and (direction == 2 or _is_down())
 	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
-	_art.position = shake
 
 
 func _update_sword_lock_bar() -> void:

@@ -18,8 +18,6 @@ const SOUNDS := {
 	# Giorgio
 	&"step": [-18.0, 0.12],
 	&"dash": [-10.0, 0.05],
-	&"wobble": [-10.0, 0.0],
-	&"fall": [-6.0, 0.04],
 	&"bump": [-10.0, 0.08],
 	&"hurt": [-4.0, 0.05],
 	&"down": [-4.0, 0.0],
@@ -28,8 +26,8 @@ const SOUNDS := {
 	&"land": [-12.0, 0.08],
 	&"ledge_drop": [-12.0, 0.05],
 	# Espada
-	&"sword_swing": [-8.0, 0.06],
-	&"sword_hit": [-6.0, 0.05],
+	&"sword_swing": [-14.0, 0.06],
+	&"sword_hit": [-12.0, 0.05],
 	&"sword_denied": [-10.0, 0.0],
 	&"sword_lock": [-6.0, 0.0],
 	&"immune": [-8.0, 0.04],

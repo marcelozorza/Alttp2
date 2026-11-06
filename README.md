@@ -31,7 +31,7 @@ No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão d
 O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no alto da tela repete a posição dos quatro botões.
 
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
-- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo demais, o personagem perde o equilíbrio e pisca em vermelho. Aperte a direção oposta para se equilibrar, ou ele cai.
+- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
 - **Espada:** botão de baixo (A no padrão Xbox). No teclado, J ou Z. O golpe também abre os baús.
 - **Bomba:** botão da direita (B no padrão Xbox). No teclado, L ou C.
@@ -107,7 +107,7 @@ O Godot reimporta os SVG ao voltar para o editor.
 
 **Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
 
-**Efeitos.** Os 50 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
+**Efeitos.** Os 48 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
 
 ```
 python3 tools/sfx.py              todos os sons
@@ -121,8 +121,6 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 
 - **De pé, sem tom:** andando, com a espada e os itens na pata.
 - **Nas 4 patas, alaranjado:** correndo. Atacar faz ele ficar de pé e encerra a corrida.
-- **Pisca em vermelho e treme:** desequilibrado. Aperte a direção oposta.
-- **Deitado e acinzentado:** caído, se arrastando até parar.
 - **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola. Com a mola forte, cresce mais e fica mais tempo no ar.

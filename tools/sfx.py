@@ -311,21 +311,6 @@ def dash():
 
 
 @recipe
-def wobble():
-    pitch = 620.0 + 90.0 * tone(11.0, 0.45) - ramp(0.0, 160.0, 0.45, "lin")
-    voice = tone(pitch, 0.45, "triangle") * (0.6 + 0.4 * tone(11.0, 0.45))
-    return finish(voice * hump(0.45, 0.2))
-
-
-@recipe
-def fall():
-    hit = mix(thud(100.0, 50.0, 0.12, 0.04), 0.6 * burst(0.06, 1000.0, 0.012))
-    rough = np.abs(low(noise(0.45), 40.0)) * 6.0
-    scrape = band(noise(0.45), 1300.0, 1.2) * rough * decay(0.45, 0.13)
-    return finish(mix(hit, at(0.5 * scrape, 0.03)))
-
-
-@recipe
 def hurt():
     return finish(yelp(1150.0, 620.0, 0.2))
 
