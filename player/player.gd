@@ -40,8 +40,7 @@ extends MomentumBody
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
 
-signal respawned
-## Perdeu toda a vida. A cena mostra a tela de derrota e depois chama respawn().
+## Perdeu toda a vida. A cena mostra a tela de derrota.
 signal died
 
 enum State { WALK, RUN, KNOCKBACK, DEAD }
@@ -184,8 +183,6 @@ var facing := Vector2.DOWN
 var health := 0
 ## Chaves pequenas guardadas. Cada porta trancada gasta uma.
 var keys := 0
-## Onde o personagem reaparece ao perder toda a vida.
-var spawn_position := Vector2.ZERO
 
 var _state := State.WALK
 var _state_tick := 0
@@ -228,7 +225,6 @@ var _last_step := 0
 func _ready() -> void:
 	add_to_group("player")
 	health = max_health
-	spawn_position = global_position
 	_tools = starting_tools << 1
 	_air_height = jump_height
 	_air_time = jump_time
@@ -406,24 +402,6 @@ func _attack() -> void:
 	_sword.attack(facing)
 	Sfx.play(&"sword_swing")
 	_freeze_until_tick = Clock.tick + GameMath.ticks(attack_freeze_time)
-
-
-## Volta ao ponto de reaparecer com a vida cheia e as cargas cheias, e
-## mantém as ferramentas, as chaves e os baús abertos. A tela de derrota
-## chama isto ao tentar de novo.
-func respawn() -> void:
-	health = max_health
-	_fire_charges.refill()
-	_bomb_charges.refill()
-	global_position = spawn_position
-	velocity = Vector2.ZERO
-	_z = 0.0
-	_z_velocity = 0.0
-	_visual_offset = 0.0
-	_drawn_height = 0.0
-	_sword_lock_until_tick = 0
-	_enter(State.WALK)
-	respawned.emit()
 
 
 func _recharge_tools() -> void:

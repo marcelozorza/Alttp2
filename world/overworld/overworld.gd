@@ -85,7 +85,6 @@ func _place_player() -> void:
 		if entrance.chapter == Progress.return_entrance:
 			_player.global_position = entrance.exit_position()
 	Progress.return_entrance = 0
-	_player.spawn_position = _player.global_position
 
 
 func _on_entrance_entered(chapter: int) -> void:

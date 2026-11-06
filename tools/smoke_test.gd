@@ -234,7 +234,7 @@ func _check_replay() -> void:
 
 ## Start abre o menu de pausa e para o jogo, e Start de novo confirma
 ## continuar. Sem vida, o personagem cai, a tela de derrota aparece e tentar
-## de novo o devolve à entrada da sala com a vida cheia.
+## de novo recomeça o capítulo do início, numa cena nova, com a vida cheia.
 func _check_pause_and_defeat() -> void:
 	var chapter: Node = get_tree().current_scene
 	var pause: PauseMenu = chapter.get_node("PauseMenu")
@@ -245,18 +245,28 @@ func _check_pause_and_defeat() -> void:
 	print("PAUSA: fechada %s, jogo parado %s" % [not pause.visible, get_tree().paused])
 	var player: Player = chapter.get("_player")
 	var defeat: DefeatScreen = chapter.get_node("DefeatScreen")
-	var spawn := player.spawn_position
-	player.global_position = spawn + Vector2(40.0, 0.0)
+	var start := player.global_position
+	player.global_position = start + Vector2(40.0, 0.0)
 	player.take_hit(99, Vector2.ZERO)
 	print("DERROTA: vida %d, caído %s" % [player.health, player.get("_state") == Player.State.DEAD])
 	await _frames(70)
 	print("DERROTA: tela %s, jogo parado %s" % [defeat.visible, get_tree().paused])
 	await _frames(60)
 	await _press("Tentar de novo")
+	await _frames(20)
+	var again: Node = get_tree().current_scene
+	var again_player: Player = again.get("_player")
 	print(
 		(
-			"DERROTA: de novo: vida %d/%d, na entrada da sala %s, jogo parado %s"
-			% [player.health, player.max_health, player.global_position == spawn, get_tree().paused]
+			"DERROTA: de novo: cena nova %s, capítulo %d, vida %d/%d, no início %s, jogo parado %s"
+			% [
+				again != chapter,
+				again.get("data").number,
+				again_player.health,
+				again_player.max_health,
+				again_player.global_position == start,
+				get_tree().paused,
+			]
 		)
 	)
 

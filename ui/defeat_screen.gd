@@ -1,9 +1,9 @@
 class_name DefeatScreen
 extends CanvasLayer
 ## Tela de derrota. Quando o personagem perde toda a vida, ele cai, e depois
-## de um instante o jogo para e a tela aparece: tentar de novo, que o faz
-## reaparecer na entrada da sala com a vida cheia e com tudo o que já
-## conseguiu, ou sair.
+## de um instante o jogo para e a tela aparece: tentar de novo, que recomeça
+## a dungeon do início, com o que o personagem tinha ao entrar (decisão de
+## Marcelo em 2026-11-06), ou sair.
 ##
 ## Os botões só respondem depois de um instante, para que o botão de ataque,
 ## que também confirma, não escolha nada por acidente.
@@ -59,8 +59,7 @@ func _on_player_died() -> void:
 
 func _on_retry() -> void:
 	visible = false
-	get_tree().paused = false
-	_player.respawn()
+	Flow.restart_scene(get_tree())
 
 
 func _on_exit() -> void:

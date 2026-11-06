@@ -24,3 +24,10 @@ static func leave_chapter(tree: SceneTree) -> void:
 static func go_to_title(tree: SceneTree) -> void:
 	tree.paused = false
 	tree.change_scene_to_file(TITLE_SCENE)
+
+
+## Recomeça a cena atual do zero: um capítulo volta ao início, com o que o
+## personagem tinha ao entrar, porque nada do meio do capítulo fica gravado.
+static func restart_scene(tree: SceneTree) -> void:
+	tree.paused = false
+	tree.reload_current_scene()

@@ -118,7 +118,6 @@ func _ready() -> void:
 		for id: int in data.starting_tools:
 			tools |= Item.bit(id)
 		_player.restore(tools, _player.max_health)
-	_player.respawned.connect(_on_player_respawned)
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
 	_camera.reset_smoothing()
@@ -262,12 +261,10 @@ func _register(actor: Node, cell: Vector2i) -> void:
 
 
 ## Troca de sala: a câmera desliza até a nova sala, os inimigos da anterior
-## voltam ao início e se desligam, e os da nova se ligam. O personagem passa a
-## reaparecer na entrada da sala.
+## voltam ao início e se desligam, e os da nova se ligam.
 func _enter_room(room: Rect2i) -> void:
 	var previous := _room
 	_room = room
-	_player.spawn_position = _player.global_position
 	_camera.position = _camera_target()
 	_clear_floor_effects()
 	_activate_room.call_deferred(previous, false)
@@ -283,11 +280,6 @@ func _activate_room(room: Rect2i, active: bool) -> void:
 func _clear_floor_effects() -> void:
 	for effect: Node in _floor_effects.get_children():
 		effect.queue_free()
-
-
-func _on_player_respawned() -> void:
-	_clear_floor_effects()
-	_activate_room.call_deferred(_room, true)
 
 
 func _on_boss_defeated(room: Rect2i) -> void:

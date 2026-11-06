@@ -25,7 +25,7 @@ O tutorial e os capítulos:
 - **Capítulo 3.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras. A passagem para a parte de baixo é uma grade: pise no interruptor para abri-la enquanto fica ali, ou empurre o bloco pesado para cima dele para abri-la de vez.
 
-No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. A música para junto e volta de onde estava. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo o devolve à entrada da sala com a vida cheia e com tudo o que já conseguiu.
+No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. A música para junto e volta de onde estava. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo recomeça a dungeon do início, com o que o personagem tinha ao entrar nela.
 
 ## Controles
 
