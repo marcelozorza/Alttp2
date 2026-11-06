@@ -40,6 +40,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func open() -> void:
 	get_tree().paused = true
+	Music.set_paused(true)
 	visible = true
 	Sfx.play(&"menu_confirm")
 	_buttons[0].grab_focus()
@@ -52,10 +53,12 @@ func _player_is_dead() -> bool:
 
 func resume() -> void:
 	visible = false
+	Music.set_paused(false)
 	get_tree().paused = false
 
 
 func _on_exit() -> void:
+	Music.set_paused(false)
 	if exit_to_title:
 		Flow.go_to_title(get_tree())
 	else:

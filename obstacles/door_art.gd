@@ -9,7 +9,7 @@ const SHAKE_TICKS := 8
 
 ## Deslocamento do tremor, contado do tick do golpe. Zero depois do tremor.
 static func shake_offset(shake_tick: int) -> Vector2:
-	var elapsed := Engine.get_physics_frames() - shake_tick
+	var elapsed := Clock.tick - shake_tick
 	if elapsed < 0 or elapsed >= SHAKE_TICKS:
 		return Vector2.ZERO
 	return Vector2(1.0 if posmod(elapsed, 4) < 2 else -1.0, 0.0)

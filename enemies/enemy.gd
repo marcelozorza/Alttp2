@@ -138,7 +138,7 @@ var _hurt_shape := RectangleShape2D.new()
 
 func _ready() -> void:
 	health = max_health
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(first_throw_delay)
+	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 
 
 ## Recebe um golpe. O empurrão vem separado, pela física.
@@ -147,11 +147,11 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 		return
 	var factor := _factor(kind)
 	if factor == 0:
-		_immune_tick = Engine.get_physics_frames()
+		_immune_tick = Clock.tick
 		Sfx.play(&"immune")
 		return
 	health -= amount * factor
-	_hit_tick = Engine.get_physics_frames()
+	_hit_tick = Clock.tick
 	if health <= 0:
 		Sfx.play(&"enemy_die")
 		_die()
@@ -168,7 +168,7 @@ func reset() -> void:
 	velocity = Vector2.ZERO
 	visible = true
 	_base.set_deferred("disabled", false)
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(first_throw_delay)
+	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 	_enter(State.IDLE)
 
 
@@ -206,7 +206,7 @@ func _update_state() -> void:
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	var to_player := (player.global_position - global_position) if player else Vector2.ZERO
 	var in_sight := player != null and to_player.length() <= sight_range
-	var elapsed := Engine.get_physics_frames() - _state_tick
+	var elapsed := Clock.tick - _state_tick
 	match _state:
 		State.IDLE:
 			if in_sight:
@@ -254,14 +254,14 @@ func _update_state() -> void:
 func _weave_velocity() -> Vector2:
 	if weave <= 0.0:
 		return Vector2.ZERO
-	return _approach_direction.orthogonal() * sin(Engine.get_physics_frames() * WEAVE_RATE) * weave
+	return _approach_direction.orthogonal() * sin(Clock.tick * WEAVE_RATE) * weave
 
 
 ## Altura do desenho acima dos pés, para quem voa.
 func _hover_height() -> float:
 	if not hover:
 		return 0.0
-	return 3.0 + sin(Engine.get_physics_frames() * 0.15) * 2.0
+	return 3.0 + sin(Clock.tick * 0.15) * 2.0
 
 
 ## Durante o bote, procura o personagem numa área um pouco maior que a base.
@@ -286,7 +286,7 @@ func _check_contact_hit() -> void:
 func _can_throw(distance: float) -> bool:
 	return (
 		grenade_scene != null
-		and Engine.get_physics_frames() >= _next_throw_tick
+		and Clock.tick >= _next_throw_tick
 		and distance >= throw_min_range
 		and distance <= throw_max_range
 	)
@@ -295,7 +295,7 @@ func _can_throw(distance: float) -> bool:
 ## A granada sai da mão, acima da cabeça, e cai onde o personagem está agora.
 ## Ela fica com os efeitos do chão, que somem ao trocar de sala.
 func _throw(target: Vector2) -> void:
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(throw_cooldown)
+	_next_throw_tick = Clock.tick + GameMath.ticks(throw_cooldown)
 	Sfx.play(&"grenade_throw")
 	var grenade := grenade_scene.instantiate() as Grenade
 	var layer := get_tree().get_first_node_in_group("floor_effects")
@@ -324,7 +324,7 @@ func _enter(state: State) -> void:
 			State.LUNGE:
 				Sfx.play(&"enemy_lunge")
 	_state = state
-	_state_tick = Engine.get_physics_frames()
+	_state_tick = Clock.tick
 
 
 func _die() -> void:
@@ -344,7 +344,7 @@ func _factor(kind: Hit.Kind) -> int:
 ## corpo provisório muda de cor e o olho mostra para onde ele vai. A barra
 ## acima mostra a vida.
 func _update_visuals() -> void:
-	var elapsed := Engine.get_physics_frames() - _state_tick
+	var elapsed := Clock.tick - _state_tick
 	var color := _body_color
 	var tint := Color.WHITE
 	var shake := Vector2.ZERO
@@ -360,10 +360,10 @@ func _update_visuals() -> void:
 		State.RECOVER, State.THROW_RECOVER:
 			color = _body_color.darkened(0.35)
 			tint = RECOVER_TINT
-	if Engine.get_physics_frames() - _hit_tick < GameMath.ticks(hit_flash_time):
+	if Clock.tick - _hit_tick < GameMath.ticks(hit_flash_time):
 		color = HIT_COLOR
 		tint = HIT_TINT
-	elif Engine.get_physics_frames() - _immune_tick < GameMath.ticks(hit_flash_time):
+	elif Clock.tick - _immune_tick < GameMath.ticks(hit_flash_time):
 		color = IMMUNE_COLOR
 		tint = IMMUNE_COLOR
 	if _art:

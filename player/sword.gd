@@ -47,7 +47,7 @@ var _hit_shape := RectangleShape2D.new()
 ## Golpeia na direção dada, uma das 4 direções retas.
 func attack(direction: Vector2) -> void:
 	_direction = direction
-	_attack_tick = Engine.get_physics_frames()
+	_attack_tick = Clock.tick
 	_already_hit.clear()
 	_apply_hits()
 	_update_blade()
@@ -60,7 +60,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _elapsed() -> int:
-	return Engine.get_physics_frames() - _attack_tick
+	return Clock.tick - _attack_tick
 
 
 func _apply_hits() -> void:

@@ -36,7 +36,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if Engine.get_physics_frames() - _lit_tick <= LIT_TICKS + 1:
+	if Clock.tick - _lit_tick <= LIT_TICKS + 1:
 		queue_redraw()
 
 
@@ -47,11 +47,11 @@ func _on_body_entered(body: Node2D) -> void:
 	player.health = player.max_health
 	Progress.save()
 	Sfx.play(&"save")
-	_lit_tick = Engine.get_physics_frames()
+	_lit_tick = Clock.tick
 
 
 func _draw() -> void:
-	var elapsed := Engine.get_physics_frames() - _lit_tick
+	var elapsed := Clock.tick - _lit_tick
 	var lit := elapsed <= LIT_TICKS
 	if lit:
 		var progress := float(elapsed) / LIT_TICKS

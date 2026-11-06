@@ -38,10 +38,10 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 		return
 	if _opens_with(kind):
 		cleared = true
-		_clear_tick = Engine.get_physics_frames()
+		_clear_tick = Clock.tick
 		Sfx.play(_clear_sound())
 	else:
-		_shake_tick = Engine.get_physics_frames()
+		_shake_tick = Clock.tick
 		Sfx.play(&"deny")
 	queue_redraw()
 
@@ -50,7 +50,7 @@ func _physics_process(_delta: float) -> void:
 	if cleared and not _opened and _ticks_since_clear() >= _open_delay():
 		_opened = true
 		_shape.set_deferred("disabled", true)
-	var shaking := Engine.get_physics_frames() - _shake_tick <= DoorArt.SHAKE_TICKS
+	var shaking := Clock.tick - _shake_tick <= DoorArt.SHAKE_TICKS
 	if shaking or (cleared and _ticks_since_clear() <= CLEAR_ANIMATION_TICKS):
 		queue_redraw()
 
@@ -76,7 +76,7 @@ func _shake_offset() -> Vector2:
 
 
 func _ticks_since_clear() -> int:
-	return Engine.get_physics_frames() - _clear_tick
+	return Clock.tick - _clear_tick
 
 
 ## Sombra no chão logo ao sul do bloqueio, enquanto ele está de pé.

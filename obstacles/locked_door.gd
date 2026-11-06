@@ -49,7 +49,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if not opened:
 		for body: Node2D in _touch.get_overlapping_bodies():
 			var player := body as Player
@@ -81,7 +81,7 @@ func _draw() -> void:
 	var texture := BOSS_DOOR_TEXTURE if needs_boss_key else DOOR_TEXTURE
 	var sink := 1.0
 	if opened:
-		sink = 1.0 - float(Engine.get_physics_frames() - _open_tick) / OPEN_TICKS
+		sink = 1.0 - float(Clock.tick - _open_tick) / OPEN_TICKS
 		if sink <= 0.0:
 			return
 	DoorArt.draw_sunk(self, texture, size, sink, DoorArt.shake_offset(_shake_tick))

@@ -109,6 +109,13 @@ const VISUAL_CATCH_UP := 1.5
 ## qualquer caso, apertar uma direção com componente para trás cancela a
 ## corrida, como uma freada.
 @export var run_can_steer := true
+## Segundos de corrida contínua até o personagem cansar. Zero desliga o
+## fôlego, e ele corre sem limite.
+@export_range(0.0, 20.0, 0.5) var run_time := 4.0
+## Segundos andando ou parado para recuperar o fôlego todo depois de cansar.
+## Cansado, o duplo toque não faz nada, e nada aparece na tela de propósito
+## (pedido de Marcelo em 2026-11-06): é só a sensação de ter de esperar.
+@export_range(0.0, 20.0, 0.5) var run_rest_time := 4.0
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -177,6 +184,10 @@ var spawn_position := Vector2.ZERO
 var _state := State.WALK
 var _state_tick := 0
 var _run_direction := Vector2.ZERO
+## Fôlego, de 0 (cansado) a 1 (cheio).
+var _breath := 1.0
+## Cansado: sem correr até o fôlego encher de novo.
+var _winded := false
 var _previous_direction := Vector2.ZERO
 var _last_press_direction := Vector2.ZERO
 var _last_press_tick := 0
@@ -221,6 +232,7 @@ func _physics_process(delta: float) -> void:
 	_recharge_tools()
 	var direction := _read_direction()
 	_update_state(direction)
+	_breathe()
 	var in_control := _state == State.WALK or _state == State.RUN
 	if in_control:
 		# A frente se atualiza antes do golpe, para que direção e ataque
@@ -339,10 +351,10 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 ## empurrão vem separado, pela física da batida. Sem vida, o personagem cai
 ## e avisa a cena, que mostra a tela de derrota.
 func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
-	if _state == State.DEAD or Engine.get_physics_frames() < _invincible_until_tick:
+	if _state == State.DEAD or Clock.tick < _invincible_until_tick:
 		return
 	health -= amount
-	_invincible_until_tick = Engine.get_physics_frames() + GameMath.ticks(invincibility_time)
+	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
 	if health <= 0:
 		health = 0
 		Sfx.play(&"down")
@@ -360,7 +372,7 @@ func _is_down() -> bool:
 ## Trava a espada por alguns segundos. Durante a invencibilidade, nada
 ## acontece. Uma trava nova nunca encurta a que já existe.
 func lock_sword(seconds: float) -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if now < _invincible_until_tick:
 		return
 	var until := now + GameMath.ticks(seconds)
@@ -371,21 +383,21 @@ func lock_sword(seconds: float) -> void:
 
 
 func is_sword_locked() -> bool:
-	return Engine.get_physics_frames() < _sword_lock_until_tick
+	return Clock.tick < _sword_lock_until_tick
 
 
 ## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
 ## Com a espada travada, o aperto só faz a barra da trava piscar.
 func _attack() -> void:
 	if is_sword_locked():
-		_sword_denied_tick = Engine.get_physics_frames()
+		_sword_denied_tick = Clock.tick
 		Sfx.play(&"sword_denied")
 		return
 	if _state == State.RUN:
 		_enter(State.WALK)
 	_sword.attack(facing)
 	Sfx.play(&"sword_swing")
-	_freeze_until_tick = Engine.get_physics_frames() + GameMath.ticks(attack_freeze_time)
+	_freeze_until_tick = Clock.tick + GameMath.ticks(attack_freeze_time)
 
 
 ## Volta ao ponto de reaparecer com a vida cheia e as cargas cheias, e
@@ -407,7 +419,7 @@ func respawn() -> void:
 
 
 func _recharge_tools() -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	_fire_charges.recharge(now, GameMath.ticks(fire_recharge_time))
 	_bomb_charges.recharge(now, GameMath.ticks(bomb_recharge_time))
 
@@ -440,7 +452,7 @@ func _place_bomb() -> void:
 	get_parent().add_child(bomb)
 	bomb.add_collision_exception_with(self)
 	add_collision_exception_with(bomb)
-	_bomb_charges.spend(Engine.get_physics_frames())
+	_bomb_charges.spend(Clock.tick)
 	Sfx.play(&"bomb_place")
 
 
@@ -458,7 +470,7 @@ func _shoot_fire() -> void:
 	fireball.strong = has_tool(Item.Id.STRONG_FIRE)
 	fireball.position = position + facing * 9.0
 	get_parent().add_child(fireball)
-	_fire_charges.spend(Engine.get_physics_frames())
+	_fire_charges.spend(Clock.tick)
 	Sfx.play(&"fire_shoot")
 
 
@@ -528,7 +540,7 @@ func _is_free_at(target: Vector2) -> bool:
 func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
 	var speed := run_speed if _state == State.RUN else walk_speed
-	if Engine.get_physics_frames() < _freeze_until_tick:
+	if Clock.tick < _freeze_until_tick:
 		# Parado durante o golpe, mas ainda pode virar para o próximo.
 		move_direction = Vector2.ZERO
 	_update_velocity(move_direction, speed, delta)
@@ -544,14 +556,14 @@ func _read_direction() -> Vector2:
 
 
 ## Andar vira corrida com o duplo toque, e a corrida dura enquanto a direção
-## estiver pressionada. O arremesso por batida interrompe qualquer estado e
-## termina em andar.
+## estiver pressionada e houver fôlego. O arremesso por batida interrompe
+## qualquer estado e termina em andar.
 func _update_state(direction: Vector2) -> void:
 	var pressed := _previous_direction == Vector2.ZERO and direction != Vector2.ZERO
 	_previous_direction = direction
 	match _state:
 		State.WALK:
-			if pressed and _is_double_tap(direction):
+			if pressed and _is_double_tap(direction) and not _winded:
 				_run_direction = direction
 				_enter(State.RUN)
 		State.RUN:
@@ -570,10 +582,26 @@ func _update_state(direction: Vector2) -> void:
 			pass
 
 
+## Gasta o fôlego correndo e o recupera no resto do tempo. Sem fôlego, o
+## personagem cansa: para de correr e só volta a correr com o fôlego cheio.
+func _breathe() -> void:
+	if run_time <= 0.0:
+		return
+	if _state == State.RUN:
+		_breath = maxf(0.0, _breath - 1.0 / GameMath.ticks(run_time))
+		if _breath == 0.0:
+			_winded = true
+			_enter(State.WALK)
+	else:
+		_breath = minf(1.0, _breath + 1.0 / maxf(1.0, GameMath.ticks(run_rest_time)))
+		if _breath == 1.0:
+			_winded = false
+
+
 ## Duas pressões na mesma direção, partindo do neutro, dentro de
 ## double_tap_window. Depois de reconhecido, o duplo toque é consumido.
 func _is_double_tap(direction: Vector2) -> bool:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	var window := GameMath.ticks(double_tap_window)
 	if direction == _last_press_direction and now - _last_press_tick <= window:
 		_last_press_direction = Vector2.ZERO
@@ -588,11 +616,11 @@ func _enter(state: State) -> void:
 	if state != _state and state == State.RUN:
 		Sfx.play(&"dash")
 	_state = state
-	_state_tick = Engine.get_physics_frames()
+	_state_tick = Clock.tick
 
 
 func _ticks_in_state() -> int:
-	return Engine.get_physics_frames() - _state_tick
+	return Clock.tick - _state_tick
 
 
 func _update_facing(direction: Vector2) -> void:
@@ -655,8 +683,8 @@ func _update_visuals() -> void:
 			tint = KNOCKBACK_TINT
 	_update_art()
 	_art.modulate = tint
-	var invincible := Engine.get_physics_frames() < _invincible_until_tick
-	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
+	var invincible := Clock.tick < _invincible_until_tick
+	var flicker := posmod(Clock.tick, 6) < 3
 	modulate.a = 0.3 if invincible and flicker else 1.0
 	# No ar, o corpo sobe e cresce, e a sombra fica no chão. O crescimento é
 	# por pixel de altura, então o pulo da mola forte cresce mais.
@@ -677,7 +705,7 @@ func _update_art() -> void:
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
 	var step_ticks := RUN_STEP_TICKS if on_all_fours else WALK_STEP_TICKS
 	var step := 0
-	if moving and posmod(floori(float(Engine.get_physics_frames()) / step_ticks), 2) == 1:
+	if moving and posmod(floori(float(Clock.tick) / step_ticks), 2) == 1:
 		step = 1
 	# Só a corrida soa, um passo a cada troca de pata, quando o segundo passo
 	# aparece. Andar é silencioso (pedido de Marcelo em 2026-11-06).
@@ -699,7 +727,7 @@ func _update_art() -> void:
 
 
 func _update_sword_lock_bar() -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	var left := _sword_lock_until_tick - now
 	_sword_lock_bar.visible = left > 0
 	if left <= 0:

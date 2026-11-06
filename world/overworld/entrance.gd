@@ -49,7 +49,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if not _used:
 		for body: Node2D in _touch.get_overlapping_bodies():
 			if body is Player:
@@ -80,5 +80,5 @@ func _draw() -> void:
 	if mode == Mode.LOCKED:
 		draw_texture(GATE_TEXTURE, offset + GATE_OFFSET)
 	elif mode == Mode.DONE:
-		var bob := sin(Engine.get_physics_frames() * 0.08) * 1.5
+		var bob := sin(Clock.tick * 0.08) * 1.5
 		draw_texture(RELIC_TEXTURE, (Vector2(10.0, -22.0 + bob)).round())

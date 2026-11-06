@@ -48,13 +48,13 @@ func launch(from: Vector2, from_height: float, target: Vector2) -> void:
 	global_position = ((target / tile).floor() + Vector2(0.5, 0.5)) * tile
 	_from = from
 	_from_height = from_height
-	_launch_tick = Engine.get_physics_frames()
+	_launch_tick = Clock.tick
 	_update_ball()
 
 
 func _physics_process(_delta: float) -> void:
 	if _burst_tick >= 0:
-		if Engine.get_physics_frames() - _burst_tick >= BURST_TICKS:
+		if Clock.tick - _burst_tick >= BURST_TICKS:
 			queue_free()
 	elif _progress() >= 1.0:
 		_burst()
@@ -66,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 ## Fração do voo já percorrida, de 0 a 1.
 func _progress() -> float:
 	var flight := maxi(GameMath.ticks(flight_time), 1)
-	return minf(float(Engine.get_physics_frames() - _launch_tick) / flight, 1.0)
+	return minf(float(Clock.tick - _launch_tick) / flight, 1.0)
 
 
 ## Posição da granada no chão, relativa ao centro da área. É onde fica a sombra.
@@ -88,7 +88,7 @@ func _area() -> Rect2:
 
 
 func _burst() -> void:
-	_burst_tick = Engine.get_physics_frames()
+	_burst_tick = Clock.tick
 	Sfx.play(&"grenade_burst")
 	_ball.visible = false
 	_area_shape.size = _area().size
@@ -113,7 +113,7 @@ func _burst() -> void:
 func _draw() -> void:
 	var area := _area()
 	if _burst_tick >= 0:
-		var fade := 1.0 - float(Engine.get_physics_frames() - _burst_tick) / BURST_TICKS
+		var fade := 1.0 - float(Clock.tick - _burst_tick) / BURST_TICKS
 		draw_rect(area, Color(color, 0.7 * fade))
 		return
 	draw_rect(area, Color(color, 0.12))

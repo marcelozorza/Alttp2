@@ -29,6 +29,11 @@ func _ready() -> void:
 	_player.play()
 
 
+## Pausa a trilha com o menu de pausa e a retoma de onde parou.
+func set_paused(paused: bool) -> void:
+	_player.stream_paused = paused
+
+
 ## Solta a trilha ao fechar o jogo, para o Godot não acusar recurso preso.
 func _exit_tree() -> void:
 	_player.stop()

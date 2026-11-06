@@ -14,24 +14,25 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 
 - **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
 - **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
-- **Treino.** Cada capítulo avulso, com as ferramentas dos dados dele e sem gravar nada, e a sala de teste.
+- **Tutorial.** A dungeon de aprendizado, fora do mundo e sem gravar nada.
+- **Treino.** O tutorial, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
 
-Os capítulos:
+O tutorial e os capítulos:
 
-- **Capítulo 1.** A dungeon de aprendizado, com 8 salas: bomba, chama e mola, nessa ordem, e o guardião de gelo no fim.
-- **Capítulo 2.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Nenhuma ordem de abrir portas prende o jogador.
-- **Capítulo 3.** A geleira, com 15 salas. O personagem chega com as três ferramentas e encontra a primeira melhoria, a chama forte, que derrete o gelo grosso. No fim, o guardião antigo.
-- **Capítulo 4.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
+- **Tutorial.** A dungeon de aprendizado, com 8 salas: bomba, chama e mola, nessa ordem, e o guardião de gelo no fim.
+- **Capítulo 1.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Nenhuma ordem de abrir portas prende o jogador.
+- **Capítulo 2.** A geleira, com 15 salas. O personagem chega com as três ferramentas e encontra a primeira melhoria, a chama forte, que derrete o gelo grosso. No fim, o guardião antigo.
+- **Capítulo 3.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras. A passagem para a parte de baixo é uma grade: pise no interruptor para abri-la enquanto fica ali, ou empurre o bloco pesado para cima dele para abri-la de vez.
 
-No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo o devolve à entrada da sala com a vida cheia e com tudo o que já conseguiu.
+No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. A música para junto e volta de onde estava. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo o devolve à entrada da sala com a vida cheia e com tudo o que já conseguiu.
 
 ## Controles
 
 O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no canto inferior esquerdo da tela repete a posição dos quatro botões, com o ícone do que cada um faz.
 
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
-- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada.
+- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada e houver fôlego: depois de 4 s correndo o personagem cansa, para de correr e só corre de novo depois de 4 s de descanso. Nada disso aparece na tela.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
 - **Espada:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. O golpe também abre os baús.
 - **Bomba:** botão de cima (Y no padrão Xbox, X no SNES). No teclado, L ou C.

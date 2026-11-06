@@ -33,7 +33,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 
 func _draw() -> void:
-	var bob := sin(Engine.get_physics_frames() * 0.08) * 2.0
+	var bob := sin(Clock.tick * 0.08) * 2.0
 	var center := Vector2(0.0, -12.0 + bob)
 	draw_rect(Rect2(Vector2(-4.0, -1.0), Vector2(8.0, 2.0)), SHADOW_COLOR)
 	draw_texture(TEXTURE, (center - Vector2(6.0, 6.0)).round())

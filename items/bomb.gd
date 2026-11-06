@@ -37,19 +37,19 @@ var _blast_shape := CircleShape2D.new()
 
 func _ready() -> void:
 	add_to_group("bombs")
-	_spawn_tick = Engine.get_physics_frames()
+	_spawn_tick = Clock.tick
 
 
 ## Fogo e explosões acendem o pavio. A bomba explode no tick seguinte, fora da
 ## consulta de física que a atingiu.
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if Hit.is_fire(kind) or kind == Hit.Kind.BLAST:
-		var lit := Engine.get_physics_frames() - GameMath.ticks(fuse_time) + 1
+		var lit := Clock.tick - GameMath.ticks(fuse_time) + 1
 		_spawn_tick = mini(_spawn_tick, lit)
 
 
 func _physics_process(delta: float) -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if _blast_tick >= 0:
 		if now - _blast_tick >= BLAST_TICKS:
 			queue_free()
@@ -64,7 +64,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _explode() -> void:
-	_blast_tick = Engine.get_physics_frames()
+	_blast_tick = Clock.tick
 	Sfx.play(&"explosion")
 	remove_from_group("bombs")
 	_base.set_deferred("disabled", true)
@@ -93,7 +93,7 @@ func _explode() -> void:
 
 
 func _draw() -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if _blast_tick >= 0:
 		var progress := float(now - _blast_tick) / BLAST_TICKS
 		var radius := blast_radius * (0.6 + 0.4 * progress)

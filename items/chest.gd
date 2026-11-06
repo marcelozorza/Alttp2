@@ -48,7 +48,7 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 	if is_open or kind != Hit.Kind.SWORD:
 		return
 	is_open = true
-	_open_tick = Engine.get_physics_frames()
+	_open_tick = Clock.tick
 	Sfx.play(&"chest_open")
 	var player := get_tree().get_first_node_in_group("player") as Player
 	if player:
@@ -59,7 +59,7 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 
 ## Redesenha enquanto o item aparece e mais uma vez depois, para apagá-lo.
 func _physics_process(_delta: float) -> void:
-	if is_open and Engine.get_physics_frames() - _open_tick <= SHOW_ITEM_TICKS + 1:
+	if is_open and Clock.tick - _open_tick <= SHOW_ITEM_TICKS + 1:
 		queue_redraw()
 
 
@@ -68,7 +68,7 @@ func _draw() -> void:
 		draw_texture(CLOSED_TEXTURE, TEXTURE_OFFSET)
 		return
 	draw_texture(OPEN_TEXTURE, TEXTURE_OFFSET)
-	var elapsed := Engine.get_physics_frames() - _open_tick
+	var elapsed := Clock.tick - _open_tick
 	if elapsed <= SHOW_ITEM_TICKS:
 		var rise := floorf(minf(elapsed, 20.0) * 0.5)
 		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 10.0 - rise))

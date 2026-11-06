@@ -23,7 +23,7 @@ func set_open(value: bool) -> void:
 	if value == open:
 		return
 	open = value
-	_move_tick = Engine.get_physics_frames()
+	_move_tick = Clock.tick
 	_closing = not open
 	if open:
 		_shape.set_deferred("disabled", true)
@@ -44,7 +44,7 @@ func _physics_process(delta: float) -> void:
 	if _closing and not _occupied():
 		_closing = false
 		_shape.disabled = false
-	if Engine.get_physics_frames() - _move_tick <= MOVE_TICKS:
+	if Clock.tick - _move_tick <= MOVE_TICKS:
 		queue_redraw()
 
 
@@ -65,7 +65,7 @@ func _occupied() -> bool:
 
 ## Desenha a grade casa por casa. Aberta, ela fica afundada no chão.
 func _draw() -> void:
-	var progress := minf(float(Engine.get_physics_frames() - _move_tick) / MOVE_TICKS, 1.0)
+	var progress := minf(float(Clock.tick - _move_tick) / MOVE_TICKS, 1.0)
 	var height := 1.0 - progress if open else progress
 	if height >= 1.0:
 		_draw_shadow()

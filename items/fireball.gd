@@ -72,7 +72,7 @@ func _hit_something() -> bool:
 
 func _draw() -> void:
 	# A chama tremula alternando o desenho espelhado.
-	var flicker := posmod(Engine.get_physics_frames(), 4) < 2
+	var flicker := posmod(Clock.tick, 4) < 2
 	var texture := STRONG_TEXTURE if strong else TEXTURE
 	var half := texture.get_width() / 2.0
 	draw_rect(Rect2(Vector2(-half / 2.0, -1.0), Vector2(half, 2.0)), SHADOW_COLOR)

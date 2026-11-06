@@ -147,7 +147,7 @@ func set_active(active: bool) -> void:
 func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD:
 		return
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if _shell:
 		if _breaks_shell(kind):
 			_shell = false
@@ -173,7 +173,7 @@ func _breaks_shell(kind: Hit.Kind) -> bool:
 
 ## Dano no chefe já sem proteção, conforme o multiplicador de cada golpe.
 func _take_damage(amount: int, kind: Hit.Kind) -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	var factor := _factor(kind)
 	if factor == 0:
 		_immune_tick = now
@@ -208,7 +208,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _update_state() -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if not _shell and now - _shell_break_tick >= GameMath.ticks(shell_regrow_time):
 		_shell = true
 		Sfx.play(&"shell_regrow")
@@ -317,7 +317,7 @@ func _enter(state: State) -> void:
 			State.CHARGE:
 				Sfx.play(&"boss_charge")
 	_state = state
-	_state_tick = Engine.get_physics_frames()
+	_state_tick = Clock.tick
 
 
 func _die() -> void:
@@ -333,7 +333,7 @@ func _die() -> void:
 ## aviso de cada ataque, mais escuro parado depois de atacar, branco ao levar
 ## dano e cinza quando o golpe não o afeta. A casca pisca antes de voltar.
 func _draw() -> void:
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	var elapsed := now - _state_tick
 	var tint := Color.WHITE
 	var shake := Vector2.ZERO

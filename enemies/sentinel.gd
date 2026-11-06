@@ -33,7 +33,7 @@ func reset() -> void:
 func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD:
 		return
-	var now := Engine.get_physics_frames()
+	var now := Clock.tick
 	if _shell:
 		if kind == Hit.Kind.BLAST:
 			_shell = false
