@@ -113,7 +113,7 @@ func _play(chapter_number: int) -> void:
 	print("portas abertas: %d" % doors)
 	# Cada sala com atores: o personagem entra e usa tudo.
 	var rooms: Dictionary = chapter.get("_room_actors")
-	for room: Vector2i in rooms:
+	for room: Rect2i in rooms:
 		var cell := _floor_cell(map, room)
 		if cell == Vector2i(-1, -1):
 			print("sala sem chão livre: ", room)
@@ -160,13 +160,14 @@ func _beat_boss(boss: Boss) -> void:
 	print("chefe %s vencido: %s (vida %d)" % [boss.name, boss.health <= 0, boss.health])
 
 
-func _floor_cell(map: ChapterMap, room: Vector2i) -> Vector2i:
-	var origin := room * Vector2i(20, 10)
-	for radius: int in 10:
+## Casa de chão mais perto do centro da sala, que pode ter mais de uma tela.
+func _floor_cell(map: ChapterMap, room: Rect2i) -> Vector2i:
+	var center := (room.position * 2 + room.size) * Vector2i(20, 10) / 2
+	for radius: int in 20:
 		for dy: int in range(-radius, radius + 1):
 			for dx: int in range(-radius, radius + 1):
-				var cell := origin + Vector2i(10 + dx, 5 + dy)
-				if map.tile(cell) == "." or map.tile(cell) == ":":
+				var cell := center + Vector2i(dx, dy)
+				if map.tile(cell) in [".", ":", "^"]:
 					return cell
 	return Vector2i(-1, -1)
 

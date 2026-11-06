@@ -12,6 +12,10 @@ extends MomentumBody
 ## casca é de gelo grosso, na paleta do gelo grosso, e só a chama forte a
 ## quebra. A chama comum só o faz piscar em cinza, como o gelo grosso do mapa.
 ##
+## Com stone_shell e tall_waves ligados, ele é o colosso, o chefe do capítulo
+## 4: a casca é de pedra rachada e só a bomba a abre, e a pancada solta a onda
+## alta, que só o pulo da mola forte passa. É o exame da mola forte.
+##
 ## Não há dano por contato. Encostar nele só troca momento pela física, e ele
 ## é muito mais pesado que o personagem.
 
@@ -32,15 +36,16 @@ const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
 const SHELL_TEXTURE := preload("res://art/guardian_shell.svg")
 const THICK_SHELL_TEXTURE := preload("res://art/guardian_thick_shell.svg")
 const CORE_TEXTURE := preload("res://art/guardian_core.svg")
-## Canto do desenho em relação à origem, nos pés.
-const GUARDIAN_OFFSET := Vector2(-14.0, -24.0)
+const COLOSSUS_SHELL_TEXTURE := preload("res://art/colossus_shell.svg")
+const COLOSSUS_CORE_TEXTURE := preload("res://art/colossus_core.svg")
+## Quanto o desenho desce abaixo da origem, nos pés.
+const ART_BELOW_FEET := 0.0
 ## Tons sobre o desenho. Acima de 1, o tom clareia.
 const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
 const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 const HEALTH_COLOR := Color(0.9, 0.3, 0.35, 1.0)
-const BODY_SIZE := Vector2(28.0, 26.0)
 ## Segundos antes de a casca voltar em que ela pisca, como aviso.
 const REGROW_WARNING_TIME := 1.0
 ## Ticks do brilho de dano e de imunidade.
@@ -53,6 +58,11 @@ const FLASH_TICKS := 6
 @export_range(0.5, 20.0, 0.5) var shell_regrow_time := 6.0
 ## Ligado, a casca é de gelo grosso e só a chama forte a quebra.
 @export var thick_shell := false
+## Ligado, a casca é de pedra rachada e só a explosão da bomba a abre. É o
+## colosso, o chefe do capítulo 4.
+@export var stone_shell := false
+## Ligada, a pancada solta a onda alta, que só o pulo da mola forte passa.
+@export var tall_waves := false
 ## Multiplicador do dano da espada, sem a casca.
 @export_range(0, 10, 1) var sword_factor := 1
 ## Multiplicador do dano do fogo, sem a casca.
@@ -143,7 +153,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 			_shell = false
 			_shell_break_tick = now
 			_hit_tick = now
-			Sfx.play(&"shell_break")
+			Sfx.play(&"armor_break" if stone_shell else &"shell_break")
 		else:
 			_immune_tick = now
 			Sfx.play(&"immune")
@@ -151,8 +161,11 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	_take_damage(amount, kind)
 
 
-## A casca comum cede a qualquer fogo. A casca grossa, só à chama forte.
+## A casca comum cede a qualquer fogo. A casca grossa, só à chama forte. A
+## casca de pedra, só à explosão.
 func _breaks_shell(kind: Hit.Kind) -> bool:
+	if stone_shell:
+		return kind == Hit.Kind.BLAST
 	if thick_shell:
 		return kind == Hit.Kind.STRONG_FIRE
 	return Hit.is_fire(kind)
@@ -252,6 +265,7 @@ func _to_player() -> Vector2:
 func _slam() -> void:
 	Sfx.play(&"boss_slam")
 	var wave := SHOCKWAVE_SCENE.instantiate() as Shockwave
+	wave.tall = tall_waves
 	var layer := get_tree().get_first_node_in_group("floor_effects")
 	if layer:
 		layer.add_child(wave)
@@ -290,9 +304,22 @@ func _factor(kind: Hit.Kind) -> int:
 	return sword_factor
 
 
-## Desenho da casca: de gelo comum ou de gelo grosso.
+## Desenho da casca: de gelo comum, de gelo grosso ou de pedra.
 func _shell_texture() -> Texture2D:
+	if stone_shell:
+		return COLOSSUS_SHELL_TEXTURE
 	return THICK_SHELL_TEXTURE if thick_shell else SHELL_TEXTURE
+
+
+## Desenho do núcleo exposto.
+func _core_texture() -> Texture2D:
+	return COLOSSUS_CORE_TEXTURE if stone_shell else CORE_TEXTURE
+
+
+## Canto do desenho em relação à origem, nos pés: centrado e terminando um
+## pouco abaixo dos pés.
+func _texture_offset(texture: Texture2D) -> Vector2:
+	return Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
 
 
 ## Troca de estado. O despertar, os avisos e a investida têm som.
@@ -339,12 +366,12 @@ func _draw() -> void:
 		tint = HIT_TINT
 	elif now - _immune_tick < FLASH_TICKS:
 		tint = IMMUNE_COLOR
-	var texture := _shell_texture() if _shell else CORE_TEXTURE
+	var texture := _shell_texture() if _shell else _core_texture()
 	if not _shell:
 		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
 			texture = _shell_texture()
-	var origin := GUARDIAN_OFFSET + shake
+	var origin := _texture_offset(texture) + shake
 	draw_texture(texture, origin, tint)
-	var bar_width := BODY_SIZE.x * float(maxi(health, 0)) / max_health
+	var bar_width := texture.get_width() * float(maxi(health, 0)) / max_health
 	draw_rect(Rect2(origin + Vector2(0.0, -4.0), Vector2(bar_width, 2.0)), HEALTH_COLOR)

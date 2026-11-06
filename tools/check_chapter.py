@@ -1,18 +1,25 @@
 """Confere os dados de um capítulo sem abrir o Godot.
 
-Lê o arquivo de dados em GDScript (MAP, BLOCKS, ITEMS, GOAL, GOAL_TOOLS e,
-se houver, STARTING_TOOLS, as ferramentas com que o personagem chega),
-confere a geometria das salas e repete as regras de alcance do jogo para
-garantir que o capítulo é vencível em qualquer ordem de abrir as portas
-trancadas e que nenhuma combinação de ferramentas e portas abertas prende o
-jogador num lugar sem volta.
+Lê o arquivo de dados em GDScript (MAP, BLOCKS, ITEMS, GOAL, GOAL_TOOLS e, se
+houver, STARTING_TOOLS, as ferramentas com que o personagem chega, e ROOMS, as
+salas maiores que uma tela), confere a geometria das salas e repete as regras
+de alcance do jogo para garantir que o capítulo é vencível em qualquer ordem
+de abrir as portas trancadas e que nenhuma combinação de ferramentas e portas
+abertas prende o jogador num lugar sem volta.
 
 As regras de alcance são as do jogo: parede rachada passa com a bomba, gelo
 passa com a chama ou a chama forte, gelo grosso só com a chama forte, porta
 trancada passa depois de aberta com uma chave pequena, porta do chefe passa
-com a chave grande, e a face de degrau passa de baixo para cima só com a mola
-e de cima para baixo sempre. Um baú conta como alcançado se alguma casa
-vizinha for alcançada.
+com a chave grande, a face de degrau passa de baixo para cima só com a mola e
+de cima para baixo sempre, e a face do degrau duplo, de baixo para cima, só
+com a mola forte. Um baú conta como alcançado se alguma casa vizinha for
+alcançada.
+
+Também confere a leitura visual que o jogo não impõe: todo bloqueio de porta
+fica uma casa para dentro da sala, o gelo grosso tem duas casas de fundo, e as
+alturas fecham. O chão tem três níveis, "." o comum, ":" o alto e "^" o mais
+alto. Casas vizinhas sem uma face de degrau entre elas precisam estar no
+mesmo nível, o degrau sobe um nível e o degrau duplo sobe dois.
 
 Como no NES, que guardava o mapa em blocos e não em pixels, a lógica não anda
 casa por casa. As casas livres ligadas entre si viram uma região, e cada
@@ -30,14 +37,17 @@ from collections import Counter
 
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-SLOTS = "123456789abdefghjklnopqrstvxyz"
-ACTORS = "muiwc*&%@"
+SLOTS = "123456789abdefghjklnopqrtvxyz"
+ACTORS = "muiwsc*&%$@"
+FLOORS = ".:^"
+LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 UP, DOWN = (0, -1), (0, 1)
 # A ordem de Item.Id em items/item.gd.
-ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "HEART", "KEY", "BOSS_KEY"]
-PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "BOSS_KEY"]
-BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE"]
+ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY"]
+PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY"]
+BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE"]
+LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 
 def bit(name):
@@ -61,7 +71,12 @@ def parse(path):
     if found:
         for name in re.findall(r"Item\.Id\.(\w+)", found.group(1)):
             starting |= bit(name)
-    return rows, blocks, items, goal, goal_mask, starting
+    rooms = []
+    found = re.search(r"const ROOMS := \[(.*?)\n\]", text, re.S)
+    if found:
+        for match in re.findall(r"Rect2i\((\d+), (\d+), (\d+), (\d+)\)", found.group(1)):
+            rooms.append(tuple(int(v) for v in match))
+    return rows, blocks, items, goal, goal_mask, starting, rooms
 
 
 class Map:
@@ -90,11 +105,14 @@ class Map:
     def block_at(self, cell):
         return self.blocks.get(self.tile(cell))
 
+    def is_ledge(self, cell):
+        return self.block_at(cell) in LEDGES
+
     def is_space(self, cell):
         character = self.tile(cell)
         if character in "# " or character in LOCATIONS:
             return False
-        return self.block_at(cell) != "LEDGE"
+        return not self.is_ledge(cell)
 
     def slot_of(self, cell):
         character = self.tile(cell)
@@ -117,16 +135,25 @@ class Map:
         return False
 
     def step_target(self, cell, step):
-        """Casa de chegada e se exige a mola, ou None."""
+        """Casa de chegada e a ferramenta que o passo exige, como bit, ou
+        None. Uma face de degrau só se cruza na vertical: subir exige a mola,
+        e no degrau duplo a mola forte. Descer é sempre livre."""
         nxt = (cell[0] + step[0], cell[1] + step[1])
-        if self.block_at(nxt) != "LEDGE":
-            return (nxt, False) if self.is_space(nxt) else None
+        kind = self.block_at(nxt)
+        if kind not in LEDGES:
+            return (nxt, 0) if self.is_space(nxt) else None
         if step not in (UP, DOWN):
             return None
-        beyond = (nxt[0] + step[0], nxt[1] + step[1])
+        slot = self.tile(nxt)
+        beyond = nxt
+        while self.tile(beyond) == slot:
+            beyond = (beyond[0] + step[0], beyond[1] + step[1])
         if not self.is_space(beyond):
             return None
-        return (beyond, step == UP)
+        need = 0
+        if step == UP:
+            need = bit("STRONG_SPRING") if kind == "TALL_LEDGE" else bit("SPRING")
+        return (beyond, need)
 
     # Grafo de regiões.
 
@@ -174,7 +201,7 @@ class Map:
                     ]
 
     def can_pass(self, edge, tools, opened):
-        if edge[2] and not tools & bit("SPRING"):
+        if edge[2] and not tools & edge[2]:
             return False
         return self.can_enter_slot(self.node_slot[edge[1]], tools, opened)
 
@@ -200,7 +227,7 @@ class Map:
                 target = self.step_target(cell, step)
                 if target is None or target[0] in reached:
                     continue
-                if target[1] and not tools & bit("SPRING"):
+                if target[1] and not tools & target[1]:
                     continue
                 if not self.can_enter_slot(self.slot_of(target[0]), tools, opened):
                     continue
@@ -241,7 +268,7 @@ class Map:
                 continue
             if self.blocks.get(slot) != "LOCKED":
                 continue
-            if edge[2] and not tools & bit("SPRING"):
+            if edge[2] and not tools & edge[2]:
                 continue
             doors.append(slot)
         return doors
@@ -277,14 +304,23 @@ class Map:
         return True
 
 
-def check_geometry(m, blocks, items, goal, errors):
+def room_of(screen, rooms):
+    """Sala maior que contém a tela, como (x, y, w, h), ou a própria tela."""
+    for room in rooms:
+        x, y, w, h = room
+        if x <= screen[0] < x + w and y <= screen[1] < y + h:
+            return room
+    return (screen[0], screen[1], 1, 1)
+
+
+def check_geometry(m, blocks, items, goal, rooms, errors):
     rooms_x = (m.width + ROOM_W - 1) // ROOM_W
     rooms_y = m.height // ROOM_H
     if m.height % ROOM_H:
         errors.append("altura do mapa não é múltipla de %d" % ROOM_H)
     counts = Counter("".join(m.rows))
     for character in counts:
-        allowed = "#.: " + LOCATIONS + SLOTS + ACTORS
+        allowed = "# " + FLOORS + LOCATIONS + SLOTS + ACTORS
         if character not in allowed:
             errors.append("caractere desconhecido %r" % character)
     if counts["@"] != 1:
@@ -304,6 +340,7 @@ def check_geometry(m, blocks, items, goal, errors):
             present.add((rx, ry))
             if any(m.tile(c) == " " for c in cells):
                 errors.append("sala %s tem casas vazias" % ((rx, ry),))
+            room = room_of((rx, ry), rooms)
             for x in range(ROOM_W):
                 for y in range(ROOM_H):
                     border = x in (0, ROOM_W - 1) or y in (0, ROOM_H - 1)
@@ -312,13 +349,16 @@ def check_geometry(m, blocks, items, goal, errors):
                         continue
                     # Abertura na borda: precisa continuar na sala vizinha.
                     if x == 0:
-                        other = (cell[0] - 1, cell[1])
+                        other, neighbor = (cell[0] - 1, cell[1]), (rx - 1, ry)
                     elif x == ROOM_W - 1:
-                        other = (cell[0] + 1, cell[1])
+                        other, neighbor = (cell[0] + 1, cell[1]), (rx + 1, ry)
                     elif y == 0:
-                        other = (cell[0], cell[1] - 1)
+                        other, neighbor = (cell[0], cell[1] - 1), (rx, ry - 1)
                     else:
-                        other = (cell[0], cell[1] + 1)
+                        other, neighbor = (cell[0], cell[1] + 1), (rx, ry + 1)
+                    if room_of(neighbor, rooms) == room:
+                        # Dentro de uma sala maior, a borda da tela não é borda.
+                        continue
                     if m.tile(other) in "# ":
                         errors.append("porta sem continuação em %s" % (cell,))
                     # Bloqueio na borda fica na beira da tela, onde não se vê
@@ -328,6 +368,23 @@ def check_geometry(m, blocks, items, goal, errors):
                             "bloqueio %s na borda da sala em %s: ponha uma casa para dentro"
                             % (m.tile(cell), cell)
                         )
+    # Salas maiores: todas as telas existem, e cada duas telas vizinhas se
+    # comunicam por dentro da sala.
+    for room in rooms:
+        x, y, w, h = room
+        screens = [(x + dx, y + dy) for dy in range(h) for dx in range(w)]
+        for screen in screens:
+            if screen not in present:
+                errors.append("sala maior %s inclui a tela vazia %s" % (room, screen))
+        for sx, sy in screens:
+            if sx + 1 < x + w:
+                column = (sx + 1) * ROOM_W - 1
+                if all(m.tile((column, sy * ROOM_H + i)) == "#" for i in range(ROOM_H)):
+                    errors.append("sala maior %s tem parede inteira entre as telas em x=%d" % (room, column))
+            if sy + 1 < y + h:
+                line = (sy + 1) * ROOM_H - 1
+                if all(m.tile((sx * ROOM_W + i, line)) == "#" for i in range(ROOM_W)):
+                    errors.append("sala maior %s tem parede inteira entre as telas em y=%d" % (room, line))
     # Vagas: cada caractere forma um retângulo cheio, e o tipo existe.
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
@@ -340,20 +397,27 @@ def check_geometry(m, blocks, items, goal, errors):
         if slot not in blocks:
             errors.append("vaga %s sem tipo em BLOCKS" % slot)
             continue
-        if blocks[slot] not in BLOCK_TYPES:
-            errors.append("vaga %s com tipo desconhecido %s" % (slot, blocks[slot]))
-        if blocks[slot] == "THICK_ICE" and min(w, h) < 2:
+        kind = blocks[slot]
+        if kind not in BLOCK_TYPES:
+            errors.append("vaga %s com tipo desconhecido %s" % (slot, kind))
+        if kind == "THICK_ICE" and min(w, h) < 2:
             errors.append("gelo grosso %s precisa de duas casas de fundo" % slot)
-        if blocks[slot] == "LEDGE":
-            if len(set(ys)) != 1:
-                errors.append("degrau %s precisa ocupar uma linha só" % slot)
-            for x, y in cells:
-                for side in (-1, 1):
-                    neighbor = m.tile((x, y + side))
-                    if neighbor in "# " or neighbor in SLOTS or neighbor in LOCATIONS:
-                        errors.append("degrau %s sem chão acima e abaixo em %s" % (slot, (x, y)))
-                if m.tile((x, y - 1)) != ":":
-                    errors.append("degrau %s sem chão alto logo ao norte em %s" % (slot, (x, y)))
+        if kind in LEDGES:
+            if h != LEDGES[kind]:
+                errors.append(
+                    "degrau %s precisa ocupar %d linha(s), ocupa %d" % (slot, LEDGES[kind], h)
+                )
+            for x in range(min(xs), max(xs) + 1):
+                above = m.tile((x, min(ys) - 1))
+                below = m.tile((x, max(ys) + 1))
+                # Um inimigo em cima do chão alto toma o caractere da casa, e
+                # aí o nível fica a cargo de check_heights.
+                if above in FLOORS and LEVELS[above] < LEDGES[kind]:
+                    errors.append("degrau %s sem chão alto o bastante logo ao norte em %s" % (slot, (x, min(ys))))
+                elif above not in FLOORS and above not in ACTORS:
+                    errors.append("degrau %s sem chão logo ao norte em %s" % (slot, (x, min(ys))))
+                if below in "# " or below in SLOTS or below in LOCATIONS:
+                    errors.append("degrau %s sem chão logo ao sul em %s" % (slot, (x, max(ys))))
     for slot in blocks:
         if slot not in "".join(m.rows):
             errors.append("BLOCKS cita a vaga %s, que não está no mapa" % slot)
@@ -362,7 +426,7 @@ def check_geometry(m, blocks, items, goal, errors):
     map_locations = set(c for c in "".join(m.rows) if c in LOCATIONS)
     for location in map_locations:
         x, y = m.find(location)
-        if m.tile((x, y + 1)) not in ".:":
+        if m.tile((x, y + 1)) not in FLOORS:
             errors.append("baú %s precisa de chão logo ao sul" % location)
         if counts[location] != 1:
             errors.append("baú %s aparece mais de uma vez" % location)
@@ -376,6 +440,59 @@ def check_geometry(m, blocks, items, goal, errors):
     return present
 
 
+def check_heights(m, errors):
+    """As alturas fecham: casas vizinhas sem face de degrau entre elas estão
+    no mesmo nível, e cada face separa dois níveis com a diferença certa."""
+    component = {}
+    levels = []
+    firsts = []
+    for y, row in enumerate(m.rows):
+        for x, character in enumerate(row):
+            cell = (x, y)
+            if character in "# " or m.is_ledge(cell) or cell in component:
+                continue
+            index = len(levels)
+            found = set()
+            frontier = [cell]
+            component[cell] = index
+            while frontier:
+                c = frontier.pop()
+                if m.tile(c) in LEVELS:
+                    found.add(LEVELS[m.tile(c)])
+                for dx, dy in STEPS:
+                    n = (c[0] + dx, c[1] + dy)
+                    if n in component or m.tile(n) in "# " or m.is_ledge(n):
+                        continue
+                    component[n] = index
+                    frontier.append(n)
+            if len(found) > 1:
+                errors.append(
+                    "alturas misturadas %s na região que começa em %s: falta uma face de degrau"
+                    % (sorted(found), cell)
+                )
+            levels.append(found.pop() if len(found) == 1 else None)
+            firsts.append(cell)
+    for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
+        kind = m.blocks.get(slot)
+        if kind not in LEDGES:
+            continue
+        cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
+        top = min(c[1] for c in cells)
+        bottom = max(c[1] for c in cells)
+        for x in sorted(set(c[0] for c in cells)):
+            above = component.get((x, top - 1))
+            below = component.get((x, bottom + 1))
+            if above is None or below is None:
+                continue
+            if levels[above] is None or levels[below] is None:
+                errors.append("degrau %s entre regiões sem nível de chão em %s" % (slot, (x, top)))
+            elif levels[above] - levels[below] != LEDGES[kind]:
+                errors.append(
+                    "degrau %s sobe de %d para %d em %s, precisa subir %d"
+                    % (slot, levels[below], levels[above], (x, top), LEDGES[kind])
+                )
+
+
 def check_logic(m, items, goal, goal_mask, errors):
     start = m.find("@")
     start_node = m.node_of[start]
@@ -384,9 +501,13 @@ def check_logic(m, items, goal, goal_mask, errors):
     # com o alcance casa por casa, e de toda casa alcançável dá para voltar ao
     # início, ou seja, nada prende o jogador.
     trap_found = False
+    tested = set()
     for count in range(len(PERMANENT) + 1):
         for combo in itertools.combinations(permanent_bits, count):
             tools = sum(combo) | m.starting
+            if tools in tested:
+                continue
+            tested.add(tools)
             for size in range(len(m.locked) + 1):
                 for opened in itertools.combinations(m.locked, size):
                     opened = set(opened)
@@ -416,12 +537,14 @@ def check_logic(m, items, goal, goal_mask, errors):
 
 
 def main(path):
-    rows, blocks, items, goal, goal_mask, starting = parse(path)
+    rows, blocks, items, goal, goal_mask, starting, rooms = parse(path)
     m = Map(rows, blocks, starting)
     errors = []
-    present = check_geometry(m, blocks, items, goal, errors)
+    present = check_geometry(m, blocks, items, goal, rooms, errors)
+    check_heights(m, errors)
     order, keys = check_logic(m, items, goal, goal_mask, errors)
-    print("salas:", len(present), sorted(present))
+    big = sum(r[2] * r[3] for r in rooms)
+    print("telas: %d, salas: %d, maiores: %s" % (len(present), len(present) - big + len(rooms), rooms))
     print(
         "regiões: %d, passagens: %d, portas trancadas: %d, chaves: %d"
         % (len(m.node_slot), len(m.edges), len(m.locked), keys)

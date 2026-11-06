@@ -123,12 +123,18 @@ armadilha, bloqueios fora da beira da tela).
     de mão única que servem de atalho de volta. As alturas precisam ser
     coerentes: num circuito fechado de salas, não pode haver uma descida sem a
     subida correspondente. Foi esse erro que tirava a leitura de altura no
-    capítulo 1 e no estrado do capítulo 2, corrigidos em 2026-11-06.
+    capítulo 1 e no estrado do capítulo 2, corrigidos em 2026-11-06. Desde o
+    capítulo 4 o chão tem três níveis, e o conferidor recusa um mapa em que a
+    altura não fecha.
 11. **Bloqueio sempre inteiro na tela.** Um bloqueio de porta fica uma casa
     para dentro da sala, num nicho entre duas paredes, nunca na beira da tela.
 12. **Tema coerente.** O capítulo 3 é de gelo: gelo grosso, morsas de gelo e o
     guardião antigo têm a mesma paleta azul profunda, e a chama forte é a
-    resposta a tudo isso.
+    resposta a tudo isso. O capítulo 4 é de pedra: degrau duplo, atiradores
+    de pedras nos estrados e o colosso de arenito, e a mola forte sobe tudo.
+14. **Salas maiores que a tela** (capítulo 4). Uma arena de duas telas dá ao
+    chefe espaço para correr, e uma pedreira de quatro telas deixa o jogador
+    ver o platô e os atiradores de longe, como as salas grandes de ALttP.
 13. **Sem dicas escritas.** O mapa é a dica. Quem precisa de ajuda tem o som
     do golpe errado e o tremor do bloqueio.
 
@@ -137,6 +143,7 @@ armadilha, bloqueios fora da beira da tela).
 - Mapa, compasso e corujas: o jogo não tem tela de mapa ainda. Fica como
   questão em aberto em `design.md`.
 - Interruptores de estado (blocos laranja e azul): bom candidato a mecanismo
-  do capítulo 4, com a mola ou a bomba como gatilho.
+  de um capítulo futuro, com a mola ou a bomba como gatilho. O capítulo 4
+  ficou com o degrau duplo.
 - Objetos carregados com restrições (a bola da Eagle's Tower): depende de
   pegar e carregar, que o Giorgio ainda não faz.

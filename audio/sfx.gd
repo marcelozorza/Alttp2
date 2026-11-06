@@ -24,6 +24,7 @@ const SOUNDS := {
 	&"hurt": [-4.0, 0.05],
 	&"down": [-4.0, 0.0],
 	&"jump": [-6.0, 0.03],
+	&"jump_strong": [-5.0, 0.03],
 	&"land": [-12.0, 0.08],
 	&"ledge_drop": [-12.0, 0.05],
 	# Espada

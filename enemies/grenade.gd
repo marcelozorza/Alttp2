@@ -5,6 +5,9 @@ extends Node2D
 ## granada sai da mão, e um quadrado cresce dentro dela até o estouro, como
 ## aviso. Quem estiver com os pés na área no estouro fica com a espada travada.
 ## A granada não causa dano, não empurra e só afeta o personagem.
+##
+## A pedra do atirador (enemies/rock.tscn) é a mesma cena com outros valores:
+## cai numa casa só, causa dano em vez de travar a espada e tem a cor da pedra.
 
 ## Tamanho do desenho da granada, em pixels.
 const BALL_SIZE := Vector2(6.0, 6.0)
@@ -18,8 +21,12 @@ const BURST_TICKS := 12
 @export_range(1, 7, 1) var area_tiles := 3
 ## Altura extra do arco, em pixels, além da altura da mão.
 @export_range(0.0, 64.0, 1.0) var arc_height := 20.0
-## Segundos com a espada travada para quem estiver na área.
+## Segundos com a espada travada para quem estiver na área. Zero não trava.
 @export_range(0.0, 10.0, 0.5) var sword_lock_time := 3.0
+## Dano em quem estiver na área. Zero não machuca.
+@export_range(0, 10, 1) var damage := 0
+## Cor da bola e da área no chão.
+@export var color := Color(0.95, 0.35, 0.85, 1.0)
 
 var _from := Vector2.ZERO
 var _from_height := 0.0
@@ -31,7 +38,7 @@ var _area_shape := RectangleShape2D.new()
 
 
 func _ready() -> void:
-	_ball.color = Player.SWORD_LOCK_COLOR
+	_ball.color = color
 
 
 ## Lança a granada. Ela sai de from, os pés de quem joga, à altura from_height,
@@ -90,8 +97,14 @@ func _burst() -> void:
 	query.transform = Transform2D(0.0, global_position)
 	for result: Dictionary in get_world_2d().direct_space_state.intersect_shape(query, 64):
 		var player := result["collider"] as Player
-		if player:
+		if not player:
+			continue
+		if sword_lock_time > 0.0:
 			player.lock_sword(sword_lock_time)
+		if damage > 0:
+			var away := player.global_position - global_position
+			var direction := away.normalized() if away != Vector2.ZERO else Vector2.DOWN
+			player.take_hit(damage, direction)
 
 
 ## Visual provisório: a área no chão com borda, o quadrado que cresce do centro
@@ -99,7 +112,6 @@ func _burst() -> void:
 ## brilha e some.
 func _draw() -> void:
 	var area := _area()
-	var color := Player.SWORD_LOCK_COLOR
 	if _burst_tick >= 0:
 		var fade := 1.0 - float(Engine.get_physics_frames() - _burst_tick) / BURST_TICKS
 		draw_rect(area, Color(color, 0.7 * fade))

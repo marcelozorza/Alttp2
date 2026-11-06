@@ -3,25 +3,27 @@ extends RefCounted
 ## Grade de um capítulo lida de linhas de texto.
 ##
 ## Cada caractere é uma casa de 16 pixels:
-## - "#" parede, " " fora do mapa, "." chão, ":" chão alto, o topo de um degrau.
+## - "#" parede, " " fora do mapa, "." chão, ":" chão alto, o topo de um degrau,
+##   "^" chão mais alto, o topo de um degrau duplo.
 ## - "@" início do personagem.
 ## - "A" a "Z" baús. O conteúdo vem dos itens do capítulo, nunca do mapa.
 ## - SLOTS: bloqueios, os algarismos de 1 a 9 e as letras minúsculas que não
 ##   são inimigos. O tipo de cada um vem dos dados do capítulo. Casas com o
 ##   mesmo caractere formam um só bloqueio.
-## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "c" caixa
-##   leve.
-## - "*" guardião de gelo, "&" sentinela e "%" guardião antigo, os chefes.
+## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "s" atirador
+##   de pedras, "c" caixa leve.
+## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
+##   chefes.
 ##
 ## A conferência de que o capítulo tem caminho até o fim fica fora do jogo, em
 ## tools/check_chapter.py, que lê os mesmos dados.
 
-enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE }
+enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE }
 
 ## Tamanho de uma casa, em pixels.
 const TILE := 16
 const LOCATIONS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const SLOTS := "123456789abdefghjklnopqrstvxyz"
+const SLOTS := "123456789abdefghjklnopqrtvxyz"
 const STEPS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 const NO_CELL := Vector2i(-1, -1)
 
@@ -74,13 +76,23 @@ func block_type(slot: String) -> int:
 	return _blocks.get(slot, -1)
 
 
-## Chão alto: o topo de um degrau, ou um baú ao lado de chão alto.
-func is_high(cell: Vector2i) -> bool:
-	if tile(cell) == ":":
-		return true
-	if not is_location(tile(cell)):
-		return false
+## Nível do chão: 0 no chão comum, 1 no chão alto (":"), o topo de um degrau,
+## e 2 no chão mais alto ("^"), o topo de um degrau duplo. Um baú, um inimigo
+## ou um bloqueio toma o caractere da casa, então fica no nível do chão mais
+## alto ao lado dele.
+func height_level(cell: Vector2i) -> int:
+	var character := tile(cell)
+	if character == "^":
+		return 2
+	if character == ":":
+		return 1
+	if character == "." or character == "#" or character == " ":
+		return 0
+	var level := 0
 	for step: Vector2i in STEPS:
-		if tile(cell + step) == ":":
-			return true
-	return false
+		var neighbor := tile(cell + step)
+		if neighbor == "^":
+			return 2
+		if neighbor == ":":
+			level = 1
+	return level

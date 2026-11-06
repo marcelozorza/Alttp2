@@ -4,7 +4,8 @@ extends Control
 ## com a lâmina magenta enquanto está travada. O botão de uma ferramenta que o
 ## personagem ainda não tem aparece vazio e apagado. Uma melhoria troca o
 ## ícone da ferramenta: com a chama forte, o botão da chama mostra a chama
-## maior de miolo branco. Ao lado do botão de uma
+## maior de miolo branco, e com a mola forte, o botão do pulo mostra a mola
+## mais alta. Ao lado do botão de uma
 ## ferramenta com cargas, do lado de fora do losango, uma coluna de pontos
 ## mostra as cargas, que se apagam de cima para baixo, e o botão escurece
 ## quando elas acabam. No capítulo, mostra também o número do capítulo e o
@@ -164,6 +165,8 @@ func _draw_buttons(player: Player) -> void:
 func _shown_item(player: Player, id: int) -> int:
 	if id == Item.Id.FIRE and player.has_tool(Item.Id.STRONG_FIRE):
 		return Item.Id.STRONG_FIRE
+	if id == Item.Id.SPRING and player.has_tool(Item.Id.STRONG_SPRING):
+		return Item.Id.STRONG_SPRING
 	return id
 
 

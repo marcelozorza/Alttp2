@@ -3,7 +3,8 @@ extends RefCounted
 ## Dados de um capítulo, lidos das constantes do arquivo de dados dele: o mapa
 ## em texto, o tipo de cada bloqueio, o item de cada baú e, se houver, as
 ## ferramentas com que o personagem chega (STARTING_TOOLS), que nos capítulos
-## seguintes ao 2 são as três ferramentas já ganhas.
+## seguintes ao 2 são as três ferramentas já ganhas, e as salas maiores que
+## uma tela (ROOMS), retângulos em salas de 20 por 10 casas.
 ##
 ## Cada capítulo tem só um arquivo de dados, e a cena do capítulo é a mesma
 ## para todos. Para criar um capítulo novo, basta um arquivo de dados com as
@@ -17,6 +18,7 @@ const SOURCES := [
 	preload("res://world/chapter_one/chapter_one_data.gd"),
 	preload("res://world/chapter_two/chapter_two_data.gd"),
 	preload("res://world/chapter_three/chapter_three_data.gd"),
+	preload("res://world/chapter_four/chapter_four_data.gd"),
 ]
 
 ## Número do capítulo, a partir de 1.
@@ -27,6 +29,9 @@ var blocks := {}
 var items := {}
 ## Ferramentas com que o personagem chega, como Item.Id.
 var starting_tools: Array = []
+## Salas maiores que uma tela, como Rect2i em unidades de sala. As outras
+## salas têm uma tela.
+var rooms: Array = []
 
 
 static func count() -> int:
@@ -42,4 +47,5 @@ static func load_number(chapter: int) -> ChapterData:
 	data.blocks = constants["BLOCKS"]
 	data.items = constants["ITEMS"]
 	data.starting_tools = constants.get("STARTING_TOOLS", [])
+	data.rooms = constants.get("ROOMS", [])
 	return data

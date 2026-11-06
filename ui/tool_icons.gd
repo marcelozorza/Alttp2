@@ -11,6 +11,8 @@ const FLAME_INNER_COLOR := Color(1.0, 0.9, 0.4, 1.0)
 ## A chama forte é maior e tem o miolo branco, como a bola de fogo dela.
 const STRONG_FLAME_CORE_COLOR := Color(1.0, 0.98, 0.85, 1.0)
 const SPRING_COLOR := Color(0.55, 0.85, 0.45, 1.0)
+## A mola forte é mais alta, com a placa de cima reforçada.
+const STRONG_SPRING_PLATE_COLOR := Color(0.85, 0.95, 0.7, 1.0)
 const HEART_COLOR := Color(0.9, 0.2, 0.25, 1.0)
 const KEY_COLOR := Color(0.85, 0.8, 0.7, 1.0)
 const BOSS_KEY_COLOR := Color(0.95, 0.4, 0.3, 1.0)
@@ -25,6 +27,17 @@ const STRONG_FLAME_MIDDLE := [
 const STRONG_FLAME_CORE := [Vector2(0, -1), Vector2(1.5, 2), Vector2(0, 3.5), Vector2(-1.5, 2)]
 const COIL := [
 	Vector2(-4, 5), Vector2(4, 3), Vector2(-4, 1), Vector2(4, -1), Vector2(-4, -3), Vector2(4, -5)
+]
+const STRONG_COIL := [
+	Vector2(-4, 6),
+	Vector2(4, 4.5),
+	Vector2(-4, 3),
+	Vector2(4, 1.5),
+	Vector2(-4, 0),
+	Vector2(4, -1.5),
+	Vector2(-4, -3),
+	Vector2(4, -4.5),
+	Vector2(-4, -6),
 ]
 const HEART_TIP := [Vector2(-4.6, -0.2), Vector2(4.6, -0.2), Vector2(0, 5)]
 
@@ -50,6 +63,11 @@ static func draw(canvas: CanvasItem, id: int, center: Vector2, factor := 1.0) ->
 			canvas.draw_polyline(_points(COIL, center, factor), SPRING_COLOR, maxf(1.0, factor))
 			var plate := Rect2(center + Vector2(-4.0, -6.5) * factor, Vector2(8.0, 1.5) * factor)
 			canvas.draw_rect(plate, SPRING_COLOR)
+		Item.Id.STRONG_SPRING:
+			var coil := _points(STRONG_COIL, center, factor)
+			canvas.draw_polyline(coil, SPRING_COLOR, maxf(1.0, factor))
+			var plate := Rect2(center + Vector2(-5.0, -8.5) * factor, Vector2(10.0, 2.5) * factor)
+			canvas.draw_rect(plate, STRONG_SPRING_PLATE_COLOR)
 		Item.Id.HEART:
 			canvas.draw_circle(center + Vector2(-2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)
 			canvas.draw_circle(center + Vector2(2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)

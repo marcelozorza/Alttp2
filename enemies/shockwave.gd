@@ -2,8 +2,16 @@ class_name Shockwave
 extends Node2D
 ## Onda de choque que corre pelo chão a partir da pancada do chefe. Só machuca
 ## quem está no chão: no ar, com o pulo da mola, ela passa por baixo.
+##
+## A onda alta, do colosso, é mais grossa e sobe mais: o pulo comum não passa
+## dela, só o pulo da mola forte. É o exame da melhoria, como a onda comum é o
+## exame da mola.
 
 const COLOR := Color(0.95, 0.95, 1.0, 1.0)
+const TALL_COLOR := Color(0.95, 0.8, 0.55, 1.0)
+## Altura dos pés que a onda alta exige, acima do pico do pulo comum.
+const TALL_CLEARANCE := 26.0
+const TALL_THICKNESS := 14.0
 
 ## Velocidade da frente da onda, em pixels por segundo.
 @export_range(10.0, 400.0, 1.0) var speed := 120.0
@@ -17,9 +25,17 @@ const COLOR := Color(0.95, 0.95, 1.0, 1.0)
 @export_range(0.0, 600.0, 10.0) var impulse := 160.0
 ## Altura dos pés, em pixels, a partir da qual a onda passa por baixo.
 @export_range(0.0, 20.0, 1.0) var clearance := 4.0
+## Ligada, a onda é alta: só o pulo da mola forte passa.
+@export var tall := false
 
 var _radius := 0.0
 var _hit := false
+
+
+func _ready() -> void:
+	if tall:
+		clearance = TALL_CLEARANCE
+		thickness = TALL_THICKNESS
 
 
 func _physics_process(delta: float) -> void:
@@ -47,6 +63,11 @@ func _check_player() -> void:
 
 func _draw() -> void:
 	var alpha := 1.0 - _radius / max_radius
-	draw_arc(Vector2.ZERO, _radius, 0.0, TAU, 64, Color(COLOR, alpha), 2.0)
-	var inner := maxf(_radius - 4.0, 0.0)
-	draw_arc(Vector2.ZERO, inner, 0.0, TAU, 64, Color(COLOR, alpha * 0.4), 1.0)
+	var color := TALL_COLOR if tall else COLOR
+	var width := 4.0 if tall else 2.0
+	draw_arc(Vector2.ZERO, _radius, 0.0, TAU, 64, Color(color, alpha), width)
+	var inner := maxf(_radius - (8.0 if tall else 4.0), 0.0)
+	draw_arc(Vector2.ZERO, inner, 0.0, TAU, 64, Color(color, alpha * 0.4), width / 2.0)
+	if tall:
+		var crest := maxf(_radius - 3.0, 0.0)
+		draw_arc(Vector2.ZERO, crest, 0.0, TAU, 64, Color(color, alpha * 0.7), 1.0)

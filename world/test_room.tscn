@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://obstacles/ice_block.tscn" id="10_ice_block"]
 [ext_resource type="PackedScene" path="res://obstacles/thick_ice.tscn" id="11_thick_ice"]
 [ext_resource type="PackedScene" path="res://enemies/walrus.tscn" id="12_walrus"]
+[ext_resource type="PackedScene" path="res://enemies/slinger.tscn" id="13_slinger"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -161,7 +162,7 @@ position = Vector2(160, 52)
 
 [node name="Player" parent="Objects" instance=ExtResource("1_player")]
 position = Vector2(48, 64)
-starting_tools = 15
+starting_tools = 31
 
 [node name="Ugly" parent="Objects" instance=ExtResource("4_ugly")]
 position = Vector2(270, 100)
@@ -171,6 +172,9 @@ position = Vector2(272, 40)
 
 [node name="Walrus" parent="Objects" instance=ExtResource("12_walrus")]
 position = Vector2(60, 150)
+
+[node name="Slinger" parent="Objects" instance=ExtResource("13_slinger")]
+position = Vector2(300, 60)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

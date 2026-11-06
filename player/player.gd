@@ -21,12 +21,13 @@ extends MomentumBody
 ## O jogo é feito para o controle, com a espada e cada ferramenta no seu
 ## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
 ## ferramenta não faz nada antes de o personagem tê-la. Uma melhoria, como a
-## chama forte, não ganha botão: muda o que a ferramenta faz. A chama e a bomba têm
-## cargas, que voltam todas juntas depois de um tempo sem uso (ver
-## player/tool_charges.gd). A espada e a mola não têm limite. A mola dá um pulo
-## vertical: o personagem sobe no eixo da câmera, cresce na tela e mantém o
-## mesmo controle do chão, sem ganhar distância. Com ela, ele sobe degraus altos
-## (ver obstacles/ledge.gd).
+## chama forte ou a mola forte, não ganha botão: muda o que a ferramenta faz. A
+## chama e a bomba têm cargas, que voltam todas juntas depois de um tempo sem
+## uso (ver player/tool_charges.gd). A espada e a mola não têm limite. A mola
+## dá um pulo vertical: o personagem sobe no eixo da câmera, cresce na tela e
+## mantém o mesmo controle do chão, sem ganhar distância. Com ela, ele sobe
+## degraus altos, e com a mola forte o pulo é mais alto e demorado, e sobe o
+## degrau duplo (ver obstacles/ledge.gd).
 ##
 ## A espada pode ficar travada por um tempo, como faz a granada do ugly. Uma
 ## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
@@ -138,8 +139,14 @@ const VISUAL_CATCH_UP := 1.5
 @export_range(8.0, 48.0, 1.0) var jump_height := 22.0
 ## Tempo no ar do pulo, em segundos.
 @export_range(0.2, 1.5, 0.05) var jump_time := 0.5
-## Quanto o personagem cresce no alto do pulo, por estar mais perto da câmera.
+## Quanto o personagem cresce no alto do pulo comum, por estar mais perto da
+## câmera. O pulo da mola forte cresce na mesma proporção, logo mais.
 @export_range(0.0, 1.0, 0.05) var jump_growth := 0.25
+## Altura do pulo com a mola forte, em pixels. Precisa passar da altura do
+## degrau duplo, que é de 32 pixels.
+@export_range(8.0, 64.0, 1.0) var strong_jump_height := 40.0
+## Tempo no ar do pulo com a mola forte, em segundos.
+@export_range(0.2, 1.5, 0.05) var strong_jump_time := 0.65
 ## Bolas de fogo seguidas antes de a chama precisar recarregar.
 @export_range(1, 10, 1) var fire_charges := 5
 ## Segundos sem usar a chama até todas as cargas voltarem.
@@ -153,7 +160,7 @@ const VISUAL_CATCH_UP := 1.5
 ## Pontos de vida ganhos com cada coração.
 @export_range(1, 6, 1) var heart_bonus := 2
 ## Ferramentas desde o início. Útil na sala de teste.
-@export_flags("Bomba", "Chama", "Mola", "Chama forte") var starting_tools := 0
+@export_flags("Bomba", "Chama", "Mola", "Chama forte", "Mola forte") var starting_tools := 0
 
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
@@ -183,6 +190,10 @@ var _z := 0.0
 var _z_velocity := 0.0
 var _visual_offset := 0.0
 var _drawn_height := 0.0
+## Altura e tempo do pulo em andamento, da mola comum ou da forte. Fora de um
+## pulo, os da mola comum, que também regem a queda de um degrau.
+var _air_height := 22.0
+var _air_time := 0.5
 var _sword_lock_until_tick := 0
 var _sword_lock_ticks := 1
 var _sword_denied_tick := -1000
@@ -205,6 +216,8 @@ func _ready() -> void:
 	health = max_health
 	spawn_position = global_position
 	_tools = starting_tools << 1
+	_air_height = jump_height
+	_air_time = jump_time
 
 
 func _physics_process(delta: float) -> void:
@@ -384,8 +397,11 @@ func _use_tools() -> void:
 	if Input.is_action_just_pressed("use_bomb") and has_tool(Item.Id.BOMB):
 		_place_bomb()
 	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
-		_z_velocity = 4.0 * jump_height / jump_time
-		Sfx.play(&"jump")
+		var strong := has_tool(Item.Id.STRONG_SPRING)
+		_air_height = strong_jump_height if strong else jump_height
+		_air_time = strong_jump_time if strong else jump_time
+		_z_velocity = 4.0 * _air_height / _air_time
+		Sfx.play(&"jump_strong" if strong else &"jump")
 
 
 ## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
@@ -423,22 +439,25 @@ func _shoot_fire() -> void:
 
 
 ## Gravidade do pulo, calculada para que a altura e o tempo no ar sejam os
-## exportados.
+## exportados para a mola em uso.
 func _update_height(delta: float) -> void:
 	if not is_airborne():
 		return
-	_z_velocity -= 8.0 * jump_height / (jump_time * jump_time) * delta
+	_z_velocity -= 8.0 * _air_height / (_air_time * _air_time) * delta
 	_z += _z_velocity * delta
 	if _z <= 0.0:
 		_z = 0.0
 		_z_velocity = 0.0
+		_air_height = jump_height
+		_air_time = jump_time
 		Sfx.play(&"land")
 
 
 ## Degraus altos. Encostado na face vindo do sul, com a mola e alto o bastante,
-## o personagem sobe. Encostado vindo do norte, ele desce num salto. Nos dois
-## casos ele cruza a face de uma vez, trocando posição por altura, e o desenho
-## alcança a nova posição em poucos ticks.
+## o personagem sobe. O degrau duplo tem 32 pixels, e só o pulo da mola forte
+## chega lá. Encostado vindo do norte, ele desce num salto. Nos dois casos ele
+## cruza a face de uma vez, trocando posição por altura, e o desenho alcança a
+## nova posição em poucos ticks.
 func _try_ledge(direction: Vector2, delta: float) -> void:
 	if direction.y == 0.0:
 		return
@@ -641,7 +660,8 @@ func _update_visuals() -> void:
 	var invincible := Engine.get_physics_frames() < _invincible_until_tick
 	var flicker := posmod(Engine.get_physics_frames(), 6) < 3
 	modulate.a = 0.3 if invincible and flicker else 1.0
-	# No ar, o corpo sobe e cresce, e a sombra fica no chão.
+	# No ar, o corpo sobe e cresce, e a sombra fica no chão. O crescimento é
+	# por pixel de altura, então o pulo da mola forte cresce mais.
 	_visual_offset = move_toward(_visual_offset, 0.0, VISUAL_CATCH_UP)
 	_drawn_height = move_toward(_drawn_height, _z, 4.0)
 	_visual.position = Vector2(0.0, _visual_offset - _z)

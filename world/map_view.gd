@@ -11,13 +11,16 @@ extends Node2D
 ##
 ## A luz vem do alto à esquerda, então toda parede projeta uma sombra curta no
 ## chão ao sul e no chão a leste. É a sombra que faz a parede ser lida como
-## volume, e não como uma faixa de outra cor. O chão alto é a beira de um
-## desnível: a face do degrau (obstacles/ledge.gd) projeta a sombra dele.
+## volume, e não como uma faixa de outra cor. O chão alto e o chão mais alto
+## são beiras de desnível, cada um mais claro que o de baixo: a face do degrau
+## (obstacles/ledge.gd) projeta a sombra deles.
 
 const FLOOR := preload("res://art/floor.svg")
 const FLOOR_ALT := preload("res://art/floor_alt.svg")
 const HIGH_FLOOR := preload("res://art/high_floor.svg")
 const HIGH_FLOOR_ALT := preload("res://art/high_floor_alt.svg")
+const HIGHER_FLOOR := preload("res://art/higher_floor.svg")
+const HIGHER_FLOOR_ALT := preload("res://art/higher_floor_alt.svg")
 const WALL := preload("res://art/wall.svg")
 const WALL_FACE := preload("res://art/wall_face.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
@@ -44,10 +47,13 @@ func _draw() -> void:
 				draw_texture(WALL_FACE if faces_floor else WALL, origin)
 				continue
 			var alternate := (x + y) % 2 == 0
-			if map.is_high(cell):
-				draw_texture(HIGH_FLOOR_ALT if alternate else HIGH_FLOOR, origin)
-			else:
-				draw_texture(FLOOR_ALT if alternate else FLOOR, origin)
+			match map.height_level(cell):
+				2:
+					draw_texture(HIGHER_FLOOR_ALT if alternate else HIGHER_FLOOR, origin)
+				1:
+					draw_texture(HIGH_FLOOR_ALT if alternate else HIGH_FLOOR, origin)
+				_:
+					draw_texture(FLOOR_ALT if alternate else FLOOR, origin)
 			_draw_wall_shadows(cell, origin)
 
 

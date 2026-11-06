@@ -1,0 +1,7 @@
+paleta
+s #5e5444
+c #74684f
+a #8c7f60
+b #a89a78
+x #80745a
+usa floor_alt

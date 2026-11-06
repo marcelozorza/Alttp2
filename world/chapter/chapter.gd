@@ -5,25 +5,35 @@ extends Node2D
 ## Os dados de cada capítulo ficam em world/<capítulo>/ (ver
 ## progression/chapter_data.gd).
 ##
+## O mapa é dividido em salas de uma tela, de 20 por 10 casas. Um capítulo
+## pode juntar várias delas numa sala maior (ROOMS nos dados): nela a câmera
+## segue o personagem, sem nunca mostrar nada fora da sala, e todos os
+## inimigos da sala agem juntos.
+##
 ## Os inimigos só agem na sala em que o personagem está. Ao entrar ou sair de
 ## uma sala, os inimigos dela voltam ao ponto inicial, e as ondas do chefe que
 ## ainda correm pelo chão somem. Baús abertos e bloqueios removidos continuam
 ## assim até o fim do capítulo.
 
 const TITLE_SCENE := "res://ui/title_screen.tscn"
-## Tamanho de uma sala, em casas.
+## Tamanho de uma sala de uma tela, em casas.
 const ROOM_TILES := Vector2i(20, 10)
 ## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
 const HUD_HEIGHT := 20.0
+## Metade da tela, em pixels.
+const HALF_SCREEN := Vector2(160.0, 90.0)
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
 const RELIC_SCENE := preload("res://items/relic.tscn")
-## Cena de cada tipo de bloqueio.
+const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
+## Cena de cada tipo de bloqueio. O degrau duplo é a mesma face do degrau,
+## com duas casas de altura.
 const OBSTACLE_SCENES := {
 	ChapterMap.Block.CRACKED: preload("res://obstacles/cracked_wall.tscn"),
 	ChapterMap.Block.ICE: preload("res://obstacles/ice_block.tscn"),
 	ChapterMap.Block.THICK_ICE: preload("res://obstacles/thick_ice.tscn"),
-	ChapterMap.Block.LEDGE: preload("res://obstacles/ledge.tscn"),
+	ChapterMap.Block.LEDGE: LEDGE_SCENE,
+	ChapterMap.Block.TALL_LEDGE: LEDGE_SCENE,
 	ChapterMap.Block.LOCKED: preload("res://obstacles/locked_door.tscn"),
 	ChapterMap.Block.BOSS_DOOR: preload("res://obstacles/boss_door.tscn"),
 }
@@ -33,12 +43,14 @@ const ENEMY_SCENES := {
 	"u": preload("res://enemies/ugly.tscn"),
 	"i": preload("res://enemies/ice_slime.tscn"),
 	"w": preload("res://enemies/walrus.tscn"),
+	"s": preload("res://enemies/slinger.tscn"),
 }
 ## Cena de cada chefe, pelo caractere do mapa.
 const BOSS_SCENES := {
 	"*": preload("res://enemies/boss.tscn"),
 	"&": preload("res://enemies/sentinel.tscn"),
 	"%": preload("res://enemies/elder_guardian.tscn"),
+	"$": preload("res://enemies/colossus.tscn"),
 }
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 
@@ -49,7 +61,10 @@ var data: ChapterData
 var map: ChapterMap
 
 var _player: Player
-var _room := Vector2i(-1000, -1000)
+## Sala atual, em unidades de sala de uma tela.
+var _room := Rect2i(-1000, -1000, 1, 1)
+## Sala maior de cada tela que faz parte de uma. As outras telas são salas.
+var _room_rects := {}
 var _room_actors := {}
 var _chests: Array[Chest] = []
 
@@ -66,6 +81,10 @@ func _ready() -> void:
 	add_to_group("chapter")
 	data = ChapterData.load_number(RunSettings.chapter)
 	map = ChapterMap.new(data.rows, data.blocks)
+	for rect: Rect2i in data.rooms:
+		for y: int in range(rect.position.y, rect.end.y):
+			for x: int in range(rect.position.x, rect.end.x):
+				_room_rects[Vector2i(x, y)] = rect
 	_map_view.map = map
 	_map_view.queue_redraw()
 	_build_walls()
@@ -85,6 +104,7 @@ func _physics_process(_delta: float) -> void:
 	var room := _room_of(_player.global_position)
 	if room != _room:
 		_enter_room(room)
+	_camera.position = _camera_target()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -167,9 +187,10 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 ## arena, o sinal defeated e a função set_active.
 func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
 	var boss := scene.instantiate() as Node2D
+	var room := _room_of_cell(cell)
 	boss.position = _cell_center(cell) + Vector2(0.0, 6.0)
-	boss.set("arena", _room_interior(_room_of_cell(cell)))
-	boss.connect("defeated", _on_boss_defeated.bind(_room_of_cell(cell)))
+	boss.set("arena", _room_interior(room))
+	boss.connect("defeated", _on_boss_defeated.bind(room))
 	_objects.add_child(boss)
 	boss.call("set_active", false)
 	_register(boss, cell)
@@ -215,17 +236,17 @@ func _register(actor: Node, cell: Vector2i) -> void:
 ## Troca de sala: a câmera desliza até a nova sala, os inimigos da anterior
 ## voltam ao início e se desligam, e os da nova se ligam. O personagem passa a
 ## reaparecer na entrada da sala.
-func _enter_room(room: Vector2i) -> void:
+func _enter_room(room: Rect2i) -> void:
 	var previous := _room
 	_room = room
 	_player.spawn_position = _player.global_position
-	_camera.position = _room_center(room)
+	_camera.position = _camera_target()
 	_clear_floor_effects()
 	_activate_room.call_deferred(previous, false)
 	_activate_room.call_deferred(room, true)
 
 
-func _activate_room(room: Vector2i, active: bool) -> void:
+func _activate_room(room: Rect2i, active: bool) -> void:
 	for actor: Node in _room_actors.get(room, []):
 		actor.call("set_active", active)
 
@@ -240,13 +261,13 @@ func _on_player_respawned() -> void:
 	_activate_room.call_deferred(_room, true)
 
 
-func _on_boss_defeated(room: Vector2i) -> void:
+func _on_boss_defeated(room: Rect2i) -> void:
 	_spawn_relic.call_deferred(room)
 
 
-func _spawn_relic(room: Vector2i) -> void:
+func _spawn_relic(room: Rect2i) -> void:
 	var relic := RELIC_SCENE.instantiate() as Relic
-	relic.position = Vector2(room * ROOM_TILES * ChapterMap.TILE) + _room_size() / 2.0
+	relic.position = _room_pixels(room).get_center()
 	relic.collected.connect(_finish, CONNECT_DEFERRED)
 	_objects.add_child(relic)
 
@@ -261,30 +282,38 @@ func _finish() -> void:
 	_end_screen.show_results(time_text(), mode_text(), "%d/%d" % [opened, _chests.size()])
 
 
-func _room_size() -> Vector2:
-	return Vector2(ROOM_TILES * ChapterMap.TILE)
+## Sala de uma casa do mapa: a sala maior que contém a tela dela, ou a própria
+## tela.
+func _room_of_cell(cell: Vector2i) -> Rect2i:
+	var screen := Vector2i(
+		floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y)
+	)
+	return _room_rects.get(screen, Rect2i(screen, Vector2i.ONE))
+
+
+func _room_of(point: Vector2) -> Rect2i:
+	return _room_of_cell(Vector2i((point / float(ChapterMap.TILE)).floor()))
+
+
+## Área da sala em pixels, com as paredes em volta.
+func _room_pixels(room: Rect2i) -> Rect2:
+	var tile := float(ChapterMap.TILE)
+	return Rect2(Vector2(room.position * ROOM_TILES) * tile, Vector2(room.size * ROOM_TILES) * tile)
 
 
 ## Área da sala sem as paredes em volta, em pixels.
-func _room_interior(room: Vector2i) -> Rect2:
-	var tile := float(ChapterMap.TILE)
-	var origin := Vector2(room * ROOM_TILES * ChapterMap.TILE)
-	return Rect2(origin + Vector2(tile, tile), _room_size() - Vector2(tile, tile) * 2.0)
+func _room_interior(room: Rect2i) -> Rect2:
+	return _room_pixels(room).grow(-float(ChapterMap.TILE))
 
 
-func _room_of(point: Vector2) -> Vector2i:
-	var size := _room_size()
-	return Vector2i(floori(point.x / size.x), floori(point.y / size.y))
-
-
-func _room_of_cell(cell: Vector2i) -> Vector2i:
-	return Vector2i(floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y))
-
-
-## Centro da câmera para a sala, deslocado para cima pela barra do HUD.
-func _room_center(room: Vector2i) -> Vector2:
-	var size := _room_size()
-	return Vector2((room.x + 0.5) * size.x, (room.y + 0.5) * size.y - HUD_HEIGHT / 2.0)
+## Centro da câmera. Numa sala de uma tela, é o centro dela, deslocado para
+## cima pela barra do HUD. Numa sala maior, a câmera segue o personagem, presa
+## aos limites da sala, para nunca mostrar a sala vizinha.
+func _camera_target() -> Vector2:
+	var pixels := _room_pixels(_room)
+	var low := pixels.position + Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
+	var high := pixels.end - HALF_SCREEN
+	return _player.global_position.clamp(low, high)
 
 
 func _cell_center(cell: Vector2i) -> Vector2:

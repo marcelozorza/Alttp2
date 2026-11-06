@@ -10,17 +10,18 @@ class_name Item
 ## quantidade. A chave grande abre a porta do chefe e nunca se gasta, então
 ## entra no conjunto de bits junto com as ferramentas.
 ##
-## A chama forte é uma melhoria da chama: não ganha botão, mas muda a bola de
-## fogo, que passa a derreter o gelo grosso e a queimar mais. A partir do
-## capítulo 3, cada capítulo novo melhora uma ferramenta em vez de criar outra.
+## A chama forte e a mola forte são melhorias: não ganham botão, mas mudam a
+## ferramenta. A chama forte derrete o gelo grosso e queima mais, e a mola
+## forte dá um pulo mais alto, que sobe o degrau duplo. A partir do capítulo 3,
+## cada capítulo novo melhora uma ferramenta em vez de criar outra.
 
-enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, HEART, KEY, BOSS_KEY }
+enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, STRONG_SPRING, HEART, KEY, BOSS_KEY }
 
 ## Ferramentas, cada uma no seu botão.
 const TOOLS := [Id.BOMB, Id.FIRE, Id.SPRING]
 ## Itens que ficam para sempre e entram na lógica como bits: as ferramentas,
 ## as melhorias e a chave grande.
-const PERMANENT := [Id.BOMB, Id.FIRE, Id.SPRING, Id.STRONG_FIRE, Id.BOSS_KEY]
+const PERMANENT := [Id.BOMB, Id.FIRE, Id.SPRING, Id.STRONG_FIRE, Id.STRONG_SPRING, Id.BOSS_KEY]
 
 
 ## Bit do item num conjunto de ferramentas guardado como inteiro.

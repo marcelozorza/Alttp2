@@ -347,6 +347,17 @@ def jump():
 
 
 @recipe
+def jump_strong():
+    """Pulo da mola forte: a mola é maior, então o som é mais grave e mais longo."""
+    rise = ramp(150.0, 440.0, 0.16)
+    held = np.full(samples(0.3), 440.0) * (1.0 + 0.07 * tone(14.0, 0.3) * decay(0.3, 0.1))
+    pitch = np.concatenate([rise, held])
+    coil = tone(pitch, 0.46) + 0.3 * tone(pitch * 2.0, 0.46) + 0.12 * tone(pitch * 0.5, 0.46)
+    coil *= attack_decay(0.46, 0.005, 0.13)
+    return finish(mix(coil, 0.5 * click(0.005, 2500.0), 0.4 * thud(110.0, 60.0, 0.1, 0.03)))
+
+
+@recipe
 def land():
     return finish(mix(burst(0.08, 600.0, 0.02), 0.8 * thud(120.0, 70.0, 0.08, 0.02)))
 
