@@ -88,6 +88,9 @@ const ROOT_PULL := 8.0
 ## Ligado, tem raiz: não sai do lugar, ataca quem chega perto e volta ao
 ## ponto inicial depois do bote.
 @export var rooted := false
+## Ligado, não dá o bote: avança devagar e sem parar, e machuca ao encostar.
+## Pedido de Marcelo em 2026-11-06 para o tatu de pedra.
+@export var contact_damage := false
 
 @export_group("Granada")
 ## Granada que ele joga de longe. Vazio, ele não joga nada.
@@ -194,6 +197,8 @@ func _physics_process(delta: float) -> void:
 		move_with_impacts()
 		if _state == State.LUNGE and not _lunge_landed:
 			_check_lunge_hit()
+		elif _state == State.APPROACH and contact_damage:
+			_check_contact_hit()
 	_update_visuals()
 
 
@@ -211,7 +216,7 @@ func _update_state() -> void:
 			_look_direction = _approach_direction
 			if not in_sight:
 				_enter(State.IDLE)
-			elif to_player.length() <= attack_range:
+			elif to_player.length() <= attack_range and not contact_damage:
 				_lunge_direction = GameMath.snap_8(to_player)
 				_look_direction = _lunge_direction
 				_enter(State.WINDUP)
@@ -266,6 +271,14 @@ func _check_lunge_hit() -> void:
 	if target:
 		target.take_hit(damage, _lunge_direction)
 		_lunge_landed = true
+
+
+## Quem machuca ao encostar acerta sempre que toca o personagem. A
+## invencibilidade depois do dano é o que espaça os golpes.
+func _check_contact_hit() -> void:
+	var target := Hit.player_in_reach(self, _base, _hurt_shape)
+	if target:
+		target.take_hit(damage, _approach_direction)
 
 
 ## Joga só quem tem granada, depois da espera desde a última, longe o bastante

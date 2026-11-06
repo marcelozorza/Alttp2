@@ -142,7 +142,7 @@ Nos inimigos com desenho, as cores viram um tom sobre ele.
 - **Azul profundo com presas e borda de geada:** morsa de gelo. Só a chama forte derrete, em duas bolas.
 - **Cor de areia, parado, com uma pedra acima da cabeça:** atirador de pedras. A pedra cai na casa marcada no chão e causa dano a quem estiver nela. Ele não sai do lugar.
 - **Roxo escuro voando em ziguezague, com uma sombra no chão:** morcego. Um golpe basta. A sombra diz onde ele está.
-- **Casca redonda de pedra rachada:** tatu de pedra. Só a bomba o abre, em duas. De longe, ele avisa e rola em linha reta.
+- **Casca redonda de pedra rachada:** tatu de pedra. Só a bomba o abre, em duas. Ele nunca corre: avança devagar e sem parar, e machuca ao encostar.
 - **Bulbo verde com boca de dentes:** planta de espinhos. Não sai do lugar e morde quem chega perto. A espada corta em 3 golpes, e uma bola de fogo basta.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
 - **Chefe azul profundo com borda de geada:** o guardião antigo, com a casca de gelo grosso. Só a chama forte quebra a casca. Os ataques são os do guardião de gelo.
