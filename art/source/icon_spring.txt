@@ -1,0 +1,19 @@
+# Mola do HUD e dos baús: placa em cima e três voltas da espiral verde.
+paleta
+o #1c3a1c
+d #4a8a30
+g #78c850
+l #b0e890
+pixels
+..oooooooo..
+..ollllldo..
+..oooooooo..
+..oddddddo..
+.od......do.
+..ogllllgo..
+..oddddddo..
+.od......do.
+..ogllllgo..
+..oddddddo..
+.od......do.
+..ogllllgo..

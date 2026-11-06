@@ -70,5 +70,5 @@ func _draw() -> void:
 	draw_texture(OPEN_TEXTURE, TEXTURE_OFFSET)
 	var elapsed := Engine.get_physics_frames() - _open_tick
 	if elapsed <= SHOW_ITEM_TICKS:
-		var rise := minf(elapsed, 20.0) * 0.5
+		var rise := floorf(minf(elapsed, 20.0) * 0.5)
 		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 10.0 - rise))

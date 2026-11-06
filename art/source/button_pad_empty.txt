@@ -1,0 +1,7 @@
+# Botão apagado do HUD: a ferramenta ainda não foi encontrada.
+paleta
+o #0c0c12
+e #2a2a38
+f #16161e
+d #0e0e14
+usa button_pad

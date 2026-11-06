@@ -1,0 +1,23 @@
+# Botão do HUD: disco escuro com relevo, onde fica o ícone do item.
+paleta
+o #101018
+e #50506a
+f #262636
+d #1a1a26
+pixels
+.....oooooo.....
+...ooeeeeeeoo...
+..oeeffffffeeo..
+.oeffffffffffdo.
+.oeffffffffffdo.
+oeffffffffffffdo
+oeffffffffffffdo
+oeffffffffffffdo
+oeffffffffffffdo
+oeffffffffffffdo
+oeffffffffffffdo
+.odffffffffffdo.
+.odffffffffffdo.
+..oddffffffddo..
+...ooddddddoo...
+.....oooooo.....

@@ -28,7 +28,7 @@ No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão d
 
 ## Controles
 
-O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no alto da tela repete a posição dos quatro botões.
+O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no canto inferior esquerdo da tela repete a posição dos quatro botões, com o ícone do que cada um faz.
 
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada.
@@ -40,7 +40,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
-- **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. As chaves guardadas aparecem à direita do losango.
+- **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. As chaves guardadas aparecem no alto, à direita da vida.
 
 ## Ferramentas
 
