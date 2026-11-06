@@ -121,7 +121,7 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 ## Tons do Giorgio
 
 - **De pé, sem tom:** andando, com a espada e os itens na pata.
-- **Nas 4 patas, alaranjado:** correndo. Atacar faz ele ficar de pé e encerra a corrida.
+- **Inclinado para a frente, alaranjado:** correndo. Atacar encerra a corrida.
 - **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola. Com a mola forte, cresce mais e fica mais tempo no ar.

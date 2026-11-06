@@ -52,9 +52,11 @@ const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
 ## Desenhos do Giorgio, nesta ordem: de frente, de costas e de lado, cada um
 ## com o segundo passo logo depois. O de lado olha para a direita, e o jogo
-## espelha para a esquerda. Andando, ele fica de pé, com a espada e os itens na
-## pata. Correndo, desce para as 4 patas, e atacar o põe de pé de novo.
-const ART_STANDING := [
+## espelha para a esquerda. Ele anda e corre de pé, com a espada e os itens
+## na pata: correndo, o desenho é inclinado para a frente (desenhos de
+## 2026-11-06, redesenhados por IA a partir do mapa de sprites, a pedido de
+## Marcelo, que tirou a pose de 4 patas da corrida).
+const ART_WALKING := [
 	preload("res://art/giorgio_stand_down.svg"),
 	preload("res://art/giorgio_stand_down_step.svg"),
 	preload("res://art/giorgio_stand_up.svg"),
@@ -62,7 +64,7 @@ const ART_STANDING := [
 	preload("res://art/giorgio_stand_side.svg"),
 	preload("res://art/giorgio_stand_side_step.svg"),
 ]
-const ART_ON_ALL_FOURS := [
+const ART_RUNNING := [
 	preload("res://art/giorgio_down.svg"),
 	preload("res://art/giorgio_down_step.svg"),
 	preload("res://art/giorgio_up.svg"),
@@ -696,20 +698,20 @@ func _update_visuals() -> void:
 	_update_sword_lock_bar()
 
 
-## Escolhe o desenho pela postura e pela frente. Correndo, ele está nas 4
-## patas, sem vida, deitado, e no resto, de pé. Andando ou
-## correndo, alterna os dois passos, mais rápido na corrida. O desenho sempre
-## termina ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
+## Escolhe o desenho pela postura e pela frente: correndo, os desenhos
+## inclinados, sem vida, deitado, e no resto, os de pé. Andando ou correndo,
+## alterna os dois passos, mais rápido na corrida. O desenho sempre termina
+## ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
 func _update_art() -> void:
-	var on_all_fours := _state == State.RUN
+	var running := _state == State.RUN
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
-	var step_ticks := RUN_STEP_TICKS if on_all_fours else WALK_STEP_TICKS
+	var step_ticks := RUN_STEP_TICKS if running else WALK_STEP_TICKS
 	var step := 0
 	if moving and posmod(floori(float(Clock.tick) / step_ticks), 2) == 1:
 		step = 1
 	# Só a corrida soa, um passo a cada troca de pata, quando o segundo passo
 	# aparece. Andar é silencioso (pedido de Marcelo em 2026-11-06).
-	if step == 1 and _last_step == 0 and on_all_fours and not is_airborne():
+	if step == 1 and _last_step == 0 and running and not is_airborne():
 		Sfx.play(&"step")
 	_last_step = step
 	var direction := 2
@@ -717,7 +719,7 @@ func _update_art() -> void:
 		direction = 0
 	elif facing.y < 0.0:
 		direction = 1
-	var frames: Array = ART_ON_ALL_FOURS if on_all_fours else ART_STANDING
+	var frames: Array = ART_RUNNING if running else ART_WALKING
 	var texture: Texture2D = frames[direction * 2 + step]
 	if _is_down():
 		texture = ART_FALLEN
