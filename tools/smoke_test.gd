@@ -12,6 +12,7 @@ extends Node
 ## se houver), o menu com o botão A e o Start do controle, o mundo (entradas
 ## trancadas e abertas, a pedra de salvamento) e cada capítulo no jogo
 ## contínuo: abre os baús, ganha todas as ferramentas, encosta nas portas,
+## pisa nos interruptores e trava o bloco pesado neles para abrir as grades,
 ## entra em cada sala usando os botões, vence o chefe, toca a relíquia e
 ## volta ao mundo. Depois confere o rejogo de um capítulo vencido, o menu de
 ## pausa, a tela de derrota, o treino, a sala de teste e o continuar do jogo
@@ -332,6 +333,57 @@ func _play(chapter_number: int) -> void:
 			if door.opened:
 				doors += 1
 	print("portas abertas: %d" % doors)
+	# Grades: o personagem em cima do interruptor abre as grades da sala só
+	# enquanto fica ali, e o bloco pesado travado nele abre de vez.
+	var room_switches: Dictionary = chapter.get("_room_switches")
+	var room_gates: Dictionary = chapter.get("_room_gates")
+	var gates_total := 0
+	var gates_by_player := 0
+	var gates_closed_again := 0
+	var gates_by_block := 0
+	var blocks_locked := 0
+	for room: Rect2i in room_switches:
+		var gates: Array = room_gates.get(room, [])
+		gates_total += gates.size()
+		var switch: FloorSwitch = room_switches[room][0]
+		player.global_position = switch.global_position
+		await _frames(4)
+		for gate: SwitchDoor in gates:
+			if gate.open:
+				gates_by_player += 1
+		player.global_position = switch.global_position + Vector2(0.0, 20.0)
+		await _frames(4)
+		for gate: SwitchDoor in gates:
+			if not gate.open:
+				gates_closed_again += 1
+		var block: HeavyBlock = null
+		for node: Node in chapter.get("_objects").get_children():
+			if node is HeavyBlock and not (node as HeavyBlock).locked:
+				var candidate := node as HeavyBlock
+				var closer := (
+					not block
+					or (
+						candidate.global_position.distance_to(switch.global_position)
+						< block.global_position.distance_to(switch.global_position)
+					)
+				)
+				if closer:
+					block = candidate
+		if block:
+			block.global_position = switch.global_position + FloorSwitch.BLOCK_OFFSET
+			await _frames(4)
+			if block.locked:
+				blocks_locked += 1
+		for gate: SwitchDoor in gates:
+			if gate.open:
+				gates_by_block += 1
+	print("interruptores: %d  grades: %d" % [room_switches.size(), gates_total])
+	print(
+		(
+			"grades: pelo personagem %d  fechadas ao sair %d  blocos travados %d  pelo bloco %d"
+			% [gates_by_player, gates_closed_again, blocks_locked, gates_by_block]
+		)
+	)
 	# Cada sala com atores: o personagem entra e usa tudo.
 	var rooms: Dictionary = chapter.get("_room_actors")
 	for room: Rect2i in rooms:

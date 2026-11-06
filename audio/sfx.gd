@@ -68,6 +68,8 @@ const SOUNDS := {
 	&"boss_die": [-2.0, 0.0],
 	&"relic": [-4.0, 0.0],
 	&"save": [-5.0, 0.0],
+	&"switch_press": [-8.0, 0.0],
+	&"switch_release": [-10.0, 0.0],
 	# Menus
 	&"menu_move": [-12.0, 0.0],
 	&"menu_confirm": [-8.0, 0.0],

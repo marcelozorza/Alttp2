@@ -1,0 +1,28 @@
+# Planta de espinhos: um bulbo com a boca de dentes, folhas com espinhos em
+# volta, que não sai do lugar e morde quem chega perto. O verde apaga no
+# fogo.
+paleta
+o #10200e
+d #1e4a1e
+g #2e7a2a
+l #4aa23a
+m #8a1c5a
+p #c43a84
+w #f6f0e0
+pixels
+....o......o....
+...ogo....ogo...
+..oglgo..oglgo..
+.oglllgooglllgo.
+.ogllllggllllgo.
+..oglllmmlllgo..
+...ogmmppmmgo...
+..ogmpwpwpwpmgo.
+.ogmppppppppmgo.
+.ogmpwpwpwpwmgo.
+.ogmmppppppmmgo.
+..ogdmmmmmmdgo..
+.oglgdddddddglo.
+oglllgoooooglllo
+.ogggo.....ogggo
+..ooo.......ooo.

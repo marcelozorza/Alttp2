@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://enemies/slinger.tscn" id="13_slinger"]
 [ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="14_pause_menu"]
 [ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="15_defeat_screen"]
+[ext_resource type="PackedScene" path="res://objects/floor_switch.tscn" id="16_floor_switch"]
+[ext_resource type="PackedScene" path="res://obstacles/switch_door.tscn" id="17_switch_door"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -129,7 +131,14 @@ size = Vector2(16, 36)
 position = Vector2(272, 128)
 size = Vector2(32, 32)
 
+[node name="SwitchDoor" parent="Obstacles" instance=ExtResource("17_switch_door")]
+position = Vector2(152, 112)
+size = Vector2(16, 16)
+
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
+
+[node name="FloorSwitch" parent="FloorEffects" instance=ExtResource("16_floor_switch")]
+position = Vector2(160, 96)
 
 [node name="Objects" type="Node2D" parent="."]
 y_sort_enabled = true

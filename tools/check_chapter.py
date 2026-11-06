@@ -37,8 +37,8 @@ from collections import Counter
 
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-SLOTS = "123456789abdefghjklnopqrtvxyz"
-ACTORS = "muiwsc*&%$@"
+SLOTS = "123456789abdefghjklnopqrtv"
+ACTORS = "muiwsc*&%$@xyz0="
 FLOORS = ".:^"
 LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
@@ -46,7 +46,7 @@ UP, DOWN = (0, -1), (0, 1)
 # A ordem de Item.Id em items/item.gd.
 ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY"]
 PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY"]
-BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE"]
+BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE"]
 LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 
@@ -80,14 +80,22 @@ def parse(path):
 
 
 class Map:
-    def __init__(self, rows, blocks, starting=0):
+    def __init__(self, rows, blocks, starting=0, rooms=()):
         self.rows = rows
         self.blocks = blocks
         self.starting = starting
+        self.rooms = list(rooms)
         self.height = len(rows)
         self.width = max(len(r) for r in rows)
         self.locked = sorted(s for s, t in blocks.items() if t == "LOCKED")
+        self.gates = sorted(s for s, t in blocks.items() if t == "GATE")
         self.build_graph()
+
+    def room_of_cell(self, cell):
+        return room_of((cell[0] // ROOM_W, cell[1] // ROOM_H), self.rooms)
+
+    def cells_of(self, character):
+        return [(x, y) for y, row in enumerate(self.rows) for x, c in enumerate(row) if c == character]
 
     def tile(self, cell):
         x, y = cell
@@ -118,10 +126,18 @@ class Map:
         character = self.tile(cell)
         return character if character in SLOTS else ""
 
-    def can_enter_slot(self, slot, tools, opened):
+    def can_enter_slot(self, slot, tools, opened, reached_nodes=None, open_gates=()):
         if slot == "":
             return True
         kind = self.blocks.get(slot)
+        if kind == "GATE":
+            # A grade abre de vez quando o jogador chega ao interruptor dela,
+            # então ela passa, de qualquer lado, assim que a região do
+            # interruptor é alcançada, ou se já foi aberta antes.
+            if slot in open_gates:
+                return True
+            source = self.gate_source.get(slot)
+            return reached_nodes is not None and source is not None and source in reached_nodes
         if kind == "CRACKED":
             return bool(tools & bit("BOMB"))
         if kind == "ICE":
@@ -133,6 +149,21 @@ class Map:
         if kind == "BOSS_DOOR":
             return bool(tools & bit("BOSS_KEY"))
         return False
+
+    def block_reaches(self, block, switch):
+        """O bloco chega ao interruptor empurrado em linha reta: os dois na
+        mesma linha ou coluna, chão de verdade entre eles e atrás do bloco."""
+        dx, dy = switch[0] - block[0], switch[1] - block[1]
+        if (dx == 0) == (dy == 0):
+            return False
+        step = (dx // abs(dx) if dx else 0, dy // abs(dy) if dy else 0)
+        cell = (block[0] + step[0], block[1] + step[1])
+        while cell != switch:
+            if self.tile(cell) not in FLOORS:
+                return False
+            cell = (cell[0] + step[0], cell[1] + step[1])
+        behind = (block[0] - step[0], block[1] - step[1])
+        return self.tile(behind) in FLOORS
 
     def step_target(self, cell, step):
         """Casa de chegada e a ferramenta que o passo exige, como bit, ou
@@ -180,6 +211,7 @@ class Map:
                             continue
                         self.node_of[n] = node
                         frontier.append(n)
+        self.find_gate_sources()
         edges = set()
         for cell, node in self.node_of.items():
             for step in STEPS:
@@ -200,40 +232,83 @@ class Map:
                         if (x + dx, y + dy) in self.node_of
                     ]
 
-    def can_pass(self, edge, tools, opened):
+    def find_gate_sources(self):
+        """Região do interruptor de cada grade: um interruptor na mesma sala,
+        numa região vizinha da grade. Sem ele, a grade nunca abre."""
+        self.gate_source = {}
+        self.gate_switches = {}
+        for slot in self.gates:
+            cells = self.cells_of(slot)
+            room = self.room_of_cell(cells[0])
+            neighbors = set()
+            for cell in cells:
+                for dx, dy in STEPS:
+                    n = (cell[0] + dx, cell[1] + dy)
+                    if n in self.node_of and self.tile(n) != slot:
+                        neighbors.add(self.node_of[n])
+            self.gate_switches[slot] = [
+                s for s in self.cells_of("=") if self.room_of_cell(s) == room
+            ]
+            for switch in self.gate_switches[slot]:
+                node = self.node_of.get(switch)
+                if node in neighbors:
+                    self.gate_source[slot] = node
+                    break
+
+    def can_pass(self, edge, tools, opened, reached, open_gates=()):
         if edge[2] and not tools & edge[2]:
             return False
-        return self.can_enter_slot(self.node_slot[edge[1]], tools, opened)
+        return self.can_enter_slot(self.node_slot[edge[1]], tools, opened, reached, open_gates)
 
-    def reachable_nodes(self, start, tools, opened):
+    def reachable_nodes(self, start, tools, opened, open_gates=()):
         reached = {start}
-        frontier = [start]
-        while frontier:
-            node = frontier.pop()
+        changed = True
+        while changed:
+            changed = False
             for edge in self.edges:
-                if edge[0] == node and edge[1] not in reached:
-                    if self.can_pass(edge, tools, opened):
+                if edge[0] in reached and edge[1] not in reached:
+                    if self.can_pass(edge, tools, opened, reached, open_gates):
                         reached.add(edge[1])
-                        frontier.append(edge[1])
+                        changed = True
         return reached
+
+    def open_gates_from(self, reached):
+        """Grades que já abriram de vez, com a região do interruptor alcançada."""
+        return {slot for slot in self.gates if self.gate_source.get(slot) in reached}
 
     def reachable_cells(self, start, tools, opened):
-        """Alcance casa por casa, só para conferir o grafo."""
+        """Alcance casa por casa, só para conferir o grafo. Uma grade cujo
+        interruptor acaba de ser alcançado reabre a busca a partir das casas
+        vizinhas dela."""
         reached = {start}
+        nodes = {self.node_of[start]}
         frontier = [start]
-        while frontier:
-            cell = frontier.pop()
-            for step in STEPS:
-                target = self.step_target(cell, step)
-                if target is None or target[0] in reached:
+        while True:
+            while frontier:
+                cell = frontier.pop()
+                for step in STEPS:
+                    target = self.step_target(cell, step)
+                    if target is None or target[0] in reached:
+                        continue
+                    if target[1] and not tools & target[1]:
+                        continue
+                    if not self.can_enter_slot(self.slot_of(target[0]), tools, opened, nodes):
+                        continue
+                    reached.add(target[0])
+                    nodes.add(self.node_of[target[0]])
+                    frontier.append(target[0])
+            for slot in self.gates:
+                if self.gate_source.get(slot) not in nodes:
                     continue
-                if target[1] and not tools & target[1]:
-                    continue
-                if not self.can_enter_slot(self.slot_of(target[0]), tools, opened):
-                    continue
-                reached.add(target[0])
-                frontier.append(target[0])
-        return reached
+                for cell in self.cells_of(slot):
+                    if cell in reached:
+                        continue
+                    for dx, dy in STEPS:
+                        n = (cell[0] + dx, cell[1] + dy)
+                        if n in reached and n not in frontier:
+                            frontier.append(n)
+            if not frontier:
+                return reached
 
     def settle(self, items, opened):
         """Abre tudo o que alcança com as portas dadas, ganha os itens e
@@ -421,6 +496,7 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
     for slot in blocks:
         if slot not in "".join(m.rows):
             errors.append("BLOCKS cita a vaga %s, que não está no mapa" % slot)
+    check_switches(m, errors)
     # Baús: chão logo ao sul, para que a espada nunca alcance um baú através de
     # uma parede ou de um bloqueio.
     map_locations = set(c for c in "".join(m.rows) if c in LOCATIONS)
@@ -438,6 +514,41 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
         if item not in ITEM_IDS:
             errors.append("baú %s com item desconhecido %s" % (location, item))
     return present
+
+
+def check_switches(m, errors):
+    """Mecanismo do bloco sobre o interruptor. Toda grade tem na mesma sala
+    um interruptor numa região vizinha dela e um bloco pesado alinhado com o
+    interruptor, com chão livre entre os dois e atrás do bloco, para o
+    personagem ter de onde empurrar. Todo interruptor e todo bloco servem a
+    uma grade da sala."""
+    used_switches, used_blocks = set(), set()
+    for slot in m.gates:
+        if slot not in m.gate_source:
+            errors.append("grade %s sem interruptor numa região vizinha, na mesma sala" % slot)
+            continue
+        room = m.room_of_cell(m.cells_of(slot)[0])
+        blocks = [b for b in m.cells_of("0") if m.room_of_cell(b) == room]
+        solved = False
+        for switch in m.gate_switches[slot]:
+            if m.node_of.get(switch) != m.gate_source[slot]:
+                continue
+            for block in blocks:
+                if m.block_reaches(block, switch):
+                    solved = True
+                    used_switches.add(switch)
+                    used_blocks.add(block)
+        if not solved:
+            errors.append(
+                "grade %s: nenhum bloco pesado alinhado com o interruptor, com chão "
+                "livre entre eles e atrás do bloco" % slot
+            )
+    for switch in m.cells_of("="):
+        if switch not in used_switches:
+            errors.append("interruptor em %s sem grade que ele abra" % (switch,))
+    for block in m.cells_of("0"):
+        if block not in used_blocks:
+            errors.append("bloco pesado em %s sem interruptor que ele alcance" % (block,))
 
 
 def check_heights(m, errors):
@@ -517,8 +628,9 @@ def check_logic(m, items, goal, goal_mask, errors):
                         errors.append("grafo e casas discordam com %s %s" % (tools, opened))
                     if trap_found:
                         continue
+                    open_gates = m.open_gates_from(nodes)
                     for node in nodes:
-                        if start_node not in m.reachable_nodes(node, tools, opened):
+                        if start_node not in m.reachable_nodes(node, tools, opened, open_gates):
                             cell = next(c for c, n in m.node_of.items() if n == node)
                             errors.append(
                                 "armadilha perto de %s com ferramentas %d e portas %s"
@@ -538,7 +650,7 @@ def check_logic(m, items, goal, goal_mask, errors):
 
 def main(path):
     rows, blocks, items, goal, goal_mask, starting, rooms = parse(path)
-    m = Map(rows, blocks, starting)
+    m = Map(rows, blocks, starting, rooms)
     errors = []
     present = check_geometry(m, blocks, items, goal, rooms, errors)
     check_heights(m, errors)

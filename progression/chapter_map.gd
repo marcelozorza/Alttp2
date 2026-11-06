@@ -11,19 +11,20 @@ extends RefCounted
 ##   são inimigos. O tipo de cada um vem dos dados do capítulo. Casas com o
 ##   mesmo caractere formam um só bloqueio.
 ## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "s" atirador
-##   de pedras, "c" caixa leve.
+##   de pedras, "x" tatu de pedra, "y" morcego, "z" planta de espinhos, "c"
+##   caixa leve, "0" bloco pesado e "=" interruptor no chão.
 ## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
 ##   chefes.
 ##
 ## A conferência de que o capítulo tem caminho até o fim fica fora do jogo, em
 ## tools/check_chapter.py, que lê os mesmos dados.
 
-enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE }
+enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE }
 
 ## Tamanho de uma casa, em pixels.
 const TILE := 16
 const LOCATIONS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const SLOTS := "123456789abdefghjklnopqrtvxyz"
+const SLOTS := "123456789abdefghjklnopqrtv"
 const STEPS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 const NO_CELL := Vector2i(-1, -1)
 

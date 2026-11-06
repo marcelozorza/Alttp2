@@ -609,6 +609,18 @@ def save():
     return finish(echo(mix(melody, shimmer), 0.12, 0.4, 0.3, 3))
 
 
+@recipe
+def switch_press():
+    """Interruptor afundando: um estalo e uma pancada curta de pedra."""
+    return finish(mix(click(0.004, 4000.0), thud(180.0, 90.0, 0.12, 0.03)))
+
+
+@recipe
+def switch_release():
+    """Interruptor voltando: a pancada ao contrário, mais leve."""
+    return finish(mix(0.6 * click(0.003, 3000.0), thud(110.0, 170.0, 0.1, 0.03)))
+
+
 # Menus --------------------------------------------------------------------------
 
 

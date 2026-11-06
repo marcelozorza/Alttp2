@@ -22,7 +22,7 @@ Os capítulos:
 - **Capítulo 2.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Nenhuma ordem de abrir portas prende o jogador.
 - **Capítulo 3.** A geleira, com 15 salas. O personagem chega com as três ferramentas e encontra a primeira melhoria, a chama forte, que derrete o gelo grosso. No fim, o guardião antigo.
 - **Capítulo 4.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
-- **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras.
+- **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras. A passagem para a parte de baixo é uma grade: pise no interruptor para abri-la enquanto fica ali, ou empurre o bloco pesado para cima dele para abri-la de vez.
 
 No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo o devolve à entrada da sala com a vida cheia e com tudo o que já conseguiu.
 
@@ -57,9 +57,9 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
 - `combat/` tipos de golpe, que decidem o que cada ferramenta afeta.
 - `items/` itens e ferramentas: baú, bomba, bola de fogo e a relíquia do fim.
-- `obstacles/` bloqueios: parede rachada, gelo, gelo grosso, portas e a face do degrau alto, comum ou duplo.
-- `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
-- `enemies/` inimigos: o minion, o ugly com a granada, o de gelo, a morsa de gelo, o atirador de pedras e os chefes com a onda de choque.
+- `obstacles/` bloqueios: parede rachada, gelo, gelo grosso, portas, a grade de ferro e a face do degrau alto, comum ou duplo.
+- `objects/` objetos do mundo: a caixa leve, o bloco pesado e o interruptor no chão.
+- `enemies/` inimigos: o minion, o ugly com a granada, o de gelo, a morsa de gelo, o atirador de pedras, o morcego, o tatu de pedra, a planta de espinhos e os chefes com a onda de choque.
 - `progression/` leitura dos dados de cada capítulo, o mapa em texto, as escolhas da partida, o progresso salvo (`progress.gd`) e o caminho entre as telas (`flow.gd`).
 - `ui/` menu de título, treino, HUD, menu de pausa, tela de derrota, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
@@ -78,7 +78,7 @@ python3 tools/check_chapter.py world/chapter_three/chapter_three_data.gd
 python3 tools/check_chapter.py world/chapter_four/chapter_four_data.gd
 ```
 
-Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face e altura do chão que fecha em todo o mapa) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.
+Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face, altura do chão que fecha em todo o mapa, e grade com um interruptor na mesma sala e um bloco pesado alinhado com ele) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.
 
 ## Editar a pixel art
 
@@ -94,7 +94,7 @@ O Godot reimporta os SVG ao voltar para o editor.
 
 **Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
 
-**Efeitos.** Os 48 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
+**Efeitos.** Os 50 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
 
 ```
 python3 tools/sfx.py              todos os sons
@@ -130,6 +130,9 @@ Nos inimigos com desenho, as cores viram um tom sobre ele.
 - **Azul claro:** de gelo. Só o fogo funciona.
 - **Azul profundo com presas e borda de geada:** morsa de gelo. Só a chama forte derrete, em duas bolas.
 - **Cor de areia, parado, com uma pedra acima da cabeça:** atirador de pedras. A pedra cai na casa marcada no chão e causa dano a quem estiver nela. Ele não sai do lugar.
+- **Roxo escuro voando em ziguezague, com uma sombra no chão:** morcego. Um golpe basta. A sombra diz onde ele está.
+- **Casca redonda de pedra rachada:** tatu de pedra. Só a bomba o abre, em duas. De longe, ele avisa e rola em linha reta.
+- **Bulbo verde com boca de dentes:** planta de espinhos. Não sai do lugar e morde quem chega perto. A espada corta em 3 golpes, e uma bola de fogo basta.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
 - **Chefe azul profundo com borda de geada:** o guardião antigo, com a casca de gelo grosso. Só a chama forte quebra a casca. Os ataques são os do guardião de gelo.
 - **Sentinela de pedra rachada:** a bomba abre a armadura. O núcleo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A armadura volta 8 s depois da explosão.
@@ -143,6 +146,8 @@ Nos inimigos com desenho, as cores viram um tom sobre ele.
 - **Pedra escurecendo para baixo, com sombra no chão e o chão de cima mais claro:** degrau alto. Sobe com a mola e desce andando contra a face.
 - **Face de duas casas, em pedra mais escura, com sombra mais longa e o chão de cima mais claro ainda:** degrau duplo. O pulo comum bate na face. Sobe com a mola forte e desce andando contra a face.
 - **Bloqueio num nicho entre duas paredes:** todo bloqueio de porta fica uma casa para dentro da sala, para aparecer inteiro na tela. As paredes projetam sombra no chão para o sul e para o leste.
+- **Grade de ferro escura numa passagem:** só o interruptor da sala abre. Golpes só a fazem tremer.
+- **Placa de pedra com um losango, no chão:** interruptor. Pisar abre a grade enquanto você fica em cima. Empurrar o bloco pesado, que tem o mesmo losango, até ele parar em cima abre de vez.
 - **Baú marrom com faixa dourada:** abre com a espada.
 - **Porta de madeira com faixas de ferro e fechadura:** gasta uma chave pequena.
 - **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.

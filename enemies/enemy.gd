@@ -11,6 +11,11 @@ extends MomentumBody
 ## bote, ele para, ergue a granada acima da cabeça piscando em amarelo e joga
 ## onde o personagem está. Depois de jogar, espera um tempo até a próxima.
 ##
+## Três jeitos mudam o padrão sem mudar o ciclo: quem voa (hover) sobe e
+## desce no ar com a sombra no chão, quem tem vaivém (weave) se aproxima em
+## ziguezague, e quem tem raiz (rooted) não sai do lugar, morde quem chega
+## perto e volta ao ponto inicial.
+##
 ## A massa decide o resto pela física. O ugly arremessa o personagem no bote e
 ## quase não se move com a espada. O minion voa longe com a espada e empurra
 ## pouco.
@@ -31,6 +36,12 @@ const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 ## clareia.
 const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
 const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
+const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
+## Velocidade angular do vaivém, em radianos por tick.
+const WEAVE_RATE := 0.2
+## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
+## segundo.
+const ROOT_PULL := 8.0
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -70,6 +81,13 @@ const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 @export_range(0.0, 3.0, 0.05) var recover_time := 0.8
 ## Dano do bote.
 @export_range(1, 10, 1) var damage := 1
+## Ligado, voa: o desenho sobe e desce no ar, com a sombra no chão.
+@export var hover := false
+## Vaivém lateral ao se aproximar, em pixels por segundo. Zero anda reto.
+@export_range(0.0, 200.0, 1.0) var weave := 0.0
+## Ligado, tem raiz: não sai do lugar, ataca quem chega perto e volta ao
+## ponto inicial depois do bote.
+@export var rooted := false
 
 @export_group("Granada")
 ## Granada que ele joga de longe. Vazio, ele não joga nada.
@@ -165,12 +183,14 @@ func _physics_process(delta: float) -> void:
 	if _state != State.DEAD:
 		match _state:
 			State.APPROACH:
-				velocity = _approach_direction * walk_speed
+				velocity = _approach_direction * walk_speed + _weave_velocity()
 			State.LUNGE:
 				# O bote segue pela física: só batidas mudam a velocidade.
 				pass
 			_:
 				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		if rooted and _state != State.LUNGE:
+			velocity = (_home - global_position) * ROOT_PULL
 		move_with_impacts()
 		if _state == State.LUNGE and not _lunge_landed:
 			_check_lunge_hit()
@@ -223,6 +243,20 @@ func _update_state() -> void:
 		State.DEAD:
 			if respawn_time > 0.0 and elapsed >= GameMath.ticks(respawn_time):
 				reset()
+
+
+## Vaivém perpendicular à aproximação, para o inimigo que voa em ziguezague.
+func _weave_velocity() -> Vector2:
+	if weave <= 0.0:
+		return Vector2.ZERO
+	return _approach_direction.orthogonal() * sin(Engine.get_physics_frames() * WEAVE_RATE) * weave
+
+
+## Altura do desenho acima dos pés, para quem voa.
+func _hover_height() -> float:
+	if not hover:
+		return 0.0
+	return 3.0 + sin(Engine.get_physics_frames() * 0.15) * 2.0
 
 
 ## Durante o bote, procura o personagem numa área um pouco maior que a base.
@@ -340,19 +374,22 @@ func _update_visuals() -> void:
 		_body.visible = false
 		_eye.visible = false
 		_art.modulate = tint
-		_art.position = shake
+		_art.position = shake + Vector2(0.0, -_hover_height()).round()
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
 	var body_center := _body.position + _body.size / 2.0
 	_eye.position = body_center + _look_direction * half - _eye.size / 2.0
 	_health_bar.size.x = _health_bar_width * float(maxi(health, 0)) / max_health
-	if grenade_scene:
+	if grenade_scene or hover:
 		queue_redraw()
 
 
-## A granada erguida aparece durante o aviso e treme junto com o corpo.
+## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
+## aviso e treme junto com o corpo.
 func _draw() -> void:
+	if hover and _state != State.DEAD:
+		draw_rect(Rect2(Vector2(-4.0, -2.0), Vector2(8.0, 2.0)), SHADOW_COLOR)
 	if _state != State.THROW_WINDUP:
 		return
 	var rect := _held_grenade_rect()

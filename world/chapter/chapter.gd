@@ -15,6 +15,11 @@ extends Node2D
 ## ainda correm pelo chão somem. Baús abertos e bloqueios removidos continuam
 ## assim até o fim do capítulo.
 ##
+## O bloco pesado ("0") e o interruptor ("=") formam o mecanismo da grade
+## (bloqueio GATE): a grade de uma sala abre enquanto um interruptor da sala
+## está pressionado, e de vez quando um bloco trava num interruptor. Um bloco
+## solto volta ao lugar quando o personagem entra de novo na sala.
+##
 ## No jogo contínuo (Progress.active), o personagem chega com as ferramentas
 ## e a vida máxima salvas, os baús de coração e de ferramenta de um capítulo
 ## já vencido começam abertos, e tocar a relíquia grava o progresso. No
@@ -40,6 +45,7 @@ const OBSTACLE_SCENES := {
 	ChapterMap.Block.TALL_LEDGE: LEDGE_SCENE,
 	ChapterMap.Block.LOCKED: preload("res://obstacles/locked_door.tscn"),
 	ChapterMap.Block.BOSS_DOOR: preload("res://obstacles/boss_door.tscn"),
+	ChapterMap.Block.GATE: preload("res://obstacles/switch_door.tscn"),
 }
 ## Cena de cada inimigo comum, pelo caractere do mapa.
 const ENEMY_SCENES := {
@@ -48,6 +54,9 @@ const ENEMY_SCENES := {
 	"i": preload("res://enemies/ice_slime.tscn"),
 	"w": preload("res://enemies/walrus.tscn"),
 	"s": preload("res://enemies/slinger.tscn"),
+	"x": preload("res://enemies/armadillo.tscn"),
+	"y": preload("res://enemies/bat.tscn"),
+	"z": preload("res://enemies/thorn_plant.tscn"),
 }
 ## Cena de cada chefe, pelo caractere do mapa.
 const BOSS_SCENES := {
@@ -57,6 +66,8 @@ const BOSS_SCENES := {
 	"$": preload("res://enemies/colossus.tscn"),
 }
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
+const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
+const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
 
 ## Ticks de jogo desde o início do capítulo, para o cronômetro.
 var elapsed_ticks := 0
@@ -70,6 +81,9 @@ var _room := Rect2i(-1000, -1000, 1, 1)
 ## Sala maior de cada tela que faz parte de uma. As outras telas são salas.
 var _room_rects := {}
 var _room_actors := {}
+## Interruptores e grades de cada sala.
+var _room_switches := {}
+var _room_gates := {}
 var _chests: Array[Chest] = []
 
 @onready var _map_view: MapView = $MapView
@@ -164,6 +178,20 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
 		crate.position = center + Vector2(0.0, 5.0)
 		_objects.add_child(crate)
+	elif character == "0":
+		var block := HEAVY_BLOCK_SCENE.instantiate() as HeavyBlock
+		block.position = center + FloorSwitch.BLOCK_OFFSET
+		_objects.add_child(block)
+		_register(block, cell)
+	elif character == "=":
+		var switch := FLOOR_SWITCH_SCENE.instantiate() as FloorSwitch
+		switch.position = center
+		var room := _room_of_cell(cell)
+		switch.changed.connect(_on_switch_changed.bind(room))
+		_floor_effects.add_child(switch)
+		var switches: Array = _room_switches.get(room, [])
+		switches.append(switch)
+		_room_switches[room] = switches
 
 
 ## O chefe nasce desligado, preso à sala dele. Todo chefe tem a propriedade
@@ -207,6 +235,21 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
 	_obstacles.add_child(obstacle)
+	if obstacle is SwitchDoor:
+		var room := _room_of_cell(area.position)
+		var gates: Array = _room_gates.get(room, [])
+		gates.append(obstacle)
+		_room_gates[room] = gates
+
+
+## As grades de uma sala abrem enquanto algum interruptor dela está
+## pressionado.
+func _on_switch_changed(_pressed: bool, room: Rect2i) -> void:
+	var any_pressed := false
+	for switch: FloorSwitch in _room_switches.get(room, []):
+		any_pressed = any_pressed or switch.pressed
+	for gate: SwitchDoor in _room_gates.get(room, []):
+		gate.set_open(any_pressed)
 
 
 func _register(actor: Node, cell: Vector2i) -> void:
@@ -234,9 +277,11 @@ func _activate_room(room: Rect2i, active: bool) -> void:
 		actor.call("set_active", active)
 
 
+## Apaga as marcas no chão, como a área da granada. Os interruptores ficam.
 func _clear_floor_effects() -> void:
 	for effect: Node in _floor_effects.get_children():
-		effect.queue_free()
+		if not effect is FloorSwitch:
+			effect.queue_free()
 
 
 func _on_player_respawned() -> void:
