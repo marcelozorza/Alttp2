@@ -3,12 +3,3 @@ class_name RunSettings
 
 ## Capítulo escolhido no menu, a partir de 1.
 static var chapter := 1
-## Ligado, os baús seguem a seed. Desligado, seguem a distribuição linear.
-static var randomized := false
-## Seed da partida aleatória.
-static var run_seed := 0
-
-
-## Sorteia uma seed nova, de seis dígitos.
-static func new_seed() -> int:
-	return randi_range(100000, 999999)

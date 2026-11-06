@@ -1,24 +1,27 @@
-# Bloco de gelo: azul claro com brilhos. Só o fogo derrete.
+# Bloco de gelo, a frente de uma parede de gelo: o topo claro com brilhos nas
+# 6 linhas de cima e a face com rachaduras embaixo, como a parede com face. Só
+# o fogo derrete. Com outro bloco ao sul, a casa usa ice_top.
 paleta
 o #2d5a86
+k #1e4068
 e #5f97c8
 a #9fd2f4
 b #c4e6fa
 w #f4fbff
 pixels
 oooooooooooooooo
-owwwbbbbbbbbbbao
-owwbbbbbbbbbbaeo
-owbbaaaaaaaaaaeo
-obbawaaaaaaaaaeo
-obbawwaaaaaaaaeo
-obbaawaaaaaaaaeo
-obbaaaaaaaaaaaeo
-obbaaaaaaaaaaaeo
-obbaaaaaaaawaaeo
-obbaaaaaaaaawaeo
-obbaaaaaaaaaaaeo
-obaaaaaaaaaaaaeo
-obaeeeeeeeeeeeeo
-oaeeeeeeeeeeeeeo
+obbwwbbbbbbbbbao
+obwbbbbbbwbbbbao
+obbbbbbbbbbbbaao
+obbbbbbbbbbbaaeo
+oaaaaaaaaaaaaeeo
+oeaaeaaaaeaaaaeo
+oeaaeaaaaeaaaaeo
+oeaaaeaaaeaaaeeo
+oeaaaeaaeaaaaeeo
+oeeaaeaaeaaaaeeo
+oeeaaaeaeaaaeeeo
+oeeeaaeaeaaeeeeo
+oeeeeeeeeeeeeeeo
+okkkkkkkkkkkkkko
 oooooooooooooooo

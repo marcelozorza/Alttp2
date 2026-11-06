@@ -4,12 +4,16 @@ extends StaticBody2D
 ## o bloqueio tremer, para mostrar que ali falta outra ferramenta.
 ##
 ## A origem fica no canto superior esquerdo. O construtor do mapa define o
-## tamanho antes de adicionar o bloqueio à cena.
+## tamanho antes de adicionar o bloqueio à cena. Como as paredes, o bloqueio
+## projeta uma sombra curta no chão ao sul.
 
 ## Ticks em que o bloqueio treme ao receber um golpe que não o afeta.
 const SHAKE_TICKS := 8
 ## Ticks de animação depois que o bloqueio é removido.
 const CLEAR_ANIMATION_TICKS := 30
+## Sombra no chão ao sul, a mesma das paredes.
+const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
+const SHADOW_HEIGHT := 3.0
 
 ## Tamanho em pixels.
 @export var size := Vector2(16.0, 16.0)
@@ -34,7 +38,7 @@ func _ready() -> void:
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if cleared:
 		return
-	if kind == _weakness():
+	if _opens_with(kind):
 		cleared = true
 		_clear_tick = Engine.get_physics_frames()
 		Sfx.play(_clear_sound())
@@ -53,9 +57,9 @@ func _physics_process(_delta: float) -> void:
 		queue_redraw()
 
 
-## Tipo de golpe que remove o bloqueio.
-func _weakness() -> Hit.Kind:
-	return Hit.Kind.BLAST
+## Diz se o golpe remove o bloqueio.
+func _opens_with(kind: Hit.Kind) -> bool:
+	return kind == Hit.Kind.BLAST
 
 
 ## Som do golpe certo.
@@ -78,3 +82,10 @@ func _shake_offset() -> Vector2:
 
 func _ticks_since_clear() -> int:
 	return Engine.get_physics_frames() - _clear_tick
+
+
+## Sombra no chão logo ao sul do bloqueio, enquanto ele está de pé.
+func _draw_shadow() -> void:
+	if cleared:
+		return
+	draw_rect(Rect2(Vector2(0.0, size.y), Vector2(size.x, SHADOW_HEIGHT)), SHADOW_COLOR)

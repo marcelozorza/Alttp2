@@ -11,6 +11,10 @@ extends StaticBody2D
 ## tamanho antes de adicionar a face à cena.
 
 const TEXTURE := preload("res://art/ledge.svg")
+## Sombra que a face projeta no chão de baixo. É o que faz o desnível ser lido
+## como altura, e não como outra cor de chão.
+const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
+const SHADOW_HEIGHT := 4.0
 
 ## Tamanho em pixels. A altura da face é também a altura do degrau.
 @export var size := Vector2(16.0, 16.0)
@@ -43,3 +47,4 @@ func bottom() -> float:
 func _draw() -> void:
 	for x: int in int(size.x / 16.0):
 		draw_texture_rect(TEXTURE, Rect2(Vector2(x * 16.0, 0.0), Vector2(16.0, size.y)), false)
+	draw_rect(Rect2(Vector2(0.0, size.y), Vector2(size.x, SHADOW_HEIGHT)), SHADOW_COLOR)

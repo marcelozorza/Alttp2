@@ -1,51 +1,47 @@
 """Confere os dados de um capítulo sem abrir o Godot.
 
-Lê o arquivo de dados em GDScript (MAP, BLOCKS, LINEAR, GOAL e GOAL_TOOLS),
-confere a geometria das salas e repete a lógica de alcance de
-progression/chapter_map.gd para garantir que a distribuição linear é
-vencível em qualquer ordem de abrir as portas trancadas, que nenhuma
-combinação de ferramentas e portas abertas prende o jogador e quantas
-distribuições embaralhadas são válidas.
+Lê o arquivo de dados em GDScript (MAP, BLOCKS, ITEMS, GOAL, GOAL_TOOLS e,
+se houver, STARTING_TOOLS, as ferramentas com que o personagem chega),
+confere a geometria das salas e repete as regras de alcance do jogo para
+garantir que o capítulo é vencível em qualquer ordem de abrir as portas
+trancadas e que nenhuma combinação de ferramentas e portas abertas prende o
+jogador num lugar sem volta.
 
-A lógica anda pelo grafo de regiões, como no jogo. Para conferir o próprio
-grafo, o alcance também é calculado casa por casa, e os dois precisam dar o
-mesmo resultado em todas as combinações.
+As regras de alcance são as do jogo: parede rachada passa com a bomba, gelo
+passa com a chama ou a chama forte, gelo grosso só com a chama forte, porta
+trancada passa depois de aberta com uma chave pequena, porta do chefe passa
+com a chave grande, e a face de degrau passa de baixo para cima só com a mola
+e de cima para baixo sempre. Um baú conta como alcançado se alguma casa
+vizinha for alcançada.
+
+Como no NES, que guardava o mapa em blocos e não em pixels, a lógica não anda
+casa por casa. As casas livres ligadas entre si viram uma região, e cada
+bloqueio vira uma região própria. A lógica anda pelo grafo dessas regiões.
+Para conferir o próprio grafo, o alcance também é calculado casa por casa, e
+os dois precisam dar o mesmo resultado em todas as combinações.
 
 Uso: python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
 """
 
 import itertools
-import math
-import random
 import re
 import sys
 from collections import Counter
 
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-SLOTS = "123456789abdefghjklnopqrstvwxyz"
-ACTORS = "muic*&@"
+SLOTS = "123456789abdefghjklnopqrstvxyz"
+ACTORS = "muiwc*&%@"
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 UP, DOWN = (0, -1), (0, 1)
-PERMANENT = ["BOMB", "FIRE", "SPRING", "BOSS_KEY"]
-ITEM_BITS = {
-    "NONE": 0,
-    "BOMB": 1,
-    "FIRE": 2,
-    "SPRING": 3,
-    "HEART": 4,
-    "KEY": 5,
-    "BOSS_KEY": 6,
-}
-# Sorteios usados para estimar a taxa de distribuições vencíveis quando há
-# permutações demais para contar todas.
-SAMPLES = 3000
-# Limite de permutações distintas contadas uma a uma.
-EXACT_LIMIT = 20000
+# A ordem de Item.Id em items/item.gd.
+ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "HEART", "KEY", "BOSS_KEY"]
+PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "BOSS_KEY"]
+BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE"]
 
 
 def bit(name):
-    return 1 << ITEM_BITS[name]
+    return 1 << ITEM_IDS.index(name)
 
 
 def parse(path):
@@ -53,20 +49,26 @@ def parse(path):
     map_block = re.search(r"const MAP := \[(.*?)\n\]", text, re.S).group(1)
     rows = re.findall(r'^\t"(.*)",$', map_block, re.M)
     blocks = dict(re.findall(r'"(\w)": ChapterMap\.Block\.(\w+)', text))
-    linear_block = re.search(r"const LINEAR := \{(.*?)\n\}", text, re.S).group(1)
-    linear = dict(re.findall(r'"(\w)": Item\.Id\.(\w+)', linear_block))
+    items_block = re.search(r"const ITEMS := \{(.*?)\n\}", text, re.S).group(1)
+    items = dict(re.findall(r'"(\w)": Item\.Id\.(\w+)', items_block))
     goal = re.search(r'const GOAL := "(.)"', text).group(1)
     goal_tools = re.search(r"const GOAL_TOOLS := \[(.*?)\]", text).group(1)
     goal_mask = 0
     for name in re.findall(r"Item\.Id\.(\w+)", goal_tools):
         goal_mask |= bit(name)
-    return rows, blocks, linear, goal, goal_mask
+    starting = 0
+    found = re.search(r"const STARTING_TOOLS := \[(.*?)\]", text)
+    if found:
+        for name in re.findall(r"Item\.Id\.(\w+)", found.group(1)):
+            starting |= bit(name)
+    return rows, blocks, items, goal, goal_mask, starting
 
 
 class Map:
-    def __init__(self, rows, blocks):
+    def __init__(self, rows, blocks, starting=0):
         self.rows = rows
         self.blocks = blocks
+        self.starting = starting
         self.height = len(rows)
         self.width = max(len(r) for r in rows)
         self.locked = sorted(s for s, t in blocks.items() if t == "LOCKED")
@@ -105,7 +107,9 @@ class Map:
         if kind == "CRACKED":
             return bool(tools & bit("BOMB"))
         if kind == "ICE":
-            return bool(tools & bit("FIRE"))
+            return bool(tools & (bit("FIRE") | bit("STRONG_FIRE")))
+        if kind == "THICK_ICE":
+            return bool(tools & bit("STRONG_FIRE"))
         if kind == "LOCKED":
             return slot in opened
         if kind == "BOSS_DOOR":
@@ -124,7 +128,7 @@ class Map:
             return None
         return (beyond, step == UP)
 
-    # Grafo de regiões, o mesmo de chapter_map.gd.
+    # Grafo de regiões.
 
     def build_graph(self):
         self.node_of = {}
@@ -204,9 +208,12 @@ class Map:
                 frontier.append(target[0])
         return reached
 
-    def settle(self, distribution, opened):
+    def settle(self, items, opened):
+        """Abre tudo o que alcança com as portas dadas, ganha os itens e
+        repete até não haver novidade. Devolve também a ordem em que os baús
+        se tornam alcançáveis, em esferas."""
         start = self.node_of[self.find("@")]
-        tools, keys, collected = 0, 0, set()
+        tools, keys, collected = self.starting, 0, set()
         order = []
         while True:
             reached = self.reachable_nodes(start, tools, opened)
@@ -220,7 +227,7 @@ class Map:
             order.append(new)
             collected.update(new)
             for location in new:
-                item = distribution.get(location, "NONE")
+                item = items.get(location, "NONE")
                 if item == "KEY":
                     keys += 1
                 elif item in PERMANENT:
@@ -239,9 +246,15 @@ class Map:
             doors.append(slot)
         return doors
 
-    def is_beatable(self, distribution, goal, goal_mask, stuck=None):
-        """Vencível em qualquer ordem de abrir portas. Em stuck, se dado, ficam
-        as portas abertas do primeiro estado sem saída."""
+    def is_beatable(self, items, goal, goal_mask, stuck=None):
+        """Vencível em qualquer ordem de abrir portas.
+
+        Cada estado é o conjunto de portas já abertas. Num estado, o jogador
+        abre todos os baús que alcança, porque abrir um baú nunca atrapalha, e
+        depois pode gastar uma chave em qualquer porta trancada que alcança. O
+        capítulo só vale se todo estado sem saída já tiver o alvo alcançado com
+        as ferramentas exigidas. Em stuck, se dado, ficam as portas abertas do
+        primeiro estado sem saída."""
         goal_node = self.node_of.get(self.find(goal))
         seen = set()
         stack = [frozenset()]
@@ -250,7 +263,7 @@ class Map:
             if opened in seen:
                 continue
             seen.add(opened)
-            reached, tools, keys, _ = self.settle(distribution, opened)
+            reached, tools, keys, _ = self.settle(items, opened)
             doors = []
             if keys - len(opened) > 0:
                 doors = self.doors_in_reach(reached, tools, opened)
@@ -264,7 +277,7 @@ class Map:
         return True
 
 
-def check_geometry(m, blocks, linear, goal, errors):
+def check_geometry(m, blocks, items, goal, errors):
     rooms_x = (m.width + ROOM_W - 1) // ROOM_W
     rooms_y = m.height // ROOM_H
     if m.height % ROOM_H:
@@ -308,17 +321,29 @@ def check_geometry(m, blocks, linear, goal, errors):
                         other = (cell[0], cell[1] + 1)
                     if m.tile(other) in "# ":
                         errors.append("porta sem continuação em %s" % (cell,))
+                    # Bloqueio na borda fica na beira da tela, onde não se vê
+                    # direito. Ele vai uma casa para dentro, num nicho.
+                    if m.tile(cell) in SLOTS:
+                        errors.append(
+                            "bloqueio %s na borda da sala em %s: ponha uma casa para dentro"
+                            % (m.tile(cell), cell)
+                        )
     # Vagas: cada caractere forma um retângulo cheio, e o tipo existe.
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
         xs = [c[0] for c in cells]
         ys = [c[1] for c in cells]
-        area = (max(xs) - min(xs) + 1) * (max(ys) - min(ys) + 1)
-        if area != len(cells):
+        w = max(xs) - min(xs) + 1
+        h = max(ys) - min(ys) + 1
+        if w * h != len(cells):
             errors.append("vaga %s não é um retângulo" % slot)
         if slot not in blocks:
             errors.append("vaga %s sem tipo em BLOCKS" % slot)
             continue
+        if blocks[slot] not in BLOCK_TYPES:
+            errors.append("vaga %s com tipo desconhecido %s" % (slot, blocks[slot]))
+        if blocks[slot] == "THICK_ICE" and min(w, h) < 2:
+            errors.append("gelo grosso %s precisa de duas casas de fundo" % slot)
         if blocks[slot] == "LEDGE":
             if len(set(ys)) != 1:
                 errors.append("degrau %s precisa ocupar uma linha só" % slot)
@@ -327,6 +352,8 @@ def check_geometry(m, blocks, linear, goal, errors):
                     neighbor = m.tile((x, y + side))
                     if neighbor in "# " or neighbor in SLOTS or neighbor in LOCATIONS:
                         errors.append("degrau %s sem chão acima e abaixo em %s" % (slot, (x, y)))
+                if m.tile((x, y - 1)) != ":":
+                    errors.append("degrau %s sem chão alto logo ao norte em %s" % (slot, (x, y)))
     for slot in blocks:
         if slot not in "".join(m.rows):
             errors.append("BLOCKS cita a vaga %s, que não está no mapa" % slot)
@@ -339,14 +366,17 @@ def check_geometry(m, blocks, linear, goal, errors):
             errors.append("baú %s precisa de chão logo ao sul" % location)
         if counts[location] != 1:
             errors.append("baú %s aparece mais de uma vez" % location)
-    if map_locations != set(linear):
+    if map_locations != set(items):
         errors.append(
-            "baús do mapa %s e de LINEAR %s diferem" % (sorted(map_locations), sorted(linear))
+            "baús do mapa %s e de ITEMS %s diferem" % (sorted(map_locations), sorted(items))
         )
+    for location, item in items.items():
+        if item not in ITEM_IDS:
+            errors.append("baú %s com item desconhecido %s" % (location, item))
     return present
 
 
-def check_logic(m, linear, goal, goal_mask, errors):
+def check_logic(m, items, goal, goal_mask, errors):
     start = m.find("@")
     start_node = m.node_of[start]
     permanent_bits = [bit(t) for t in PERMANENT]
@@ -356,7 +386,7 @@ def check_logic(m, linear, goal, goal_mask, errors):
     trap_found = False
     for count in range(len(PERMANENT) + 1):
         for combo in itertools.combinations(permanent_bits, count):
-            tools = sum(combo)
+            tools = sum(combo) | m.starting
             for size in range(len(m.locked) + 1):
                 for opened in itertools.combinations(m.locked, size):
                     opened = set(opened)
@@ -375,51 +405,30 @@ def check_logic(m, linear, goal, goal_mask, errors):
                             )
                             trap_found = True
                             break
-    _, _, _, order = m.settle(linear, frozenset(m.locked))
+    _, _, _, order = m.settle(items, frozenset(m.locked))
     stuck = []
-    if not m.is_beatable(linear, goal, goal_mask, stuck):
-        errors.append("a distribuição linear não é vencível, presa com as portas %s" % stuck)
-    items = sorted(linear.values())
-    locations = sorted(linear)
-    counts = Counter(items)
-    total = math.factorial(len(items))
-    for amount in counts.values():
-        total //= math.factorial(amount)
-    if total <= EXACT_LIMIT:
-        valid = 0
-        for perm in set(itertools.permutations(items)):
-            if m.is_beatable(dict(zip(locations, perm)), goal, goal_mask):
-                valid += 1
-        return order, total, valid, None
-    rng = random.Random(1)
-    valid = 0
-    for _ in range(SAMPLES):
-        perm = items[:]
-        rng.shuffle(perm)
-        if m.is_beatable(dict(zip(locations, perm)), goal, goal_mask):
-            valid += 1
-    return order, total, valid, SAMPLES
+    if not m.is_beatable(items, goal, goal_mask, stuck):
+        errors.append("o capítulo não é vencível, preso com as portas %s" % stuck)
+    keys = sum(1 for item in items.values() if item == "KEY")
+    if keys < len(m.locked):
+        errors.append("%d chaves para %d portas trancadas" % (keys, len(m.locked)))
+    return order, keys
 
 
 def main(path):
-    rows, blocks, linear, goal, goal_mask = parse(path)
-    m = Map(rows, blocks)
+    rows, blocks, items, goal, goal_mask, starting = parse(path)
+    m = Map(rows, blocks, starting)
     errors = []
-    present = check_geometry(m, blocks, linear, goal, errors)
-    order, total, valid, samples = check_logic(m, linear, goal, goal_mask, errors)
+    present = check_geometry(m, blocks, items, goal, errors)
+    order, keys = check_logic(m, items, goal, goal_mask, errors)
     print("salas:", len(present), sorted(present))
-    print("regiões: %d, passagens: %d, portas trancadas: %d" % (
-        len(m.node_slot), len(m.edges), len(m.locked)))
-    print("esferas da linear, com todas as portas abertas:")
+    print(
+        "regiões: %d, passagens: %d, portas trancadas: %d, chaves: %d"
+        % (len(m.node_slot), len(m.edges), len(m.locked), keys)
+    )
+    print("esferas dos baús, com todas as portas abertas:")
     for i, sphere in enumerate(order):
-        print("  %d: %s" % (i, ", ".join("%s=%s" % (l, linear[l]) for l in sorted(sphere))))
-    if samples is None:
-        print("distribuições distintas: %d, vencíveis: %d" % (total, valid))
-    else:
-        print(
-            "distribuições distintas: %d, vencíveis em %d sorteios: %d (%.1f%%)"
-            % (total, samples, valid, 100.0 * valid / samples)
-        )
+        print("  %d: %s" % (i, ", ".join("%s=%s" % (l, items[l]) for l in sorted(sphere))))
     for error in errors:
         print("ERRO:", error)
     return 1 if errors else 0

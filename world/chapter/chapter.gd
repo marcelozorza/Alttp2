@@ -1,6 +1,6 @@
 extends Node2D
 ## Cena de qualquer capítulo. Lê os dados do capítulo escolhido no menu, monta
-## o mapa, distribui os itens pela seed, move a câmera de sala em sala e
+## o mapa, põe em cada baú o item dele, move a câmera de sala em sala e
 ## encerra o capítulo quando o personagem toca a relíquia que o chefe deixa.
 ## Os dados de cada capítulo ficam em world/<capítulo>/ (ver
 ## progression/chapter_data.gd).
@@ -18,16 +18,28 @@ const HUD_HEIGHT := 20.0
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
 const RELIC_SCENE := preload("res://items/relic.tscn")
-const CRACKED_WALL_SCENE := preload("res://obstacles/cracked_wall.tscn")
-const ICE_BLOCK_SCENE := preload("res://obstacles/ice_block.tscn")
-const LOCKED_DOOR_SCENE := preload("res://obstacles/locked_door.tscn")
-const BOSS_DOOR_SCENE := preload("res://obstacles/boss_door.tscn")
-const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
-const MINION_SCENE := preload("res://enemies/minion.tscn")
-const UGLY_SCENE := preload("res://enemies/ugly.tscn")
-const ICE_SLIME_SCENE := preload("res://enemies/ice_slime.tscn")
-const BOSS_SCENE := preload("res://enemies/boss.tscn")
-const SENTINEL_SCENE := preload("res://enemies/sentinel.tscn")
+## Cena de cada tipo de bloqueio.
+const OBSTACLE_SCENES := {
+	ChapterMap.Block.CRACKED: preload("res://obstacles/cracked_wall.tscn"),
+	ChapterMap.Block.ICE: preload("res://obstacles/ice_block.tscn"),
+	ChapterMap.Block.THICK_ICE: preload("res://obstacles/thick_ice.tscn"),
+	ChapterMap.Block.LEDGE: preload("res://obstacles/ledge.tscn"),
+	ChapterMap.Block.LOCKED: preload("res://obstacles/locked_door.tscn"),
+	ChapterMap.Block.BOSS_DOOR: preload("res://obstacles/boss_door.tscn"),
+}
+## Cena de cada inimigo comum, pelo caractere do mapa.
+const ENEMY_SCENES := {
+	"m": preload("res://enemies/minion.tscn"),
+	"u": preload("res://enemies/ugly.tscn"),
+	"i": preload("res://enemies/ice_slime.tscn"),
+	"w": preload("res://enemies/walrus.tscn"),
+}
+## Cena de cada chefe, pelo caractere do mapa.
+const BOSS_SCENES := {
+	"*": preload("res://enemies/boss.tscn"),
+	"&": preload("res://enemies/sentinel.tscn"),
+	"%": preload("res://enemies/elder_guardian.tscn"),
+}
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 
 ## Ticks de jogo desde o início do capítulo, para o cronômetro.
@@ -35,8 +47,6 @@ var elapsed_ticks := 0
 var finished := false
 var data: ChapterData
 var map: ChapterMap
-## Item de cada baú nesta partida.
-var distribution := {}
 
 var _player: Player
 var _room := Vector2i(-1000, -1000)
@@ -56,15 +66,12 @@ func _ready() -> void:
 	add_to_group("chapter")
 	data = ChapterData.load_number(RunSettings.chapter)
 	map = ChapterMap.new(data.rows, data.blocks)
-	distribution = data.linear
-	if RunSettings.randomized:
-		distribution = Randomizer.shuffled(
-			map, data.linear, RunSettings.run_seed, data.goal, data.goal_tools
-		)
 	_map_view.map = map
 	_map_view.queue_redraw()
 	_build_walls()
 	_build_cells()
+	for id: int in data.starting_tools:
+		_player.give_item(id)
 	_player.respawned.connect(_on_player_respawned)
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
@@ -86,10 +93,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_tree().change_scene_to_file(TITLE_SCENE)
 
 
-## Texto do modo da partida, para o HUD e para a tela de fim.
+## Nome do capítulo, para o HUD e para a tela de fim.
 func mode_text() -> String:
-	var mode := "Seed %d" % RunSettings.run_seed if RunSettings.randomized else "Linear"
-	return "Cap. %d  %s" % [data.number, mode]
+	return "Cap. %d" % data.number
 
 
 ## Cronômetro no formato minutos:segundos.centésimos.
@@ -143,25 +149,18 @@ func _build_cells() -> void:
 
 func _add_actor(character: String, cell: Vector2i) -> void:
 	var center := _cell_center(cell)
-	match character:
-		"@":
-			_player = PLAYER_SCENE.instantiate() as Player
-			_player.position = center
-			_objects.add_child(_player)
-		"m":
-			_add_enemy(MINION_SCENE, cell)
-		"u":
-			_add_enemy(UGLY_SCENE, cell)
-		"i":
-			_add_enemy(ICE_SLIME_SCENE, cell)
-		"*":
-			_add_boss(BOSS_SCENE, cell)
-		"&":
-			_add_boss(SENTINEL_SCENE, cell)
-		"c":
-			var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
-			crate.position = center + Vector2(0.0, 5.0)
-			_objects.add_child(crate)
+	if ENEMY_SCENES.has(character):
+		_add_enemy(ENEMY_SCENES[character], cell)
+	elif BOSS_SCENES.has(character):
+		_add_boss(BOSS_SCENES[character], cell)
+	elif character == "@":
+		_player = PLAYER_SCENE.instantiate() as Player
+		_player.position = center
+		_objects.add_child(_player)
+	elif character == "c":
+		var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
+		crate.position = center + Vector2(0.0, 5.0)
+		_objects.add_child(crate)
 
 
 ## O chefe nasce desligado, preso à sala dele. Todo chefe tem a propriedade
@@ -189,28 +188,17 @@ func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 func _add_chest(location: String, cell: Vector2i) -> void:
 	var chest := CHEST_SCENE.instantiate() as Chest
 	chest.location_id = location
-	chest.item = distribution.get(location, Item.Id.NONE)
+	chest.item = data.items.get(location, Item.Id.NONE)
 	chest.position = Vector2(cell * ChapterMap.TILE) + Vector2(8.0, 13.0)
 	_objects.add_child(chest)
 	_chests.append(chest)
 
 
 func _add_obstacle(slot: String, area: Rect2i) -> void:
-	var scene: PackedScene
-	match map.block_type(slot):
-		ChapterMap.Block.CRACKED:
-			scene = CRACKED_WALL_SCENE
-		ChapterMap.Block.ICE:
-			scene = ICE_BLOCK_SCENE
-		ChapterMap.Block.LEDGE:
-			scene = LEDGE_SCENE
-		ChapterMap.Block.LOCKED:
-			scene = LOCKED_DOOR_SCENE
-		ChapterMap.Block.BOSS_DOOR:
-			scene = BOSS_DOOR_SCENE
-		_:
-			push_error("Vaga %s sem tipo de bloqueio." % slot)
-			return
+	var scene: PackedScene = OBSTACLE_SCENES.get(map.block_type(slot))
+	if not scene:
+		push_error("Vaga %s sem tipo de bloqueio." % slot)
+		return
 	var obstacle := scene.instantiate() as Node2D
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))

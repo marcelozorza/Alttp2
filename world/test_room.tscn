@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" path="res://obstacles/ledge.tscn" id="8_ledge"]
 [ext_resource type="PackedScene" path="res://obstacles/cracked_wall.tscn" id="9_cracked_wall"]
 [ext_resource type="PackedScene" path="res://obstacles/ice_block.tscn" id="10_ice_block"]
+[ext_resource type="PackedScene" path="res://obstacles/thick_ice.tscn" id="11_thick_ice"]
+[ext_resource type="PackedScene" path="res://enemies/walrus.tscn" id="12_walrus"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -120,6 +122,10 @@ size = Vector2(16, 36)
 position = Vector2(248, 128)
 size = Vector2(16, 36)
 
+[node name="ThickIce" parent="Obstacles" instance=ExtResource("11_thick_ice")]
+position = Vector2(272, 128)
+size = Vector2(32, 32)
+
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
 [node name="Objects" type="Node2D" parent="."]
@@ -155,13 +161,16 @@ position = Vector2(160, 52)
 
 [node name="Player" parent="Objects" instance=ExtResource("1_player")]
 position = Vector2(48, 64)
-starting_tools = 7
+starting_tools = 15
 
 [node name="Ugly" parent="Objects" instance=ExtResource("4_ugly")]
 position = Vector2(270, 100)
 
 [node name="Minion" parent="Objects" instance=ExtResource("5_minion")]
 position = Vector2(272, 40)
+
+[node name="Walrus" parent="Objects" instance=ExtResource("12_walrus")]
+position = Vector2(60, 150)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

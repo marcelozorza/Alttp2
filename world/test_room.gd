@@ -1,7 +1,8 @@
 extends Node2D
 ## Sala de teste da física, do combate e das ferramentas. O personagem começa
-## com todas elas, e há um degrau alto, uma parede rachada e um bloco de gelo
-## para experimentar. Os bloqueios voltam ao reabrir a sala. Esc volta ao menu.
+## com todas elas, inclusive a chama forte, e há um degrau alto, uma parede
+## rachada, um bloco de gelo, um gelo grosso e uma morsa de gelo para
+## experimentar. Os bloqueios voltam ao reabrir a sala. Esc volta ao menu.
 
 const TITLE_SCENE := "res://ui/title_screen.tscn"
 

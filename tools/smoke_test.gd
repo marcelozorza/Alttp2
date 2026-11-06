@@ -9,11 +9,10 @@ extends Node
 ## trocas de cena não o apaguem.
 ##
 ## Confere o áudio (barramentos, os arquivos de cada efeito e a música local,
-## se houver), o menu com o botão A e o Start do controle, o tempo do sorteio de
-## seeds e cada capítulo, linear e com seed: abre os baús, ganha todas as
-## ferramentas, encosta nas portas, entra em cada sala usando os botões, vence
-## o chefe e toca a relíquia. Qualquer erro de script aparece na saída como
-## SCRIPT ERROR. Não muda nada no projeto.
+## se houver), o menu com o botão A e o Start do controle e cada capítulo:
+## abre os baús, ganha todas as ferramentas, encosta nas portas, entra em cada
+## sala usando os botões, vence o chefe e toca a relíquia. Qualquer erro de
+## script aparece na saída como SCRIPT ERROR. Não muda nada no projeto.
 
 const ACTIONS := [
 	"attack", "use_fire", "use_bomb", "jump", "move_left", "move_right", "move_up", "move_down"
@@ -51,7 +50,7 @@ func _run() -> void:
 	var placeholder := Node.new()
 	get_tree().root.add_child(placeholder)
 	get_tree().current_scene = placeholder
-	# Menu: o A do controle precisa iniciar o capítulo 1 linear.
+	# Menu: o A do controle precisa iniciar o capítulo 1.
 	get_tree().change_scene_to_file("res://ui/title_screen.tscn")
 	await _frames(10)
 	await _joy(JOY_BUTTON_A)
@@ -66,36 +65,8 @@ func _run() -> void:
 
 	_check_audio()
 
-	# Tempo do sorteio de seeds.
-	for chapter: int in [1, 2]:
-		var data := ChapterData.load_number(chapter)
-		var map := ChapterMap.new(data.rows, data.blocks)
-		var worst := 0
-		var total := 0
-		for i: int in 20:
-			var t := Time.get_ticks_usec()
-			var dist := Randomizer.shuffled(map, data.linear, 1000 + i, data.goal, data.goal_tools)
-			var dt := Time.get_ticks_usec() - t
-			worst = maxi(worst, dt)
-			total += dt
-			if not map.is_beatable(dist, data.goal, data.goal_tools):
-				print("SEED INVÁLIDA cap ", chapter, " seed ", 1000 + i)
-		print(
-			(
-				"SORTEIO cap %d: média %.1f ms, pior %.1f ms"
-				% [chapter, total / 20000.0, worst / 1000.0]
-			)
-		)
-		print(
-			(
-				"LINEAR cap %d vencível: %s"
-				% [chapter, map.is_beatable(data.linear, data.goal, data.goal_tools)]
-			)
-		)
-
-	for chapter: int in [1, 2]:
-		for randomized: bool in [false, true]:
-			await _play(chapter, randomized)
+	for chapter: int in range(1, ChapterData.count() + 1):
+		await _play(chapter)
 	print("FIM DO TESTE")
 	# Sons tocando no fechamento deixam o Godot acusar recurso preso.
 	get_tree().root.get_node("Music").get("_player").stop()
@@ -105,19 +76,12 @@ func _run() -> void:
 	get_tree().quit()
 
 
-func _play(chapter_number: int, randomized: bool) -> void:
+func _play(chapter_number: int) -> void:
 	RunSettings.chapter = chapter_number
-	RunSettings.randomized = randomized
-	RunSettings.run_seed = 424242 + chapter_number
 	get_tree().change_scene_to_file("res://world/chapter/chapter.tscn")
 	await _frames(20)
 	var chapter: Node = get_tree().current_scene
-	print(
-		(
-			"--- capítulo %d %s: %s"
-			% [chapter_number, "seed" if randomized else "linear", chapter.call("mode_text")]
-		)
-	)
+	print("--- capítulo %d: %s" % [chapter_number, chapter.call("mode_text")])
 	var player: Player = chapter.get("_player")
 	var map: ChapterMap = chapter.get("map")
 	# Baús: encosta e dá a espada em cada um.
@@ -130,7 +94,7 @@ func _play(chapter_number: int, randomized: bool) -> void:
 		if chest.is_open:
 			opened += 1
 	print("baús abertos: %d/%d  chaves: %d" % [opened, chapter.get("_chests").size(), player.keys])
-	for id: int in [Item.Id.BOMB, Item.Id.FIRE, Item.Id.SPRING, Item.Id.BOSS_KEY]:
+	for id: int in Item.PERMANENT:
 		player.give_item(id)
 	for _i: int in 8:
 		player.give_item(Item.Id.KEY)
@@ -179,7 +143,14 @@ func _play(chapter_number: int, randomized: bool) -> void:
 
 
 func _beat_boss(boss: Boss) -> void:
-	var kinds := [Hit.Kind.BLAST, Hit.Kind.FIRE, Hit.Kind.SWORD, Hit.Kind.SWORD, Hit.Kind.BLAST]
+	var kinds := [
+		Hit.Kind.BLAST,
+		Hit.Kind.FIRE,
+		Hit.Kind.STRONG_FIRE,
+		Hit.Kind.SWORD,
+		Hit.Kind.SWORD,
+		Hit.Kind.BLAST,
+	]
 	var guard := 0
 	while boss.health > 0 and guard < 400:
 		for kind: int in kinds:

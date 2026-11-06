@@ -20,7 +20,8 @@ extends MomentumBody
 ##
 ## O jogo é feito para o controle, com a espada e cada ferramenta no seu
 ## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
-## ferramenta não faz nada antes de o personagem tê-la. A chama e a bomba têm
+## ferramenta não faz nada antes de o personagem tê-la. Uma melhoria, como a
+## chama forte, não ganha botão: muda o que a ferramenta faz. A chama e a bomba têm
 ## cargas, que voltam todas juntas depois de um tempo sem uso (ver
 ## player/tool_charges.gd). A espada e a mola não têm limite. A mola dá um pulo
 ## vertical: o personagem sobe no eixo da câmera, cresce na tela e mantém o
@@ -152,7 +153,7 @@ const VISUAL_CATCH_UP := 1.5
 ## Pontos de vida ganhos com cada coração.
 @export_range(1, 6, 1) var heart_bonus := 2
 ## Ferramentas desde o início. Útil na sala de teste.
-@export_flags("Bomba", "Chama", "Mola") var starting_tools := 0
+@export_flags("Bomba", "Chama", "Mola", "Chama forte") var starting_tools := 0
 
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
@@ -260,7 +261,8 @@ func max_charges(id: int) -> int:
 
 ## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, um
 ## coração aumenta a vida máxima e enche a vida, a chave pequena vai para o
-## chaveiro e a chave grande fica para sempre, como uma ferramenta sem botão.
+## chaveiro, e a chave grande e as melhorias ficam para sempre, como uma
+## ferramenta sem botão.
 func give_item(id: int) -> void:
 	if id == Item.Id.HEART:
 		max_health += heart_bonus
@@ -403,7 +405,8 @@ func _place_bomb() -> void:
 
 
 ## Lança uma bola de fogo na direção da frente, se houver carga. Uma de cada
-## vez: a próxima só sai depois que a anterior some.
+## vez: a próxima só sai depois que a anterior some. Com a chama forte, a bola
+## sai forte.
 func _shoot_fire() -> void:
 	if _fire_charges.left(fire_charges) <= 0:
 		return
@@ -412,6 +415,7 @@ func _shoot_fire() -> void:
 	var fireball := FIREBALL_SCENE.instantiate() as Fireball
 	fireball.direction = facing
 	fireball.shooter = self
+	fireball.strong = has_tool(Item.Id.STRONG_FIRE)
 	fireball.position = position + facing * 9.0
 	get_parent().add_child(fireball)
 	_fire_charges.spend(Engine.get_physics_frames())

@@ -13,6 +13,7 @@ func _draw() -> void:
 	if cleared:
 		_draw_debris()
 		return
+	_draw_shadow()
 	var offset := _shake_offset()
 	for y: int in int(size.y / 16.0):
 		for x: int in int(size.x / 16.0):

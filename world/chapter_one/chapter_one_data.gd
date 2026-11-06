@@ -1,10 +1,12 @@
 class_name ChapterOneData
 ## Dados do capítulo 1. O mapa traz só a geometria e as vagas de bloqueios e de
 ## baús, na legenda de ChapterMap. O tipo de cada bloqueio e o item de cada baú
-## ficam separados, para que a seed redistribua os itens sem mexer no mapa.
+## ficam em tabelas separadas do mapa.
 ##
 ## São 8 salas de uma tela, de 20 por 10 casas, numa grade de 3 por 4. As
-## portas ficam no meio das paredes e têm duas casas de largura.
+## portas ficam no meio das paredes e têm duas casas de largura. Um bloqueio
+## de porta fica uma casa para dentro da sala, num nicho entre duas paredes,
+## para aparecer inteiro na tela e não na beira dela.
 
 const MAP := [
 	"                    ####################",
@@ -17,8 +19,8 @@ const MAP := [
 	"                    #..................#",
 	"                    #..................#",
 	"                    #########..#########",
-	"                    #########88#########",
-	"                    #..................#",
+	"                    #########..#########",
+	"                    #.......#88#.......#",
 	"                    #.........m........#",
 	"                    #..................#",
 	"                    #########99#########",
@@ -30,20 +32,20 @@ const MAP := [
 	"#############################..#############################",
 	"#..................##::::::::::::::::::##..........#::::F::#",
 	"#...D..............##::::::::::::::::::##..........#:::::::#",
-	"#..................##555555555555555555##..........#7777777#",
-	"#.....m................................4...................#",
-	"#..............m.......................4...................#",
-	"#..................##....m.............##...E....i.........#",
+	"#..................##55555555555555555###..........#7777777#",
+	"#.....m...............................4....................#",
+	"#..............m......................4....................#",
+	"#..................##....m............###...E....i.........#",
 	"#..................##..................##.............m....#",
 	"#..................##..................##..................#",
 	"#########..##################..##################..#########",
-	"#########33##################..##################66#########",
-	"#..................##..................##..................#",
+	"#########..##################..##################..#########",
+	"#.......#33#.......##..................##.......#66#.......#",
 	"#.....m............##..................##...A..............#",
-	"#..................##....m.......c.....##.........u........#",
-	"#...................1......................................#",
-	"#...................1..................................#####",
-	"#...C..............##..................##..............2...#",
+	"#..................###...m.......c.....##.........u........#",
+	"#....................1.....................................#",
+	"#....................1.................................#####",
+	"#...C..............###.................##..............2...#",
 	"#............i.....##.........@........##..............2.B.#",
 	"#..................##..................##..............#...#",
 	"############################################################",
@@ -56,15 +58,15 @@ const BLOCKS := {
 	"3": ChapterMap.Block.ICE,
 	"4": ChapterMap.Block.ICE,
 	"5": ChapterMap.Block.LEDGE,
-	"6": ChapterMap.Block.LEDGE,
+	"6": ChapterMap.Block.ICE,
 	"7": ChapterMap.Block.LEDGE,
 	"8": ChapterMap.Block.CRACKED,
 	"9": ChapterMap.Block.ICE,
 }
 
-## Distribuição linear, a ordem pensada para ensinar: bomba, chama e mola. Cada
-## bloqueio aparece antes da ferramenta que o resolve. É só mais uma seed.
-const LINEAR := {
+## Item de cada baú, na ordem pensada para ensinar: bomba, chama e mola. Cada
+## bloqueio aparece antes da ferramenta que o resolve.
+const ITEMS := {
 	"A": Item.Id.BOMB,
 	"B": Item.Id.HEART,
 	"C": Item.Id.FIRE,
@@ -73,8 +75,7 @@ const LINEAR := {
 	"F": Item.Id.HEART,
 }
 
-## Casa do alvo do capítulo: o chefe.
+## Casa do alvo do capítulo, o chefe, e as ferramentas que ele exige: a chama
+## quebra a casca e a mola escapa das ondas. Só tools/check_chapter.py lê isto.
 const GOAL := "*"
-## Ferramentas exigidas para vencer o chefe: a chama quebra a casca e a mola
-## escapa das ondas.
 const GOAL_TOOLS := [Item.Id.FIRE, Item.Id.SPRING]

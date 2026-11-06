@@ -1,8 +1,8 @@
 # Alttp2 (nome provisório)
 
-Aventura top-down original, inspirada na jogabilidade de A Link to the Past e na estrutura dos randomizers e dos Metroidvanias. Cada ferramenta é arma e chave. Cada partida usa uma seed que redistribui as ferramentas e sempre garante um caminho até o fim.
+Aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim.
 
-Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
+Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O estudo das dungeons de referência e as regras tiradas dele estão em [docs/referencias.md](docs/referencias.md).
 
 ## Como abrir
 
@@ -12,10 +12,10 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md).
 
 ## Menu
 
-- **Capítulo 1: linear.** A distribuição pensada para aprender: bomba, chama e mola, nessa ordem.
-- **Capítulo 1: seed aleatória.** Sorteia uma seed de seis dígitos, mostrada no alto da tela. Os itens trocam de baú, e sempre há caminho até o chefe.
-- **Capítulo 2: linear e seed aleatória.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Na seed, as chaves também trocam de baú, e nenhuma ordem de abrir portas prende o jogador.
-- **Sala de teste.** A sala da física e do combate, com todas as ferramentas desde o início, um degrau alto, uma parede rachada e um bloco de gelo.
+- **Capítulo 1.** A dungeon de aprendizado, com 8 salas: bomba, chama e mola, nessa ordem, e o guardião de gelo no fim.
+- **Capítulo 2.** A dungeon grande, com 17 salas, chaves pequenas, portas trancadas, a chave grande e a sentinela no fim. Nenhuma ordem de abrir portas prende o jogador.
+- **Capítulo 3.** A geleira, com 15 salas. O personagem chega com as três ferramentas e encontra a primeira melhoria, a chama forte, que derrete o gelo grosso. No fim, o guardião antigo.
+- **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso e uma morsa de gelo.
 
 No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Esc, ou o botão Back do controle, volta ao menu de dentro do jogo.
 
@@ -39,6 +39,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 
 - **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. A espada empurra a bomba. Dá para soltar 2 seguidas, e as duas voltam 3 s depois da última.
 - **Chama:** bola de fogo reta. Derrete gelo e acende bombas. Dá para lançar 5 seguidas, uma de cada vez na tela, e todas voltam 3 s depois da última.
+- **Chama forte:** melhoria da chama, encontrada no capítulo 3, sem botão próprio. A bola de fogo fica maior e com o miolo branco. Faz tudo o que a chama faz, derrete o gelo grosso, causa o dobro do dano nos inimigos que o fogo afeta e é a única coisa que vence a morsa de gelo e a casca do guardião antigo.
 - **Mola:** pulo vertical, sem limite e sem ganhar distância. Encostado na face de um degrau alto, no alto do pulo e apertando para cima, o personagem sobe. Para descer, basta andar contra a face vindo de cima.
 - **Cargas:** os pontos ao lado do botão, no alto da tela, mostram quantas bombas e chamas restam. O botão escurece quando acabam.
 
@@ -48,13 +49,13 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
 - `combat/` tipos de golpe, que decidem o que cada ferramenta afeta.
 - `items/` itens e ferramentas: baú, bomba, bola de fogo e a relíquia do fim.
-- `obstacles/` bloqueios: parede rachada, gelo e a face do degrau alto.
+- `obstacles/` bloqueios: parede rachada, gelo, gelo grosso, portas e a face do degrau alto.
 - `objects/` objetos do mundo, como a caixa leve e o bloco pesado.
-- `enemies/` inimigos: o minion, o ugly com a granada, o de gelo e o chefe com a onda de choque.
-- `progression/` lógica de alcance, gerador de seeds e as escolhas da partida.
+- `enemies/` inimigos: o minion, o ugly com a granada, o de gelo, a morsa de gelo e os chefes com a onda de choque.
+- `progression/` leitura dos dados de cada capítulo, o mapa em texto e as escolhas da partida.
 - `ui/` menu, HUD, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/` e `chapter_two/` têm os dados de cada capítulo, com o mapa em texto e as distribuições separadas do mapa. `test_room.tscn` é a sala de teste.
+- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/`, `chapter_two/` e `chapter_three/` têm os dados de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. `test_room.tscn` é a sala de teste.
 - `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/local/` recebe a trilha provisória, fora do Git.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
@@ -65,9 +66,10 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 ```
 python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
 python3 tools/check_chapter.py world/chapter_two/chapter_two_data.gd
+python3 tools/check_chapter.py world/chapter_three/chapter_three_data.gd
 ```
 
-Confere a geometria das salas e das portas, garante que a distribuição linear é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador, e conta quantas distribuições embaralhadas são vencíveis.
+Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.
 
 ## Editar a pixel art
 
@@ -117,14 +119,18 @@ Nos inimigos com desenho, as cores viram um tom sobre ele.
 - **Branco:** acabou de levar um golpe.
 - **Cinza:** o golpe não o afeta. Falta outra ferramenta.
 - **Azul claro:** de gelo. Só o fogo funciona.
+- **Azul profundo com presas e borda de geada:** morsa de gelo. Só a chama forte derrete, em duas bolas.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
+- **Chefe azul profundo com borda de geada:** o guardião antigo, com a casca de gelo grosso. Só a chama forte quebra a casca. Os ataques são os do guardião de gelo.
 - **Sentinela de pedra rachada:** a bomba abre a armadura. O núcleo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A armadura volta 8 s depois da explosão.
 
 ## Cores do mundo
 
 - **Parede escura com rachaduras claras:** abre com a bomba.
 - **Bloco azul claro com brilhos:** derrete com a chama.
-- **Faixa marrom listrada com chão mais claro acima:** degrau alto. Sobe com a mola.
+- **Bloco azul profundo com a borda branca de geada, duas casas de fundo:** gelo grosso. A chama comum só o faz tremer. Derrete com a chama forte.
+- **Pedra escurecendo para baixo, com sombra no chão e o chão de cima mais claro:** degrau alto. Sobe com a mola e desce andando contra a face.
+- **Bloqueio num nicho entre duas paredes:** todo bloqueio de porta fica uma casa para dentro da sala, para aparecer inteiro na tela. As paredes projetam sombra no chão para o sul e para o leste.
 - **Baú marrom com faixa dourada:** abre com a espada.
 - **Porta de madeira com faixas de ferro e fechadura:** gasta uma chave pequena.
 - **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.

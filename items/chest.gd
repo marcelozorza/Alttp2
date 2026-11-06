@@ -1,7 +1,8 @@
 class_name Chest
 extends StaticBody2D
 ## Baú que guarda um item. Abre com um golpe de espada, e o item vai direto
-## para o personagem. O conteúdo vem da distribuição da seed, nunca do mapa.
+## para o personagem. O conteúdo vem da tabela de itens do capítulo, nunca do
+## mapa.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
 

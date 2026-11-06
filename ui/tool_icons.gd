@@ -8,6 +8,8 @@ const BOMB_COLOR := Color(0.12, 0.12, 0.17, 1.0)
 const FUSE_COLOR := Color(1.0, 0.75, 0.25, 1.0)
 const FLAME_OUTER_COLOR := Color(1.0, 0.45, 0.1, 1.0)
 const FLAME_INNER_COLOR := Color(1.0, 0.9, 0.4, 1.0)
+## A chama forte é maior e tem o miolo branco, como a bola de fogo dela.
+const STRONG_FLAME_CORE_COLOR := Color(1.0, 0.98, 0.85, 1.0)
 const SPRING_COLOR := Color(0.55, 0.85, 0.45, 1.0)
 const HEART_COLOR := Color(0.9, 0.2, 0.25, 1.0)
 const KEY_COLOR := Color(0.85, 0.8, 0.7, 1.0)
@@ -16,6 +18,11 @@ const BLADE_COLOR := Color(0.86, 0.9, 0.95, 1.0)
 const HILT_COLOR := Color(0.55, 0.34, 0.16, 1.0)
 const FLAME := [Vector2(0, -6), Vector2(4, 0), Vector2(3, 4), Vector2(-3, 4), Vector2(-4, 0)]
 const FLAME_CORE := [Vector2(0, -2), Vector2(2, 1), Vector2(1, 3), Vector2(-1, 3), Vector2(-2, 1)]
+const STRONG_FLAME := [Vector2(0, -7), Vector2(5, 0), Vector2(4, 5), Vector2(-4, 5), Vector2(-5, 0)]
+const STRONG_FLAME_MIDDLE := [
+	Vector2(0, -4), Vector2(3, 1), Vector2(2, 4), Vector2(-2, 4), Vector2(-3, 1)
+]
+const STRONG_FLAME_CORE := [Vector2(0, -1), Vector2(1.5, 2), Vector2(0, 3.5), Vector2(-1.5, 2)]
 const COIL := [
 	Vector2(-4, 5), Vector2(4, 3), Vector2(-4, 1), Vector2(4, -1), Vector2(-4, -3), Vector2(4, -5)
 ]
@@ -33,6 +40,12 @@ static func draw(canvas: CanvasItem, id: int, center: Vector2, factor := 1.0) ->
 		Item.Id.FIRE:
 			canvas.draw_colored_polygon(_points(FLAME, center, factor), FLAME_OUTER_COLOR)
 			canvas.draw_colored_polygon(_points(FLAME_CORE, center, factor), FLAME_INNER_COLOR)
+		Item.Id.STRONG_FIRE:
+			canvas.draw_colored_polygon(_points(STRONG_FLAME, center, factor), FLAME_OUTER_COLOR)
+			var middle := _points(STRONG_FLAME_MIDDLE, center, factor)
+			canvas.draw_colored_polygon(middle, FLAME_INNER_COLOR)
+			var core := _points(STRONG_FLAME_CORE, center, factor)
+			canvas.draw_colored_polygon(core, STRONG_FLAME_CORE_COLOR)
 		Item.Id.SPRING:
 			canvas.draw_polyline(_points(COIL, center, factor), SPRING_COLOR, maxf(1.0, factor))
 			var plate := Rect2(center + Vector2(-4.0, -6.5) * factor, Vector2(8.0, 1.5) * factor)

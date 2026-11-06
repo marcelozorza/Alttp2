@@ -1,0 +1,25 @@
+# Topo de um bloco de gelo que tem outro bloco ao sul: só a superfície clara,
+# como o topo da parede.
+paleta
+o #2d5a86
+e #5f97c8
+a #9fd2f4
+b #c4e6fa
+w #f4fbff
+pixels
+oooooooooooooooo
+obbwwbbbbbbbbbao
+obwbbbbbbwbbbbao
+obbbbbbbbbbbbaao
+obbbbbbbbbbbbaao
+obbbbbbbwbbbbaao
+obbbbbbbbbbbbaao
+obbbbbbbbbbbbaao
+obbwbbbbbbbbbaao
+obbbbbbbbbbbaaao
+obbbbbbbbbbbaaao
+obbbbbbbbbbbaaao
+obbbbbbbbbwbaaao
+obbbbbbbbbbaaaao
+oaaaaaaaaaaaaaeo
+oooooooooooooooo

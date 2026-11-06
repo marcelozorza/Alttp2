@@ -17,7 +17,8 @@ extends MomentumBody
 ##
 ## Cada tipo de golpe tem um multiplicador de dano, que é a parte de pedra,
 ## papel e tesoura do combate. Multiplicador zero torna o inimigo imune: o
-## golpe só o empurra, e ele pisca em cinza.
+## golpe só o empurra, e ele pisca em cinza. A chama forte tem o próprio
+## multiplicador, para que o gelo grosso ceda só a ela.
 
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER, STAGGER, DEAD }
 
@@ -46,6 +47,9 @@ const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
 @export_range(0, 10, 1) var sword_factor := 1
 ## Multiplicador do dano do fogo.
 @export_range(0, 10, 1) var fire_factor := 1
+## Multiplicador do dano da chama forte. Em geral o dobro do fogo comum. Um
+## inimigo de gelo grosso tem fogo comum zero e chama forte maior que zero.
+@export_range(0, 20, 1) var strong_fire_factor := 2
 ## Multiplicador do dano da explosão.
 @export_range(0, 10, 1) var blast_factor := 1
 
@@ -295,6 +299,8 @@ func _factor(kind: Hit.Kind) -> int:
 	match kind:
 		Hit.Kind.FIRE:
 			return fire_factor
+		Hit.Kind.STRONG_FIRE:
+			return strong_fire_factor
 		Hit.Kind.BLAST:
 			return blast_factor
 		Hit.Kind.SHOCKWAVE:

@@ -1,0 +1,24 @@
+# Topo do gelo grosso que tem outro bloco ao sul: a superfície escura com a
+# moldura de geada.
+paleta
+o #0f2448
+a #3f7ab8
+b #7fb0dc
+w #e8f4ff
+pixels
+oooooooooooooooo
+owwwwwwwwwwwwwwo
+owaaaaaaaaaaaawo
+owaabaaaaaaaaawo
+owaaaaaaaaaaaawo
+owaaaaaaabaaaawo
+owaaaaaaaaaaaawo
+owaaaaaaaaaaaawo
+owaabaaaaaaaaawo
+owaaaaaaaaaaaawo
+owaaaaaaaaaaaawo
+owaaaaaaaabaaawo
+owaaaaaaaaaaaawo
+owaaaaaaaaaaaawo
+oaaaaaaaaaaaaaao
+oooooooooooooooo

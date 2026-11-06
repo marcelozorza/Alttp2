@@ -2,10 +2,12 @@ extends Control
 ## HUD: a vida, um quadrado por ponto, e os quatro botões de face do controle
 ## num losango, cada um na posição do botão. A espada fica sempre no seu botão,
 ## com a lâmina magenta enquanto está travada. O botão de uma ferramenta que o
-## personagem ainda não tem aparece vazio e apagado. Ao lado do botão de uma
+## personagem ainda não tem aparece vazio e apagado. Uma melhoria troca o
+## ícone da ferramenta: com a chama forte, o botão da chama mostra a chama
+## maior de miolo branco. Ao lado do botão de uma
 ## ferramenta com cargas, do lado de fora do losango, uma coluna de pontos
 ## mostra as cargas, que se apagam de cima para baixo, e o botão escurece
-## quando elas acabam. No capítulo, mostra também o modo da partida e o
+## quando elas acabam. No capítulo, mostra também o número do capítulo e o
 ## cronômetro numa barra no alto da tela. À direita do losango ficam as chaves
 ## pequenas guardadas e, depois de encontrada, a chave grande. Com mais de
 ## HEALTH_ROW pontos de vida, a vida passa a ocupar duas linhas mais baixas.
@@ -152,10 +154,17 @@ func _draw_buttons(player: Player) -> void:
 			continue
 		var left := player.charges_left(id)
 		draw_circle(center, BUTTON_RADIUS, BUTTON_COLOR)
-		ToolIcons.draw(self, id, center, ICON_FACTOR)
+		ToolIcons.draw(self, _shown_item(player, id), center, ICON_FACTOR)
 		if left == 0:
 			draw_circle(center, BUTTON_RADIUS, SPENT_SHADE)
 		_draw_charges(center, left, player.max_charges(id))
+
+
+## Item desenhado no botão da ferramenta: a melhoria, se o personagem a tem.
+func _shown_item(player: Player, id: int) -> int:
+	if id == Item.Id.FIRE and player.has_tool(Item.Id.STRONG_FIRE):
+		return Item.Id.STRONG_FIRE
+	return id
 
 
 ## Coluna de cargas ao lado do botão, do lado de fora do losango. Os botões do

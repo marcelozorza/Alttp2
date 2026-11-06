@@ -43,7 +43,7 @@ func _ready() -> void:
 ## Fogo e explosões acendem o pavio. A bomba explode no tick seguinte, fora da
 ## consulta de física que a atingiu.
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
-	if kind == Hit.Kind.FIRE or kind == Hit.Kind.BLAST:
+	if Hit.is_fire(kind) or kind == Hit.Kind.BLAST:
 		var lit := Engine.get_physics_frames() - GameMath.ticks(fuse_time) + 1
 		_spawn_tick = mini(_spawn_tick, lit)
 

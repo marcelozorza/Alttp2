@@ -1,6 +1,6 @@
 class_name EndScreen
 extends CanvasLayer
-## Tela de fim do capítulo, com o tempo, o modo da partida e os baús abertos.
+## Tela de fim do capítulo, com o tempo, o capítulo e os baús abertos.
 ## Funciona com o jogo pausado.
 ##
 ## Os botões só respondem depois de um instante, para que o botão de ataque,
@@ -24,14 +24,13 @@ func _ready() -> void:
 	_summary = MenuKit.label("", 10)
 	column.add_child(_summary)
 	_buttons.append(MenuKit.button("Jogar de novo", _on_replay))
-	_buttons.append(MenuKit.button("Nova seed", _on_new_seed))
 	_buttons.append(MenuKit.button("Menu", _on_menu))
 	for button: Button in _buttons:
 		column.add_child(button)
 
 
-func show_results(time_text: String, mode_text: String, chests_text: String) -> void:
-	_summary.text = "Tempo %s\n%s\nBaús abertos %s" % [time_text, mode_text, chests_text]
+func show_results(time_text: String, chapter_text: String, chests_text: String) -> void:
+	_summary.text = "Tempo %s\n%s\nBaús abertos %s" % [time_text, chapter_text, chests_text]
 	visible = true
 	for button: Button in _buttons:
 		button.disabled = true
@@ -41,16 +40,9 @@ func show_results(time_text: String, mode_text: String, chests_text: String) -> 
 	_buttons[0].grab_focus()
 
 
-## Joga de novo com a mesma distribuição: a mesma seed ou a linear.
 func _on_replay() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
-
-
-func _on_new_seed() -> void:
-	RunSettings.randomized = true
-	RunSettings.run_seed = RunSettings.new_seed()
-	_on_replay()
 
 
 func _on_menu() -> void:

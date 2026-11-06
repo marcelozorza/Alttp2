@@ -9,7 +9,7 @@ extends Node
 ##
 ## Os arquivos ficam em audio/sfx/ e saem das receitas de tools/sfx.py. O
 ## som não muda nada no jogo, então o sorteio de tom usa um gerador próprio,
-## separado do da seed.
+## que nenhuma lógica de jogo lê.
 
 const VOICES := 8
 const FOLDER := "res://audio/sfx/"

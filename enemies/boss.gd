@@ -8,6 +8,10 @@ extends MomentumBody
 ## amarelo. A pancada no chão solta uma onda que só se evita no ar, com a mola.
 ## A investida corre em linha reta na direção travada durante o aviso.
 ##
+## Com thick_shell ligado, ele é o guardião antigo, o chefe do capítulo 3: a
+## casca é de gelo grosso, na paleta do gelo grosso, e só a chama forte a
+## quebra. A chama comum só o faz piscar em cinza, como o gelo grosso do mapa.
+##
 ## Não há dano por contato. Encostar nele só troca momento pela física, e ele
 ## é muito mais pesado que o personagem.
 
@@ -26,6 +30,7 @@ enum State {
 
 const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
 const SHELL_TEXTURE := preload("res://art/guardian_shell.svg")
+const THICK_SHELL_TEXTURE := preload("res://art/guardian_thick_shell.svg")
 const CORE_TEXTURE := preload("res://art/guardian_core.svg")
 ## Canto do desenho em relação à origem, nos pés.
 const GUARDIAN_OFFSET := Vector2(-14.0, -24.0)
@@ -46,10 +51,14 @@ const FLASH_TICKS := 6
 @export_range(1, 60, 1) var max_health := 12
 ## Segundos até a casca de gelo voltar depois de quebrada.
 @export_range(0.5, 20.0, 0.5) var shell_regrow_time := 6.0
+## Ligado, a casca é de gelo grosso e só a chama forte a quebra.
+@export var thick_shell := false
 ## Multiplicador do dano da espada, sem a casca.
 @export_range(0, 10, 1) var sword_factor := 1
 ## Multiplicador do dano do fogo, sem a casca.
 @export_range(0, 10, 1) var fire_factor := 1
+## Multiplicador do dano da chama forte, sem a casca.
+@export_range(0, 20, 1) var strong_fire_factor := 2
 ## Multiplicador do dano da explosão, sem a casca.
 @export_range(0, 10, 1) var blast_factor := 3
 
@@ -130,7 +139,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 		return
 	var now := Engine.get_physics_frames()
 	if _shell:
-		if kind == Hit.Kind.FIRE:
+		if _breaks_shell(kind):
 			_shell = false
 			_shell_break_tick = now
 			_hit_tick = now
@@ -140,6 +149,13 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 			Sfx.play(&"immune")
 		return
 	_take_damage(amount, kind)
+
+
+## A casca comum cede a qualquer fogo. A casca grossa, só à chama forte.
+func _breaks_shell(kind: Hit.Kind) -> bool:
+	if thick_shell:
+		return kind == Hit.Kind.STRONG_FIRE
+	return Hit.is_fire(kind)
 
 
 ## Dano no chefe já sem proteção, conforme o multiplicador de cada golpe.
@@ -265,11 +281,18 @@ func _factor(kind: Hit.Kind) -> int:
 	match kind:
 		Hit.Kind.FIRE:
 			return fire_factor
+		Hit.Kind.STRONG_FIRE:
+			return strong_fire_factor
 		Hit.Kind.BLAST:
 			return blast_factor
 		Hit.Kind.SHOCKWAVE:
 			return 0
 	return sword_factor
+
+
+## Desenho da casca: de gelo comum ou de gelo grosso.
+func _shell_texture() -> Texture2D:
+	return THICK_SHELL_TEXTURE if thick_shell else SHELL_TEXTURE
 
 
 ## Troca de estado. O despertar, os avisos e a investida têm som.
@@ -316,11 +339,11 @@ func _draw() -> void:
 		tint = HIT_TINT
 	elif now - _immune_tick < FLASH_TICKS:
 		tint = IMMUNE_COLOR
-	var texture := SHELL_TEXTURE if _shell else CORE_TEXTURE
+	var texture := _shell_texture() if _shell else CORE_TEXTURE
 	if not _shell:
 		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
-			texture = SHELL_TEXTURE
+			texture = _shell_texture()
 	var origin := GUARDIAN_OFFSET + shake
 	draw_texture(texture, origin, tint)
 	var bar_width := BODY_SIZE.x * float(maxi(health, 0)) / max_health

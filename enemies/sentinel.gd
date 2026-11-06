@@ -46,7 +46,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 			Sfx.play(&"immune")
 		return
 	if _frost:
-		if kind == Hit.Kind.FIRE:
+		if Hit.is_fire(kind):
 			_frost = false
 			_hit_tick = now
 			Sfx.play(&"ice_melt")
