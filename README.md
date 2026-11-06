@@ -32,7 +32,7 @@ No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão d
 O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado serve para testar. O losango no canto inferior esquerdo da tela repete a posição dos quatro botões, com o ícone do que cada um faz.
 
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
-- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. A corrida dura enquanto a direção estiver pressionada e houver fôlego: depois de 4 s correndo o personagem cansa, para de correr e só corre de novo depois de 4 s de descanso. Nada disso aparece na tela.
+- **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo, nenhum ataque tira vida: a corrida é a esquiva. Ela dura enquanto a direção estiver pressionada e houver fôlego: depois de 3 s correndo o personagem cansa, para de correr e só corre de novo depois de 4 s de descanso. Nada disso aparece na tela.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
 - **Espada:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. O golpe também abre os baús.
 - **Bomba:** botão de cima (Y no padrão Xbox, X no SNES). No teclado, L ou C.
@@ -121,7 +121,7 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 ## Tons do Giorgio
 
 - **De pé, sem tom:** andando, com a espada e os itens na pata.
-- **Inclinado para a frente, alaranjado:** correndo. Atacar encerra a corrida.
+- **Inclinado para a frente, alaranjado:** correndo, sem tomar dano. Atacar encerra a corrida.
 - **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola. Com a mola forte, cresce mais e fica mais tempo no ar.

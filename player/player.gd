@@ -113,11 +113,15 @@ const VISUAL_CATCH_UP := 1.5
 @export var run_can_steer := true
 ## Segundos de corrida contínua até o personagem cansar. Zero desliga o
 ## fôlego, e ele corre sem limite.
-@export_range(0.0, 20.0, 0.5) var run_time := 4.0
+@export_range(0.0, 20.0, 0.5) var run_time := 3.0
 ## Segundos andando ou parado para recuperar o fôlego todo depois de cansar.
 ## Cansado, o duplo toque não faz nada, e nada aparece na tela de propósito
 ## (pedido de Marcelo em 2026-11-06): é só a sensação de ter de esperar.
 @export_range(0.0, 20.0, 0.5) var run_rest_time := 4.0
+## Correndo, nenhum ataque tira vida (decisão de Marcelo em 2026-11-06): a
+## corrida é a esquiva, e o fôlego é o que a limita. A física da batida
+## continua, então correr contra um inimigo ainda ricocheteia.
+@export var run_invincible := true
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -349,11 +353,13 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 		_enter(State.KNOCKBACK)
 
 
-## Recebe um ataque. Durante a invencibilidade, ataques são ignorados. O
-## empurrão vem separado, pela física da batida. Sem vida, o personagem cai
-## e avisa a cena, que mostra a tela de derrota.
+## Recebe um ataque. Durante a invencibilidade e correndo, ataques são
+## ignorados. O empurrão vem separado, pela física da batida. Sem vida, o
+## personagem cai e avisa a cena, que mostra a tela de derrota.
 func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD or Clock.tick < _invincible_until_tick:
+		return
+	if run_invincible and _state == State.RUN:
 		return
 	health -= amount
 	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
