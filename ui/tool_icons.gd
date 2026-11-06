@@ -21,10 +21,10 @@ const TEXTURES := {
 
 ## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do
 ## _draw de um canvas.
-static func draw(canvas: CanvasItem, id: int, center: Vector2) -> void:
+static func draw(canvas: CanvasItem, id: int, center: Vector2, tint := Color.WHITE) -> void:
 	var texture: Texture2D = TEXTURES.get(id)
 	if texture:
-		draw_centered(canvas, texture, center)
+		draw_centered(canvas, texture, center, tint)
 
 
 ## Desenha a espada centrada em center, travada ou não.
@@ -34,5 +34,7 @@ static func draw_sword(canvas: CanvasItem, center: Vector2, locked := false) -> 
 
 ## Desenha a textura com o centro em center, em pixels inteiros, para que a
 ## pixel art fique nítida.
-static func draw_centered(canvas: CanvasItem, texture: Texture2D, center: Vector2) -> void:
-	canvas.draw_texture(texture, (center - texture.get_size() / 2.0).floor())
+static func draw_centered(
+	canvas: CanvasItem, texture: Texture2D, center: Vector2, tint := Color.WHITE
+) -> void:
+	canvas.draw_texture(texture, (center - texture.get_size() / 2.0).floor(), tint)

@@ -40,7 +40,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
-- **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. As chaves guardadas aparecem no alto, à direita da vida.
+- **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 
 ## Ferramentas
 

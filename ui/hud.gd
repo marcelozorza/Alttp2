@@ -1,9 +1,11 @@
 extends Control
-## HUD. No alto, numa barra, a vida, um quadrado por ponto, as chaves pequenas
-## guardadas, a chave grande depois de encontrada e, no capítulo, o número do
-## capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela, os quatro
-## botões de face do controle num losango, cada um na posição do botão, com o
-## ícone em pixel art do que ele faz. A espada fica sempre no seu botão, com a
+## HUD. No alto, numa barra, a vida, um quadrado por ponto, e, no capítulo, o
+## número do capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela,
+## os quatro botões de face do controle num losango, cada um na posição do
+## botão, com o ícone em pixel art do que ele faz. À direita do losango, no
+## capítulo, o contador de chaves pequenas, sempre à vista, mesmo em zero, e a
+## chave grande depois de encontrada (Marcelo não achava o contador no alto,
+## 2026-11-06). A espada fica sempre no seu botão, com a
 ## lâmina magenta enquanto está travada. O botão de uma ferramenta que o
 ## personagem ainda não tem aparece apagado. Uma melhoria troca o ícone da
 ## ferramenta: com a chama forte, o botão da chama mostra a chama maior de
@@ -17,8 +19,10 @@ const PIP_SIZE := Vector2(6.0, 6.0)
 const PIP_GAP := 2.0
 ## Pontos de vida que cabem numa linha, antes do losango dos botões.
 const HEALTH_ROW := 12
-## Onde começam as chaves, à direita da vida.
-const KEYS_POSITION := Vector2(102.0, -2.0)
+## Centro do ícone da chave, à direita do losango, na altura do centro dele.
+const KEYS_POSITION := Vector2(54.0, 152.0)
+## Chave apagada, quando não há nenhuma.
+const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
 const FULL_COLOR := Color(0.9, 0.2, 0.25, 1.0)
 const EMPTY_COLOR := Color(0.25, 0.1, 0.12, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
@@ -77,11 +81,12 @@ func _draw() -> void:
 	if show_bar:
 		draw_rect(Rect2(-position, BAR_SIZE), BAR_COLOR)
 	var player := get_tree().get_first_node_in_group("player") as Player
+	var chapter := get_tree().get_first_node_in_group("chapter")
 	if player:
 		_draw_health(player)
 		_draw_buttons(player)
-		_draw_keys(player)
-	var chapter := get_tree().get_first_node_in_group("chapter")
+		if chapter:
+			_draw_keys(player)
 	if chapter:
 		var text := "%s   %s" % [chapter.call("mode_text"), chapter.call("time_text")]
 		var font := ThemeDB.fallback_font
@@ -119,24 +124,17 @@ func _draw_health(player: Player) -> void:
 		draw_rect(Rect2(pip_position, pip_size), FULL_COLOR if i < player.health else EMPTY_COLOR)
 
 
-## Uma chave pequena por ícone, até 4, e um número quando passam disso. A chave
-## grande vem depois.
+## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a
+## chave grande depois, quando o personagem a tem.
 func _draw_keys(player: Player) -> void:
-	var x := KEYS_POSITION.x
-	var shown := mini(player.keys, 4)
-	for i: int in shown:
-		ToolIcons.draw(self, Item.Id.KEY, Vector2(x + 4.0, KEYS_POSITION.y + 6.0))
-		x += 8.0
-	if player.keys > shown:
-		var font := ThemeDB.fallback_font
-		var text := "+%d" % (player.keys - shown)
-		draw_string(
-			font, Vector2(x + 1.0, 9.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, TEXT_COLOR
-		)
-		x += 14.0
+	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
+	ToolIcons.draw(self, Item.Id.KEY, KEYS_POSITION, tint)
+	var font := ThemeDB.fallback_font
+	var text := "x%d" % player.keys
+	var text_position := KEYS_POSITION + Vector2(6.0, 4.0)
+	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
 	if player.has_tool(Item.Id.BOSS_KEY):
-		var center := Vector2(x + 6.0, KEYS_POSITION.y + 6.0)
-		ToolIcons.draw(self, Item.Id.BOSS_KEY, center)
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, KEYS_POSITION + Vector2(26.0, 0.0))
 
 
 func _draw_buttons(player: Player) -> void:
