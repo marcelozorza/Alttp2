@@ -137,6 +137,8 @@ func _physics_process(_delta: float) -> void:
 
 ## Nome do capítulo, para o HUD e para a tela de fim.
 func mode_text() -> String:
+	if data.number == ChapterData.TUTORIAL:
+		return "Tutorial"
 	return "Cap. %d" % data.number
 
 

@@ -20,7 +20,10 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.85))
-	column.add_child(MenuKit.label("Capítulo concluído", 16))
+	var title := "Capítulo concluído"
+	if RunSettings.chapter == ChapterData.TUTORIAL:
+		title = "Tutorial concluído"
+	column.add_child(MenuKit.label(title, 16))
 	_summary = MenuKit.label("", 10)
 	column.add_child(_summary)
 	if Progress.active:

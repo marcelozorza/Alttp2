@@ -63,7 +63,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `progression/` leitura dos dados de cada capítulo, o mapa em texto, as escolhas da partida, o progresso salvo (`progress.gd`) e o caminho entre as telas (`flow.gd`).
 - `ui/` menu de título, treino, HUD, menu de pausa, tela de derrota, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `chapter_one/`, `chapter_two/`, `chapter_three/` e `chapter_four/` têm os dados de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
+- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `tutorial/`, `chapter_one/`, `chapter_two/` e `chapter_three/` têm os dados do tutorial e de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
 - `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/local/` recebe a trilha provisória, fora do Git.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
@@ -72,10 +72,10 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 ## Conferir um capítulo sem o Godot
 
 ```
+python3 tools/check_chapter.py world/tutorial/tutorial_data.gd
 python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
 python3 tools/check_chapter.py world/chapter_two/chapter_two_data.gd
 python3 tools/check_chapter.py world/chapter_three/chapter_three_data.gd
-python3 tools/check_chapter.py world/chapter_four/chapter_four_data.gd
 ```
 
 Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face, altura do chão que fecha em todo o mapa, e grade com um interruptor na mesma sala e um bloco pesado alinhado com ele) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.

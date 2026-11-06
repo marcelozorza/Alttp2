@@ -12,7 +12,7 @@ class_name Item
 ##
 ## A chama forte e a mola forte são melhorias: não ganham botão, mas mudam a
 ## ferramenta. A chama forte derrete o gelo grosso e queima mais, e a mola
-## forte dá um pulo mais alto, que sobe o degrau duplo. A partir do capítulo 3,
+## forte dá um pulo mais alto, que sobe o degrau duplo. A partir do capítulo 2,
 ## cada capítulo novo melhora uma ferramenta em vez de criar outra.
 
 enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, STRONG_SPRING, HEART, KEY, BOSS_KEY }

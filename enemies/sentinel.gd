@@ -1,6 +1,6 @@
 class_name Sentinel
 extends Boss
-## Chefe do capítulo 2, a sentinela de pedra. É o exame das três ferramentas
+## Chefe do capítulo 1, a dungeon grande: a sentinela de pedra. É o exame das três ferramentas
 ## juntas, numa ordem que o jogador lê pelo próprio desenho.
 ##
 ## A armadura de pedra tem as rachaduras claras da parede rachada, então só a

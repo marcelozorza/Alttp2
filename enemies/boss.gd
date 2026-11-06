@@ -1,6 +1,6 @@
 class_name Boss
 extends MomentumBody
-## Chefe do capítulo 1, o guardião de gelo. É o exame das três ferramentas.
+## Chefe do tutorial, o antigo capítulo 1: o guardião de gelo. É o exame das três ferramentas.
 ##
 ## Coberto pela casca de gelo, ele ignora espada e bomba: só a chama quebra a
 ## casca, que volta depois de shell_regrow_time. Sem a casca, o núcleo apanha
@@ -59,7 +59,7 @@ const FLASH_TICKS := 6
 ## Ligado, a casca é de gelo grosso e só a chama forte a quebra.
 @export var thick_shell := false
 ## Ligado, a casca é de pedra rachada e só a explosão da bomba a abre. É o
-## colosso, o chefe do capítulo 4.
+## colosso, o chefe do capítulo 3, a pedreira.
 @export var stone_shell := false
 ## Ligada, a pancada solta a onda alta, que só o pulo da mola forte passa.
 @export var tall_waves := false

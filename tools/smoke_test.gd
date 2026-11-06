@@ -116,6 +116,7 @@ func _run() -> void:
 	await _check_replay()
 	await _check_pause_and_defeat()
 	await _check_training()
+	await _check_tutorial()
 	await _check_continue()
 	Progress.clear_file()
 	print("FIM DO TESTE")
@@ -267,13 +268,13 @@ func _check_training() -> void:
 	await _frames(10)
 	await _press("Treino")
 	print("TREINO: -> ", _scene_name())
-	await _press("Capítulo 3")
+	await _press("Capítulo 2")
 	await _frames(10)
 	var chapter: Node = get_tree().current_scene
 	var player: Player = chapter.get("_player")
 	print(
 		(
-			"TREINO: -> %s, contínuo %s, chama %s, chama forte %s, vida %d"
+			"TREINO: capítulo 2 -> %s, contínuo %s, chama %s, chama forte %s, vida %d"
 			% [
 				_scene_name(),
 				Progress.active,
@@ -286,6 +287,27 @@ func _check_training() -> void:
 	get_tree().change_scene_to_file(Flow.TEST_ROOM_SCENE)
 	await _frames(20)
 	print("TREINO: sala de teste -> ", _scene_name())
+
+
+## Tutorial: o antigo capítulo 1, avulso, a partir do título, sem gravar.
+func _check_tutorial() -> void:
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	await _frames(10)
+	await _press("Tutorial")
+	await _frames(10)
+	var chapter: Node = get_tree().current_scene
+	var player: Player = chapter.get("_player")
+	print(
+		(
+			"TUTORIAL: -> %s, nome %s, contínuo %s, bomba %s"
+			% [
+				_scene_name(),
+				chapter.call("mode_text"),
+				Progress.active,
+				player.has_tool(Item.Id.BOMB)
+			]
+		)
+	)
 
 
 ## Continuar: o jogo salvo volta ao mundo com os capítulos vencidos.

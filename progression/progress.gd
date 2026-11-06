@@ -15,7 +15,10 @@ class_name Progress
 ## Com "active" desligado, o capítulo é jogado avulso, a partir do treino, e
 ## nada é gravado.
 
-const VERSION := 1
+## Versão do arquivo. A 1 numerava os capítulos de 1 a 4, antes de o
+## capítulo 1 virar o tutorial (2026-11-06), então um arquivo antigo é
+## descartado.
+const VERSION := 2
 const BASE_HEALTH := 6
 
 ## Ligado durante o jogo contínuo. O treino joga um capítulo avulso.
@@ -110,7 +113,8 @@ static func load_file() -> bool:
 		return false
 	var data = JSON.parse_string(file.get_as_text())
 	file.close()
-	if not data is Dictionary:
+	if not data is Dictionary or int(data.get("version", 0)) != VERSION:
+		clear_file()
 		return false
 	start_new()
 	chapters_done = int(data.get("chapters_done", 0))

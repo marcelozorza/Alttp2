@@ -3,8 +3,10 @@ extends RefCounted
 ## Dados de um capítulo, lidos das constantes do arquivo de dados dele: o mapa
 ## em texto, o tipo de cada bloqueio, o item de cada baú e, se houver, as
 ## ferramentas com que o personagem chega (STARTING_TOOLS), que nos capítulos
-## seguintes ao 2 são as três ferramentas já ganhas, e as salas maiores que
+## seguintes ao 1 são as três ferramentas já ganhas, e as salas maiores que
 ## uma tela (ROOMS), retângulos em salas de 20 por 10 casas.
+##
+## O tutorial é o antigo capítulo 1, jogado fora do mundo, e tem o número 0.
 ##
 ## Cada capítulo tem só um arquivo de dados, e a cena do capítulo é a mesma
 ## para todos. Para criar um capítulo novo, basta um arquivo de dados com as
@@ -12,16 +14,17 @@ extends RefCounted
 ## GOAL_TOOLS, que só tools/check_chapter.py lê, para garantir fora do Godot
 ## que o capítulo tem caminho até o chefe.
 
-## Arquivo de dados de cada capítulo, na ordem do menu. Precisa ser preload: o
+## Arquivo de dados de cada capítulo, na ordem do mundo. Precisa ser preload: o
 ## nome da classe não vale como constante dentro de uma lista.
 const SOURCES := [
 	preload("res://world/chapter_one/chapter_one_data.gd"),
 	preload("res://world/chapter_two/chapter_two_data.gd"),
 	preload("res://world/chapter_three/chapter_three_data.gd"),
-	preload("res://world/chapter_four/chapter_four_data.gd"),
 ]
+const TUTORIAL_SOURCE := preload("res://world/tutorial/tutorial_data.gd")
+const TUTORIAL := 0
 
-## Número do capítulo, a partir de 1.
+## Número do capítulo, a partir de 1. Zero é o tutorial.
 var number := 1
 var rows: Array = []
 var blocks := {}
@@ -38,11 +41,16 @@ static func count() -> int:
 	return SOURCES.size()
 
 
+## Carrega o capítulo pelo número, ou o tutorial com TUTORIAL.
 static func load_number(chapter: int) -> ChapterData:
-	var source: Script = SOURCES[clampi(chapter, 1, SOURCES.size()) - 1]
-	var constants := source.get_script_constant_map()
 	var data := ChapterData.new()
-	data.number = clampi(chapter, 1, SOURCES.size())
+	var source: Script = TUTORIAL_SOURCE
+	if chapter != TUTORIAL:
+		data.number = clampi(chapter, 1, SOURCES.size())
+		source = SOURCES[data.number - 1]
+	else:
+		data.number = TUTORIAL
+	var constants := source.get_script_constant_map()
 	data.rows = constants["MAP"]
 	data.blocks = constants["BLOCKS"]
 	data.items = constants["ITEMS"]
