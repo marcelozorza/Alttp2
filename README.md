@@ -26,7 +26,7 @@ O tutorial e os capítulos:
 - **Capítulo 3.** A pedreira, com 17 salas em 22 telas: a arena, a pedreira e o pátio são maiores que a tela, e a câmera acompanha o personagem dentro delas. O personagem chega com as três ferramentas e a chama forte e encontra a mola forte, cujo pulo sobe o degrau duplo. Atiradores de pedras nos estrados e o colosso no fim.
 - **Sala de teste.** A sala da física e do combate, com todas as ferramentas e a chama forte desde o início, um degrau alto, uma parede rachada, um bloco de gelo, um gelo grosso, uma morsa de gelo e um atirador de pedras. A passagem para a parte de baixo é uma grade: pise no interruptor para abri-la enquanto fica ali, ou empurre o bloco pesado para cima dele para abri-la de vez.
 
-No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start, Back ou Esc abrem o menu de pausa, com continuar e sair. A música para junto e volta de onde estava. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo recomeça a dungeon do início, com o que o personagem tinha ao entrar nela.
+No menu, use as setas ou o direcional para escolher e Enter, Espaço, o botão de baixo (A) ou o Start do controle para confirmar. Dentro do jogo, Start ou Esc abrem o menu de pausa, com continuar, mapa e sair. Back no controle de Xbox, Select no de SNES, M ou Tab abrem direto o mapa da dungeon, e o mesmo botão fecha. A música para junto e volta de onde estava. Sem vida, o personagem cai e aparece a tela de derrota: tentar de novo recomeça a dungeon do início, com o que o personagem tinha ao entrar nela.
 
 ## Controles
 
@@ -43,7 +43,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
 - **Vida:** os corações no alto, um a cada dois pontos, pela metade ou vazios conforme você perde vida. Cada inimigo morto tem 30% de chance de deixar um ossinho, que enche 2 pontos ao ser pego e some em 10 s, e com 3 pontos ou menos todo inimigo deixa um. Com 4 pontos ou menos, um beep discreto avisa.
-- **Minimapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. Na pausa, o mapa inteiro da dungeon, com as salas não vistas escurecidas.
+- **Minimapa e mapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. O botão de mapa abre o mapa inteiro da dungeon numa tela própria: nas salas já vistas aparecem baús fechados e abertos, portas trancadas, porta do chefe, paredes rachadas, gelo, degraus e grades, as salas não vistas são blocos sombreados, o chefe tem uma caveira desde o começo e o Giorgino pisca. Uma legenda fica embaixo.
 - **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 
 ## Ferramentas

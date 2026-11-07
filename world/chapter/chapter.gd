@@ -97,6 +97,8 @@ var _room_actors := {}
 var _room_switches := {}
 var _room_gates := {}
 var _chests: Array[Chest] = []
+## Bloqueio de cada vaga do mapa, para a tela de mapa saber o que já saiu.
+var _obstacle_by_slot := {}
 
 @onready var _map_view: MapView = $MapView
 @onready var _walls: StaticBody2D = $Walls
@@ -172,6 +174,33 @@ func current_room() -> Rect2i:
 
 func room_tiles() -> Vector2i:
 	return ROOM_TILES
+
+
+## Sala de uma tela, em unidades de sala: a sala maior que a contém, ou a
+## própria tela.
+func room_at(screen: Vector2i) -> Rect2i:
+	return _room_rects.get(screen, Rect2i(screen, Vector2i.ONE))
+
+
+## Se o baú de um local já foi aberto, para a tela de mapa.
+func chest_is_open(location: String) -> bool:
+	for chest: Chest in _chests:
+		if chest.location_id == location:
+			return chest.is_open
+	return false
+
+
+## Se o bloqueio de uma vaga já saiu do caminho: parede quebrada, gelo
+## derretido, porta destrancada ou grade aberta. Um degrau nunca sai.
+func block_cleared(slot: String) -> bool:
+	var obstacle: Node = _obstacle_by_slot.get(slot)
+	if obstacle is SwitchDoor:
+		return (obstacle as SwitchDoor).open
+	if obstacle is Obstacle:
+		return (obstacle as Obstacle).cleared
+	if obstacle is LockedDoor:
+		return (obstacle as LockedDoor).opened
+	return false
 
 
 ## Cria o personagem, os baús, os inimigos e os bloqueios de cada casa do mapa.
@@ -274,6 +303,7 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
 	_obstacles.add_child(obstacle)
+	_obstacle_by_slot[slot] = obstacle
 	if obstacle is SwitchDoor:
 		var room := _room_of_cell(area.position)
 		var gates: Array = _room_gates.get(room, [])
@@ -365,10 +395,9 @@ func _finish() -> void:
 ## Sala de uma casa do mapa: a sala maior que contém a tela dela, ou a própria
 ## tela.
 func _room_of_cell(cell: Vector2i) -> Rect2i:
-	var screen := Vector2i(
-		floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y)
+	return room_at(
+		Vector2i(floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y))
 	)
-	return _room_rects.get(screen, Rect2i(screen, Vector2i.ONE))
 
 
 func _room_of(point: Vector2) -> Rect2i:
