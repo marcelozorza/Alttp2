@@ -1,7 +1,7 @@
 extends Control
 ## Tela de título. Continuar o jogo salvo, se houver, começar um jogo novo,
-## jogar o tutorial, que fica fora do mundo, ou ir ao treino, com cada
-## capítulo avulso e a sala de teste.
+## jogar o modo randomizado com uma seed, jogar o tutorial, que fica fora do
+## mundo, ou ir ao treino, com cada capítulo avulso e a sala de teste.
 ##
 ## O jogo novo só grava por cima do salvo quando o personagem vence um
 ## capítulo ou encosta na pedra de salvamento.
@@ -19,6 +19,7 @@ func _ready() -> void:
 	column.add_child(new_game)
 	if not first:
 		first = new_game
+	column.add_child(MenuKit.button("Randomizado", _on_randomized))
 	column.add_child(MenuKit.button("Tutorial", _on_tutorial))
 	column.add_child(MenuKit.button("Treino", _on_training))
 	first.grab_focus.call_deferred()
@@ -32,6 +33,10 @@ func _on_continue() -> void:
 func _on_new_game() -> void:
 	Progress.start_new()
 	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+
+
+func _on_randomized() -> void:
+	get_tree().change_scene_to_file(Flow.SEED_SCENE)
 
 
 ## O tutorial é jogado avulso, como no treino: nada é gravado.

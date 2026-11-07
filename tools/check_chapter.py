@@ -27,6 +27,11 @@ bloqueio vira uma região própria. A lógica anda pelo grafo dessas regiões.
 Para conferir o próprio grafo, o alcance também é calculado casa por casa, e
 os dois precisam dar o mesmo resultado em todas as combinações.
 
+A mesma lógica existe dentro do jogo, em progression/chapter_logic.gd, para
+o gerador de seeds. Qualquer mudança nas regras precisa ser feita nos dois, e
+o teste de fumaça imprime as esferas de cada capítulo para comparar com as
+daqui.
+
 Uso: python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
      python3 tools/check_chapter.py world/tutorial/tutorial_data.gd
 """

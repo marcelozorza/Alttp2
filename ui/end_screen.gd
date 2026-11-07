@@ -6,8 +6,8 @@ extends CanvasLayer
 ##
 ## Ao vencer a última dungeon no jogo contínuo, vira a tela de vitória: mostra
 ## o tempo do jogo inteiro e convida ao modo randomizado, o jogo de verdade
-## (pedido de Marcelo em 2026-11-07). Enquanto esse modo não existe, o botão
-## dele aparece desligado.
+## (pedido de Marcelo em 2026-11-07). Numa seed vencida, mostra o número dela
+## e convida a outra.
 ##
 ## Os botões só respondem depois de um instante, para que o botão de ataque,
 ## que no teclado e no controle também confirma, não reinicie o capítulo por
@@ -34,8 +34,7 @@ func _ready() -> void:
 	column.add_child(_title)
 	_summary = MenuKit.label("", 10)
 	column.add_child(_summary)
-	_random_button = MenuKit.button("Modo randomizado (em breve)", _on_leave)
-	_random_button.disabled = true
+	_random_button = MenuKit.button("Jogar randomizado", _on_random)
 	_random_button.visible = false
 	column.add_child(_random_button)
 	if Progress.active:
@@ -54,29 +53,43 @@ func show_results(time_text: String, chapter_text: String, chests_text: String) 
 
 
 ## Vitória: o tempo do jogo inteiro desde o Novo jogo, o da última dungeon e o
-## convite ao modo randomizado.
-func show_victory(run_time_text: String, time_text: String, chests_text: String) -> void:
-	_title.text = "Você venceu as três dungeons"
-	_summary.text = (
-		(
-			"Tempo total %s\nÚltima dungeon em %s, baús abertos %s\n\n"
-			% [run_time_text, time_text, chests_text]
-		)
-		+ "O jogo de verdade começa agora: as mesmas dungeons\n"
-		+ "com os itens embaralhados por uma seed. Em breve."
+## convite ao modo randomizado. Numa seed, o número dela para compartilhar.
+func show_victory(
+	run_time_text: String, time_text: String, chests_text: String, seed_value: int
+) -> void:
+	var summary := (
+		"Tempo total %s\nÚltima dungeon em %s, baús abertos %s\n\n"
+		% [run_time_text, time_text, chests_text]
 	)
+	if seed_value == 0:
+		_title.text = "Você venceu as três dungeons"
+		summary += (
+			"O jogo de verdade começa agora: as mesmas dungeons\n"
+			+ "com os itens embaralhados por uma seed."
+		)
+		_random_button.text = "Jogar randomizado"
+	else:
+		_title.text = "Seed %06d vencida" % seed_value
+		summary += "Compartilhe o número da seed: quem jogar\na mesma seed joga o mesmo jogo."
+		_random_button.text = "Jogar outra seed"
+	_summary.text = summary
 	_random_button.visible = true
 	await _appear()
 
 
 func _appear() -> void:
 	visible = true
-	for button: Button in _buttons:
+	for button: Button in _buttons + [_random_button]:
 		button.disabled = true
 	await get_tree().create_timer(INPUT_DELAY).timeout
-	for button: Button in _buttons:
+	for button: Button in _buttons + [_random_button]:
 		button.disabled = false
 	_buttons[0].grab_focus()
+
+
+func _on_random() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file(Flow.SEED_SCENE)
 
 
 func _on_replay() -> void:

@@ -25,6 +25,8 @@ func _ready() -> void:
 	visible = false
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.75))
 	column.add_child(MenuKit.label("Pausa", 16))
+	if Progress.active and Progress.seed != 0:
+		column.add_child(MenuKit.label("Seed %06d" % Progress.seed, 8))
 	# No capítulo, o mapa inteiro da dungeon (pedido de Marcelo em 2026-11-07).
 	column.add_child(Minimap.new())
 	_buttons.append(MenuKit.button("Continuar", resume))

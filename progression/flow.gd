@@ -5,6 +5,7 @@ class_name Flow
 ## No treino, leva ao menu de título.
 
 const TITLE_SCENE := "res://ui/title_screen.tscn"
+const SEED_SCENE := "res://ui/seed_screen.tscn"
 const TRAINING_SCENE := "res://ui/training_screen.tscn"
 const OVERWORLD_SCENE := "res://world/overworld/overworld.tscn"
 const CHAPTER_SCENE := "res://world/chapter/chapter.tscn"

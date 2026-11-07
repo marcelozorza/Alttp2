@@ -120,6 +120,8 @@ func _run() -> void:
 	await _check_training()
 	await _check_tutorial()
 	await _check_continue()
+	_check_logic()
+	await _check_randomized()
 	Progress.clear_file()
 	print("FIM DO TESTE")
 	# Sons tocando no fechamento deixam o Godot acusar recurso preso.
@@ -442,6 +444,107 @@ func _check_continue() -> void:
 		(
 			"CONTINUAR: -> %s, vencidos %d, modos %s, vida %d"
 			% [_scene_name(), Progress.chapters_done, modes, Progress.max_health]
+		)
+	)
+
+
+## A lógica do jogo repete a do conferidor: as esferas de cada capítulo
+## linear, com todas as portas abertas, têm de ser as que
+## tools/check_chapter.py imprime.
+func _check_logic() -> void:
+	for chapter: int in range(0, ChapterData.count() + 1):
+		var data := ChapterData.load_number(chapter)
+		var logic := ChapterLogic.new(data)
+		var tools := 0
+		for id: int in data.starting_tools:
+			tools |= Item.bit(id)
+		var spheres: Array[String] = []
+		for sphere: Array in logic.spheres(data.items, tools):
+			spheres.append(",".join(PackedStringArray(sphere)))
+		print(
+			(
+				"LÓGICA: capítulo %d esferas %s, vencível %s"
+				% [chapter, " | ".join(spheres), logic.is_beatable(data.items, tools)]
+			)
+		)
+
+
+## O modo randomizado: a mesma seed dá a mesma distribuição, cada seed tem as
+## cinco ferramentas, o menu leva à seed, as três entradas abrem, um baú
+## aberto fica gravado na hora e volta aberto, e continuar carrega a seed.
+func _check_randomized() -> void:
+	var first := Randomizer.generate(123456)
+	var again := Randomizer.generate(123456)
+	var other := Randomizer.generate(7)
+	print("SEED: 123456 -> %s" % Randomizer.describe(first))
+	print("SEED: 7 -> %s" % Randomizer.describe(other))
+	print(
+		(
+			"SEED: igual de novo %s, diferente da 7 %s"
+			% [Randomizer.describe(first) == Randomizer.describe(again), first != other]
+		)
+	)
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	await _frames(10)
+	await _press("Randomizado")
+	var field: SeedField = null
+	for node: Node in get_tree().current_scene.find_children("*", "SeedField", true, false):
+		field = node as SeedField
+	field.value = 123456
+	await _press("Jogar")
+	await _frames(10)
+	var modes := []
+	for chapter: int in range(1, ChapterData.count() + 1):
+		var entrance := _entrance(chapter)
+		modes.append(entrance.mode if entrance else -1)
+	print(
+		(
+			"SEED: jogar -> %s, seed %d, contínuo %s, modos %s"
+			% [_scene_name(), Progress.seed, Progress.active, modes]
+		)
+	)
+	var player: Player = get_tree().current_scene.get("_player")
+	await _walk_into(_entrance(3), player)
+	var chapter: Node = get_tree().current_scene
+	player = chapter.get("_player")
+	var chest: Chest = null
+	for candidate: Chest in chapter.get("_chests"):
+		if candidate.item in Randomizer.PROGRESSION or candidate.item == Item.Id.HEART:
+			chest = candidate
+			break
+	var location := chest.location_id
+	var item_name: String = Item.Id.keys()[chest.item]
+	player.global_position = chest.global_position + Vector2(0, 14)
+	await _frames(4)
+	chest.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
+	await _frames(4)
+	var recorded := Progress.was_opened(3, location)
+	Flow.leave_chapter(get_tree())
+	await _frames(10)
+	player = get_tree().current_scene.get("_player")
+	await _walk_into(_entrance(3), player)
+	chapter = get_tree().current_scene
+	var reopened := false
+	for candidate: Chest in chapter.get("_chests"):
+		if candidate.location_id == location:
+			reopened = candidate.is_open
+	print(
+		(
+			"SEED: capítulo 3 baú %s=%s gravado %s, de volta aberto %s, ferramentas %d"
+			% [location, item_name, recorded, reopened, Progress.tools]
+		)
+	)
+	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	await _frames(10)
+	await _press("Continuar")
+	print(
+		(
+			"SEED: continuar -> %s, seed %d, mesma distribuição %s"
+			% [
+				_scene_name(),
+				Progress.seed,
+				Randomizer.describe(Progress.seed_items) == Randomizer.describe(first)
+			]
 		)
 	)
 

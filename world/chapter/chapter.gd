@@ -249,10 +249,17 @@ func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 func _add_chest(location: String, cell: Vector2i) -> void:
 	var chest := CHEST_SCENE.instantiate() as Chest
 	chest.location_id = location
-	chest.item = data.items.get(location, Item.Id.NONE)
+	chest.item = Progress.item_at(data.number, location, data.items.get(location, Item.Id.NONE))
 	chest.position = Vector2(cell * ChapterMap.TILE) + Vector2(8.0, 13.0)
+	chest.opened.connect(_on_chest_opened)
 	_objects.add_child(chest)
 	_chests.append(chest)
+
+
+## No modo randomizado, o baú aberto fica gravado na hora.
+func _on_chest_opened(chest: Chest) -> void:
+	if Progress.active and Progress.seed != 0:
+		Progress.record_chest(data.number, chest, _player)
 
 
 func _add_obstacle(slot: String, area: Rect2i) -> void:
@@ -338,8 +345,10 @@ func _finish() -> void:
 		if chest.is_open:
 			opened += 1
 	var chests_text := "%d/%d" % [opened, _chests.size()]
-	if Progress.active and data.number == ChapterData.count():
-		_end_screen.show_victory(GameMath.time_text(Progress.run_ticks), time_text(), chests_text)
+	if Progress.active and Progress.all_done():
+		_end_screen.show_victory(
+			GameMath.time_text(Progress.run_ticks), time_text(), chests_text, Progress.seed
+		)
 	else:
 		_end_screen.show_results(time_text(), mode_text(), chests_text)
 
