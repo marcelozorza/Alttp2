@@ -1,6 +1,6 @@
 # Giorgino
 
-Giorgino é um cachorro, e este é o jogo dele: uma aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim. Um mundo pequeno liga as dungeons, e o progresso fica salvo.
+Giorgino é um cachorro, e este é o jogo dele: uma aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim. Um mundo pequeno liga as dungeons, e o progresso fica salvo. Esse modo original ensina as quatro dungeons do jogo, a inicial e as três do mundo. O jogo de verdade será o modo randomizado, ainda por fazer, em que uma seed embaralha os itens entre elas.
 
 Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O estudo das dungeons de referência e as regras tiradas dele estão em [docs/referencias.md](docs/referencias.md).
 
