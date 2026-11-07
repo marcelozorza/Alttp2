@@ -9,12 +9,12 @@ extends Node2D
 const TEXTURE := preload("res://art/bone.svg")
 ## Ticks do pulo ao aparecer e altura dele, em pixels.
 const POP_TICKS := 24
-const POP_HEIGHT := 12.0
+const POP_HEIGHT := 24.0
 ## Ticks até sumir, e quantos antes do fim ele pisca.
 const LIFE_TICKS := 600
 const BLINK_TICKS := 120
 ## Distância do personagem, em pixels, em que o ossinho é pego.
-const PICK_RADIUS := 10.0
+const PICK_RADIUS := 20.0
 
 ## Quanto de vida o ossinho devolve.
 @export_range(1, 6, 1) var heal_amount := 2
@@ -50,4 +50,4 @@ func _draw() -> void:
 	if age < POP_TICKS:
 		var t := float(age) / POP_TICKS
 		rise = POP_HEIGHT * 4.0 * t * (1.0 - t)
-	ToolIcons.draw_centered(self, TEXTURE, Vector2(0.0, -3.0 - floorf(rise)))
+	ToolIcons.draw_centered(self, TEXTURE, Vector2(0.0, -6.0 - floorf(rise)))

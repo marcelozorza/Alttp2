@@ -12,12 +12,12 @@ const TEXTURE := preload("res://art/fireball.svg")
 const STRONG_TEXTURE := preload("res://art/fireball_strong.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Altura do desenho acima do chão, em pixels.
-const DRAW_HEIGHT := 6.0
+const DRAW_HEIGHT := 12.0
 
 ## Velocidade, em pixels por segundo.
-@export_range(10.0, 400.0, 1.0) var speed := 170.0
+@export_range(20.0, 800.0, 1.0) var speed := 340.0
 ## Distância máxima, em pixels.
-@export_range(8.0, 320.0, 1.0) var max_distance := 120.0
+@export_range(16.0, 640.0, 1.0) var max_distance := 240.0
 ## Dano por acerto. Os multiplicadores de cada alvo fazem o resto.
 @export_range(1, 10, 1) var damage := 1
 
@@ -32,7 +32,7 @@ var _shape := RectangleShape2D.new()
 
 func _ready() -> void:
 	add_to_group("fireballs")
-	_shape.size = Vector2(8.0, 8.0) if strong else Vector2(6.0, 6.0)
+	_shape.size = Vector2(16.0, 16.0) if strong else Vector2(12.0, 12.0)
 
 
 func _physics_process(delta: float) -> void:
@@ -75,7 +75,7 @@ func _draw() -> void:
 	var flicker := posmod(Clock.tick, 4) < 2
 	var texture := STRONG_TEXTURE if strong else TEXTURE
 	var half := texture.get_width() / 2.0
-	draw_rect(Rect2(Vector2(-half / 2.0, -1.0), Vector2(half, 2.0)), SHADOW_COLOR)
+	draw_rect(Rect2(Vector2(-half / 2.0, -2.0), Vector2(half, 4.0)), SHADOW_COLOR)
 	var rect := Rect2(Vector2(-half, -DRAW_HEIGHT - half), Vector2(half, half) * 2.0)
 	if flicker:
 		rect = Rect2(rect.end.x, rect.position.y, -rect.size.x, rect.size.y)

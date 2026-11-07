@@ -6,11 +6,19 @@ a #f88830
 y #fcd860
 w #fff8d0
 pixels
-..oooo..
-.orrrro.
-orraayro
-oraywyro
-oraywyro
-orraayro
-.orrrro.
-..oooo..
+....oooooooo....
+....oooooooo....
+..oorrrrrrrroo..
+..oorrrrrrrroo..
+oorrrraaaayyrroo
+oorrrraaaayyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorrrraaaayyrroo
+oorrrraaaayyrroo
+..oorrrrrrrroo..
+..oorrrrrrrroo..
+....oooooooo....
+....oooooooo....

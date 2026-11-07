@@ -18,12 +18,12 @@ const PLAYER_COLOR := Color(0.9, 0.2, 0.25, 1.0)
 const BACKGROUND := Color(0.05, 0.05, 0.08, 0.7)
 const NOTHING := Color(0.0, 0.0, 0.0, 0.0)
 ## Pixels por sala de uma tela no HUD.
-const HUD_CELL := Vector2(10.0, 5.0)
+const HUD_CELL := Vector2(20.0, 10.0)
 ## Quadros de cada fase do pisca.
 const BLINK_FRAMES := 20
 
 ## Quantas vezes o mapa inteiro é ampliado, com um pixel por casa antes disso.
-@export_range(1, 4, 1) var full_scale := 2
+@export_range(1, 8, 1) var full_scale := 4
 
 
 func _ready() -> void:

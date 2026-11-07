@@ -11,14 +11,14 @@ var _play: Button
 func _ready() -> void:
 	Progress.active = false
 	var column := MenuKit.centered_column(self, Color(0.1, 0.11, 0.13, 1.0))
-	column.add_child(MenuKit.label("Randomizado", 16))
+	column.add_child(MenuKit.label("Randomizado", 32))
 	column.add_child(
 		MenuKit.label(
 			(
 				"As mesmas dungeons, com os itens embaralhados pela seed.\n"
 				+ "O mesmo número dá o mesmo jogo em qualquer cópia."
 			),
-			8
+			16
 		)
 	)
 	_field = SeedField.new()
@@ -26,7 +26,7 @@ func _ready() -> void:
 	_field.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	column.add_child(_field)
 	column.add_child(
-		MenuKit.label("Esquerda e direita escolhem o dígito, cima e baixo mudam, A confirma.", 8)
+		MenuKit.label("Esquerda e direita escolhem o dígito, cima e baixo mudam, A confirma.", 16)
 	)
 	_play = MenuKit.button("Jogar", _on_play)
 	column.add_child(_play)

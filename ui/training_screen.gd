@@ -7,7 +7,7 @@ extends Control
 func _ready() -> void:
 	Progress.active = false
 	var column := MenuKit.centered_column(self, Color(0.1, 0.11, 0.13, 1.0))
-	column.add_child(MenuKit.label("Treino", 16))
+	column.add_child(MenuKit.label("Treino", 32))
 	var first := MenuKit.button("Tutorial", _start.bind(ChapterData.TUTORIAL))
 	column.add_child(first)
 	for chapter: int in range(1, ChapterData.count() + 1):

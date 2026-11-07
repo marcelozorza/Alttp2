@@ -76,7 +76,7 @@ const FLASH_TICKS := 6
 ## Segundos parado depois que o personagem entra na sala.
 @export_range(0.0, 3.0, 0.1) var wake_time := 1.0
 ## Velocidade de aproximação, em pixels por segundo.
-@export_range(0.0, 200.0, 1.0) var walk_speed := 28.0
+@export_range(0.0, 400.0, 1.0) var walk_speed := 56.0
 ## Segundos se aproximando entre um ataque e outro.
 @export_range(0.1, 5.0, 0.1) var approach_time := 1.6
 ## Segundos de aviso antes da pancada no chão.
@@ -86,7 +86,7 @@ const FLASH_TICKS := 6
 ## Segundos de aviso antes da investida, com a direção já travada.
 @export_range(0.1, 3.0, 0.05) var charge_windup_time := 0.7
 ## Velocidade da investida, em pixels por segundo.
-@export_range(0.0, 600.0, 1.0) var charge_speed := 210.0
+@export_range(0.0, 1200.0, 1.0) var charge_speed := 420.0
 ## Duração da investida, em segundos.
 @export_range(0.05, 2.0, 0.05) var charge_time := 0.45
 ## Segundos parado depois da investida.
@@ -343,7 +343,7 @@ func _draw() -> void:
 	match _state:
 		State.SLAM_WINDUP, State.CHARGE_WINDUP:
 			var blink := posmod(elapsed, 8) < 4
-			shake = Vector2(1.0 if blink else -1.0, 0.0)
+			shake = Vector2(2.0 if blink else -2.0, 0.0)
 			if blink:
 				tint = WINDUP_COLOR
 		State.SLAM_RECOVER, State.CHARGE_RECOVER:
@@ -360,4 +360,4 @@ func _draw() -> void:
 	var origin := _texture_offset(texture) + shake
 	draw_texture(texture, origin, tint)
 	var bar_width := texture.get_width() * float(maxi(health, 0)) / max_health
-	draw_rect(Rect2(origin + Vector2(0.0, -4.0), Vector2(bar_width, 2.0)), HEALTH_COLOR)
+	draw_rect(Rect2(origin + Vector2(0.0, -8.0), Vector2(bar_width, 4.0)), HEALTH_COLOR)

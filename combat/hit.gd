@@ -29,7 +29,7 @@ static func factor(kind: Kind, sword: int, fire: int, strong_fire: int, blast: i
 
 
 ## Personagem dentro da área de ataque de um corpo, ou null: a base do corpo
-## com uma margem de 2 px em volta. Serve para o bote dos inimigos e a
+## com uma margem de 4 px em volta. Serve para o bote dos inimigos e a
 ## investida dos chefes. Com dodged_in_air, o personagem no ar não conta: o
 ## bote de um inimigo comum passa por baixo dele. A investida de um chefe
 ## acerta de qualquer jeito.
@@ -37,7 +37,7 @@ static func player_in_reach(
 	body: PhysicsBody2D, base: CollisionShape2D, reach: RectangleShape2D, dodged_in_air := true
 ) -> Player:
 	var base_shape := base.shape as RectangleShape2D
-	reach.size = base_shape.size + Vector2(4.0, 4.0)
+	reach.size = base_shape.size + Vector2(8.0, 8.0)
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = reach
 	query.transform = Transform2D(0.0, base.global_position)

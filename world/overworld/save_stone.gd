@@ -7,9 +7,9 @@ extends StaticBody2D
 
 const TEXTURE := preload("res://art/save_stone.svg")
 const LIT_TEXTURE := preload("res://art/save_stone_lit.svg")
-const TEXTURE_OFFSET := Vector2(-8.0, -19.0)
-const SIZE := Vector2(12.0, 6.0)
-const TOUCH_MARGIN := 3.0
+const TEXTURE_OFFSET := Vector2(-16.0, -38.0)
+const SIZE := Vector2(24.0, 12.0)
+const TOUCH_MARGIN := 6.0
 const LIT_TICKS := 60
 const RING_COLOR := Color(0.95, 0.8, 0.35, 0.7)
 
@@ -57,5 +57,5 @@ func _draw() -> void:
 		var progress := float(elapsed) / LIT_TICKS
 		var color := RING_COLOR
 		color.a *= 1.0 - progress
-		draw_arc(Vector2(0.0, -3.0), 4.0 + progress * 14.0, 0.0, TAU, 24, color, 1.0)
+		draw_arc(Vector2(0.0, -6.0), 8.0 + progress * 28.0, 0.0, TAU, 24, color, 2.0)
 	draw_texture(LIT_TEXTURE if lit else TEXTURE, TEXTURE_OFFSET)

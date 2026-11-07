@@ -11,8 +11,8 @@ signal opened(chest: Chest)
 const CLOSED_TEXTURE := preload("res://art/chest.svg")
 const OPEN_TEXTURE := preload("res://art/chest_open.svg")
 ## Canto do desenho em relação à origem, no centro da base.
-const TEXTURE_OFFSET := Vector2(-8.0, -15.0)
-const SIZE := Vector2(14.0, 10.0)
+const TEXTURE_OFFSET := Vector2(-16.0, -30.0)
+const SIZE := Vector2(28.0, 20.0)
 ## Ticks em que o item fica flutuando sobre o baú aberto.
 const SHOW_ITEM_TICKS := 60
 
@@ -70,5 +70,5 @@ func _draw() -> void:
 	draw_texture(OPEN_TEXTURE, TEXTURE_OFFSET)
 	var elapsed := Clock.tick - _open_tick
 	if elapsed <= SHOW_ITEM_TICKS:
-		var rise := floorf(minf(elapsed, 20.0) * 0.5)
-		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 10.0 - rise))
+		var rise := minf(elapsed, 20.0)
+		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 20.0 - rise))

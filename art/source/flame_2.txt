@@ -4,9 +4,15 @@ y #ffe070
 o #ff8a1a
 w #fff8d0
 pixels
-...o.
-.oo..
-.oyo.
-oyyyo
-oywyo
-.ooo.
+......oo..
+......oo..
+..oooo....
+..oooo....
+..ooyyoo..
+..ooyyoo..
+ooyyyyyyoo
+ooyyyyyyoo
+ooyywwyyoo
+ooyywwyyoo
+..oooooo..
+..oooooo..

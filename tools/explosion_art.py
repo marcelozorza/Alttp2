@@ -1,7 +1,8 @@
 """Gera os quadros da explosão da bomba, em art/source/explosion_1.txt a 4.
 
-A explosão é pixel art de 56 por 56 pixels, com raio 26 no auge, como o raio
-de dano da bomba. São quatro quadros: o clarão, a bola de fogo crescendo com
+A explosão é desenhada em 56 por 56 pixels, com raio 26 no auge, e ampliada
+2 vezes na saída, para 112 por 112, como os outros desenhos desde que a
+resolução dobrou (2026-11-07): o raio ampliado é o raio de dano da bomba. São quatro quadros: o clarão, a bola de fogo crescendo com
 línguas para fora, o anel no tamanho cheio com o meio já escurecendo e a
 fumaça se desfazendo. Cada quadro é uma nuvem de círculos de tamanhos e
 posições sorteados com semente fixa, então o resultado é sempre o mesmo, e
@@ -18,6 +19,8 @@ import random
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "art" / "source"
 SIZE = 56
+# Ampliação na saída: cada pixel sorteado vira um quadrado de SCALE por SCALE.
+SCALE = 2
 CENTER = (SIZE - 1) / 2.0
 PALETTE = {
     "w": "#fff8dc",
@@ -131,7 +134,9 @@ def main():
         ]
         lines += [f"{letter} {PALETTE[letter]}" for letter in PALETTE if letter in used]
         lines.append("pixels")
-        lines += ["".join(row) for row in grid]
+        for row in grid:
+            big = "".join(ch * SCALE for ch in row)
+            lines += [big] * SCALE
         (OUTPUT / f"explosion_{index}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
         print(f"explosion_{index}.txt")
 

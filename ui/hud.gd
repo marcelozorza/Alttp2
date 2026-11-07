@@ -26,11 +26,11 @@ extends Control
 const BONE_TEXTURE := preload("res://art/icon_bone.svg")
 const EMPTY_BONE_TEXTURE := preload("res://art/icon_bone_empty.svg")
 ## Passo entre dois ossos na linha e entre as duas linhas.
-const BONE_STEP := Vector2(10.0, 6.0)
+const BONE_STEP := Vector2(20.0, 12.0)
 ## Pontos de vida que cabem numa linha, antes do cronômetro.
-const HEALTH_ROW := 12
+const HEALTH_ROW := 24
 ## Centro do ícone da chave, à direita do losango, na altura do centro dele.
-const KEYS_POSITION := Vector2(54.0, 152.0)
+const KEYS_POSITION := Vector2(108.0, 304.0)
 ## Chave apagada, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
@@ -39,24 +39,24 @@ const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
 ## cuja ferramenta o personagem ainda não tem.
 const BUTTON_TEXTURE := preload("res://art/button_pad.svg")
 const EMPTY_BUTTON_TEXTURE := preload("res://art/button_pad_empty.svg")
-const BUTTON_RADIUS := 8.0
+const BUTTON_RADIUS := 16.0
 ## Sombra sobre o botão de uma ferramenta sem cargas.
 const SPENT_SHADE := Color(0.0, 0.0, 0.0, 0.55)
 const CHARGE_COLOR := Color(0.95, 0.9, 0.75, 1.0)
 const SPENT_CHARGE_COLOR := Color(0.25, 0.25, 0.28, 1.0)
-const CHARGE_SIZE := Vector2(2.0, 2.0)
+const CHARGE_SIZE := Vector2(4.0, 4.0)
 ## Distância vertical entre duas cargas.
-const CHARGE_STEP := 3.0
+const CHARGE_STEP := 6.0
 ## Tamanho da barra do capítulo, a largura toda da tela.
-const BAR_SIZE := Vector2(320.0, 20.0)
+const BAR_SIZE := Vector2(640.0, 40.0)
 ## Centro do losango dos botões, relativo ao HUD: canto inferior esquerdo da
 ## tela, com espaço à esquerda para a coluna de cargas do botão da esquerda.
-const BUTTONS_CENTER := Vector2(26.0, 152.0)
+const BUTTONS_CENTER := Vector2(52.0, 304.0)
 ## Posição de cada botão de face a partir do centro do losango, pelo índice do
 ## Godot, que segue a posição física do botão: 0 embaixo, 1 à direita, 2 à
 ## esquerda e 3 em cima.
 const FACE_BUTTON_OFFSETS := [
-	Vector2(0.0, 12.0), Vector2(12.0, 0.0), Vector2(-12.0, 0.0), Vector2(0.0, -12.0)
+	Vector2(0.0, 24.0), Vector2(24.0, 0.0), Vector2(-24.0, 0.0), Vector2(0.0, -24.0)
 ]
 ## Ferramenta de cada ação. A espada fica de fora, por não ser uma ferramenta.
 const TOOL_ACTIONS := {
@@ -64,9 +64,9 @@ const TOOL_ACTIONS := {
 	&"use_bomb": Item.Id.BOMB,
 	&"jump": Item.Id.SPRING,
 }
-const FONT_SIZE := 8
-## Canto inferior direito do minimapa, relativo ao HUD, a 4 px das bordas.
-const MINIMAP_CORNER := Vector2(312.0, 172.0)
+const FONT_SIZE := 16
+## Canto inferior direito do minimapa, relativo ao HUD, a 8 px das bordas.
+const MINIMAP_CORNER := Vector2(624.0, 344.0)
 
 ## Ligado, desenha a barra de fundo do capítulo, que esconde a sala vizinha.
 @export var show_bar := false
@@ -109,10 +109,10 @@ func _draw() -> void:
 	if not text.is_empty():
 		draw_string(
 			ThemeDB.fallback_font,
-			Vector2(150.0, 9.0),
+			Vector2(300.0, 18.0),
 			text,
 			HORIZONTAL_ALIGNMENT_RIGHT,
-			162.0,
+			324.0,
 			FONT_SIZE,
 			TEXT_COLOR
 		)
@@ -145,10 +145,10 @@ func _draw_keys(player: Player) -> void:
 	ToolIcons.draw(self, Item.Id.KEY, KEYS_POSITION, tint)
 	var font := ThemeDB.fallback_font
 	var text := "x%d" % player.keys
-	var text_position := KEYS_POSITION + Vector2(6.0, 4.0)
+	var text_position := KEYS_POSITION + Vector2(12.0, 8.0)
 	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
 	if player.has_tool(Item.Id.BOSS_KEY):
-		ToolIcons.draw(self, Item.Id.BOSS_KEY, KEYS_POSITION + Vector2(26.0, 0.0))
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, KEYS_POSITION + Vector2(52.0, 0.0))
 
 
 func _draw_buttons(player: Player) -> void:
@@ -187,9 +187,9 @@ func _shown_item(player: Player, id: int) -> int:
 func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 	if maximum <= 0:
 		return
-	var x := center.x + BUTTON_RADIUS + 2.0
+	var x := center.x + BUTTON_RADIUS + 4.0
 	if center.x < BUTTONS_CENTER.x:
-		x = center.x - BUTTON_RADIUS - 2.0 - CHARGE_SIZE.x
+		x = center.x - BUTTON_RADIUS - 4.0 - CHARGE_SIZE.x
 	var top := floorf(center.y - ((maximum - 1) * CHARGE_STEP + CHARGE_SIZE.y) / 2.0)
 	for i: int in maximum:
 		var color := CHARGE_COLOR if i >= maximum - left else SPENT_CHARGE_COLOR
@@ -201,5 +201,5 @@ func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 func _draw_minimap(chapter: Node) -> void:
 	var size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
 	var origin := MINIMAP_CORNER - size
-	draw_rect(Rect2(origin - Vector2(2.0, 2.0), size + Vector2(4.0, 4.0)), Minimap.BACKGROUND)
+	draw_rect(Rect2(origin - Vector2(4.0, 4.0), size + Vector2(8.0, 8.0)), Minimap.BACKGROUND)
 	Minimap.draw_rooms(self, chapter, origin, Minimap.HUD_CELL)

@@ -22,7 +22,7 @@ extends RefCounted
 enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE }
 
 ## Tamanho de uma casa, em pixels.
-const TILE := 16
+const TILE := 32
 const LOCATIONS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const SLOTS := "123456789abdefghjklnopqrtv"
 const STEPS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]

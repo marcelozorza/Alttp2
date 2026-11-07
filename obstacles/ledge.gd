@@ -21,10 +21,10 @@ const TALL_TEXTURE := preload("res://art/tall_ledge.svg")
 ## Sombra que a face projeta no chão de baixo. É o que faz o desnível ser lido
 ## como altura, e não como outra cor de chão.
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
-const SHADOW_HEIGHT := 4.0
+const SHADOW_HEIGHT := 8.0
 
 ## Tamanho em pixels. A altura da face é também a altura do degrau.
-@export var size := Vector2(16.0, 16.0)
+@export var size := Vector2(32.0, 32.0)
 
 
 func _ready() -> void:
@@ -53,13 +53,13 @@ func bottom() -> float:
 
 ## Degrau duplo: a face tem duas casas de altura.
 func is_tall() -> bool:
-	return size.y >= 32.0
+	return size.y >= 64.0
 
 
 func _draw() -> void:
 	var texture := TALL_TEXTURE if is_tall() else TEXTURE
-	for x: int in int(size.x / 16.0):
-		draw_texture_rect(texture, Rect2(Vector2(x * 16.0, 0.0), Vector2(16.0, size.y)), false)
+	for x: int in int(size.x / 32.0):
+		draw_texture_rect(texture, Rect2(Vector2(x * 32.0, 0.0), Vector2(32.0, size.y)), false)
 	# Uma face mais alta projeta uma sombra mais longa.
-	var shadow := SHADOW_HEIGHT + (size.y - 16.0) / 8.0
+	var shadow := SHADOW_HEIGHT + (size.y - 32.0) / 8.0
 	draw_rect(Rect2(Vector2(0.0, size.y), Vector2(size.x, shadow)), SHADOW_COLOR)

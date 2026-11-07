@@ -12,7 +12,7 @@ static func shake_offset(shake_tick: int) -> Vector2:
 	var elapsed := Clock.tick - shake_tick
 	if elapsed < 0 or elapsed >= SHAKE_TICKS:
 		return Vector2.ZERO
-	return Vector2(1.0 if posmod(elapsed, 4) < 2 else -1.0, 0.0)
+	return Vector2(2.0 if posmod(elapsed, 4) < 2 else -2.0, 0.0)
 
 
 ## Desenha a textura de uma casa repetida por toda a área, mostrando só a

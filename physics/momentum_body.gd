@@ -14,7 +14,7 @@ extends CharacterBody2D
 
 ## Velocidade de afastamento, em pixels por segundo, a partir da qual a batida
 ## soa.
-const BUMP_SOUND_SPEED := 50.0
+const BUMP_SOUND_SPEED := 100.0
 
 @export_group("Física")
 ## Massa. O personagem tem massa 1, e os objetos são medidos em relação a ele.
@@ -23,10 +23,10 @@ const BUMP_SOUND_SPEED := 50.0
 ## Numa batida entre dois corpos, vale o produto das duas restituições.
 @export_range(0.0, 1.0, 0.05) var restitution := 1.0
 ## Velocidade mínima de batida, em pixels por segundo, para haver ricochete.
-@export_range(0.0, 400.0, 1.0) var bounce_threshold := 120.0
+@export_range(0.0, 800.0, 1.0) var bounce_threshold := 240.0
 ## Desaceleração quando o corpo se move sem controle, em pixels por segundo
 ## ao quadrado.
-@export_range(0.0, 3000.0, 10.0) var friction := 600.0
+@export_range(0.0, 6000.0, 10.0) var friction := 1200.0
 
 
 ## Calcula a troca de momento entre um corpo A que se move e um corpo B em que

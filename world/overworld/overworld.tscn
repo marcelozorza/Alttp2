@@ -29,10 +29,10 @@ position_smoothing_speed = 8.0
 [node name="Hud" type="Control" parent="HudLayer"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 4.0
-offset_bottom = 4.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 8.0
+offset_bottom = 8.0
 mouse_filter = 2
 script = ExtResource("3_hud")
 show_bar = true

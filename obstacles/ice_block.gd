@@ -47,11 +47,11 @@ func _draw() -> void:
 	# Derretendo, cada bloco de 16 pixels afunda no chão: some a parte de cima.
 	var offset := _shake_offset()
 	var visible_part := height / size.y
-	var rows := int(size.y / 16.0)
+	var rows := int(size.y / 32.0)
 	for y: int in rows:
 		var texture := _front_texture() if y == rows - 1 else _top_texture()
-		for x: int in int(size.x / 16.0):
-			var cell_height := 16.0 * visible_part
-			var origin := offset + Vector2(x, y) * 16.0 + Vector2(0.0, 16.0 - cell_height)
-			var source := Rect2(0.0, 16.0 - cell_height, 16.0, cell_height)
+		for x: int in int(size.x / 32.0):
+			var cell_height := 32.0 * visible_part
+			var origin := offset + Vector2(x, y) * 32.0 + Vector2(0.0, 32.0 - cell_height)
+			var source := Rect2(0.0, 32.0 - cell_height, 32.0, cell_height)
 			draw_texture_rect_region(texture, Rect2(origin, source.size), source)

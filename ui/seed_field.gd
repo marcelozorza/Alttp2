@@ -6,9 +6,9 @@ extends Control
 signal confirmed
 
 const DIGITS := 6
-const DIGIT_WIDTH := 14.0
-const FONT_SIZE := 16
-const HEIGHT := 22.0
+const DIGIT_WIDTH := 28.0
+const FONT_SIZE := 32
+const HEIGHT := 44.0
 const CURSOR_COLOR := Color(1.0, 1.0, 1.0, 0.25)
 
 var value := 0
@@ -74,5 +74,5 @@ func _draw() -> void:
 			draw_rect(Rect2(x, 0.0, DIGIT_WIDTH, HEIGHT), CURSOR_COLOR)
 		var glyph := text[i]
 		var width := font.get_string_size(glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
-		var position := Vector2(x + (DIGIT_WIDTH - width) / 2.0, HEIGHT - 5.0)
+		var position := Vector2(x + (DIGIT_WIDTH - width) / 2.0, HEIGHT - 10.0)
 		draw_string(font, position, glyph, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE)

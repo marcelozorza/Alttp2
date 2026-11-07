@@ -8,7 +8,7 @@ class_name CameraFollow
 ## da sala ou do mapa. Pedido de Marcelo em 2026-11-06: com a câmera sempre
 ## centrada, parecia que o personagem ficava parado e o mundo é que andava.
 
-const HALF_SCREEN := Vector2(160.0, 90.0)
+const HALF_SCREEN := Vector2(320.0, 180.0)
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda.
 const EDGE_TILES := 3
 

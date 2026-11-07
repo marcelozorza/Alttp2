@@ -30,9 +30,9 @@ func _ready() -> void:
 	var title := "Capítulo concluído"
 	if RunSettings.chapter == ChapterData.TUTORIAL:
 		title = "Tutorial concluído"
-	_title = MenuKit.label(title, 16)
+	_title = MenuKit.label(title, 32)
 	column.add_child(_title)
-	_summary = MenuKit.label("", 10)
+	_summary = MenuKit.label("", 20)
 	column.add_child(_summary)
 	_random_button = MenuKit.button("Jogar randomizado", _on_random)
 	_random_button.visible = false

@@ -11,10 +11,10 @@ extends StaticBody2D
 const CLEAR_ANIMATION_TICKS := 30
 ## Sombra no chão ao sul, a mesma das paredes.
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
-const SHADOW_HEIGHT := 3.0
+const SHADOW_HEIGHT := 6.0
 
 ## Tamanho em pixels.
-@export var size := Vector2(16.0, 16.0)
+@export var size := Vector2(32.0, 32.0)
 
 var cleared := false
 

@@ -81,7 +81,7 @@ const ART_RUNNING := [
 ## Deitado, sem vida.
 const ART_FALLEN := preload("res://art/giorgino_fallen.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
-const ART_BELOW_FEET := 4.0
+const ART_BELOW_FEET := 8.0
 ## Ticks de cada passo, andando e correndo.
 const WALK_STEP_TICKS := 10
 const RUN_STEP_TICKS := 6
@@ -94,16 +94,18 @@ const SWORD_DENIED_TICKS := 6
 const BOMB_SCENE := preload("res://items/bomb.tscn")
 const FIREBALL_SCENE := preload("res://items/fireball.tscn")
 ## Desvios laterais, em pixels, tentados ao cruzar um degrau desalinhado.
-const LEDGE_SEARCH := [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6]
+const LEDGE_SEARCH := [
+	0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6, -7, 7, -8, 8, -9, 9, -10, 10, -11, 11, -12, 12
+]
 ## Quanto o desenho alcança a posição real por tick depois de cruzar um degrau.
-const VISUAL_CATCH_UP := 1.5
+const VISUAL_CATCH_UP := 3.0
 ## Segundos entre o som da pancada e o aviso de vida baixa, para não se
 ## misturarem.
 const LOW_HEALTH_DELAY := 0.3
 
 @export_group("Andar")
 ## Velocidade máxima, em pixels por segundo.
-@export_range(10.0, 300.0, 1.0) var walk_speed := 90.0
+@export_range(20.0, 600.0, 1.0) var walk_speed := 180.0
 ## Segundos para ir do repouso à velocidade máxima. Zero é arranque instantâneo.
 @export_range(0.0, 1.0, 0.01) var acceleration_time := 0.0
 ## Segundos para parar a partir da velocidade máxima. Zero é parada instantânea.
@@ -111,7 +113,7 @@ const LOW_HEALTH_DELAY := 0.3
 
 @export_group("Correr")
 ## Velocidade da corrida, em pixels por segundo.
-@export_range(10.0, 400.0, 1.0) var run_speed := 150.0
+@export_range(20.0, 800.0, 1.0) var run_speed := 300.0
 ## Tempo máximo, em segundos, entre os dois toques na mesma direção para
 ## começar a correr. A corrida dura enquanto a direção estiver pressionada.
 @export_range(0.1, 0.5, 0.01) var double_tap_window := 0.25
@@ -135,7 +137,7 @@ const LOW_HEALTH_DELAY := 0.3
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
 ## controle depois de arremessado.
-@export_range(0.0, 200.0, 1.0) var recover_speed := 30.0
+@export_range(0.0, 400.0, 1.0) var recover_speed := 60.0
 
 @export_group("Ataque")
 ## Segundos em que o personagem fica parado a cada golpe. Zero permite andar
@@ -156,9 +158,9 @@ const LOW_HEALTH_DELAY := 0.3
 
 @export_group("Ferramentas")
 ## Altura do pulo da mola, em pixels. Com o passo fixo, o pico real fica um
-## pouco abaixo (20,5 px para 22). Precisa passar da altura dos degraus, que é
+## pouco abaixo (41 px para 44). Precisa passar da altura dos degraus, que é
 ## de 16 pixels.
-@export_range(8.0, 48.0, 1.0) var jump_height := 22.0
+@export_range(16.0, 96.0, 1.0) var jump_height := 44.0
 ## Tempo no ar do pulo, em segundos.
 @export_range(0.2, 1.5, 0.05) var jump_time := 0.5
 ## Quanto o personagem cresce no alto do pulo comum, por estar mais perto da
@@ -166,7 +168,7 @@ const LOW_HEALTH_DELAY := 0.3
 @export_range(0.0, 1.0, 0.05) var jump_growth := 0.25
 ## Altura do pulo com a mola forte, em pixels. Precisa passar da altura do
 ## degrau duplo, que é de 32 pixels.
-@export_range(8.0, 64.0, 1.0) var strong_jump_height := 40.0
+@export_range(16.0, 128.0, 1.0) var strong_jump_height := 80.0
 ## Tempo no ar do pulo com a mola forte, em segundos.
 @export_range(0.2, 1.5, 0.05) var strong_jump_time := 0.65
 ## Bolas de fogo seguidas antes de a chama precisar recarregar.
@@ -187,7 +189,7 @@ const LOW_HEALTH_DELAY := 0.3
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
 ## parede andando em linha reta. Zero desliga.
-@export_range(0, 12, 1) var corner_tolerance := 6
+@export_range(0, 24, 1) var corner_tolerance := 12
 
 ## Direção para onde o personagem olha, sempre uma das 4 direções retas.
 ## Define para onde vão o golpe, a chama e a bomba. Segurar a ação
@@ -220,7 +222,7 @@ var _visual_offset := 0.0
 var _drawn_height := 0.0
 ## Altura e tempo do pulo em andamento, da mola comum ou da forte. Fora de um
 ## pulo, os da mola comum, que também regem a queda de um degrau.
-var _air_height := 22.0
+var _air_height := 44.0
 var _air_time := 0.5
 var _sword_lock_until_tick := 0
 var _sword_lock_ticks := 1
@@ -500,7 +502,7 @@ func _place_bomb() -> void:
 	if get_tree().get_nodes_in_group("bombs").size() >= max_bombs:
 		return
 	var bomb := BOMB_SCENE.instantiate() as Bomb
-	bomb.position = position + facing * 6.0
+	bomb.position = position + facing * 12.0
 	get_parent().add_child(bomb)
 	bomb.add_collision_exception_with(self)
 	add_collision_exception_with(bomb)
@@ -520,7 +522,7 @@ func _shoot_fire() -> void:
 	fireball.direction = facing
 	fireball.shooter = self
 	fireball.strong = has_tool(Item.Id.STRONG_FIRE)
-	fireball.position = position + facing * 9.0
+	fireball.position = position + facing * 18.0
 	get_parent().add_child(fireball)
 	_fire_charges.spend(Clock.tick)
 	Sfx.play(&"fire_shoot")
@@ -550,7 +552,7 @@ func _try_ledge(direction: Vector2, delta: float) -> void:
 	if direction.y == 0.0:
 		return
 	var vertical := Vector2(0.0, signf(direction.y))
-	var probe := vertical * maxf(2.0, absf(velocity.y) * delta + 1.0)
+	var probe := vertical * maxf(4.0, absf(velocity.y) * delta + 2.0)
 	var collision := KinematicCollision2D.new()
 	if not test_move(global_transform, probe, collision):
 		return
@@ -560,9 +562,9 @@ func _try_ledge(direction: Vector2, delta: float) -> void:
 	var feet_half := (_feet.shape as RectangleShape2D).size.y / 2.0
 	if vertical.y < 0.0:
 		if has_tool(Item.Id.SPRING) and _z >= ledge.step_height():
-			_cross_ledge(ledge.top() - feet_half - 1.0, -ledge.step_height())
+			_cross_ledge(ledge.top() - feet_half - 2.0, -ledge.step_height())
 	else:
-		_cross_ledge(ledge.bottom() + feet_half + 1.0, ledge.step_height())
+		_cross_ledge(ledge.bottom() + feet_half + 2.0, ledge.step_height())
 
 
 func _cross_ledge(target_y: float, height_change: float) -> void:
@@ -741,7 +743,7 @@ func _update_visuals() -> void:
 	# No ar, o corpo sobe e cresce, e a sombra fica no chão. O crescimento é
 	# por pixel de altura, então o pulo da mola forte cresce mais.
 	_visual_offset = move_toward(_visual_offset, 0.0, VISUAL_CATCH_UP)
-	_drawn_height = move_toward(_drawn_height, _z, 4.0)
+	_drawn_height = move_toward(_drawn_height, _z, 8.0)
 	_visual.position = Vector2(0.0, _visual_offset - _z)
 	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
 	_shadow.visible = is_airborne()
@@ -754,7 +756,7 @@ func _update_visuals() -> void:
 ## ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
 func _update_art() -> void:
 	var running := _state == State.RUN
-	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 1.0
+	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 2.0
 	var step_ticks := RUN_STEP_TICKS if running else WALK_STEP_TICKS
 	var step := 0
 	if moving and posmod(floori(float(Clock.tick) / step_ticks), 2) == 1:

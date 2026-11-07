@@ -171,7 +171,7 @@ func _check_overworld() -> void:
 	for node: Node in world.get("_objects").get_children():
 		if node is SaveStone:
 			stone = node
-	player.global_position = stone.global_position + Vector2(0.0, 4.0)
+	player.global_position = stone.global_position + Vector2(0.0, 8.0)
 	await _frames(10)
 	print(
 		(
@@ -250,7 +250,7 @@ func _check_pause_and_defeat() -> void:
 	var player: Player = chapter.get("_player")
 	var defeat: DefeatScreen = chapter.get_node("DefeatScreen")
 	var start := player.global_position
-	player.global_position = start + Vector2(40.0, 0.0)
+	player.global_position = start + Vector2(80.0, 0.0)
 	player.take_hit(99, Vector2.ZERO)
 	print("DERROTA: vida %d, caído %s" % [player.health, player.get("_state") == Player.State.DEAD])
 	await _frames(70)
@@ -294,7 +294,7 @@ func _check_bone_drops() -> void:
 			enemies.append(node as Enemy)
 	var counts := []
 	for enemy: Enemy in enemies:
-		enemy.global_position = player.global_position + Vector2(24.0, 0.0)
+		enemy.global_position = player.global_position + Vector2(48.0, 0.0)
 		enemy.take_hit(99, Vector2.ZERO, Hit.Kind.SWORD)
 		await _frames(2)
 		counts.append(_bones(chapter).size())
@@ -325,13 +325,13 @@ func _check_jump_over() -> void:
 			enemy = node as Enemy
 			break
 	var cell := _floor_run(map, chapter.call("current_room"), 6)
-	var start := (Vector2(cell) + Vector2(0.5, 0.5)) * 16.0
+	var start := (Vector2(cell) + Vector2(0.5, 0.5)) * float(ChapterMap.TILE)
 	# O inimigo de outra sala está desligado. Liga a colisão e desliga o
 	# movimento, para ele ficar parado no caminho.
 	enemy.set_active(true)
 	enemy.set_physics_process(false)
 	enemy.velocity = Vector2.ZERO
-	enemy.global_position = start + Vector2(20.0, 0.0)
+	enemy.global_position = start + Vector2(40.0, 0.0)
 	player.global_position = start
 	player.velocity = Vector2.ZERO
 	await _frames(2)
@@ -354,7 +354,7 @@ func _check_jump_over() -> void:
 	var jumped := player.global_position.x - start.x
 	print(
 		(
-			"PULO: inimigo a 20 px, no chão parou a %.0f px, com o pulo foi a %.0f px, vida %d -> %d"
+			"PULO: inimigo a 40 px, no chão parou a %.0f px, com o pulo foi a %.0f px, vida %d -> %d"
 			% [blocked, jumped, health, player.health]
 		)
 	)
@@ -514,7 +514,7 @@ func _check_randomized() -> void:
 			break
 	var location := chest.location_id
 	var item_name: String = Item.Id.keys()[chest.item]
-	player.global_position = chest.global_position + Vector2(0, 14)
+	player.global_position = chest.global_position + Vector2(0, 28)
 	await _frames(4)
 	chest.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
 	await _frames(4)
@@ -561,7 +561,7 @@ func _play(chapter_number: int) -> void:
 	# Baús: encosta e dá a espada em cada um.
 	var opened := 0
 	for chest: Chest in chapter.get("_chests"):
-		player.global_position = chest.global_position + Vector2(0, 14)
+		player.global_position = chest.global_position + Vector2(0, 28)
 		await _frames(4)
 		chest.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
 		await _frames(4)
@@ -578,7 +578,7 @@ func _play(chapter_number: int) -> void:
 		if obstacle is LockedDoor:
 			var door := obstacle as LockedDoor
 			for side: Vector2 in [
-				Vector2(door.size.x / 2.0, door.size.y + 5.0), Vector2(door.size.x / 2.0, -3.0)
+				Vector2(door.size.x / 2.0, door.size.y + 10.0), Vector2(door.size.x / 2.0, -6.0)
 			]:
 				player.global_position = door.global_position + side
 				await _frames(6)

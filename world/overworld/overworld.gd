@@ -9,8 +9,8 @@ extends Node2D
 ## personagem aparece na entrada dele. Ao continuar um jogo salvo, aparece
 ## na pedra de salvamento.
 
-const HUD_HEIGHT := 20.0
-const HALF_SCREEN := Vector2(160.0, 90.0)
+const HUD_HEIGHT := 40.0
+const HALF_SCREEN := Vector2(320.0, 180.0)
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda
 ## no mundo: 6 na horizontal, onde Marcelo marcou o ponto jogando (2026-11-07),
 ## e 4 na vertical, o mais perto de 6 que a tela de 10 casas de altura permite
@@ -63,7 +63,7 @@ func _build_cells() -> void:
 				_objects.add_child(_player)
 			elif character == "S":
 				var stone := SAVE_STONE_SCENE.instantiate() as SaveStone
-				stone.position = _cell_center(cell) + Vector2(0.0, 6.0)
+				stone.position = _cell_center(cell) + Vector2(0.0, 12.0)
 				_objects.add_child(stone)
 			elif character.is_valid_int() and not entrances.has(character):
 				entrances[character] = cell

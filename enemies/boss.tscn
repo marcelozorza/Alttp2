@@ -3,15 +3,15 @@
 [ext_resource type="Script" path="res://enemies/boss.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
-size = Vector2(26, 12)
+size = Vector2(52, 24)
 
 [node name="Boss" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_script")
 mass = 8.0
 restitution = 0.3
-friction = 900.0
+friction = 1800.0
 
 [node name="Base" type="CollisionShape2D" parent="."]
-position = Vector2(0, -6)
+position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_base")

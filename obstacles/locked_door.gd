@@ -15,12 +15,12 @@ const SHAKE_COOLDOWN_TICKS := 30
 ## Ticks da animação de abrir.
 const OPEN_TICKS := 12
 ## Quanto a área de toque passa da porta, em pixels.
-const TOUCH_MARGIN := 2.0
+const TOUCH_MARGIN := 4.0
 const DOOR_TEXTURE := preload("res://art/locked_door.svg")
 const BOSS_DOOR_TEXTURE := preload("res://art/boss_door.svg")
 
 ## Tamanho em pixels.
-@export var size := Vector2(16.0, 16.0)
+@export var size := Vector2(32.0, 32.0)
 ## Ligado, é a porta do chefe, que pede a chave grande.
 @export var needs_boss_key := false
 

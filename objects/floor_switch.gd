@@ -12,12 +12,12 @@ signal changed(pressed: bool)
 
 const TEXTURE := preload("res://art/floor_switch.svg")
 const PRESSED_TEXTURE := preload("res://art/floor_switch_pressed.svg")
-const SIZE := Vector2(12.0, 12.0)
+const SIZE := Vector2(24.0, 24.0)
 ## Distância, em pixels, do centro do bloco ao lugar certo para ele travar.
-const SNAP_DISTANCE := 6.0
+const SNAP_DISTANCE := 12.0
 ## Onde fica a origem de um bloco em cima do interruptor, relativa à do
 ## interruptor: no centro da base do bloco, embaixo da casa.
-const BLOCK_OFFSET := Vector2(0.0, 8.0)
+const BLOCK_OFFSET := Vector2(0.0, 16.0)
 
 var pressed := false
 
@@ -51,7 +51,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	draw_texture(PRESSED_TEXTURE if pressed else TEXTURE, Vector2(-8.0, -8.0))
+	draw_texture(PRESSED_TEXTURE if pressed else TEXTURE, Vector2(-16.0, -16.0))
 
 
 ## As grades de uma sala abrem enquanto algum interruptor dela está

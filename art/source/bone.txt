@@ -4,9 +4,15 @@ o #4a3728
 w #f6f1e4
 s #d8cfb8
 pixels
-.oo....oo.
-owwo..owwo
-.owwwwwwo.
-.owssssso.
-owso..osso
-.oo....oo.
+..oooo........oooo..
+..oooo........oooo..
+oowwwwoo....oowwwwoo
+oowwwwoo....oowwwwoo
+..oowwwwwwwwwwwwoo..
+..oowwwwwwwwwwwwoo..
+..oowwssssssssssoo..
+..oowwssssssssssoo..
+oowwssoo....oossssoo
+oowwssoo....oossssoo
+..oooo........oooo..
+..oooo........oooo..

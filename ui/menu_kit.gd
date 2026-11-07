@@ -15,7 +15,7 @@ static func label(text: String, font_size: int) -> Label:
 static func button(text: String, action: Callable) -> Button:
 	var result := Button.new()
 	result.text = text
-	result.add_theme_font_size_override("font_size", 10)
+	result.add_theme_font_size_override("font_size", 20)
 	result.pressed.connect(Sfx.play.bind(&"menu_confirm"))
 	result.pressed.connect(action)
 	result.focus_entered.connect(_on_focus)
@@ -40,6 +40,6 @@ static func centered_column(parent: Node, background: Color) -> VBoxContainer:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	parent.add_child(center)
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 4)
+	column.add_theme_constant_override("separation", 8)
 	center.add_child(column)
 	return column

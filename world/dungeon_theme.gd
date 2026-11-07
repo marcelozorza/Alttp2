@@ -40,7 +40,7 @@ const MOSS_PATCH := preload("res://art/moss_patch.svg")
 const COBWEB := preload("res://art/cobweb.svg")
 const CARPET := preload("res://art/carpet.svg")
 ## Posição da chama a partir do canto da tocha: a base da chama sobre o aro.
-const TORCH_FLAME_OFFSET := Vector2(0.0, -5.0)
+const TORCH_FLAME_OFFSET := Vector2(0.0, -10.0)
 
 var name := "stone"
 var floor_tile: Texture2D
@@ -173,7 +173,7 @@ func floor_texture(level: int, alternate: bool) -> Texture2D:
 			return floor_alt if alternate else floor_tile
 
 
-## Canto de uma peça centrada numa casa de 16 px, para a arandela.
+## Canto de uma peça centrada numa casa, para a arandela.
 static func centered(texture: Texture2D, origin: Vector2) -> Vector2:
 	var size := texture.get_size()
 	return origin + Vector2(floorf((TILE - size.x) / 2.0), floorf((TILE - size.y) / 2.0))
@@ -189,4 +189,4 @@ static func hanging_origin(texture: Texture2D, origin: Vector2) -> Vector2:
 ## base da casa.
 static func floor_prop_origin(texture: Texture2D, origin: Vector2) -> Vector2:
 	var size := texture.get_size()
-	return origin + Vector2(floorf((TILE - size.x) / 2.0), TILE - size.y - 2.0)
+	return origin + Vector2(floorf((TILE - size.x) / 2.0), TILE - size.y - 4.0)

@@ -4,8 +4,13 @@ paleta
 o #4a3728
 w #f6f1e4
 pixels
-.oo...oo.
-owwo.owwo
-.owwwwwo.
-owwo.owwo
-.oo...oo.
+..oooo......oooo..
+..oooo......oooo..
+oowwwwoo..oowwwwoo
+oowwwwoo..oowwwwoo
+..oowwwwwwwwwwoo..
+..oowwwwwwwwwwoo..
+oowwwwoo..oowwwwoo
+oowwwwoo..oowwwwoo
+..oooo......oooo..
+..oooo......oooo..

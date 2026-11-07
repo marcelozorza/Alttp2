@@ -44,7 +44,7 @@ const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 const WEAVE_RATE := 0.2
 ## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
 ## segundo.
-const ROOT_PULL := 8.0
+const ROOT_PULL := 16.0
 ## Ticks de cada passo da caminhada, quando há quadros de passo.
 const WALK_FRAME_TICKS := 8
 
@@ -89,15 +89,15 @@ const WALK_FRAME_TICKS := 8
 
 @export_group("Comportamento")
 ## Distância, em pixels, a partir da qual percebe o personagem.
-@export_range(0.0, 400.0, 1.0) var sight_range := 200.0
+@export_range(0.0, 800.0, 1.0) var sight_range := 400.0
 ## Distância, em pixels, em que para de se aproximar e prepara o bote.
-@export_range(0.0, 200.0, 1.0) var attack_range := 44.0
+@export_range(0.0, 400.0, 1.0) var attack_range := 88.0
 ## Velocidade de aproximação, em pixels por segundo.
-@export_range(0.0, 200.0, 1.0) var walk_speed := 40.0
+@export_range(0.0, 400.0, 1.0) var walk_speed := 80.0
 ## Segundos preparando o bote. É o aviso para o jogador.
 @export_range(0.0, 3.0, 0.05) var windup_time := 0.6
 ## Velocidade do bote, em pixels por segundo.
-@export_range(0.0, 600.0, 1.0) var lunge_speed := 180.0
+@export_range(0.0, 1200.0, 1.0) var lunge_speed := 360.0
 ## Duração do bote, em segundos.
 @export_range(0.0, 1.0, 0.01) var lunge_time := 0.25
 ## Segundos parado e vulnerável depois do bote.
@@ -107,7 +107,7 @@ const WALK_FRAME_TICKS := 8
 ## Ligado, voa: o desenho sobe e desce no ar, com a sombra no chão.
 @export var hover := false
 ## Vaivém lateral ao se aproximar, em pixels por segundo. Zero anda reto.
-@export_range(0.0, 200.0, 1.0) var weave := 0.0
+@export_range(0.0, 400.0, 1.0) var weave := 0.0
 ## Ligado, tem raiz: não sai do lugar, ataca quem chega perto e volta ao
 ## ponto inicial depois do bote.
 @export var rooted := false
@@ -120,9 +120,9 @@ const WALK_FRAME_TICKS := 8
 @export var grenade_scene: PackedScene
 ## Distância mínima, em pixels, para jogar a granada. Mais perto, ele segue se
 ## aproximando para o bote.
-@export_range(0.0, 400.0, 1.0) var throw_min_range := 64.0
+@export_range(0.0, 800.0, 1.0) var throw_min_range := 128.0
 ## Distância máxima, em pixels, para jogar a granada.
-@export_range(0.0, 400.0, 1.0) var throw_max_range := 160.0
+@export_range(0.0, 800.0, 1.0) var throw_max_range := 320.0
 ## Segundos com a granada erguida antes de jogar. É o aviso para o jogador.
 @export_range(0.0, 3.0, 0.05) var throw_windup_time := 0.6
 ## Segundos parado depois de jogar.
@@ -287,7 +287,7 @@ func _weave_velocity() -> Vector2:
 func _hover_height() -> float:
 	if not hover:
 		return 0.0
-	return 3.0 + sin(Clock.tick * 0.15) * 2.0
+	return 6.0 + sin(Clock.tick * 0.15) * 4.0
 
 
 ## Durante o bote, procura o personagem numa área um pouco maior que a base.
@@ -336,7 +336,7 @@ func _throw(target: Vector2) -> void:
 func _held_grenade_rect() -> Rect2:
 	var size := Grenade.BALL_SIZE
 	var center_x := _body_rest_position.x + _body.size.x / 2.0
-	var bottom := _health_bar.position.y - 2.0
+	var bottom := _health_bar.position.y - 4.0
 	return Rect2(Vector2(center_x - size.x / 2.0, bottom - size.y), size)
 
 
@@ -380,7 +380,7 @@ func _update_visuals() -> void:
 			var blink := posmod(elapsed, 8) < 4
 			color = WINDUP_COLOR if blink else _body_color
 			tint = WINDUP_COLOR if blink else Color.WHITE
-			shake = Vector2(1.0 if blink else -1.0, 0.0)
+			shake = Vector2(2.0 if blink else -2.0, 0.0)
 		State.LUNGE:
 			color = LUNGE_COLOR
 			tint = LUNGE_COLOR
@@ -434,7 +434,7 @@ func _frame_for_state() -> Texture2D:
 	if _look_direction.y < 0.0 and not back_frames.is_empty():
 		frames = back_frames
 	var step := 0
-	if _state == State.APPROACH and velocity.length() > 1.0:
+	if _state == State.APPROACH and velocity.length() > 2.0:
 		step = posmod(floori(float(Clock.tick) / WALK_FRAME_TICKS), frames.size())
 	return frames[step]
 
@@ -443,7 +443,7 @@ func _frame_for_state() -> Texture2D:
 ## aviso e treme junto com o corpo.
 func _draw() -> void:
 	if hover and _state != State.DEAD:
-		draw_rect(Rect2(Vector2(-4.0, -2.0), Vector2(8.0, 2.0)), SHADOW_COLOR)
+		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
 	if _state != State.THROW_WINDUP:
 		return
 	var rect := _held_grenade_rect()

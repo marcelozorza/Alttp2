@@ -3,14 +3,14 @@
 [ext_resource type="Script" path="res://enemies/boss.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
-size = Vector2(28, 12)
+size = Vector2(56, 24)
 
 [node name="Colossus" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_script")
 mass = 10.0
 restitution = 0.3
-friction = 900.0
+friction = 1800.0
 max_health = 18
 shell_regrow_time = 6.0
 stone_shell = true
@@ -19,16 +19,16 @@ sword_factor = 1
 fire_factor = 1
 strong_fire_factor = 2
 blast_factor = 2
-walk_speed = 30.0
+walk_speed = 60.0
 approach_time = 1.5
 slam_windup_time = 0.9
 slam_recover_time = 1.5
 charge_windup_time = 0.7
-charge_speed = 230.0
+charge_speed = 460.0
 charge_time = 0.6
 charge_recover_time = 1.1
 charge_damage = 2
 
 [node name="Base" type="CollisionShape2D" parent="."]
-position = Vector2(0, -6)
+position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_base")

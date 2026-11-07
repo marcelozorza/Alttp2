@@ -5,13 +5,23 @@ e #5f97c8
 a #9fd2f4
 w #f4fbff
 pixels
-....w.....
-...oao....
-...oaao.w.
-..oaawooao
-..oaaaoaao
-.w.oaaoaao
-oao.oaaaeo
-oaaooaaeeo
-oaaeoeeeeo
-.ooooooooo
+........ww..........
+........ww..........
+......ooaaoo........
+......ooaaoo........
+......ooaaaaoo..ww..
+......ooaaaaoo..ww..
+....ooaaaawwooooaaoo
+....ooaaaawwooooaaoo
+....ooaaaaaaooaaaaoo
+....ooaaaaaaooaaaaoo
+..ww..ooaaaaooaaaaoo
+..ww..ooaaaaooaaaaoo
+ooaaoo..ooaaaaaaeeoo
+ooaaoo..ooaaaaaaeeoo
+ooaaaaooooaaaaeeeeoo
+ooaaaaooooaaaaeeeeoo
+ooaaaaeeooeeeeeeeeoo
+ooaaaaeeooeeeeeeeeoo
+..oooooooooooooooooo
+..oooooooooooooooooo

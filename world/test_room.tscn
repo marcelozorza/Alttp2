@@ -19,126 +19,126 @@
 [ext_resource type="PackedScene" path="res://obstacles/switch_door.tscn" id="17_switch_door"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
-size = Vector2(320, 16)
+size = Vector2(640, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical"]
-size = Vector2(16, 148)
+size = Vector2(32, 296)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_inner"]
-size = Vector2(136, 16)
+size = Vector2(272, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pillar_base"]
-size = Vector2(32, 16)
+size = Vector2(64, 32)
 
 [node name="TestRoom" type="Node2D"]
 script = ExtResource("7_script")
 
 [node name="Floor" type="ColorRect" parent="."]
-offset_right = 320.0
-offset_bottom = 180.0
+offset_right = 640.0
+offset_bottom = 360.0
 mouse_filter = 2
 color = Color(0.36, 0.56, 0.34, 1)
 
 [node name="Walls" type="StaticBody2D" parent="."]
 
 [node name="Top" type="CollisionShape2D" parent="Walls"]
-position = Vector2(160, 8)
+position = Vector2(320, 16)
 shape = SubResource("RectangleShape2D_horizontal")
 
 [node name="Visual" type="ColorRect" parent="Walls/Top"]
-offset_left = -160.0
-offset_top = -8.0
-offset_right = 160.0
-offset_bottom = 8.0
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="Bottom" type="CollisionShape2D" parent="Walls"]
-position = Vector2(160, 172)
+position = Vector2(320, 344)
 shape = SubResource("RectangleShape2D_horizontal")
 
 [node name="Visual" type="ColorRect" parent="Walls/Bottom"]
-offset_left = -160.0
-offset_top = -8.0
-offset_right = 160.0
-offset_bottom = 8.0
+offset_left = -320.0
+offset_top = -16.0
+offset_right = 320.0
+offset_bottom = 16.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="Left" type="CollisionShape2D" parent="Walls"]
-position = Vector2(8, 90)
+position = Vector2(16, 180)
 shape = SubResource("RectangleShape2D_vertical")
 
 [node name="Visual" type="ColorRect" parent="Walls/Left"]
-offset_left = -8.0
-offset_top = -74.0
-offset_right = 8.0
-offset_bottom = 74.0
+offset_left = -16.0
+offset_top = -148.0
+offset_right = 16.0
+offset_bottom = 148.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="Right" type="CollisionShape2D" parent="Walls"]
-position = Vector2(312, 90)
+position = Vector2(624, 180)
 shape = SubResource("RectangleShape2D_vertical")
 
 [node name="Visual" type="ColorRect" parent="Walls/Right"]
-offset_left = -8.0
-offset_top = -74.0
-offset_right = 8.0
-offset_bottom = 74.0
+offset_left = -16.0
+offset_top = -148.0
+offset_right = 16.0
+offset_bottom = 148.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="InnerLeft" type="CollisionShape2D" parent="Walls"]
-position = Vector2(84, 120)
+position = Vector2(168, 240)
 shape = SubResource("RectangleShape2D_inner")
 
 [node name="Visual" type="ColorRect" parent="Walls/InnerLeft"]
-offset_left = -68.0
-offset_top = -8.0
-offset_right = 68.0
-offset_bottom = 8.0
+offset_left = -136.0
+offset_top = -16.0
+offset_right = 136.0
+offset_bottom = 16.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="InnerRight" type="CollisionShape2D" parent="Walls"]
-position = Vector2(236, 120)
+position = Vector2(472, 240)
 shape = SubResource("RectangleShape2D_inner")
 
 [node name="Visual" type="ColorRect" parent="Walls/InnerRight"]
-offset_left = -68.0
-offset_top = -8.0
-offset_right = 68.0
-offset_bottom = 8.0
+offset_left = -136.0
+offset_top = -16.0
+offset_right = 136.0
+offset_bottom = 16.0
 mouse_filter = 2
 color = Color(0.32, 0.28, 0.25, 1)
 
 [node name="Obstacles" type="Node2D" parent="."]
 
 [node name="Ledge" parent="Obstacles" instance=ExtResource("8_ledge")]
-position = Vector2(56, 32)
-size = Vector2(64, 16)
+position = Vector2(112, 64)
+size = Vector2(128, 32)
 
 [node name="CrackedWall" parent="Obstacles" instance=ExtResource("9_cracked_wall")]
-position = Vector2(200, 128)
-size = Vector2(16, 36)
+position = Vector2(400, 256)
+size = Vector2(32, 72)
 
 [node name="IceBlock" parent="Obstacles" instance=ExtResource("10_ice_block")]
-position = Vector2(248, 128)
-size = Vector2(16, 36)
+position = Vector2(496, 256)
+size = Vector2(32, 72)
 
 [node name="ThickIce" parent="Obstacles" instance=ExtResource("11_thick_ice")]
-position = Vector2(272, 128)
-size = Vector2(32, 32)
+position = Vector2(544, 256)
+size = Vector2(64, 64)
 
 [node name="SwitchDoor" parent="Obstacles" instance=ExtResource("17_switch_door")]
-position = Vector2(152, 112)
-size = Vector2(16, 16)
+position = Vector2(304, 224)
+size = Vector2(32, 32)
 
 [node name="Switches" type="Node2D" parent="."]
 
 [node name="FloorSwitch" parent="Switches" instance=ExtResource("16_floor_switch")]
-position = Vector2(160, 96)
+position = Vector2(320, 192)
 
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
@@ -146,56 +146,56 @@ position = Vector2(160, 96)
 y_sort_enabled = true
 
 [node name="Pillar" type="StaticBody2D" parent="Objects"]
-position = Vector2(224, 72)
+position = Vector2(448, 144)
 
 [node name="TopFace" type="ColorRect" parent="Objects/Pillar"]
-offset_left = -16.0
-offset_top = -40.0
-offset_right = 16.0
-offset_bottom = -16.0
+offset_left = -32.0
+offset_top = -80.0
+offset_right = 32.0
+offset_bottom = -32.0
 mouse_filter = 2
 color = Color(0.72, 0.7, 0.64, 1)
 
 [node name="FrontFace" type="ColorRect" parent="Objects/Pillar"]
-offset_left = -16.0
-offset_top = -16.0
-offset_right = 16.0
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
 mouse_filter = 2
 color = Color(0.5, 0.48, 0.44, 1)
 
 [node name="Base" type="CollisionShape2D" parent="Objects/Pillar"]
-position = Vector2(0, -8)
+position = Vector2(0, -16)
 shape = SubResource("RectangleShape2D_pillar_base")
 
 [node name="LightCrate" parent="Objects" instance=ExtResource("2_crate")]
-position = Vector2(120, 96)
+position = Vector2(240, 192)
 
 [node name="HeavyBlock" parent="Objects" instance=ExtResource("3_block")]
-position = Vector2(160, 52)
+position = Vector2(320, 104)
 
 [node name="Player" parent="Objects" instance=ExtResource("1_player")]
-position = Vector2(48, 64)
+position = Vector2(96, 128)
 starting_tools = 31
 
 [node name="Ugly" parent="Objects" instance=ExtResource("4_ugly")]
-position = Vector2(270, 100)
+position = Vector2(540, 200)
 
 [node name="Minion" parent="Objects" instance=ExtResource("5_minion")]
-position = Vector2(272, 40)
+position = Vector2(544, 80)
 
 [node name="Walrus" parent="Objects" instance=ExtResource("12_walrus")]
-position = Vector2(60, 150)
+position = Vector2(120, 300)
 
 [node name="Slinger" parent="Objects" instance=ExtResource("13_slinger")]
-position = Vector2(300, 60)
+position = Vector2(600, 120)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="Health" type="Control" parent="HUD"]
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 4.0
-offset_bottom = 4.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 8.0
+offset_bottom = 8.0
 mouse_filter = 2
 script = ExtResource("6_hud")
 

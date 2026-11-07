@@ -27,7 +27,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	var column := MenuKit.centered_column(self, Color(0.12, 0.02, 0.04, 0.85))
-	column.add_child(MenuKit.label("Derrota", 16))
+	column.add_child(MenuKit.label("Derrota", 32))
 	_buttons.append(MenuKit.button("Tentar de novo", _on_retry))
 	_buttons.append(MenuKit.button(exit_text, _on_exit))
 	for button: Button in _buttons:

@@ -15,12 +15,12 @@ enum Mode { LOCKED, OPEN, DONE }
 const TEXTURE := preload("res://art/entrance.svg")
 const GATE_TEXTURE := preload("res://art/gate.svg")
 const RELIC_TEXTURE := preload("res://art/relic.svg")
-const SIZE := Vector2(32.0, 16.0)
+const SIZE := Vector2(64.0, 32.0)
 ## Quanto o desenho sobe acima da origem.
-const ART_ABOVE := 8.0
-const GATE_OFFSET := Vector2(10.0, 7.0)
+const ART_ABOVE := 16.0
+const GATE_OFFSET := Vector2(20.0, 14.0)
 const SHAKE_COOLDOWN_TICKS := 30
-const TOUCH_MARGIN := 2.0
+const TOUCH_MARGIN := 4.0
 
 ## Número do capítulo que a entrada abre.
 @export var chapter := 1
@@ -71,7 +71,7 @@ func _touched(now: int) -> void:
 
 ## Centro da casa logo ao sul, onde o personagem aparece ao voltar.
 func exit_position() -> Vector2:
-	return global_position + Vector2(SIZE.x / 2.0, SIZE.y + 8.0)
+	return global_position + Vector2(SIZE.x / 2.0, SIZE.y + 16.0)
 
 
 func _draw() -> void:
@@ -80,5 +80,5 @@ func _draw() -> void:
 	if mode == Mode.LOCKED:
 		draw_texture(GATE_TEXTURE, offset + GATE_OFFSET)
 	elif mode == Mode.DONE:
-		var bob := sin(Clock.tick * 0.08) * 1.5
-		draw_texture(RELIC_TEXTURE, (Vector2(10.0, -22.0 + bob)).round())
+		var bob := sin(Clock.tick * 0.08) * 3.0
+		draw_texture(RELIC_TEXTURE, (Vector2(20.0, -44.0 + bob)).round())

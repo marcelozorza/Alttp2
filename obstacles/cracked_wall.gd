@@ -15,9 +15,9 @@ func _draw() -> void:
 		return
 	_draw_shadow()
 	var offset := _shake_offset()
-	for y: int in int(size.y / 16.0):
-		for x: int in int(size.x / 16.0):
-			draw_texture(TEXTURE, offset + Vector2(x, y) * 16.0)
+	for y: int in int(size.y / 32.0):
+		for x: int in int(size.x / 32.0):
+			draw_texture(TEXTURE, offset + Vector2(x, y) * 32.0)
 
 
 func _draw_debris() -> void:
@@ -27,5 +27,5 @@ func _draw_debris() -> void:
 	var color := Color(DEBRIS_COLOR, 1.0 - float(elapsed) / DEBRIS_TICKS)
 	for i: int in 8:
 		var angle := TAU * i / 8.0
-		var center := size / 2.0 + Vector2(cos(angle), sin(angle)) * (4.0 + elapsed * 0.6)
-		draw_rect(Rect2(center - Vector2(1.5, 1.5), Vector2(3.0, 3.0)), color)
+		var center := size / 2.0 + Vector2(cos(angle), sin(angle)) * (8.0 + elapsed * 1.2)
+		draw_rect(Rect2(center - Vector2(3.0, 3.0), Vector2(6.0, 6.0)), color)

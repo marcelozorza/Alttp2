@@ -35,7 +35,7 @@ const TREE := preload("res://art/tree.svg")
 const TREE_FACE := preload("res://art/tree_face.svg")
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
 ## Largura da sombra das paredes no chão, em pixels.
-const SHADOW_SIZE := 3.0
+const SHADOW_SIZE := 6.0
 ## Caracteres de chão liso, onde os adornos de chão podem ficar.
 const PLAIN_FLOOR := ".:^"
 ## Caracteres sob os quais o tapete pode ficar: chão comum, o início do
@@ -47,6 +47,8 @@ const ROOM_TILES := Vector2i(20, 10)
 const CARPET_TILES := Vector2i(6, 4)
 ## Distância mínima, em casas, entre dois adornos na mesma fileira de parede.
 const WALL_PROP_GAP := 2
+## Largura das molduras do tapete, em pixels.
+const FRAME := 2.0
 
 ## Ligado, desenha o mundo: mata, grama, caminho e água.
 @export var outdoor := false
@@ -231,7 +233,7 @@ func _draw_carpets() -> void:
 					draw_texture(theme.carpet, Vector2(x, y) * tile)
 			var pixels := Rect2(Vector2(area.position) * tile, Vector2(area.size) * tile)
 			_draw_frame(pixels, theme.carpet_edge)
-			_draw_frame(pixels.grow(-2.0), theme.carpet_border)
+			_draw_frame(pixels.grow(-4.0), theme.carpet_border)
 
 
 ## Área só de chão comum, sem desnível, bloqueio nem baú.
@@ -243,13 +245,13 @@ func _is_flat(area: Rect2i) -> bool:
 	return true
 
 
-## Moldura de um pixel de largura.
+## Moldura de FRAME pixels de largura.
 func _draw_frame(rect: Rect2, color: Color) -> void:
-	draw_rect(Rect2(rect.position, Vector2(rect.size.x, 1.0)), color)
+	draw_rect(Rect2(rect.position, Vector2(rect.size.x, FRAME)), color)
 	draw_rect(
-		Rect2(rect.position + Vector2(0.0, rect.size.y - 1.0), Vector2(rect.size.x, 1.0)), color
+		Rect2(rect.position + Vector2(0.0, rect.size.y - FRAME), Vector2(rect.size.x, FRAME)), color
 	)
-	draw_rect(Rect2(rect.position, Vector2(1.0, rect.size.y)), color)
+	draw_rect(Rect2(rect.position, Vector2(FRAME, rect.size.y)), color)
 	draw_rect(
-		Rect2(rect.position + Vector2(rect.size.x - 1.0, 0.0), Vector2(1.0, rect.size.y)), color
+		Rect2(rect.position + Vector2(rect.size.x - FRAME, 0.0), Vector2(FRAME, rect.size.y)), color
 	)

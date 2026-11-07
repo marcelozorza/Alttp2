@@ -13,23 +13,23 @@ extends Node2D
 
 ## Centro e meia extensão do corpo desenhado do personagem, a partir da origem
 ## nos pés. A lâmina sai da borda do corpo.
-const BODY_CENTER := Vector2(0.0, -4.0)
-const BODY_HALF_EXTENTS := Vector2(6.0, 8.0)
+const BODY_CENTER := Vector2(0.0, -8.0)
+const BODY_HALF_EXTENTS := Vector2(12.0, 16.0)
 ## Meia extensão dos pés, a colisão do personagem.
-const FEET_HALF_EXTENTS := Vector2(6.0, 4.0)
+const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
 ## Espessura desenhada da lâmina, em pixels.
-const BLADE_THICKNESS := 4.0
+const BLADE_THICKNESS := 8.0
 
 ## Comprimento da lâmina para fora do corpo, em pixels.
-@export_range(4.0, 40.0, 1.0) var reach := 12.0
+@export_range(8.0, 80.0, 1.0) var reach := 24.0
 ## Largura da área de dano, em pixels. É maior que a lâmina desenhada, para
 ## perdoar pequenos desalinhamentos.
-@export_range(2.0, 24.0, 1.0) var hit_width := 8.0
+@export_range(4.0, 48.0, 1.0) var hit_width := 16.0
 ## Dano por golpe.
 @export_range(1, 10, 1) var damage := 1
 ## Empurrão no alvo, em pixels por segundo para massa 1. Alvos mais pesados
 ## são empurrados menos.
-@export_range(0.0, 600.0, 10.0) var impulse := 100.0
+@export_range(0.0, 1200.0, 10.0) var impulse := 200.0
 ## Segundos em que a lâmina estendida causa dano.
 @export_range(0.0, 0.5, 0.01) var active_time := 0.1
 ## Segundos da animação de recolher, sem dano.

@@ -28,9 +28,9 @@ extends Node2D
 ## Tamanho de uma sala de uma tela, em casas.
 const ROOM_TILES := Vector2i(20, 10)
 ## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
-const HUD_HEIGHT := 20.0
+const HUD_HEIGHT := 40.0
 ## Metade da tela, em pixels.
-const HALF_SCREEN := Vector2(160.0, 90.0)
+const HALF_SCREEN := Vector2(320.0, 180.0)
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const BONE_DROP_SCENE := preload("res://items/bone_drop.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
@@ -205,7 +205,7 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		_objects.add_child(_player)
 	elif character == "c":
 		var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
-		crate.position = center + Vector2(0.0, 5.0)
+		crate.position = center + Vector2(0.0, 10.0)
 		_objects.add_child(crate)
 	elif character == "0":
 		var block := HEAVY_BLOCK_SCENE.instantiate() as HeavyBlock
@@ -228,7 +228,7 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
 	var boss := scene.instantiate() as Node2D
 	var room := _room_of_cell(cell)
-	boss.position = _cell_center(cell) + Vector2(0.0, 6.0)
+	boss.position = _cell_center(cell) + Vector2(0.0, 12.0)
 	boss.set("arena", _room_interior(room))
 	boss.connect("defeated", _on_boss_defeated.bind(room))
 	_objects.add_child(boss)
@@ -239,7 +239,7 @@ func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
 ## Os inimigos nascem desligados. Só a sala do personagem fica ligada.
 func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 	var enemy := scene.instantiate() as Enemy
-	enemy.position = _cell_center(cell) + Vector2(0.0, 4.0)
+	enemy.position = _cell_center(cell) + Vector2(0.0, 8.0)
 	enemy.respawn_time = 0.0
 	enemy.died.connect(_on_enemy_died)
 	_objects.add_child(enemy)
@@ -251,7 +251,7 @@ func _add_chest(location: String, cell: Vector2i) -> void:
 	var chest := CHEST_SCENE.instantiate() as Chest
 	chest.location_id = location
 	chest.item = Progress.item_at(data.number, location, data.items.get(location, Item.Id.NONE))
-	chest.position = Vector2(cell * ChapterMap.TILE) + Vector2(8.0, 13.0)
+	chest.position = Vector2(cell * ChapterMap.TILE) + Vector2(16.0, 26.0)
 	chest.opened.connect(_on_chest_opened)
 	_objects.add_child(chest)
 	_chests.append(chest)

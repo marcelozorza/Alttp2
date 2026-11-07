@@ -8,14 +8,14 @@ extends MomentumBody
 ## O personagem atravessa as próprias bombas, para poder soltá-las aos pés.
 ##
 ## A explosão é pixel art em quatro quadros (tools/explosion_art.py),
-## desenhada com o raio padrão de 26 px. Mudar blast_radius muda o dano, não o
+## desenhada com o raio padrão de 52 px. Mudar blast_radius muda o dano, não o
 ## desenho.
 
 const TEXTURE := preload("res://art/bomb.svg")
 const WARNING_COLOR := Color(0.95, 0.25, 0.2, 1.0)
 const SPARK_COLOR := Color(1.0, 0.75, 0.25, 1.0)
 ## Centro do desenho e da explosão, a partir da origem na base.
-const CENTER := Vector2(0.0, -4.0)
+const CENTER := Vector2(0.0, -8.0)
 const BLAST_FRAMES: Array[Texture2D] = [
 	preload("res://art/explosion_1.svg"),
 	preload("res://art/explosion_2.svg"),
@@ -23,7 +23,7 @@ const BLAST_FRAMES: Array[Texture2D] = [
 	preload("res://art/explosion_4.svg"),
 ]
 ## Lado dos quadros da explosão, em pixels.
-const BLAST_FRAME_SIZE := 56.0
+const BLAST_FRAME_SIZE := 112.0
 ## Ticks de cada quadro da explosão.
 const BLAST_FRAME_TICKS := 3
 ## Ticks em que a explosão fica visível.
@@ -35,11 +35,11 @@ const WARNING_TIME := 0.5
 ## Segundos até explodir.
 @export_range(0.2, 5.0, 0.05) var fuse_time := 1.5
 ## Raio da explosão, em pixels.
-@export_range(4.0, 64.0, 1.0) var blast_radius := 26.0
+@export_range(8.0, 128.0, 1.0) var blast_radius := 52.0
 ## Dano em quem estiver no raio, inclusive o personagem.
 @export_range(1, 10, 1) var damage := 1
 ## Empurrão da explosão, em pixels por segundo para massa 1.
-@export_range(0.0, 800.0, 10.0) var blast_impulse := 240.0
+@export_range(0.0, 1600.0, 10.0) var blast_impulse := 480.0
 
 var _spawn_tick := 0
 var _blast_tick := -1
@@ -119,6 +119,6 @@ func _draw() -> void:
 	var warning := remaining <= GameMath.ticks(WARNING_TIME) and posmod(remaining, 6) < 3
 	# O desenho tem 10 por 10 pixels, com o corpo centrado em CENTER.
 	var tint := WARNING_COLOR if warning else Color.WHITE
-	draw_texture(TEXTURE, CENTER + Vector2(-5.0, -6.0), tint)
+	draw_texture(TEXTURE, CENTER + Vector2(-10.0, -12.0), tint)
 	if posmod(now, 4) < 2:
-		draw_rect(Rect2(CENTER + Vector2(2.0, -7.0), Vector2(1.0, 1.0)), SPARK_COLOR)
+		draw_rect(Rect2(CENTER + Vector2(4.0, -14.0), Vector2(2.0, 2.0)), SPARK_COLOR)

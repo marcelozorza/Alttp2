@@ -24,9 +24,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.75))
-	column.add_child(MenuKit.label("Pausa", 16))
+	column.add_child(MenuKit.label("Pausa", 32))
 	if Progress.active and Progress.seed != 0:
-		column.add_child(MenuKit.label("Seed %06d" % Progress.seed, 8))
+		column.add_child(MenuKit.label("Seed %06d" % Progress.seed, 16))
 	# No capítulo, o mapa inteiro da dungeon (pedido de Marcelo em 2026-11-07).
 	column.add_child(Minimap.new())
 	_buttons.append(MenuKit.button("Continuar", resume))
