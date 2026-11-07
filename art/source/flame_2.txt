@@ -1,0 +1,12 @@
+# Chama da tocha, quadro 2.
+paleta
+y #ffe070
+o #ff8a1a
+w #fff8d0
+pixels
+...o.
+.oo..
+.oyo.
+oyyyo
+oywyo
+.ooo.

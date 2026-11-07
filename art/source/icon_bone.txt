@@ -1,0 +1,11 @@
+# Ponto de vida no HUD: um ossinho (pedido de Marcelo em 2026-11-07, no lugar
+# do quadrado vermelho).
+paleta
+o #4a3728
+w #f6f1e4
+pixels
+.oo...oo.
+owwo.owwo
+.owwwwwo.
+owwo.owwo
+.oo...oo.

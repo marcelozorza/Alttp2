@@ -1,0 +1,8 @@
+# Tema geleira (capítulo 2): pedra azul. Troca de paleta de floor.
+paleta
+s #223050
+c #2a3c62
+a #354a76
+b #42598a
+x #2f4068
+usa floor

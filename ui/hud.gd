@@ -1,5 +1,5 @@
 extends Control
-## HUD. No alto, numa barra, a vida, um quadrado por ponto, e, no capítulo, o
+## HUD. No alto, numa barra, a vida, um ossinho por ponto, e, no capítulo, o
 ## número do capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela,
 ## os quatro botões de face do controle num losango, cada um na posição do
 ## botão, com o ícone em pixel art do que ele faz. À direita do losango, no
@@ -13,23 +13,26 @@ extends Control
 ## branca. Ao lado do botão de uma ferramenta com cargas, do lado de fora do
 ## losango, uma coluna de pontos mostra as cargas, que se apagam de cima para
 ## baixo, e o botão escurece quando elas acabam. Com mais de HEALTH_ROW pontos
-## de vida, a vida passa a ocupar duas linhas mais baixas.
+## de vida, a vida passa a ocupar duas linhas. Os ossos no lugar dos quadrados
+## vermelhos foram pedido de Marcelo em 2026-11-07: um osso cheio por ponto de
+## vida e um osso apagado por ponto perdido.
 ##
 ## No canto inferior direito, no capítulo, o minimapa das salas já visitadas
 ## (ui/minimap.gd). No alto, à direita, o cronômetro: no jogo contínuo, o do
 ## jogo inteiro desde o Novo jogo, e no treino o do capítulo (pedidos de
 ## Marcelo em 2026-11-07).
 
-const PIP_SIZE := Vector2(6.0, 6.0)
-const PIP_GAP := 2.0
-## Pontos de vida que cabem numa linha, antes do losango dos botões.
+## Osso de um ponto de vida, cheio e apagado.
+const BONE_TEXTURE := preload("res://art/icon_bone.svg")
+const EMPTY_BONE_TEXTURE := preload("res://art/icon_bone_empty.svg")
+## Passo entre dois ossos na linha e entre as duas linhas.
+const BONE_STEP := Vector2(10.0, 6.0)
+## Pontos de vida que cabem numa linha, antes do cronômetro.
 const HEALTH_ROW := 12
 ## Centro do ícone da chave, à direita do losango, na altura do centro dele.
 const KEYS_POSITION := Vector2(54.0, 152.0)
 ## Chave apagada, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
-const FULL_COLOR := Color(0.9, 0.2, 0.25, 1.0)
-const EMPTY_COLOR := Color(0.25, 0.1, 0.12, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
 ## Disco de um botão com espada ou ferramenta, e disco apagado de um botão
@@ -128,14 +131,11 @@ func _find_button_center(action: StringName) -> void:
 
 
 func _draw_health(player: Player) -> void:
-	var pip_size := PIP_SIZE
-	if player.max_health > HEALTH_ROW:
-		pip_size.y = (PIP_SIZE.y - 1.0) / 2.0
 	for i: int in player.max_health:
 		var row := floori(float(i) / HEALTH_ROW)
 		var column := i % HEALTH_ROW
-		var pip_position := Vector2(column * (pip_size.x + PIP_GAP), row * (pip_size.y + 1.0))
-		draw_rect(Rect2(pip_position, pip_size), FULL_COLOR if i < player.health else EMPTY_COLOR)
+		var corner := Vector2(column * BONE_STEP.x, row * BONE_STEP.y)
+		draw_texture(BONE_TEXTURE if i < player.health else EMPTY_BONE_TEXTURE, corner)
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a

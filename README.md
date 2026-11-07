@@ -42,7 +42,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
-- **Vida:** os quadrados vermelhos no alto. A cada 3 inimigos mortos numa dungeon, o terceiro deixa um ossinho, que enche 2 pontos ao ser pego e some em 10 s. Com 4 pontos ou menos, um beep discreto avisa.
+- **Vida:** os ossinhos no alto, um por ponto, apagados conforme você perde vida. A cada 3 inimigos mortos numa dungeon, o terceiro deixa um ossinho, que enche 2 pontos ao ser pego e some em 10 s. Com 4 pontos ou menos, um beep discreto avisa.
 - **Minimapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. Na pausa, o mapa inteiro da dungeon, com as salas não vistas escurecidas.
 - **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 
@@ -105,7 +105,7 @@ Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e um
 python3 tools/pixel_svg.py
 ```
 
-O Godot reimporta os SVG ao voltar para o editor. Os quatro quadros da explosão da bomba (`explosion_1` a `explosion_4`) não se editam à mão: saem de `python3 tools/explosion_art.py`, que gera o texto deles antes do passo acima.
+O Godot reimporta os SVG ao voltar para o editor. Uma linha `usa outro_desenho` no lugar da grade reaproveita os pixels de outro desenho com a paleta nova: é assim que os tiles do castelo, do gelo e das ruínas (`floor_castle`, `wall_ice`, `wall_face_moss` e os demais) saem dos tiles de pedra, e a chama azul da chama comum. Os quatro quadros da explosão da bomba (`explosion_1` a `explosion_4`) não se editam à mão: saem de `python3 tools/explosion_art.py`, que gera o texto deles antes do passo acima.
 
 ## Som
 
@@ -153,6 +153,8 @@ Nos inimigos com desenho, as cores viram um tom sobre ele. O minion, o gatinho l
 - **Colosso de arenito rachado:** a bomba abre a casca, que volta em 6 s. O núcleo de pedra derretida apanha da espada, da chama forte e da bomba. A pancada no chão solta uma onda alta, cor de areia, que só a mola forte pula.
 
 ## Cores do mundo
+
+Cada dungeon tem um tema: o tutorial é a pedra azulada com tochas, o capítulo 1 é o castelo roxo com candelabros, estandartes e tapete vermelho, o capítulo 2 é a geleira azul com chamas azuis, estalactites e geada, e o capítulo 3 são as ruínas verdes com trepadeiras, teias e musgo. Os adornos são só enfeite: nada deles bloqueia ou esconde um caminho. O que muda o jogo é isto:
 
 - **Parede escura com rachaduras claras:** abre com a bomba.
 - **Bloco azul claro com brilhos:** derrete com a chama.

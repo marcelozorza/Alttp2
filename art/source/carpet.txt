@@ -1,0 +1,21 @@
+# Tapete vermelho do castelo, o miolo, com losangos escuros.
+paleta
+r #7a1a28
+m #641420
+pixels
+rrrrrrrrrrrrrrrr
+rrrmrrrrrrrmrrrr
+rrmmmrrrrrmmmrrr
+rrrmrrrrrrrmrrrr
+rrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrr
+rrrrrrrmrrrrrrrr
+rrrrrrmmmrrrrrrr
+rrrrrrrmrrrrrrrr
+rrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrr
+rrrmrrrrrrrmrrrr
+rrmmmrrrrrmmmrrr
+rrrmrrrrrrrmrrrr
+rrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrr

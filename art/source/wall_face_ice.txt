@@ -1,0 +1,10 @@
+# Tema geleira (capítulo 2): pedra azul. Troca de paleta de wall_face.
+paleta
+o #0e1830
+d #162440
+m #1e3050
+k #24385c
+f #3c5a86
+g #4e72a4
+h #6690c2
+usa wall_face

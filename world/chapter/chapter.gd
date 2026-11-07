@@ -115,6 +115,7 @@ func _ready() -> void:
 			for x: int in range(rect.position.x, rect.end.x):
 				_room_rects[Vector2i(x, y)] = rect
 	_map_view.map = map
+	_map_view.theme = DungeonTheme.for_chapter(data.number)
 	_map_view.queue_redraw()
 	MapWalls.build(map, _walls)
 	_build_cells()
