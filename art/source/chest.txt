@@ -1,44 +1,48 @@
 # Baú fechado, inspirado no baú vermelho e dourado que Marcelo mandou em
-# 2026-11-07: corpo vermelho com um friso mais claro, cantoneiras e faixas
-# douradas e a fechadura dourada na frente. A base fica na última linha.
+# 2026-11-07: tampa abaulada, corpo de tábuas vermelhas, cantoneiras e
+# fechadura douradas. Redesenhado em 32 por 32 quando a resolução dobrou,
+# no mesmo dia. A base fica na penúltima linha, com a sombra na última.
 # Abre com a espada.
 paleta
 o #2a1208
+q #8c1a12
 r #c8281e
 h #e8503c
+d #8a5a10
 g #e0a020
 y #f8e070
-d #8a5a10
+k #1a0c06
+b #5a3a1a
 pixels
 ................................
 ................................
 ................................
 ................................
 ................................
-................................
-....oooooooooooooooooooooooo....
-....oooooooooooooooooooooooo....
-..ooggggggggggggggggggggggggoo..
-..ooggggggggggggggggggggggggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggggggggggyyyyggggggggggoo..
-..ooggggggggggyyyyggggggggggoo..
-..ooooooooooooyyyyoooooooooooo..
-..ooooooooooooyyyyoooooooooooo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggggggggggggggggggggggggoo..
-..ooggggggggggggggggggggggggoo..
-..ooddddddddddddddddddddddddoo..
-..ooddddddddddddddddddddddddoo..
+.......oooooooooooooooooo.......
+.....oogggggggggggggggggoo......
+....oghhrrrrrrrrrrrrrrrhhgo.....
+...ogyhrrrrrrrrrrrrrrrrrhqgo....
+...ogyrrrrrrrrrrrrrrrrrrrqgo....
+..ogyrrrrrrrrrrrrrrrrrrrrqqgo...
+..ogggggggggggggggggggggggggo...
+..oddddddddddyyyyydddddddddddo..
+..oyggdhhhhhhyggggdhhhhhhyggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdqqqqqqygkggdqqqqqqyggdo..
+..oyggdhhhhhhddddddhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oddddddddddddddddddddddddddo..
+..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
 ..oooooooooooooooooooooooooooo..
-..oooooooooooooooooooooooooooo..
-................................
-................................
+.oooooooooooooooooooooooooooooo.
+...oooooooooooooooooooooooooo...

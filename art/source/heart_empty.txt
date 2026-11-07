@@ -1,0 +1,21 @@
+# Coração vazio do HUD, dois pontos perdidos.
+paleta
+o #3a1a20
+e #1e1014
+n #4a2a30
+pixels
+..oooo....oooo..
+.oneeeo..oeeeeo.
+oneeeeeooeeeeeeo
+oneeeeeeeeeeeeeo
+oeeeeeeeeeeeeeeo
+oeeeeeeeeeeeeeeo
+oeeeeeeeeeeeeeeo
+.oeeeeeeeeeeeeo.
+.oeeeeeeeeeeeeo.
+..oeeeeeeeeeeo..
+...oeeeeeeeeo...
+....oeeeeeeo....
+.....oeeeeo.....
+......oeeo......
+.......oo.......

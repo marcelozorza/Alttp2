@@ -12,23 +12,26 @@ extends Control
 ## miolo branco, e com a mola forte, o botão do pulo mostra a mola de placa
 ## branca. Ao lado do botão de uma ferramenta com cargas, do lado de fora do
 ## losango, uma coluna de pontos mostra as cargas, que se apagam de cima para
-## baixo, e o botão escurece quando elas acabam. Com mais de HEALTH_ROW pontos
-## de vida, a vida passa a ocupar duas linhas. Os ossos no lugar dos quadrados
-## vermelhos foram pedido de Marcelo em 2026-11-07: um osso cheio por ponto de
-## vida e um osso apagado por ponto perdido.
+## baixo, e o botão escurece quando elas acabam. A vida são corações de dois
+## pontos, cheios, pela metade ou vazios, e com mais de HEALTH_ROW corações
+## passa a ocupar duas linhas. Os corações voltaram no lugar dos ossos de um
+## dia por pedido de Marcelo em 2026-11-07 ("corações na barra lá em cima,
+## mas ossos que dão a energia").
 ##
 ## No canto inferior direito, no capítulo, o minimapa das salas já visitadas
 ## (ui/minimap.gd). No alto, à direita, o cronômetro: no jogo contínuo, o do
 ## jogo inteiro desde o Novo jogo, e no treino o do capítulo (pedidos de
 ## Marcelo em 2026-11-07).
 
-## Osso de um ponto de vida, cheio e apagado.
-const BONE_TEXTURE := preload("res://art/icon_bone.svg")
-const EMPTY_BONE_TEXTURE := preload("res://art/icon_bone_empty.svg")
-## Passo entre dois ossos na linha e entre as duas linhas.
-const BONE_STEP := Vector2(20.0, 12.0)
-## Pontos de vida que cabem numa linha, antes do cronômetro.
-const HEALTH_ROW := 24
+## Coração de dois pontos de vida: cheio, pela metade e vazio (Marcelo pediu
+## os corações de volta em 2026-11-07, no lugar dos ossos de um dia).
+const HEART_TEXTURE := preload("res://art/heart.svg")
+const HALF_HEART_TEXTURE := preload("res://art/heart_half.svg")
+const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
+## Passo entre dois corações na linha e entre as duas linhas.
+const HEART_STEP := Vector2(18.0, 16.0)
+## Corações que cabem numa linha, antes do cronômetro.
+const HEALTH_ROW := 12
 ## Centro do ícone da chave, à direita do losango, na altura do centro dele.
 const KEYS_POSITION := Vector2(108.0, 304.0)
 ## Chave apagada, quando não há nenhuma.
@@ -130,12 +133,19 @@ func _find_button_center(action: StringName) -> void:
 			return
 
 
+## Um coração a cada dois pontos de vida máxima, cheio, pela metade ou vazio.
 func _draw_health(player: Player) -> void:
-	for i: int in player.max_health:
+	var hearts := ceili(player.max_health / 2.0)
+	for i: int in hearts:
+		var points := clampi(player.health - i * 2, 0, 2)
+		var texture := EMPTY_HEART_TEXTURE
+		if points == 2:
+			texture = HEART_TEXTURE
+		elif points == 1:
+			texture = HALF_HEART_TEXTURE
 		var row := floori(float(i) / HEALTH_ROW)
 		var column := i % HEALTH_ROW
-		var corner := Vector2(column * BONE_STEP.x, row * BONE_STEP.y)
-		draw_texture(BONE_TEXTURE if i < player.health else EMPTY_BONE_TEXTURE, corner)
+		draw_texture(texture, Vector2(column * HEART_STEP.x, row * HEART_STEP.y))
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a

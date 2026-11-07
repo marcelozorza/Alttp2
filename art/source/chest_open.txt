@@ -1,43 +1,46 @@
-# Baú aberto: a tampa erguida para trás, o fundo escuro com a borda dourada
-# e a frente igual à do baú fechado.
+# Baú aberto, bem diferente do fechado (pedido de Marcelo em 2026-11-07): a
+# tampa fica erguida atrás, mostrando o forro escuro com a moldura dourada,
+# e a boca do baú é escura. O corpo é mais baixo que o do baú fechado.
 paleta
 o #2a1208
+q #8c1a12
 r #c8281e
 h #e8503c
+d #8a5a10
 g #e0a020
 y #f8e070
-d #8a5a10
 k #1a0c06
+b #5a3a1a
 pixels
 ................................
 ................................
-....oooooooooooooooooooooooo....
-....oooooooooooooooooooooooo....
-..ooggggggggggggggggggggggggoo..
-..ooggggggggggggggggggggggggoo..
-..ooggrrrrrrrrrrrrrrrrrrrrggoo..
-..ooggrrrrrrrrrrrrrrrrrrrrggoo..
-..ooggggggggggggggggggggggggoo..
-..ooggggggggggggggggggggggggoo..
-..ookkkkkkkkkkkkkkkkkkkkkkkkoo..
-..ookkkkkkkkkkkkkkkkkkkkkkkkoo..
-..ookkkkkkkkkkkkkkkkkkkkkkkkoo..
-..ookkkkkkkkkkkkkkkkkkkkkkkkoo..
-..ooyyyyyyyyyyyyyyyyyyyyyyyyoo..
-..ooyyyyyyyyyyyyyyyyyyyyyyyyoo..
-..ooggggggggggyyyyggggggggggoo..
-..ooggggggggggyyyyggggggggggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggrrhhrrrrggggrrhhrrrrggoo..
-..ooggggggggggggggggggggggggoo..
-..ooggggggggggggggggggggggggoo..
-..ooddddddddddddddddddddddddoo..
-..ooddddddddddddddddddddddddoo..
-..oooooooooooooooooooooooooooo..
-..oooooooooooooooooooooooooooo..
-................................
-................................
+...oooooooooooooooooooooooooo...
+..ogggggggggggggggggggggggggo...
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogggggggggggggggggggggggggo...
+..oyyyyyyyyyyyyyyyyyyyyyyyyyyo..
+..okkkkkkkkkkkkkkkkkkkkkkkkkko..
+..okkkkkkkkkkkkkkkkkkkkkkkkkko..
+..okbbbbbbbbbbbbbbbbbbbbbbbbko..
+..okkkddddddddddddddddddddkkko..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oddddddddddddddddddddddddddo..
+..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
+..oqqqqqqqqqqqqqqqqqqqqqqqqqqo..
+.oooooooooooooooooooooooooooooo.
+...oooooooooooooooooooooooooo...

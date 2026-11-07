@@ -5,9 +5,13 @@ extends Node2D
 ## vídeo do Super Nintendo. Os bloqueios e os objetos se desenham sozinhos por
 ## cima.
 ##
-## A parede com chão logo ao sul usa o tile com a face de tijolos, que dá o
-## volume da perspectiva 3/4. O chão alterna entre duas variações, como um
-## tabuleiro, para quebrar a repetição.
+## Toda parede mostra o topo escuro e, de cada lado em que há chão, uma face
+## de tijolos iluminada, em perspectiva forçada com a câmera no centro da
+## sala, como no castelo de Hyrule do A Link to the Past (pedido de Marcelo em
+## 2026-11-07, que via a parede de cima clara e as dos lados escuras). A face
+## tem FACE_DEPTH pixels e o resto da casa é topo. Onde duas faces se
+## encontram, uma diagonal as separa, da quina do topo à quina do chão. O chão
+## alterna entre duas variações, como um tabuleiro, para quebrar a repetição.
 ##
 ## A luz vem do alto à esquerda, então toda parede projeta uma sombra curta no
 ## chão ao sul e no chão a leste. É a sombra que faz a parede ser lida como
@@ -47,6 +51,12 @@ const ROOM_TILES := Vector2i(20, 10)
 const CARPET_TILES := Vector2i(6, 4)
 ## Distância mínima, em casas, entre dois adornos na mesma fileira de parede.
 const WALL_PROP_GAP := 2
+## Profundidade da face de uma parede, em pixels. O resto da casa é o topo.
+const FACE_DEPTH := 24.0
+## Profundidade de cada face quando a parede tem chão dos dois lados.
+const HALF_FACE := 16.0
+## Os quatro cantos diagonais de uma casa.
+const CORNERS := [Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, -1), Vector2i(-1, -1)]
 ## Largura das molduras do tapete, em pixels.
 const FRAME := 2.0
 
@@ -82,7 +92,7 @@ func _draw() -> void:
 				_draw_outdoor(cell, character, origin)
 				continue
 			if character == "#":
-				draw_texture(theme.wall_face if _faces_floor(cell) else theme.wall, origin)
+				_draw_wall(cell, origin)
 				continue
 			var alternate := (x + y) % 2 == 0
 			draw_texture(theme.floor_texture(map.height_level(cell), alternate), origin)
@@ -120,10 +130,124 @@ func _draw_wall_shadows(cell: Vector2i, origin: Vector2) -> void:
 		draw_rect(Rect2(origin + Vector2(0.0, top), Vector2(SHADOW_SIZE, tile - top)), SHADOW_COLOR)
 
 
-## Parede com chão logo ao sul, que mostra a face.
+## Parede: o topo e uma face de cada lado em que há chão. Com chão dos dois
+## lados opostos, cada face fica com metade da casa. As faces laterais são
+## polígonos: onde encostam na face de frente ou na de trás, a diagonal vai da
+## quina do topo à quina do chão, e é a lateral que fica do lado do seu eixo,
+## como nas ombreiras das portas do A Link to the Past.
+func _draw_wall(cell: Vector2i, origin: Vector2) -> void:
+	var tile := float(ChapterMap.TILE)
+	draw_texture(theme.wall, origin)
+	var floor_n := _is_floor(cell + Vector2i.UP)
+	var floor_s := _is_floor(cell + Vector2i.DOWN)
+	var floor_w := _is_floor(cell + Vector2i.LEFT)
+	var floor_e := _is_floor(cell + Vector2i.RIGHT)
+	var depth_n := _face_depth(floor_n, floor_s)
+	var depth_s := _face_depth(floor_s, floor_n)
+	var depth_w := _face_depth(floor_w, floor_e)
+	var depth_e := _face_depth(floor_e, floor_w)
+	if floor_s:
+		var band: Array = [
+			Vector2(0.0, tile - depth_s),
+			Vector2(tile, tile - depth_s),
+			Vector2(tile, tile),
+			Vector2(0.0, tile)
+		]
+		_draw_face(theme.wall_face, origin, band, false, false)
+	if floor_n:
+		var band: Array = [
+			Vector2.ZERO, Vector2(tile, 0.0), Vector2(tile, depth_n), Vector2(0.0, depth_n)
+		]
+		_draw_face(theme.wall_face, origin, band, false, true)
+	if floor_e:
+		var band: Array = [
+			Vector2(tile - depth_e, depth_n),
+			Vector2(tile, 0.0),
+			Vector2(tile, tile),
+			Vector2(tile - depth_e, tile - depth_s),
+		]
+		_draw_face(theme.wall_side, origin, band, false, false)
+	if floor_w:
+		var band: Array = [
+			Vector2.ZERO,
+			Vector2(depth_w, depth_n),
+			Vector2(depth_w, tile - depth_s),
+			Vector2(0.0, tile)
+		]
+		_draw_face(theme.wall_side, origin, band, true, false)
+	for corner: Vector2i in CORNERS:
+		var orthogonal_floor := (
+			_is_floor(cell + Vector2i(corner.x, 0)) or _is_floor(cell + Vector2i(0, corner.y))
+		)
+		if _is_floor(cell + corner) and not orthogonal_floor:
+			_draw_inner_corner(origin, corner)
+
+
+## Profundidade da face de um lado: nada sem chão ali, metade com chão também
+## do lado oposto.
+func _face_depth(has_floor: bool, opposite_floor: bool) -> float:
+	if not has_floor:
+		return 0.0
+	return HALF_FACE if opposite_floor else FACE_DEPTH
+
+
+## Canto de dentro da sala: a casa de parede com chão só na diagonal. A face
+## de frente da parede vizinha e a lateral da outra se encontram numa diagonal
+## da quina do topo à quina do chão, com a de frente acima dela.
+func _draw_inner_corner(origin: Vector2, corner: Vector2i) -> void:
+	var tile := float(ChapterMap.TILE)
+	var cap := tile - FACE_DEPTH
+	var flip_h := corner.x < 0
+	var flip_v := corner.y < 0
+	var front: Array = [Vector2(cap, cap), Vector2(tile, cap), Vector2(tile, tile)]
+	var side: Array = [Vector2(cap, cap), Vector2(tile, tile), Vector2(cap, tile)]
+	_draw_face(theme.wall_face, origin, _mirror(front, flip_h, flip_v), false, flip_v)
+	_draw_face(theme.wall_side, origin, _mirror(side, flip_h, flip_v), flip_h, false)
+
+
+## Espelha pontos de uma casa em pixels, no eixo pedido.
+func _mirror(points: Array, flip_h: bool, flip_v: bool) -> Array:
+	var tile := float(ChapterMap.TILE)
+	var result: Array = []
+	for point: Vector2 in points:
+		result.append(
+			Vector2(tile - point.x if flip_h else point.x, tile - point.y if flip_v else point.y)
+		)
+	return result
+
+
+## Pedaço de uma textura de parede recortado num polígono, em pixels a partir
+## do canto da casa. A textura cobre a casa inteira, espelhada se for o caso,
+## então cada ponto lê a textura na mesma posição em que fica na casa.
+func _draw_face(
+	texture: Texture2D, origin: Vector2, points: Array, flip_h: bool, flip_v: bool
+) -> void:
+	var tile := float(ChapterMap.TILE)
+	var polygon := PackedVector2Array()
+	var uvs := PackedVector2Array()
+	for point: Vector2 in points:
+		if not polygon.is_empty() and polygon[polygon.size() - 1] == origin + point:
+			continue
+		polygon.append(origin + point)
+		var uv := point / tile
+		uvs.append(Vector2(1.0 - uv.x if flip_h else uv.x, 1.0 - uv.y if flip_v else uv.y))
+	if polygon.size() > 1 and polygon[0] == polygon[polygon.size() - 1]:
+		polygon.remove_at(polygon.size() - 1)
+		uvs.remove_at(uvs.size() - 1)
+	if polygon.size() < 3:
+		return
+	draw_polygon(polygon, PackedColorArray([Color.WHITE]), uvs, texture)
+
+
+func _is_floor(cell: Vector2i) -> bool:
+	var character := map.tile(cell)
+	return character != "#" and character != " "
+
+
+## Parede com chão logo ao sul, que mostra a face de frente: é nela que ficam
+## as arandelas e as peças penduradas.
 func _faces_floor(cell: Vector2i) -> bool:
-	var below := map.tile(cell + Vector2i.DOWN)
-	return below != "#" and below != " "
+	return _is_floor(cell + Vector2i.DOWN)
 
 
 func _is_plain(cell: Vector2i) -> bool:
@@ -169,7 +293,7 @@ func _draw_wall_row(y: int, flame_positions: Array[Vector2]) -> void:
 		if decorated:
 			last_prop = x
 		elif theme.icicles and _chance(cell, 3) < theme.icicle_chance:
-			draw_texture(theme.icicles, origin)
+			draw_texture(theme.icicles, origin + Vector2(0.0, tile - FACE_DEPTH))
 
 
 ## Uma arandela ou uma peça pendurada na face, se o sorteio der. Diz se pôs.

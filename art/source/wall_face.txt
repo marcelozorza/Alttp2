@@ -1,5 +1,9 @@
-# Parede com a face voltada para o chão ao sul: topo escuro em cima e tijolos
-# iluminados embaixo, que dão o volume da perspectiva 3/4.
+# Face da parede que olha para o sul, com o chão logo abaixo: 8 px de topo e
+# 24 px de tijolos iluminados, com a aresta clara junto do topo e o rodapé
+# escuro junto do chão. O MapView usa a faixa de baixo e, espelhada na
+# vertical, a face da parede do sul da sala. Redesenhada em 32 px em
+# 2026-11-07, quando as paredes passaram a ter face nos quatro lados, como
+# no castelo de Hyrule do A Link to the Past.
 paleta
 o #15131e
 d #1f1c2b
@@ -9,35 +13,35 @@ f #4a4562
 g #5d577a
 h #736c94
 pixels
-mmmmmmmmmmmmmmoommmmmmmmmmmmmmoo
-mmmmmmmmmmmmmmoommmmmmmmmmmmmmoo
-mmddddddddddddoommmmddddddddddoo
-mmddddddddddddoommmmddddddddddoo
-mmddddddddddddoommddddddddddddoo
-mmddddddddddddoommddddddddddddoo
-mmddddddddddddoommddddddddddddoo
-mmddddddddddddoommddddddddddddoo
-oooooooooooooooooooooooooooooooo
-oooooooooooooooooooooooooooooooo
-hhhhhhhhhhhhhhkkhhhhhhhhhhhhhhkk
-hhhhhhhhhhhhhhkkhhhhhhhhhhhhhhkk
-ggffffffffffffkkggffffffffffffkk
-ggffffffffffffkkggffffffffffffkk
-ggffffffffffffkkggffffffffffffkk
-ggffffffffffffkkggffffffffffffkk
+mmmmmmmmmmmmmmmommmmmmmmmmmmmmmo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+gggggggggggggggggggggggggggggggg
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+ghhhhhhhhhhhhhhkghhhhhhhhhhhhhhk
+gggggggggggggggkgggggggggggggggk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-hhhhhhkkhhhhhhhhhhhhhhkkhhhhhhhh
-hhhhhhkkhhhhhhhhhhhhhhkkhhhhhhhh
-ggffffkkggffffffffffffffkkggffff
-ggffffkkggffffffffffffffkkggffff
-ggffffkkggffffffffffffffkkggffff
-ggffffkkggffffffffffffffkkggffff
+hhhhhhhkghhhhhhhhhhhhhhkghhhhhhh
+gggggggkgggggggggggggggkgggggggg
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+ghhhhhhhhhhhhhhkghhhhhhhhhhhhhhk
+gggggggggggggggkgggggggggggggggk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
-hhhhhhhhhhhhhhkkhhhhhhhhhhhhhhkk
-hhhhhhhhhhhhhhkkhhhhhhhhhhhhhhkk
-ggffffffffffffkkggffffffffffffkk
-ggffffffffffffkkggffffffffffffkk
-oooooooooooooooooooooooooooooooo
-oooooooooooooooooooooooooooooooo

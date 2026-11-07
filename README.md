@@ -42,7 +42,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
-- **Vida:** os ossinhos no alto, um por ponto, apagados conforme você perde vida. Cada inimigo morto tem 30% de chance de deixar um ossinho, que enche 2 pontos ao ser pego e some em 10 s, e com 3 pontos ou menos todo inimigo deixa um. Com 4 pontos ou menos, um beep discreto avisa.
+- **Vida:** os corações no alto, um a cada dois pontos, pela metade ou vazios conforme você perde vida. Cada inimigo morto tem 30% de chance de deixar um ossinho, que enche 2 pontos ao ser pego e some em 10 s, e com 3 pontos ou menos todo inimigo deixa um. Com 4 pontos ou menos, um beep discreto avisa.
 - **Minimapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. Na pausa, o mapa inteiro da dungeon, com as salas não vistas escurecidas.
 - **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 

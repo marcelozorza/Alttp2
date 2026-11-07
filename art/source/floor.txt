@@ -1,4 +1,7 @@
-# Chão da dungeon: lajotas de pedra, luz do alto à esquerda.
+# Chão de pedra: lajotas de 16 px em duas fileiras desencontradas, com
+# argamassa escura embaixo e à direita, borda clara em cima e à esquerda, e
+# uns grãos. Redesenhado em 32 px em 2026-11-07 (gerado por um script
+# descartável, editável à mão). Os temas trocam a paleta com usa.
 paleta
 s #2b2838
 c #36334a
@@ -6,35 +9,35 @@ a #423e58
 b #4f4b68
 x #3a3750
 pixels
-bbbbbbbbbbbbbbssbbbbbbbbbbbbbbss
-bbbbbbbbbbbbbbssbbbbbbbbbbbbbbss
-bbaaaaaaaaaaaaccbbaaaaaaaaxxaacc
-bbaaaaaaaaaaaaccbbaaaaaaaaxxaacc
-bbaaaaxxaaaaaaccbbaaaaaaaaaaaacc
-bbaaaaxxaaaaaaccbbaaaaaaaaaaaacc
-bbaaaaaaaaaaaaccbbaaaaaaaaaaaacc
-bbaaaaaaaaaaaaccbbaaaaaaaaaaaacc
-bbaaaaaaaaxxaaccbbxxaaaaaaaaaacc
-bbaaaaaaaaxxaaccbbxxaaaaaaaaaacc
-bbaaaaaaaaaaaaccbbaaaaaaaaaaaacc
-bbaaaaaaaaaaaaccbbaaaaaaaaaaaacc
-bbccccccccccccccbbcccccccccccccc
-bbccccccccccccccbbcccccccccccccc
+bbbbbbbbbbbbbbbsbbbbbbbbbbbbbbbs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaxaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaxaaaaaacaaacsbaaaaaaaacaaaacs
+baaaaaaaaaacxacsbaaaaaaaaacxaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaxacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaxaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+baaaaaaaaaaaaacsbaaaaaaaaaaaaacs
+bccccccccccccccsbccccccccccccccs
 ssssssssssssssssssssssssssssssss
-ssssssssssssssssssssssssssssssss
-bbbbbbssbbbbbbbbbbbbbbbbssbbbbbb
-bbbbbbssbbbbbbbbbbbbbbbbssbbbbbb
-bbaaaaccbbaaaaaaaaaaxxaaccbbaaaa
-bbaaaaccbbaaaaaaaaaaxxaaccbbaaaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbaaaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbaaaa
-bbxxaaccbbaaaaaaxxaaaaaaccbbaaaa
-bbxxaaccbbaaaaaaxxaaaaaaccbbaaaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbxxaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbxxaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbaaaa
-bbaaaaccbbaaaaaaaaaaaaaaccbbaaaa
-bbccccccbbccccccccccccccccccbbcc
-bbccccccbbccccccccccccccccccbbcc
-ssssssssssssssssssssssssssssssss
+bbbbbbbsbbbbbbbbbbbbbbbsbbbbbbbs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaxacsbaaaaaaaaaaaaacsbaxaaacs
+baaaaacsbaaaaaaaaaaxaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaxaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaxacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaxaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+baaaaacsbaaaaaaaaaaaaacsbaaaaacs
+bccccccsbccccccccccccccsbccccccs
 ssssssssssssssssssssssssssssssss

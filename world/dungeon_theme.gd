@@ -52,7 +52,9 @@ var high_floor_alt: Texture2D
 var higher_floor: Texture2D
 var higher_floor_alt: Texture2D
 var wall: Texture2D
+## Face de frente, com o chão ao sul, e face lateral, com o chão a leste.
 var wall_face: Texture2D
+var wall_side: Texture2D
 ## Tocha ou candelabro na face da parede. Nulo, sem arandela.
 var sconce: Texture2D
 ## Quadros da chama da tocha, desenhados sobre a arandela. Vazio, sem chama.
@@ -150,7 +152,7 @@ static func moss() -> DungeonTheme:
 	return theme
 
 
-## Carrega os oito tiles com o sufixo do tema ("" para a pedra).
+## Carrega os nove tiles com o sufixo do tema ("" para a pedra).
 func load_tiles(suffix: String) -> void:
 	floor_tile = load("res://art/floor%s.svg" % suffix)
 	floor_alt = load("res://art/floor_alt%s.svg" % suffix)
@@ -160,6 +162,7 @@ func load_tiles(suffix: String) -> void:
 	higher_floor_alt = load("res://art/higher_floor_alt%s.svg" % suffix)
 	wall = load("res://art/wall%s.svg" % suffix)
 	wall_face = load("res://art/wall_face%s.svg" % suffix)
+	wall_side = load("res://art/wall_side%s.svg" % suffix)
 
 
 ## Tile de chão pelo nível e pela alternância do tabuleiro.
