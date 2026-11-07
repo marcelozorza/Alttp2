@@ -1,0 +1,6 @@
+# Tema castelo (capítulo 1): pedra roxa quente. Troca de paleta de wall.
+paleta
+o #19101c
+d #251a2c
+m #30223a
+usa wall

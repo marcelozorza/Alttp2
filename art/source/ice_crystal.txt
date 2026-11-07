@@ -1,0 +1,17 @@
+# Cristais de gelo brotando do chão.
+paleta
+o #2d5a86
+e #5f97c8
+a #9fd2f4
+w #f4fbff
+pixels
+....w.....
+...oao....
+...oaao.w.
+..oaawooao
+..oaaaoaao
+.w.oaaoaao
+oao.oaaaeo
+oaaooaaeeo
+oaaeoeeeeo
+.ooooooooo

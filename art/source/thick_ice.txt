@@ -1,0 +1,27 @@
+# Gelo grosso, a frente: azul profundo com a borda branca de geada. A chama
+# comum só faz tremer. Só a chama forte derrete. Com outro bloco ao sul, a
+# casa usa thick_ice_top.
+paleta
+o #0f2448
+k #16335f
+e #244f8c
+a #3f7ab8
+b #7fb0dc
+w #e8f4ff
+pixels
+oooooooooooooooo
+owwwwwwwwwwwwwwo
+owaaaaaaaaaaaawo
+owaabaaaaaabaawo
+owaaaaaaaaaaaawo
+oaaaaaaaaaaaaaao
+oeeeeeeeeeeeeeeo
+oaaaweaaaaaweaao
+oaaweaaaaaweaaao
+oaweaaaaaweaaaao
+oeeaaaaaaeeaaaao
+oeeaaaaeeeaaaeao
+okeeaaeeeaaaeeao
+okkeeeeeeeeeeeeo
+okkkkkkkkkkkkkko
+oooooooooooooooo

@@ -1,0 +1,19 @@
+# Morcego: asas abertas, corpo roxo escuro e olhos claros. Voa em ziguezague
+# e dá o bote rápido.
+paleta
+o #1c1428
+p #3e2a5a
+l #5a3f7e
+w #d8c8ff
+e #ffe066
+pixels
+.oo........oo.
+oppo......oppo
+opppo.oo.opppo
+.opppooooppppo
+..oplloolloppo
+...oplweelppo.
+....opllllpo..
+.....oppppo...
+......oppo....
+.......oo.....

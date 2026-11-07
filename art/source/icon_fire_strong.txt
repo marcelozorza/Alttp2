@@ -1,0 +1,19 @@
+# Chama forte do HUD e dos baús: labareda maior, de duas pontas, miolo branco.
+paleta
+o #7a1a10
+a #ff8a30
+y #ffd850
+w #fff8e0
+pixels
+.....o...o..
+....oao.oao.
+....oaooaao.
+...oaaoaaao.
+...oaayaaao.
+..oaayyyaao.
+..oayywyyao.
+..oaywwwyao.
+..oaywwwyao.
+..oayywyyao.
+...oayyyao..
+....oooooo..

@@ -1,0 +1,18 @@
+# Chave pequena do HUD e dos baús: argola em cima, haste e dois dentes.
+paleta
+o #3a3020
+k #e8dcb0
+d #a89870
+pixels
+..ooo..
+.okkko.
+.ok.ko.
+.okdko.
+..oko..
+..oko..
+..oko..
+..okoo.
+..okko.
+..okoo.
+..okko.
+..ooo..

@@ -1,0 +1,13 @@
+# Estalactites de gelo penduradas na face da parede, sobre o chão.
+paleta
+w #f4fbff
+b #c4e6fa
+e #5f97c8
+pixels
+wbwwbwbwwbwwbwbw
+wbwebwbwebwwbweb
+.bwe.wbe.bw.bwe.
+.bw..wb..bw.bw..
+..w..wb..b...w..
+.....w...b......
+.........b......

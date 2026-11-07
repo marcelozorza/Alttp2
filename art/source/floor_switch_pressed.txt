@@ -1,0 +1,25 @@
+# Interruptor pressionado: a placa afundou, rente ao chão, e o losango acende.
+paleta
+o #1a1826
+d #3a3650
+f #58547a
+b #6e6a90
+h #8a86a8
+m #f0c040
+pixels
+................
+..oooooooooooo..
+.ohhhhhhhhhhhho.
+.ohbbbbbbbbbbfo.
+.ohbbbbbmbbbbfo.
+.ohbbbbmmmbbbfo.
+.ohbbbmmmmmbbfo.
+.ohbbbbmmmbbbfo.
+.ohbbbbbmbbbbfo.
+.ohbbbbbbbbbbfo.
+.ohbbbbbbbbbbfo.
+.oooooooooooooo.
+................
+................
+................
+................

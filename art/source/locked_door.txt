@@ -1,0 +1,28 @@
+# Porta trancada: bloco de madeira com faixas de ferro e fechadura. Gasta uma
+# chave pequena.
+paleta
+o #1a1410
+f #3b2a1c
+w #6b4a2c
+x #8a6238
+i #4b4f5c
+j #7c8394
+k #b9bfcc
+h #101014
+pixels
+oooooooooooooooo
+oiiiiiiiiiiiiiio
+oijjjjjjjjjjjjio
+owxxxwxxxwxxxwfo
+owxxxwxxxwxxxwfo
+oiiiiiikkiiiiiio
+owxxxwxkkxwxxwfo
+owxxxwxjhjxxxwfo
+owxxxwxjhjxxxwfo
+owxxxwxxhxwxxwfo
+oiiiiiijjiiiiiio
+owxxxwxxxwxxxwfo
+owxxxwxxxwxxxwfo
+oijjjjjjjjjjjjio
+oiiiiiiiiiiiiiio
+oooooooooooooooo

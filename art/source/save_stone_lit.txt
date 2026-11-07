@@ -1,0 +1,9 @@
+# A estela com o losango aceso, logo depois de salvar.
+paleta
+o #1c2030
+s #3e4a62
+a #56657e
+b #74849c
+h #98a8bc
+m #f0c040
+usa save_stone

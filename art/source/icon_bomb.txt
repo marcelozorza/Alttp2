@@ -1,0 +1,22 @@
+# Bomba do HUD e dos baús: redonda, preta com brilho, pavio aceso.
+paleta
+o #0c0c12
+d #1e1e2c
+m #323248
+h #5a5a7a
+w #a0a0c0
+f #8a6238
+y #ffe070
+pixels
+........fyy.
+.......f....
+...ooooo....
+..ommmmdo...
+.omhwmmmdo..
+.omwmmmmdo..
+.ommmmmddo..
+.ommmmdddo..
+.odmmddddo..
+..odddddo...
+...ooooo....
+............

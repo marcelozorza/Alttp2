@@ -1,0 +1,25 @@
+# Minion andando, passo 2.
+paleta
+o #2a2230
+r #b8521c
+d #7a2e12
+l #dd7a32
+c #f1dcb8
+p #e49aa4
+y #f2c443
+
+pixels
+.o........o.
+opo......opo
+oproooooorpo
+orlrdrrdrrro
+olrrrddrrrro
+oryorrrryoro
+orrccppccrro
+.orrcoocrro.
+..orrccrro..
+.odrrccrrdo.
+.orrrccrrro.
+.orrorrorro.
+.occo..orro.
+..oo...occo.

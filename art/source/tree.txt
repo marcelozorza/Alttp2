@@ -1,0 +1,25 @@
+# Copa de árvore, vista de cima: a mata que cerca o mundo. Luz do alto à
+# esquerda.
+paleta
+o #142e18
+d #1e4a24
+g #2a6630
+l #3a8440
+h #4e9c4e
+pixels
+dgggdddgggddgggd
+glhgldglhgldglhg
+glgglddgggldgggl
+dggdddgggdddgggd
+ddglhgddglhgdddg
+gdglggldglggldgg
+ggddggddddgddddd
+dglhgdgglhgddglh
+dglggdddgggdddgl
+gdddgdgdddgdgddg
+ggglhggdglhggdgg
+dddgggdddgggdddd
+gglhgddglhgddglh
+dglggdggggddddgg
+ddddgddddddgdddd
+oooooooooooooooo

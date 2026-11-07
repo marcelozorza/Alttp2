@@ -1,0 +1,19 @@
+# Coração dos baús: um ponto de vida a mais.
+paleta
+o #5a1018
+r #e03848
+p #ff7080
+w #ffd0d8
+pixels
+............
+..ooo..ooo..
+.opwrooorro.
+.oprrrrrrro.
+.orrrrrrrro.
+..orrrrrro..
+..orrrrrro..
+...orrrro...
+....orro....
+.....oo.....
+............
+............

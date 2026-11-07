@@ -1,0 +1,8 @@
+# Tema ruína com musgo (capítulo 3): pedra esverdeada. Troca de paleta de floor.
+paleta
+s #263226
+c #30402f
+a #3c4e3a
+b #4a5e46
+x #35463a
+usa floor

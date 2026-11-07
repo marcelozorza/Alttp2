@@ -10,6 +10,13 @@
 [ext_resource type="PackedScene" path="res://obstacles/ledge.tscn" id="8_ledge"]
 [ext_resource type="PackedScene" path="res://obstacles/cracked_wall.tscn" id="9_cracked_wall"]
 [ext_resource type="PackedScene" path="res://obstacles/ice_block.tscn" id="10_ice_block"]
+[ext_resource type="PackedScene" path="res://obstacles/thick_ice.tscn" id="11_thick_ice"]
+[ext_resource type="PackedScene" path="res://enemies/walrus.tscn" id="12_walrus"]
+[ext_resource type="PackedScene" path="res://enemies/slinger.tscn" id="13_slinger"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="14_pause_menu"]
+[ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="15_defeat_screen"]
+[ext_resource type="PackedScene" path="res://objects/floor_switch.tscn" id="16_floor_switch"]
+[ext_resource type="PackedScene" path="res://obstacles/switch_door.tscn" id="17_switch_door"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_horizontal"]
 size = Vector2(320, 16)
@@ -120,6 +127,19 @@ size = Vector2(16, 36)
 position = Vector2(248, 128)
 size = Vector2(16, 36)
 
+[node name="ThickIce" parent="Obstacles" instance=ExtResource("11_thick_ice")]
+position = Vector2(272, 128)
+size = Vector2(32, 32)
+
+[node name="SwitchDoor" parent="Obstacles" instance=ExtResource("17_switch_door")]
+position = Vector2(152, 112)
+size = Vector2(16, 16)
+
+[node name="Switches" type="Node2D" parent="."]
+
+[node name="FloorSwitch" parent="Switches" instance=ExtResource("16_floor_switch")]
+position = Vector2(160, 96)
+
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
 [node name="Objects" type="Node2D" parent="."]
@@ -155,13 +175,19 @@ position = Vector2(160, 52)
 
 [node name="Player" parent="Objects" instance=ExtResource("1_player")]
 position = Vector2(48, 64)
-starting_tools = 7
+starting_tools = 31
 
 [node name="Ugly" parent="Objects" instance=ExtResource("4_ugly")]
 position = Vector2(270, 100)
 
 [node name="Minion" parent="Objects" instance=ExtResource("5_minion")]
 position = Vector2(272, 40)
+
+[node name="Walrus" parent="Objects" instance=ExtResource("12_walrus")]
+position = Vector2(60, 150)
+
+[node name="Slinger" parent="Objects" instance=ExtResource("13_slinger")]
+position = Vector2(300, 60)
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
@@ -172,3 +198,11 @@ offset_right = 4.0
 offset_bottom = 4.0
 mouse_filter = 2
 script = ExtResource("6_hud")
+
+[node name="PauseMenu" parent="." instance=ExtResource("14_pause_menu")]
+exit_text = "Menu principal"
+exit_to_title = true
+
+[node name="DefeatScreen" parent="." instance=ExtResource("15_defeat_screen")]
+exit_text = "Menu principal"
+exit_to_title = true

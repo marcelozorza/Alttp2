@@ -1,6 +1,13 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://enemies/enemy.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/minion_walk_1.svg" id="2_art"]
+[ext_resource type="Texture2D" path="res://art/minion_walk_2.svg" id="3_walk_2"]
+[ext_resource type="Texture2D" path="res://art/minion_back.svg" id="4_back"]
+[ext_resource type="Texture2D" path="res://art/minion_windup.svg" id="5_windup"]
+[ext_resource type="Texture2D" path="res://art/minion_lunge.svg" id="6_lunge"]
+[ext_resource type="Texture2D" path="res://art/minion_recover.svg" id="7_recover"]
+[ext_resource type="Texture2D" path="res://art/minion_hit.svg" id="8_hit"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(10, 6)
@@ -13,6 +20,12 @@ restitution = 0.5
 friction = 400.0
 max_health = 2
 stagger_time = 0.3
+walk_frames = Array[Texture2D]([ExtResource("2_art"), ExtResource("3_walk_2")])
+back_frames = Array[Texture2D]([ExtResource("4_back")])
+windup_frame = ExtResource("5_windup")
+lunge_frame = ExtResource("6_lunge")
+recover_frame = ExtResource("7_recover")
+hit_frame = ExtResource("8_hit")
 attack_range = 48.0
 walk_speed = 60.0
 windup_time = 0.35
@@ -46,6 +59,11 @@ offset_right = 6.0
 offset_bottom = -14.0
 mouse_filter = 2
 color = Color(0.4, 0.85, 0.4, 1)
+
+[node name="Art" type="Sprite2D" parent="."]
+texture = ExtResource("2_art")
+centered = false
+offset = Vector2(-6, -14)
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)

@@ -1,0 +1,27 @@
+# Parede com a face voltada para o chão ao sul: topo escuro em cima e tijolos
+# iluminados embaixo, que dão o volume da perspectiva 3/4.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+k #2e2a40
+f #4a4562
+g #5d577a
+h #736c94
+pixels
+mmmmmmmommmmmmmo
+mddddddommdddddo
+mddddddomddddddo
+mddddddomddddddo
+oooooooooooooooo
+hhhhhhhkhhhhhhhk
+gffffffkgffffffk
+gffffffkgffffffk
+kkkkkkkkkkkkkkkk
+hhhkhhhhhhhkhhhh
+gffkgfffffffkgff
+gffkgfffffffkgff
+kkkkkkkkkkkkkkkk
+hhhhhhhkhhhhhhhk
+gffffffkgffffffk
+oooooooooooooooo

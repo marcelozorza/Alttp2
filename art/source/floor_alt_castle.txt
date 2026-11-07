@@ -1,0 +1,8 @@
+# Tema castelo (capítulo 1): pedra roxa quente. Troca de paleta de floor_alt.
+paleta
+s #342032
+c #43293f
+a #52344c
+b #63425a
+x #4a2e44
+usa floor_alt

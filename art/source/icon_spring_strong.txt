@@ -1,0 +1,20 @@
+# Mola forte do HUD e dos baús: placa branca reforçada e quatro voltas.
+paleta
+o #1c3a1c
+d #4a8a30
+g #78c850
+l #b0e890
+w #f0fff0
+pixels
+..oooooooo..
+..owwwwwlo..
+..oooooooo..
+.od......do.
+..ogllllgo..
+.od......do.
+..ogllllgo..
+.od......do.
+..ogllllgo..
+.od......do.
+..ogllllgo..
+............

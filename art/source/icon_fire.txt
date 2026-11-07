@@ -1,0 +1,19 @@
+# Chama do HUD e dos baús: labareda laranja com o miolo amarelo.
+paleta
+o #7a1a10
+a #ff8a30
+y #ffd850
+w #fff4b0
+pixels
+......o.....
+.....oao....
+.....oao....
+....oaao.o..
+....oaaaoao.
+...oaayaaao.
+...oayyyaao.
+..oaayyyaao.
+..oaywyyao..
+..oaayyaao..
+...oaaaao...
+....oooo....

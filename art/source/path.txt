@@ -1,0 +1,23 @@
+# Caminho de terra batida entre a grama, com pedrinhas.
+paleta
+d #7a5a3a
+t #a07a4c
+s #b08a58
+p #c4a070
+pixels
+tttttttttttttttt
+ttstttttttttsttt
+ttttttttpdtttttt
+tttttttttttttttt
+tsttttttttttttst
+ttttttpdtttttttt
+tttttttttttttttt
+ttttttttttttsttt
+ttsttttttttttttt
+tttttttttpdttttt
+tttttttttttttttt
+tttpdttttttttttt
+ttttttttttttsttt
+tstttttttttttttt
+tttttttttpdttttt
+tttttttttttttttt

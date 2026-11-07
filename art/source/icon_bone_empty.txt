@@ -1,0 +1,5 @@
+# Ponto de vida perdido: o ossinho apagado. Troca de paleta de icon_bone.
+paleta
+o #2a2430
+w #4a4048
+usa icon_bone

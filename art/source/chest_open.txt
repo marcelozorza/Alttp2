@@ -1,0 +1,27 @@
+# Baú aberto: a tampa erguida para trás, o fundo escuro com a borda dourada
+# e a frente igual à do baú fechado.
+paleta
+o #2a1208
+r #c8281e
+h #e8503c
+g #e0a020
+y #f8e070
+d #8a5a10
+k #1a0c06
+pixels
+................
+..oooooooooooo..
+.oggggggggggggo.
+.ogrrrrrrrrrrgo.
+.oggggggggggggo.
+.okkkkkkkkkkkko.
+.okkkkkkkkkkkko.
+.oyyyyyyyyyyyyo.
+.ogggggyygggggo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.oggggggggggggo.
+.oddddddddddddo.
+.oooooooooooooo.
+................

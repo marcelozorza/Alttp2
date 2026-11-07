@@ -1,0 +1,27 @@
+# Parede rachada: a face de tijolos com rachaduras claras. Abre com a bomba.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+k #2e2a40
+f #4a4562
+g #5d577a
+h #736c94
+r #c9c0a8
+pixels
+mmmmmmmommmmmmmo
+mddddrdommdddddo
+mdddddrdmddddddo
+mddddrddmddddddo
+oooooroooooooooo
+hhhhhrhkhhhhhhhk
+gffffrrkgfffrffk
+gfffffrkgffrfffk
+kkkkkkrrrkkrkkkk
+hhhkhhhhhrrhhhhh
+gffkgfffrfffkgff
+gffkgffrffffkgff
+kkkkkkkrkkkkkkkk
+hhhhhhrkhhhhhhhk
+gffffrfkgffffffk
+oooooooooooooooo
