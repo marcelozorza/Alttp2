@@ -13,7 +13,7 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 ## Menu
 
 - **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
-- **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
+- **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, para na pausa e fica gravado. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e o convite ao modo randomizado, que ainda não existe. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
 - **Tutorial.** A dungeon de aprendizado, fora do mundo e sem gravar nada.
 - **Treino.** O tutorial, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
 
@@ -37,10 +37,12 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 - **Espada:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. O golpe também abre os baús.
 - **Bomba:** botão de cima (Y no padrão Xbox, X no SNES). No teclado, L ou C.
 - **Chama:** botão da esquerda (X no padrão Xbox, Y no SNES). No teclado, K ou X.
-- **Pulo, com a mola:** botão da direita (B no padrão Xbox, A no SNES). No teclado, Espaço ou V.
+- **Pulo, com a mola:** botão da direita (B no padrão Xbox, A no SNES). No teclado, Espaço ou V. No ar, o personagem passa por cima dos inimigos comuns, e o bote deles não o alcança. Os chefes continuam sólidos.
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
+- **Vida:** os quadrados vermelhos no alto. A cada 3 inimigos mortos numa dungeon, o terceiro deixa um ossinho, que enche 2 pontos ao ser pego e some em 10 s. Com 4 pontos ou menos, um beep discreto avisa.
+- **Minimapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. Na pausa, o mapa inteiro da dungeon, com as salas não vistas escurecidas.
 - **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 
 ## Ferramentas
@@ -102,13 +104,13 @@ Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e um
 python3 tools/pixel_svg.py
 ```
 
-O Godot reimporta os SVG ao voltar para o editor.
+O Godot reimporta os SVG ao voltar para o editor. Os quatro quadros da explosão da bomba (`explosion_1` a `explosion_4`) não se editam à mão: saem de `python3 tools/explosion_art.py`, que gera o texto deles antes do passo acima.
 
 ## Som
 
 **Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
 
-**Efeitos.** Os 48 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
+**Efeitos.** Os 49 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
 
 ```
 python3 tools/sfx.py              todos os sons

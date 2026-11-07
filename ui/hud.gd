@@ -14,6 +14,11 @@ extends Control
 ## losango, uma coluna de pontos mostra as cargas, que se apagam de cima para
 ## baixo, e o botão escurece quando elas acabam. Com mais de HEALTH_ROW pontos
 ## de vida, a vida passa a ocupar duas linhas mais baixas.
+##
+## No canto inferior direito, no capítulo, o minimapa das salas já visitadas
+## (ui/minimap.gd). No alto, à direita, o cronômetro: no jogo contínuo, o do
+## jogo inteiro desde o Novo jogo, e no treino o do capítulo (pedidos de
+## Marcelo em 2026-11-07).
 
 const PIP_SIZE := Vector2(6.0, 6.0)
 const PIP_GAP := 2.0
@@ -57,6 +62,8 @@ const TOOL_ACTIONS := {
 	&"jump": Item.Id.SPRING,
 }
 const FONT_SIZE := 8
+## Canto inferior direito do minimapa, relativo ao HUD, a 4 px das bordas.
+const MINIMAP_CORNER := Vector2(312.0, 172.0)
 
 ## Ligado, desenha a barra de fundo do capítulo, que esconde a sala vizinha.
 @export var show_bar := false
@@ -87,11 +94,18 @@ func _draw() -> void:
 		_draw_buttons(player)
 		if chapter:
 			_draw_keys(player)
+	var text := ""
 	if chapter:
-		var text := "%s   %s" % [chapter.call("mode_text"), chapter.call("time_text")]
-		var font := ThemeDB.fallback_font
+		var time: String = chapter.call("time_text")
+		if Progress.active:
+			time = GameMath.time_text(Progress.run_ticks)
+		text = "%s   %s" % [chapter.call("mode_text"), time]
+		_draw_minimap(chapter)
+	elif Progress.active:
+		text = GameMath.time_text(Progress.run_ticks)
+	if not text.is_empty():
 		draw_string(
-			font,
+			ThemeDB.fallback_font,
 			Vector2(150.0, 9.0),
 			text,
 			HORIZONTAL_ALIGNMENT_RIGHT,
@@ -180,3 +194,12 @@ func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 	for i: int in maximum:
 		var color := CHARGE_COLOR if i >= maximum - left else SPENT_CHARGE_COLOR
 		draw_rect(Rect2(Vector2(x, top + i * CHARGE_STEP), CHARGE_SIZE), color)
+
+
+## Minimapa das salas já visitadas, no canto inferior direito, sobre um fundo
+## escuro.
+func _draw_minimap(chapter: Node) -> void:
+	var size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
+	var origin := MINIMAP_CORNER - size
+	draw_rect(Rect2(origin - Vector2(2.0, 2.0), size + Vector2(4.0, 4.0)), Minimap.BACKGROUND)
+	Minimap.draw_rooms(self, chapter, origin, Minimap.HUD_CELL)

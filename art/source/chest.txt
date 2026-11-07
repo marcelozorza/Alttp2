@@ -1,25 +1,28 @@
-# Baú fechado. A base fica na última linha. Abre com a espada.
+# Baú fechado, inspirado no baú vermelho e dourado que Marcelo mandou em
+# 2026-11-07: corpo vermelho com um friso mais claro, cantoneiras e faixas
+# douradas e a fechadura dourada na frente. A base fica na última linha.
+# Abre com a espada.
 paleta
-o #23160c
-d #4f3016
-w #7a4a22
-x #a06a34
-g #f0c050
-y #fae49a
+o #2a1208
+r #c8281e
+h #e8503c
+g #e0a020
+y #f8e070
+d #8a5a10
 pixels
 ................
 ................
 ................
-.oooooooooooooo.
-.oxxxxxxxxxxxxo.
-.oxwwwwwwwwwwxo.
-.oxwwwwyywwwwwo.
-.ooooooggoooooo.
-.oxxxxxggxxxxwo.
-.oxwwwwwwwwwwdo.
-.oxwwwwwwwwwwdo.
-.ogggggggggggdo.
-.oxwwwwwwwwwwdo.
-.owdddddddddddo.
+..oooooooooooo..
+.oggggggggggggo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.ogggggyygggggo.
+.ooooooyyoooooo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.oggggggggggggo.
+.oddddddddddddo.
 .oooooooooooooo.
 ................

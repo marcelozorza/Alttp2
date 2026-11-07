@@ -32,6 +32,7 @@ const HUD_HEIGHT := 20.0
 ## Metade da tela, em pixels.
 const HALF_SCREEN := Vector2(160.0, 90.0)
 const PLAYER_SCENE := preload("res://player/player.tscn")
+const BONE_DROP_SCENE := preload("res://items/bone_drop.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
 const RELIC_SCENE := preload("res://items/relic.tscn")
 const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
@@ -69,6 +70,11 @@ const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
 const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
 
+## A cada tantos inimigos mortos, o último deixa um ossinho que recupera vida
+## (pedido de Marcelo em 2026-11-07, para a morte, que recomeça a dungeon, não
+## ficar dura demais). Zero desliga. A contagem recomeça com a dungeon.
+@export_range(0, 10, 1) var bone_drop_every := 3
+
 ## Ticks de jogo desde o início do capítulo, para o cronômetro.
 var elapsed_ticks := 0
 var finished := false
@@ -76,8 +82,12 @@ var data: ChapterData
 var map: ChapterMap
 
 var _player: Player
+## Inimigos mortos nesta dungeon, para o ossinho.
+var _kills := 0
 ## Sala atual, em unidades de sala de uma tela.
 var _room := Rect2i(-1000, -1000, 1, 1)
+## Salas em que o personagem já esteve, para o minimapa.
+var _visited := {}
 ## Sala maior de cada tela que faz parte de uma. As outras telas são salas.
 var _room_rects := {}
 var _room_actors := {}
@@ -127,6 +137,8 @@ func _physics_process(_delta: float) -> void:
 	if finished:
 		return
 	elapsed_ticks += 1
+	if Progress.active:
+		Progress.run_ticks += 1
 	var room := _room_of(_player.global_position)
 	if room != _room:
 		_enter_room(room)
@@ -141,11 +153,22 @@ func mode_text() -> String:
 	return "Cap. %d" % data.number
 
 
-## Cronômetro no formato minutos:segundos.centésimos.
+## Cronômetro do capítulo no formato minutos:segundos.centésimos.
 func time_text() -> String:
-	var seconds := float(elapsed_ticks) / Engine.physics_ticks_per_second
-	var minutes := floori(seconds / 60.0)
-	return "%02d:%05.2f" % [minutes, seconds - minutes * 60.0]
+	return GameMath.time_text(elapsed_ticks)
+
+
+## Salas em que o personagem já esteve, em unidades de sala, para o minimapa.
+func visited_rooms() -> Array:
+	return _visited.keys()
+
+
+func current_room() -> Rect2i:
+	return _room
+
+
+func room_tiles() -> Vector2i:
+	return ROOM_TILES
 
 
 ## Cria o personagem, os baús, os inimigos e os bloqueios de cada casa do mapa.
@@ -217,6 +240,7 @@ func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 	var enemy := scene.instantiate() as Enemy
 	enemy.position = _cell_center(cell) + Vector2(0.0, 4.0)
 	enemy.respawn_time = 0.0
+	enemy.died.connect(_on_enemy_died)
 	_objects.add_child(enemy)
 	enemy.set_active(false)
 	_register(enemy, cell)
@@ -265,6 +289,7 @@ func _register(actor: Node, cell: Vector2i) -> void:
 func _enter_room(room: Rect2i) -> void:
 	var previous := _room
 	_room = room
+	_visited[room] = true
 	_camera.position = _camera_target()
 	_clear_floor_effects()
 	_activate_room.call_deferred(previous, false)
@@ -286,6 +311,16 @@ func _on_boss_defeated(room: Rect2i) -> void:
 	_spawn_relic.call_deferred(room)
 
 
+## Conta os inimigos mortos e, a cada bone_drop_every, deixa um ossinho onde o
+## último caiu. O ossinho fica com os efeitos do chão e some ao trocar de sala.
+func _on_enemy_died(enemy: Enemy) -> void:
+	_kills += 1
+	if bone_drop_every > 0 and _kills % bone_drop_every == 0:
+		var bone := BONE_DROP_SCENE.instantiate() as BoneDrop
+		bone.position = enemy.global_position
+		_floor_effects.add_child(bone)
+
+
 func _spawn_relic(room: Rect2i) -> void:
 	var relic := RELIC_SCENE.instantiate() as Relic
 	relic.position = _room_pixels(room).get_center()
@@ -302,7 +337,11 @@ func _finish() -> void:
 	for chest: Chest in _chests:
 		if chest.is_open:
 			opened += 1
-	_end_screen.show_results(time_text(), mode_text(), "%d/%d" % [opened, _chests.size()])
+	var chests_text := "%d/%d" % [opened, _chests.size()]
+	if Progress.active and data.number == ChapterData.count():
+		_end_screen.show_victory(GameMath.time_text(Progress.run_ticks), time_text(), chests_text)
+	else:
+		_end_screen.show_results(time_text(), mode_text(), chests_text)
 
 
 ## Sala de uma casa do mapa: a sala maior que contém a tela dela, ou a própria

@@ -36,6 +36,13 @@ extends MomentumBody
 ##
 ## Sem vida, o personagem cai e fica no chão (DEAD) até a tela de derrota
 ## chamar respawn(), que o devolve ao ponto de reaparecer com a vida cheia.
+## Quando a vida cai a low_health, um aviso discreto soa.
+##
+## No ar, o personagem passa por cima dos inimigos comuns: troca para a camada
+## AIR, que os inimigos não veem, e deixa de ver a camada deles (ver
+## physics/layers.gd). O bote de um inimigo também não o alcança no ar. Ao
+## cair em cima de um inimigo, segue passando até sair de cima, para não ser
+## empurrado para fora dele de uma vez.
 ##
 ## Os parâmetros exportados podem ser ajustados com o jogo rodando, pela aba
 ## Remoto da árvore de cena, e o efeito é imediato.
@@ -90,6 +97,9 @@ const FIREBALL_SCENE := preload("res://items/fireball.tscn")
 const LEDGE_SEARCH := [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6]
 ## Quanto o desenho alcança a posição real por tick depois de cruzar um degrau.
 const VISUAL_CATCH_UP := 1.5
+## Segundos entre o som da pancada e o aviso de vida baixa, para não se
+## misturarem.
+const LOW_HEALTH_DELAY := 0.3
 
 @export_group("Andar")
 ## Velocidade máxima, em pixels por segundo.
@@ -140,6 +150,9 @@ const VISUAL_CATCH_UP := 1.5
 @export_range(6, 40, 1) var max_health_cap := 24
 ## Segundos de invencibilidade depois de tomar dano, com o personagem piscando.
 @export_range(0.0, 3.0, 0.05) var invincibility_time := 1.0
+## Vida em que, ao perder vida, soa o aviso discreto (pedido de Marcelo em
+## 2026-11-07). Zero desliga.
+@export_range(0, 40, 1) var low_health := 4
 
 @export_group("Ferramentas")
 ## Altura do pulo da mola, em pixels. Com o passo fixo, o pico real fica um
@@ -196,6 +209,10 @@ var _last_press_direction := Vector2.ZERO
 var _last_press_tick := 0
 var _freeze_until_tick := 0
 var _invincible_until_tick := 0
+## Tick em que o aviso de vida baixa toca. Zero quando não há aviso à espera.
+var _low_health_tick := 0
+## No ar, ou no chão ainda em cima de um inimigo.
+var _passing_enemies := false
 var _tools := 0
 var _z := 0.0
 var _z_velocity := 0.0
@@ -224,6 +241,8 @@ var _last_step := 0
 
 func _ready() -> void:
 	add_to_group("player")
+	collision_layer = Layers.SCENERY
+	collision_mask = Layers.SCENERY | Layers.ENEMY
 	health = max_health
 	_tools = starting_tools << 1
 	_air_height = jump_height
@@ -232,6 +251,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_recharge_tools()
+	_warn_low_health()
 	var direction := _read_direction()
 	_update_state(direction)
 	_breathe()
@@ -252,6 +272,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		_steer(direction, delta)
 	_try_ledge(direction, delta)
+	_pass_enemies()
 	move_with_impacts()
 	_update_height(delta)
 	_update_visuals()
@@ -294,6 +315,15 @@ func max_charges(id: int) -> int:
 		Item.Id.BOMB:
 			return bomb_charges
 	return 0
+
+
+## Recupera vida, até a máxima, sem mexer nela. É o que o ossinho deixado por
+## um inimigo faz.
+func heal(amount: int) -> void:
+	if _state == State.DEAD:
+		return
+	health = mini(health + amount, max_health)
+	Sfx.play(&"item_heart")
 
 
 ## Recebe o item de um baú. Uma ferramenta passa a funcionar no seu botão, um
@@ -361,11 +391,47 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
 	if health <= 0:
 		health = 0
+		_low_health_tick = 0
 		Sfx.play(&"down")
 		_enter(State.DEAD)
 		died.emit()
 	else:
 		Sfx.play(&"hurt")
+		if low_health > 0 and health <= low_health and health + amount > low_health:
+			_low_health_tick = Clock.tick + GameMath.ticks(LOW_HEALTH_DELAY)
+
+
+## Toca o aviso de vida baixa na hora marcada por take_hit.
+func _warn_low_health() -> void:
+	if _low_health_tick > 0 and Clock.tick >= _low_health_tick:
+		_low_health_tick = 0
+		Sfx.play(&"low_health")
+
+
+## No ar, troca de camada para passar por cima dos inimigos. De volta ao chão,
+## volta à camada comum assim que não houver inimigo embaixo dos pés.
+func _pass_enemies() -> void:
+	if is_airborne():
+		_set_passing_enemies(true)
+	elif _passing_enemies and not _touches_enemy():
+		_set_passing_enemies(false)
+
+
+func _set_passing_enemies(passing: bool) -> void:
+	if passing == _passing_enemies:
+		return
+	_passing_enemies = passing
+	collision_layer = Layers.AIR if passing else Layers.SCENERY
+	collision_mask = Layers.SCENERY if passing else Layers.SCENERY | Layers.ENEMY
+
+
+## Diz se os pés estão sobre algum inimigo comum.
+func _touches_enemy() -> bool:
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = _feet.shape
+	query.transform = Transform2D(0.0, global_position + _feet.position)
+	query.collision_mask = Layers.ENEMY
+	return not get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
 
 
 ## Sem vida: deitado, sem controle e sem arremesso.

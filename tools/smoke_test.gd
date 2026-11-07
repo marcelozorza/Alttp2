@@ -23,10 +23,10 @@ extends Node
 ## pisa nos interruptores e trava o bloco pesado neles para abrir as grades,
 ## entra em cada sala usando os botões, vence o chefe, toca a relíquia e
 ## volta ao mundo. Depois confere o rejogo de um capítulo vencido, o menu de
-## pausa, a tela de derrota, o treino, a sala de teste e o continuar do jogo
-## salvo. Qualquer erro de script aparece na saída como SCRIPT ERROR. Não
-## muda nada no projeto, e grava o progresso num arquivo próprio, que apaga
-## no fim.
+## pausa, a tela de derrota, o ossinho dos inimigos, o treino, a sala de
+## teste e o continuar do jogo salvo. Qualquer erro de script aparece na
+## saída como SCRIPT ERROR. Não muda nada no projeto, e grava o progresso
+## num arquivo próprio, que apaga no fim.
 
 const ACTIONS := [
 	"attack", "use_fire", "use_bomb", "jump", "move_left", "move_right", "move_up", "move_down"
@@ -115,6 +115,8 @@ func _run() -> void:
 		await _check_after_chapter(chapter)
 	await _check_replay()
 	await _check_pause_and_defeat()
+	await _check_bone_drops()
+	await _check_jump_over()
 	await _check_training()
 	await _check_tutorial()
 	await _check_continue()
@@ -273,6 +275,113 @@ func _check_pause_and_defeat() -> void:
 
 ## Treino: capítulo avulso, sem gravar, com as ferramentas dos dados, e a
 ## sala de teste.
+## Ossinho dos inimigos: a cada 3 mortos na dungeon, o último deixa um ossinho
+## que recupera vida ao ser tocado.
+func _check_bone_drops() -> void:
+	RunSettings.chapter = 1
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
+	await _frames(20)
+	var chapter: Node = get_tree().current_scene
+	var player: Player = chapter.get("_player")
+	player.take_hit(4, Vector2.ZERO)
+	await _frames(2)
+	var hurt := player.health
+	var enemies: Array[Enemy] = []
+	for node: Node in chapter.get("_objects").get_children():
+		if node is Enemy and node.get("sword_factor") > 0 and enemies.size() < 3:
+			enemies.append(node as Enemy)
+	var counts := []
+	for enemy: Enemy in enemies:
+		enemy.global_position = player.global_position + Vector2(24.0, 0.0)
+		enemy.take_hit(99, Vector2.ZERO, Hit.Kind.SWORD)
+		await _frames(2)
+		counts.append(_bones(chapter).size())
+	var bones := _bones(chapter)
+	if not bones.is_empty():
+		player.global_position = (bones[0] as Node2D).global_position
+	await _frames(6)
+	print(
+		(
+			"OSSINHO: ossinhos após cada morte %s, vida %d -> %d de %d, pego %s"
+			% [counts, hurt, player.health, player.max_health, _bones(chapter).is_empty()]
+		)
+	)
+
+
+## Pular sobre um inimigo: no chão, o inimigo parado barra o caminho. No ar, o
+## personagem passa por cima dele e cai do outro lado, sem perder vida.
+func _check_jump_over() -> void:
+	RunSettings.chapter = 1
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
+	await _frames(20)
+	var chapter: Node = get_tree().current_scene
+	var player: Player = chapter.get("_player")
+	var map: ChapterMap = chapter.get("map")
+	var enemy: Enemy = null
+	for node: Node in chapter.get("_objects").get_children():
+		if node is Enemy and not node.get("hover"):
+			enemy = node as Enemy
+			break
+	var cell := _floor_run(map, chapter.call("current_room"), 6)
+	var start := (Vector2(cell) + Vector2(0.5, 0.5)) * 16.0
+	# O inimigo de outra sala está desligado. Liga a colisão e desliga o
+	# movimento, para ele ficar parado no caminho.
+	enemy.set_active(true)
+	enemy.set_physics_process(false)
+	enemy.velocity = Vector2.ZERO
+	enemy.global_position = start + Vector2(20.0, 0.0)
+	player.global_position = start
+	player.velocity = Vector2.ZERO
+	await _frames(2)
+	Input.action_press("move_right")
+	await _frames(30)
+	Input.action_release("move_right")
+	var blocked := player.global_position.x - start.x
+	player.global_position = start
+	player.velocity = Vector2.ZERO
+	await _frames(2)
+	var health := player.health
+	player.give_item(Item.Id.SPRING)
+	Input.action_press("move_right")
+	Input.action_press("jump")
+	await _frames(2)
+	Input.action_release("jump")
+	await _frames(38)
+	Input.action_release("move_right")
+	await _frames(10)
+	var jumped := player.global_position.x - start.x
+	print(
+		(
+			"PULO: inimigo a 20 px, no chão parou a %.0f px, com o pulo foi a %.0f px, vida %d -> %d"
+			% [blocked, jumped, health, player.health]
+		)
+	)
+
+
+## Primeira casa de chão da sala com mais length - 1 casas de chão à direita.
+func _floor_run(map: ChapterMap, room: Rect2i, length: int) -> Vector2i:
+	var origin := room.position * Vector2i(20, 10)
+	var size := room.size * Vector2i(20, 10)
+	for y: int in range(origin.y + 1, origin.y + size.y - 1):
+		for x: int in range(origin.x + 1, origin.x + size.x - length):
+			var free := true
+			for i: int in length:
+				if map.tile(Vector2i(x + i, y)) != ".":
+					free = false
+					break
+			if free:
+				return Vector2i(x, y)
+	return Vector2i(-1, -1)
+
+
+func _bones(chapter: Node) -> Array:
+	var bones := []
+	for node: Node in chapter.get("_floor_effects").get_children():
+		if node is BoneDrop:
+			bones.append(node)
+	return bones
+
+
 func _check_training() -> void:
 	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
 	await _frames(10)
@@ -451,7 +560,17 @@ func _play(chapter_number: int) -> void:
 	if relic:
 		player.global_position = relic.global_position
 		await _frames(20)
-	print("terminou: %s  fim: %s" % [chapter.get("finished"), chapter.get("_end_screen").visible])
+	print(
+		(
+			"terminou: %s  fim: %s  salas visitadas: %d  tempo total: %s"
+			% [
+				chapter.get("finished"),
+				chapter.get("_end_screen").visible,
+				chapter.call("visited_rooms").size(),
+				GameMath.time_text(Progress.run_ticks),
+			]
+		)
+	)
 
 
 func _beat_boss(boss: Boss) -> void:

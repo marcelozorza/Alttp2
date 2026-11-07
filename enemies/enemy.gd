@@ -25,6 +25,9 @@ extends MomentumBody
 ## golpe só o empurra, e ele pisca em cinza. A chama forte tem o próprio
 ## multiplicador, para que o gelo grosso ceda só a ela.
 
+## Emitido ao morrer, com o próprio inimigo, para o capítulo contar as mortes.
+signal died(enemy: Enemy)
+
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER, STAGGER, DEAD }
 
 ## Cores provisórias dos estados.
@@ -157,6 +160,9 @@ var _hurt_shape := RectangleShape2D.new()
 
 
 func _ready() -> void:
+	# Camada dos inimigos comuns, por cima da qual o personagem pula.
+	collision_layer = Layers.ENEMY
+	collision_mask = Layers.SCENERY | Layers.ENEMY
 	health = max_health
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 
@@ -352,6 +358,7 @@ func _die() -> void:
 	velocity = Vector2.ZERO
 	visible = false
 	_base.set_deferred("disabled", true)
+	died.emit(self)
 
 
 func _factor(kind: Hit.Kind) -> int:

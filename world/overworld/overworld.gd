@@ -11,6 +11,11 @@ extends Node2D
 
 const HUD_HEIGHT := 20.0
 const HALF_SCREEN := Vector2(160.0, 90.0)
+## Casas entre o personagem e a borda da tela a partir das quais a câmera anda
+## no mundo: 6 na horizontal, onde Marcelo marcou o ponto jogando (2026-11-07),
+## e 4 na vertical, o mais perto de 6 que a tela de 10 casas de altura permite
+## sem perder a zona morta.
+const EDGE_TILES := Vector2i(6, 4)
 const SOLID := "#~"
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const ENTRANCE_SCENE := preload("res://world/overworld/entrance.tscn")
@@ -41,6 +46,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if Progress.active:
+		Progress.run_ticks += 1
 	_camera.position = _camera_target(true)
 
 
@@ -101,7 +108,7 @@ func _camera_target(pushed := false) -> Vector2:
 	var high := Vector2(map.width, map.height) * tile - HALF_SCREEN
 	var target := _player.global_position
 	if pushed:
-		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT)
+		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT, EDGE_TILES)
 	return CameraFollow.centered(target, low, high)
 
 

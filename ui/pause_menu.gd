@@ -5,6 +5,8 @@ extends CanvasLayer
 ## contínuo e ao menu de título no treino, e perde o que foi feito no
 ## capítulo. No mundo e na sala de teste, sair leva ao menu de título.
 ##
+## No capítulo, mostra o mapa inteiro da dungeon (ui/minimap.gd).
+##
 ## Não abre enquanto outra tela, como a de fim ou a de derrota, estiver com o
 ## jogo parado, nem com o personagem sem vida, para a tela de derrota poder
 ## aparecer.
@@ -23,6 +25,8 @@ func _ready() -> void:
 	visible = false
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.75))
 	column.add_child(MenuKit.label("Pausa", 16))
+	# No capítulo, o mapa inteiro da dungeon (pedido de Marcelo em 2026-11-07).
+	column.add_child(Minimap.new())
 	_buttons.append(MenuKit.button("Continuar", resume))
 	_buttons.append(MenuKit.button(exit_text, _on_exit))
 	for button: Button in _buttons:

@@ -316,6 +316,13 @@ def hurt():
 
 
 @recipe
+def low_health():
+    """Aviso de vida baixa: dois toques curtos e secos, como um monitor."""
+    beep = tone(1760.0, 0.05) * attack_decay(0.05, 0.003, 0.02)
+    return finish(mix(beep, at(beep, 0.11)))
+
+
+@recipe
 def down():
     cry = yelp(950.0, 320.0, 0.6)
     return finish(mix(cry, at(0.7 * thud(90.0, 45.0, 0.2, 0.05), 0.42)))

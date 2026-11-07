@@ -117,6 +117,9 @@ var _hurt_shape := RectangleShape2D.new()
 
 
 func _ready() -> void:
+	# Um chefe é sólido também para o personagem no ar.
+	collision_layer = Layers.SCENERY
+	collision_mask = Layers.SCENERY | Layers.ENEMY | Layers.AIR
 	health = max_health
 
 
@@ -277,7 +280,7 @@ func _slam() -> void:
 ## Durante a investida, procura o personagem numa área um pouco maior que a
 ## base. Uma investida acerta no máximo uma vez.
 func _check_charge_hit() -> void:
-	var target := Hit.player_in_reach(self, _base, _hurt_shape)
+	var target := Hit.player_in_reach(self, _base, _hurt_shape, false)
 	if target:
 		target.take_hit(charge_damage, _charge_direction)
 		_charge_landed = true

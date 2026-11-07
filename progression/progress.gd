@@ -14,6 +14,9 @@ class_name Progress
 ##
 ## Com "active" desligado, o capítulo é jogado avulso, a partir do treino, e
 ## nada é gravado.
+##
+## O cronômetro do jogo inteiro (run_ticks) conta desde o Novo jogo, no mundo
+## e nos capítulos, para com a pausa e é gravado junto com o resto.
 
 ## Versão do arquivo. A 1 numerava os capítulos de 1 a 4, antes de o
 ## capítulo 1 virar o tutorial (2026-11-06), então um arquivo antigo é
@@ -35,6 +38,9 @@ static var chapters_done := 0
 ## Ferramentas e melhorias, nos bits de Item, sem a chave grande.
 static var tools := 0
 static var max_health := BASE_HEALTH
+## Ticks de jogo desde o Novo jogo, para o cronômetro do jogo inteiro (pedido
+## de Marcelo em 2026-11-07).
+static var run_ticks := 0
 ## Baús já abertos por capítulo: número do capítulo, em texto, para as letras
 ## dos baús.
 static var opened := {}
@@ -46,6 +52,7 @@ static func start_new() -> void:
 	chapters_done = 0
 	tools = 0
 	max_health = BASE_HEALTH
+	run_ticks = 0
 	opened = {}
 
 
@@ -98,6 +105,7 @@ static func save() -> void:
 		"chapters_done": chapters_done,
 		"tools": tools,
 		"max_health": max_health,
+		"run_ticks": run_ticks,
 		"opened": opened,
 	}
 	file.store_string(JSON.stringify(data, "\t"))
@@ -120,6 +128,7 @@ static func load_file() -> bool:
 	chapters_done = int(data.get("chapters_done", 0))
 	tools = int(data.get("tools", 0))
 	max_health = int(data.get("max_health", BASE_HEALTH))
+	run_ticks = int(data.get("run_ticks", 0))
 	var saved_opened = data.get("opened", {})
 	if saved_opened is Dictionary:
 		opened = saved_opened

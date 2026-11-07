@@ -30,9 +30,11 @@ static func factor(kind: Kind, sword: int, fire: int, strong_fire: int, blast: i
 
 ## Personagem dentro da área de ataque de um corpo, ou null: a base do corpo
 ## com uma margem de 2 px em volta. Serve para o bote dos inimigos e a
-## investida dos chefes.
+## investida dos chefes. Com dodged_in_air, o personagem no ar não conta: o
+## bote de um inimigo comum passa por baixo dele. A investida de um chefe
+## acerta de qualquer jeito.
 static func player_in_reach(
-	body: PhysicsBody2D, base: CollisionShape2D, reach: RectangleShape2D
+	body: PhysicsBody2D, base: CollisionShape2D, reach: RectangleShape2D, dodged_in_air := true
 ) -> Player:
 	var base_shape := base.shape as RectangleShape2D
 	reach.size = base_shape.size + Vector2(4.0, 4.0)
@@ -43,6 +45,6 @@ static func player_in_reach(
 	query.exclude = excluded
 	for result: Dictionary in body.get_world_2d().direct_space_state.intersect_shape(query):
 		var target := result["collider"] as Player
-		if target:
+		if target and not (dodged_in_air and target.is_airborne()):
 			return target
 	return null

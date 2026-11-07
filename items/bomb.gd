@@ -6,15 +6,28 @@ extends MomentumBody
 ## permite chutá-la para longe.
 ##
 ## O personagem atravessa as próprias bombas, para poder soltá-las aos pés.
+##
+## A explosão é pixel art em quatro quadros (tools/explosion_art.py),
+## desenhada com o raio padrão de 26 px. Mudar blast_radius muda o dano, não o
+## desenho.
 
 const TEXTURE := preload("res://art/bomb.svg")
 const WARNING_COLOR := Color(0.95, 0.25, 0.2, 1.0)
 const SPARK_COLOR := Color(1.0, 0.75, 0.25, 1.0)
-const BLAST_COLOR := Color(1.0, 0.85, 0.5, 1.0)
 ## Centro do desenho e da explosão, a partir da origem na base.
 const CENTER := Vector2(0.0, -4.0)
+const BLAST_FRAMES: Array[Texture2D] = [
+	preload("res://art/explosion_1.svg"),
+	preload("res://art/explosion_2.svg"),
+	preload("res://art/explosion_3.svg"),
+	preload("res://art/explosion_4.svg"),
+]
+## Lado dos quadros da explosão, em pixels.
+const BLAST_FRAME_SIZE := 56.0
+## Ticks de cada quadro da explosão.
+const BLAST_FRAME_TICKS := 3
 ## Ticks em que a explosão fica visível.
-const BLAST_TICKS := 10
+const BLAST_TICKS := BLAST_FRAME_TICKS * 4
 ## Segundos finais do pavio em que a bomba pisca, como aviso.
 const WARNING_TIME := 0.5
 
@@ -37,6 +50,9 @@ var _blast_shape := CircleShape2D.new()
 
 func _ready() -> void:
 	add_to_group("bombs")
+	# Chutada, bate em paredes e em inimigos.
+	collision_layer = Layers.SCENERY
+	collision_mask = Layers.SCENERY | Layers.ENEMY
 	_spawn_tick = Clock.tick
 
 
@@ -95,9 +111,9 @@ func _explode() -> void:
 func _draw() -> void:
 	var now := Clock.tick
 	if _blast_tick >= 0:
-		var progress := float(now - _blast_tick) / BLAST_TICKS
-		var radius := blast_radius * (0.6 + 0.4 * progress)
-		draw_circle(CENTER, radius, Color(BLAST_COLOR, 1.0 - progress))
+		var frame := mini((now - _blast_tick) / BLAST_FRAME_TICKS, BLAST_FRAMES.size() - 1)
+		var corner := CENTER - Vector2(BLAST_FRAME_SIZE, BLAST_FRAME_SIZE) / 2.0
+		draw_texture(BLAST_FRAMES[frame], corner)
 		return
 	var remaining := GameMath.ticks(fuse_time) - (now - _spawn_tick)
 	var warning := remaining <= GameMath.ticks(WARNING_TIME) and posmod(remaining, 6) < 3

@@ -1,25 +1,27 @@
-# Baú aberto: a tampa erguida para trás e o fundo escuro.
+# Baú aberto: a tampa erguida para trás, o fundo escuro com a borda dourada
+# e a frente igual à do baú fechado.
 paleta
-o #23160c
-d #4f3016
-w #7a4a22
-x #a06a34
-g #f0c050
-k #120b06
+o #2a1208
+r #c8281e
+h #e8503c
+g #e0a020
+y #f8e070
+d #8a5a10
+k #1a0c06
 pixels
 ................
-.oooooooooooooo.
-.oxxxxxxxxxxxxo.
-.odwwwwwwwwwwdo.
-.oooooooooooooo.
+..oooooooooooo..
+.oggggggggggggo.
+.ogrrrrrrrrrrgo.
+.oggggggggggggo.
 .okkkkkkkkkkkko.
 .okkkkkkkkkkkko.
-.oooooooooooooo.
-.oxxxxxxxxxxxwo.
-.oxwwwwwwwwwwdo.
-.oxwwwwwwwwwwdo.
-.ogggggggggggdo.
-.oxwwwwwwwwwwdo.
-.owdddddddddddo.
+.oyyyyyyyyyyyyo.
+.ogggggyygggggo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.ogrhrrggrhrrgo.
+.oggggggggggggo.
+.oddddddddddddo.
 .oooooooooooooo.
 ................
