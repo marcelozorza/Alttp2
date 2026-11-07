@@ -14,6 +14,13 @@ class_name Item
 ## ferramenta. A chama forte derrete o gelo grosso e queima mais, e a mola
 ## forte dá um pulo mais alto, que sobe o degrau duplo. A partir do capítulo 2,
 ## cada capítulo novo melhora uma ferramenta em vez de criar outra.
+##
+## As melhorias são progressivas, como no randomizer do A Link to the Past: a
+## primeira mola encontrada é a mola e a segunda é a mola forte, seja qual for
+## a ordem dos baús, e o mesmo vale para a chama. Sem isso, uma seed podia dar
+## a mola forte antes da mola, e o jogador não pulava nem com a lógica achando
+## que sim (seed travada que Marcelo pegou em 2026-11-07). O jogo e a lógica
+## passam todo item por progressive antes de ganhá-lo.
 
 enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, STRONG_SPRING, HEART, KEY, BOSS_KEY }
 
@@ -22,6 +29,8 @@ const TOOLS := [Id.BOMB, Id.FIRE, Id.SPRING]
 ## Itens que ficam para sempre e entram na lógica como bits: as ferramentas,
 ## as melhorias e a chave grande.
 const PERMANENT := [Id.BOMB, Id.FIRE, Id.SPRING, Id.STRONG_FIRE, Id.STRONG_SPRING, Id.BOSS_KEY]
+## Cada melhoria e a ferramenta que ela melhora.
+const UPGRADES := {Id.STRONG_FIRE: Id.FIRE, Id.STRONG_SPRING: Id.SPRING}
 
 
 ## Bit do item num conjunto de ferramentas guardado como inteiro.
@@ -31,3 +40,21 @@ static func bit(id: int) -> int:
 
 static func has(tools: int, id: int) -> bool:
 	return (tools & bit(id)) != 0
+
+
+## O que um item vale para quem tem estas ferramentas: a melhoria vira a
+## ferramenta enquanto falta a ferramenta, e a ferramenta repetida vira a
+## melhoria.
+static func progressive(tools: int, id: int) -> int:
+	for upgrade: int in UPGRADES:
+		var base: int = UPGRADES[upgrade]
+		if id == upgrade and not has(tools, base):
+			return base
+		if id == base and has(tools, base):
+			return upgrade
+	return id
+
+
+## As ferramentas depois de ganhar o item, já progressivo.
+static func collect(tools: int, id: int) -> int:
+	return tools | bit(progressive(tools, id))

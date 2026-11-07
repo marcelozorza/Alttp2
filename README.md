@@ -14,7 +14,7 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 
 - **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
 - **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, para na pausa e fica gravado. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e convida ao modo randomizado. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
-- **Randomizado.** O jogo de verdade: as mesmas três dungeons do mundo, com as ferramentas e as melhorias embaralhadas entre os baús delas por uma seed, um número de 1 a 999999. Na tela da seed, esquerda e direita escolhem o dígito, cima e baixo mudam, os números do teclado digitam, Sortear sorteia outro e Jogar começa. O mesmo número dá o mesmo jogo em qualquer cópia, então dá para compartilhar. As três entradas abrem de início, as chaves ficam nas dungeons delas e cada baú de ferramenta, melhoria ou coração fica gravado na hora em que abre. O número da seed aparece na pausa e na tela de vitória.
+- **Randomizado.** O jogo de verdade: as mesmas três dungeons do mundo, com as ferramentas e as melhorias embaralhadas entre os baús delas por uma seed, um número de 1 a 999999. Na tela da seed, esquerda e direita escolhem o dígito, cima e baixo mudam, os números do teclado digitam, Sortear sorteia outro e Jogar começa. O mesmo número dá o mesmo jogo em qualquer cópia, então dá para compartilhar. As três entradas abrem de início, as chaves ficam nas dungeons delas e cada baú de ferramenta, melhoria ou coração fica gravado na hora em que abre. A primeira mola encontrada é a mola e a segunda é a mola forte, seja qual for a ordem dos baús, e o mesmo vale para a chama. Morrer na seed perde tudo: ela recomeça do zero, no mundo. O número da seed aparece na pausa e na tela de vitória.
 - **Tutorial.** A dungeon de aprendizado, fora do mundo e sem gravar nada.
 - **Treino.** O tutorial, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
 
@@ -42,7 +42,7 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 
 O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
-- **Vida:** os ossinhos no alto, um por ponto, apagados conforme você perde vida. A cada 3 inimigos mortos numa dungeon, o terceiro deixa um ossinho, que enche 2 pontos ao ser pego e some em 10 s. Com 4 pontos ou menos, um beep discreto avisa.
+- **Vida:** os ossinhos no alto, um por ponto, apagados conforme você perde vida. Cada inimigo morto tem 30% de chance de deixar um ossinho, que enche 2 pontos ao ser pego e some em 10 s, e com 3 pontos ou menos todo inimigo deixa um. Com 4 pontos ou menos, um beep discreto avisa.
 - **Minimapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. Na pausa, o mapa inteiro da dungeon, com as salas não vistas escurecidas.
 - **Chaves:** encoste numa porta trancada para gastar uma chave pequena. A porta vermelha do chefe pede a chave grande. O contador de chaves fica à direita do losango, e a chave grande aparece ao lado dele.
 

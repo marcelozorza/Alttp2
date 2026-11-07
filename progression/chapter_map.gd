@@ -2,7 +2,7 @@ class_name ChapterMap
 extends RefCounted
 ## Grade de um capítulo lida de linhas de texto.
 ##
-## Cada caractere é uma casa de 16 pixels:
+## Cada caractere é uma casa de 32 pixels:
 ## - "#" parede, " " fora do mapa, "." chão, ":" chão alto, o topo de um degrau,
 ##   "^" chão mais alto, o topo de um degrau duplo.
 ## - "@" início do personagem.

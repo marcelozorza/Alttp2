@@ -52,6 +52,9 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 	Sfx.play(&"chest_open")
 	var player := get_tree().get_first_node_in_group("player") as Player
 	if player:
+		# O baú passa a mostrar o que de fato deu: a mola forte achada antes da
+		# mola é a mola.
+		item = Item.progressive(player.tool_bits(), item)
 		player.give_item(item)
 	opened.emit(self)
 	queue_redraw()

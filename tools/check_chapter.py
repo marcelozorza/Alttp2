@@ -60,6 +60,23 @@ def bit(name):
     return 1 << ITEM_IDS.index(name)
 
 
+UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING"}
+
+
+def collect(tools, item):
+    """Ferramentas depois de ganhar o item, progressivo como em items/item.gd:
+    a melhoria achada antes da ferramenta vale a ferramenta, e a ferramenta
+    repetida vale a melhoria."""
+    for upgrade, base in UPGRADES.items():
+        if item == upgrade and not tools & bit(base):
+            item = base
+            break
+        if item == base and tools & bit(base):
+            item = upgrade
+            break
+    return tools | bit(item)
+
+
 def parse(path):
     text = open(path, encoding="utf-8").read()
     map_block = re.search(r"const MAP := \[(.*?)\n\]", text, re.S).group(1)
@@ -343,7 +360,7 @@ class Map:
                 if item == "KEY":
                     keys += 1
                 elif item in PERMANENT:
-                    tools |= bit(item)
+                    tools = collect(tools, item)
 
     def doors_in_reach(self, reached, tools, opened):
         doors = []

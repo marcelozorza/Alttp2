@@ -154,7 +154,7 @@ func settle(items: Dictionary, starting_tools: int, opened: Dictionary) -> Dicti
 			if item == Item.Id.KEY:
 				keys += 1
 			elif item in Item.PERMANENT:
-				tools |= Item.bit(item)
+				tools = Item.collect(tools, item)
 	return {
 		"reached": reached, "tools": tools, "keys": keys, "collected": collected, "order": order
 	}

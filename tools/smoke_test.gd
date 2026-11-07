@@ -478,6 +478,17 @@ func _check_randomized() -> void:
 	var other := Randomizer.generate(7)
 	print("SEED: 123456 -> %s" % Randomizer.describe(first))
 	print("SEED: 7 -> %s" % Randomizer.describe(other))
+	var first_spring := Item.progressive(0, Item.Id.STRONG_SPRING)
+	var both := Item.collect(Item.collect(0, Item.Id.STRONG_SPRING), Item.Id.STRONG_SPRING)
+	print(
+		(
+			"ITENS: mola forte antes da mola vira %s, duas molas fortes dão mola e mola forte %s"
+			% [
+				Item.Id.keys()[first_spring],
+				Item.has(both, Item.Id.SPRING) and Item.has(both, Item.Id.STRONG_SPRING),
+			]
+		)
+	)
 	print(
 		(
 			"SEED: igual de novo %s, diferente da 7 %s"

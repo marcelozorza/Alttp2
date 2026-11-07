@@ -76,6 +76,14 @@ static func start_seed(seed_value: int) -> void:
 	seed_items = Randomizer.generate(seed_value)
 
 
+## No modo randomizado, a morte perde tudo: a mesma seed recomeça do zero, e o
+## arquivo é gravado assim na hora, para que sair do jogo na tela de derrota
+## não salve a partida (decisão de Marcelo em 2026-11-07, jogando).
+static func restart_seed() -> void:
+	start_seed(seed)
+	save()
+
+
 static func is_done(chapter: int) -> bool:
 	return (chapters_done & (1 << chapter)) != 0
 

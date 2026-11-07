@@ -7,7 +7,7 @@ extends StaticBody2D
 ## andar contra ela vindo do norte. A travessia fica a cargo do personagem
 ## (ver player.gd). A face só informa onde ficam as bordas e a altura.
 ##
-## O degrau comum tem 16 pixels. O degrau duplo tem 32, duas casas de face, e
+## O degrau comum tem 32 pixels. O degrau duplo tem 64, duas casas de face, e
 ## só o pulo da mola forte chega lá: o pulo comum bate na face e volta. A face
 ## dupla tem a própria pedra, mais escura, para o jogador ver de longe que o
 ## degrau é outro.

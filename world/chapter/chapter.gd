@@ -70,10 +70,14 @@ const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
 const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
 
-## A cada tantos inimigos mortos, o último deixa um ossinho que recupera vida
-## (pedido de Marcelo em 2026-11-07, para a morte, que recomeça a dungeon, não
-## ficar dura demais). Zero desliga. A contagem recomeça com a dungeon.
-@export_range(0, 10, 1) var bone_drop_every := 3
+## Chance, em cem, de um inimigo morto deixar um ossinho que recupera vida
+## (pedido de Marcelo em 2026-11-07, para a morte não ficar dura demais). É
+## sorteio, e não a cada tantos inimigos, para às vezes surpreender e às vezes
+## demorar, como ele pediu ao jogar. Zero desliga.
+@export_range(0, 100, 1) var bone_drop_chance := 30
+## Com esta vida ou menos, todo inimigo morto deixa um ossinho (pedido dele em
+## 2026-11-07).
+@export_range(0, 40, 1) var bone_drop_sure_health := 3
 
 ## Ticks de jogo desde o início do capítulo, para o cronômetro.
 var elapsed_ticks := 0
@@ -82,8 +86,6 @@ var data: ChapterData
 var map: ChapterMap
 
 var _player: Player
-## Inimigos mortos nesta dungeon, para o ossinho.
-var _kills := 0
 ## Sala atual, em unidades de sala de uma tela.
 var _room := Rect2i(-1000, -1000, 1, 1)
 ## Salas em que o personagem já esteve, para o minimapa.
@@ -319,14 +321,20 @@ func _on_boss_defeated(room: Rect2i) -> void:
 	_spawn_relic.call_deferred(room)
 
 
-## Conta os inimigos mortos e, a cada bone_drop_every, deixa um ossinho onde o
-## último caiu. O ossinho fica com os efeitos do chão e some ao trocar de sala.
+## Sorteia um ossinho onde o inimigo caiu, sempre quando a vida está baixa. O
+## ossinho fica com os efeitos do chão e some ao trocar de sala.
 func _on_enemy_died(enemy: Enemy) -> void:
-	_kills += 1
-	if bone_drop_every > 0 and _kills % bone_drop_every == 0:
-		var bone := BONE_DROP_SCENE.instantiate() as BoneDrop
-		bone.position = enemy.global_position
-		_floor_effects.add_child(bone)
+	if not _drops_bone():
+		return
+	var bone := BONE_DROP_SCENE.instantiate() as BoneDrop
+	bone.position = enemy.global_position
+	_floor_effects.add_child(bone)
+
+
+func _drops_bone() -> bool:
+	if _player and _player.health <= bone_drop_sure_health:
+		return true
+	return randi_range(1, 100) <= bone_drop_chance
 
 
 func _spawn_relic(room: Rect2i) -> void:

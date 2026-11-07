@@ -88,7 +88,7 @@ static func verify(logics: Dictionary, table: Dictionary) -> bool:
 				collected[key] = true
 				var item: int = table[chapter].get(letter, Item.Id.NONE)
 				if item in PROGRESSION:
-					tools |= Item.bit(item)
+					tools = Item.collect(tools, item)
 					gained = true
 	for item: int in PROGRESSION:
 		if not Item.has(tools, item):
@@ -126,9 +126,11 @@ static func _fill(
 	_shuffle(pool, rng)
 	while not pool.is_empty():
 		var item: int = pool.pop_back()
+		# O que o jogador teria com o resto do saco: com uma só mola no saco,
+		# ele tem a mola e não a mola forte, porque os itens são progressivos.
 		var assumed := 0
 		for other: int in pool:
-			assumed |= Item.bit(other)
+			assumed = Item.collect(assumed, other)
 		var options := _available(logics, table, assumed)
 		if options.is_empty():
 			return {}

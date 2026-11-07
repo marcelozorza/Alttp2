@@ -27,6 +27,12 @@ static func go_to_title(tree: SceneTree) -> void:
 	tree.change_scene_to_file(TITLE_SCENE)
 
 
+## Vai ao mundo, na pedra de salvamento ou na entrada guardada em Progress.
+static func go_to_overworld(tree: SceneTree) -> void:
+	tree.paused = false
+	tree.change_scene_to_file(OVERWORLD_SCENE)
+
+
 ## Recomeça a cena atual do zero: um capítulo volta ao início, com o que o
 ## personagem tinha ao entrar, porque nada do meio do capítulo fica gravado.
 static func restart_scene(tree: SceneTree) -> void:

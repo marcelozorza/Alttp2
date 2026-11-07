@@ -44,7 +44,7 @@ func _draw() -> void:
 		height = size.y * (1.0 - float(_ticks_since_clear()) / _melt_ticks())
 		if height <= 0.0:
 			return
-	# Derretendo, cada bloco de 16 pixels afunda no chão: some a parte de cima.
+	# Derretendo, cada bloco de 32 pixels afunda no chão: some a parte de cima.
 	var offset := _shake_offset()
 	var visible_part := height / size.y
 	var rows := int(size.y / 32.0)

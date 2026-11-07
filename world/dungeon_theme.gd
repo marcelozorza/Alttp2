@@ -6,12 +6,15 @@ extends RefCounted
 ## quatro esboços da mesma sala em estilos diferentes):
 ##
 ## - Pedra: o tutorial, a dungeon crua, com tochas e ossos pelo chão.
-## - Castelo: o capítulo 1, roxo e dourado, com candelabros, estandartes,
-##   vasos e um tapete vermelho no centro das salas.
+## - Castelo: o capítulo 1, roxo e dourado, com candelabros, estandartes e
+##   um tapete vermelho no centro das salas.
 ## - Gelo: o capítulo 2, azul, com tochas de chama azul, estalactites, geada no
 ##   chão e cristais de gelo.
 ## - Ruínas: o capítulo 3, verde e tomado pelo mato, com trepadeiras, teias nos
-##   cantos, musgo, vasos e ossos.
+##   cantos, musgo e ossos.
+##
+## Não há vasos: Marcelo os tirou em 2026-11-07, porque eram só enfeite, como
+## os potes do A Link to the Past, sem utilidade no jogo.
 ##
 ## Os tiles dos temas são trocas de paleta dos tiles de pedra (art/source, com
 ## "usa"), então a forma das lajotas e dos tijolos é a mesma em todos. Os
@@ -32,7 +35,6 @@ const CANDELABRA := preload("res://art/candelabra.svg")
 const BANNER := preload("res://art/banner.svg")
 const VINE := preload("res://art/vine.svg")
 const BONES_PILE := preload("res://art/bones_pile.svg")
-const POT := preload("res://art/pot.svg")
 const ICE_CRYSTAL := preload("res://art/ice_crystal.svg")
 const FROST := preload("res://art/frost.svg")
 const ICICLES := preload("res://art/icicles.svg")
@@ -114,8 +116,6 @@ static func castle() -> DungeonTheme:
 	theme.sconce_spacing = 6
 	theme.hangings.assign([BANNER])
 	theme.hanging_chance = 18
-	theme.floor_props.assign([POT])
-	theme.floor_prop_chance = 4
 	theme.carpet = CARPET
 	return theme
 
@@ -143,7 +143,7 @@ static func moss() -> DungeonTheme:
 	theme.sconce_spacing = 7
 	theme.hangings.assign([VINE])
 	theme.hanging_chance = 22
-	theme.floor_props.assign([POT, BONES_PILE])
+	theme.floor_props.assign([BONES_PILE])
 	theme.overlay = MOSS_PATCH
 	theme.overlay_chance = 12
 	theme.cobweb = COBWEB

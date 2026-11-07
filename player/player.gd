@@ -159,7 +159,7 @@ const LOW_HEALTH_DELAY := 0.3
 @export_group("Ferramentas")
 ## Altura do pulo da mola, em pixels. Com o passo fixo, o pico real fica um
 ## pouco abaixo (41 px para 44). Precisa passar da altura dos degraus, que é
-## de 16 pixels.
+## de 32 pixels.
 @export_range(16.0, 96.0, 1.0) var jump_height := 44.0
 ## Tempo no ar do pulo, em segundos.
 @export_range(0.2, 1.5, 0.05) var jump_time := 0.5
@@ -341,7 +341,7 @@ func give_item(id: int) -> void:
 		keys += 1
 		Sfx.play(&"item_key")
 	elif id in Item.PERMANENT:
-		_tools |= Item.bit(id)
+		_tools = Item.collect(_tools, id)
 		Sfx.play(&"item_tool")
 
 
