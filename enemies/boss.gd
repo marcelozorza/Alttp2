@@ -308,6 +308,12 @@ func _texture_offset(texture: Texture2D) -> Vector2:
 	return Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
 
 
+## Verdadeiro para desenhar espelhado, virado para a esquerda. Os chefes de
+## frente nunca viram; a sentinela, de perfil, vira para o lado do personagem.
+func _faces_left() -> bool:
+	return false
+
+
 ## Troca de estado. O despertar, os avisos e a investida têm som.
 func _enter(state: State) -> void:
 	if state != _state:
@@ -358,6 +364,12 @@ func _draw() -> void:
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
 			texture = _shell_texture()
 	var origin := _texture_offset(texture) + shake
-	draw_texture(texture, origin, tint)
+	if _faces_left():
+		var size := texture.get_size()
+		draw_texture_rect(
+			texture, Rect2(origin + Vector2(size.x, 0.0), size * Vector2(-1.0, 1.0)), false, tint
+		)
+	else:
+		draw_texture(texture, origin, tint)
 	var bar_width := texture.get_width() * float(maxi(health, 0)) / max_health
 	draw_rect(Rect2(origin + Vector2(0.0, -8.0), Vector2(bar_width, 4.0)), HEALTH_COLOR)

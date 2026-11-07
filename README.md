@@ -149,7 +149,7 @@ Nos inimigos com desenho, as cores viram um tom sobre ele. O minion, o gatinho l
 - **Bulbo verde com boca de dentes:** planta de espinhos. Não sai do lugar e morde quem chega perto. A espada corta em 3 golpes, e uma bola de fogo basta.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
 - **Chefe azul profundo com borda de geada:** o guardião antigo, com a casca de gelo grosso. Só a chama forte quebra a casca. Os ataques são os do guardião de gelo.
-- **Sentinela de pedra rachada:** a bomba abre a armadura. O núcleo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A armadura volta 8 s depois da explosão.
+- **Sentinela, o buldogue de pedra:** a bomba quebra a pele de pedra. O corpo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A pedra volta 8 s depois da explosão.
 - **Colosso de arenito rachado:** a bomba abre a casca, que volta em 6 s. O núcleo de pedra derretida apanha da espada, da chama forte e da bomba. A pancada no chão solta uma onda alta, cor de areia, que só a mola forte pula.
 
 ## Cores do mundo

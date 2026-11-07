@@ -1,23 +1,24 @@
 class_name Sentinel
 extends Boss
-## Chefe do capítulo 1, a dungeon grande: a sentinela de pedra. É o exame das três ferramentas
-## juntas, numa ordem que o jogador lê pelo próprio desenho.
+## Chefe do capítulo 1, a dungeon grande: a sentinela, um buldogue de pedra
+## com coleira de pontas (desenho a partir da referência que Marcelo mandou
+## fazer em 2026-11-07). É o exame das três ferramentas juntas, numa ordem que
+## o jogador lê pelo próprio desenho.
 ##
-## A armadura de pedra tem as rachaduras claras da parede rachada, então só a
-## bomba a abre. Por baixo, o núcleo está congelado, com o azul do bloco de
-## gelo, e só a chama o derrete. Só então o núcleo quente apanha da espada e da
-## bomba. A armadura e o gelo voltam juntos depois de shell_regrow_time,
-## contados da explosão, então bomba, chama e espada precisam vir em sequência.
+## A pele de pedra cinza só cede à bomba. Por baixo, o corpo está congelado,
+## com o azul do gelo grosso, e só a chama o derrete. Só então o núcleo quente
+## apanha da espada e da bomba. A pedra e o gelo voltam juntos depois de
+## shell_regrow_time, contados da explosão, então bomba, chama e espada
+## precisam vir em sequência.
 ##
 ## Os ataques são os do guardião de gelo: a pancada que solta a onda, evitada
 ## com a mola, e a investida em linha reta. O ritmo fica nos parâmetros da
-## cena.
+## cena. O desenho é de perfil, virado para a direita, e vira para o lado em
+## que o personagem está.
 
 const ARMOR_TEXTURE := preload("res://art/sentinel_shell.svg")
 const FROST_TEXTURE := preload("res://art/sentinel_frost.svg")
 const HOT_CORE_TEXTURE := preload("res://art/sentinel_core.svg")
-## Canto do desenho em relação à origem, nos pés.
-const TEXTURE_OFFSET := Vector2(-28.0, -54.0)
 
 ## Ligado enquanto o núcleo está congelado, depois que a armadura caiu.
 var _frost := true
@@ -63,9 +64,9 @@ func _update_state() -> void:
 		_frost = true
 
 
-## O desenho mostra a camada de fora: a armadura enquanto fechada, e por
-## baixo o gelo ou o núcleo quente. O resto do desenho (avisos, dano, a
-## armadura piscando antes de voltar) é o do chefe comum.
+## O desenho mostra a camada de fora: a pedra enquanto fechada, e por baixo o
+## gelo ou o núcleo quente. O resto do desenho (avisos, dano, a pedra piscando
+## antes de voltar) é o do chefe comum.
 func _shell_texture() -> Texture2D:
 	return ARMOR_TEXTURE
 
@@ -74,5 +75,5 @@ func _core_texture() -> Texture2D:
 	return FROST_TEXTURE if _frost else HOT_CORE_TEXTURE
 
 
-func _texture_offset(_texture: Texture2D) -> Vector2:
-	return TEXTURE_OFFSET
+func _faces_left() -> bool:
+	return _look.x < 0.0
