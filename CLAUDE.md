@@ -1,6 +1,6 @@
-# Alttp2
+# Giorgino
 
-Jogo de aventura top-down em Godot 4.7 com GDScript. Visão, princípios e decisões ficam em `docs/design.md`. Atualize esse documento quando uma decisão for tomada ou mudar.
+Jogo de aventura top-down em Godot 4.7 com GDScript. O herói e o jogo se chamam Giorgino. O repositório mantém o nome antigo, alttp2. Visão, princípios e decisões ficam em `docs/design.md`. Atualize esse documento quando uma decisão for tomada ou mudar.
 
 ## Convenções
 

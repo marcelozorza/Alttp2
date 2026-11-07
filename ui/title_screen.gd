@@ -10,8 +10,7 @@ extends Control
 func _ready() -> void:
 	Progress.active = false
 	var column := MenuKit.centered_column(self, Color(0.1, 0.11, 0.13, 1.0))
-	column.add_child(MenuKit.label("Alttp2", 24))
-	column.add_child(MenuKit.label("nome provisório", 8))
+	column.add_child(MenuKit.label("Giorgino", 24))
 	var first: Button = null
 	if Progress.exists():
 		first = MenuKit.button("Continuar", _on_continue)

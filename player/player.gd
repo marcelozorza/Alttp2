@@ -45,34 +45,34 @@ signal died
 
 enum State { WALK, RUN, KNOCKBACK, DEAD }
 
-## Tons sobre o desenho do Giorgio em cada estado. Acima de 1, o tom clareia.
+## Tons sobre o desenho do Giorgino em cada estado. Acima de 1, o tom clareia.
 const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
 const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
-## Desenhos do Giorgio, nesta ordem: de frente, de costas e de lado, cada um
+## Desenhos do Giorgino, nesta ordem: de frente, de costas e de lado, cada um
 ## com o segundo passo logo depois. O de lado olha para a direita, e o jogo
 ## espelha para a esquerda. Ele anda e corre de pé, com a espada e os itens
 ## na pata: correndo, o desenho é inclinado para a frente (desenhos de
 ## 2026-11-06, redesenhados por IA a partir do mapa de sprites, a pedido de
 ## Marcelo, que tirou a pose de 4 patas da corrida).
 const ART_WALKING := [
-	preload("res://art/giorgio_stand_down.svg"),
-	preload("res://art/giorgio_stand_down_step.svg"),
-	preload("res://art/giorgio_stand_up.svg"),
-	preload("res://art/giorgio_stand_up_step.svg"),
-	preload("res://art/giorgio_stand_side.svg"),
-	preload("res://art/giorgio_stand_side_step.svg"),
+	preload("res://art/giorgino_stand_down.svg"),
+	preload("res://art/giorgino_stand_down_step.svg"),
+	preload("res://art/giorgino_stand_up.svg"),
+	preload("res://art/giorgino_stand_up_step.svg"),
+	preload("res://art/giorgino_stand_side.svg"),
+	preload("res://art/giorgino_stand_side_step.svg"),
 ]
 const ART_RUNNING := [
-	preload("res://art/giorgio_down.svg"),
-	preload("res://art/giorgio_down_step.svg"),
-	preload("res://art/giorgio_up.svg"),
-	preload("res://art/giorgio_up_step.svg"),
-	preload("res://art/giorgio_side.svg"),
-	preload("res://art/giorgio_side_step.svg"),
+	preload("res://art/giorgino_down.svg"),
+	preload("res://art/giorgino_down_step.svg"),
+	preload("res://art/giorgino_up.svg"),
+	preload("res://art/giorgino_up_step.svg"),
+	preload("res://art/giorgino_side.svg"),
+	preload("res://art/giorgino_side_step.svg"),
 ]
 ## Deitado, sem vida.
-const ART_FALLEN := preload("res://art/giorgio_fallen.svg")
+const ART_FALLEN := preload("res://art/giorgino_fallen.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
 const ART_BELOW_FEET := 4.0
 ## Ticks de cada passo, andando e correndo.
@@ -655,7 +655,7 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 	return Vector2.ZERO
 
 
-## O desenho do Giorgio segue a frente, e um tom sobre ele indica o estado: o
+## O desenho do Giorgino segue a frente, e um tom sobre ele indica o estado: o
 ## corpo treme no desequilíbrio e fica deitado na queda. Com a espada travada,
 ## uma barra acima da cabeça encolhe até a trava acabar.
 func _update_visuals() -> void:

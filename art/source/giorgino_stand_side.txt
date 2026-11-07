@@ -1,4 +1,4 @@
-# Giorgio de pé, de lado, olhando para a direita. Para a esquerda, o jogo espelha.
+# Giorgino de pé, de lado, olhando para a direita. Para a esquerda, o jogo espelha.
 paleta
 o #2a2230
 k #2a2329

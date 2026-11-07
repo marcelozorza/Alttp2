@@ -1,4 +1,4 @@
-# Giorgio de pé, de frente, com a espada e os itens na pata. Anda assim.
+# Giorgino de pé, de frente, com a espada e os itens na pata. Anda assim.
 paleta
 o #2a2230
 k #2a2329

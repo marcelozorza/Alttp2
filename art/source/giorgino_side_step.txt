@@ -1,4 +1,4 @@
-# Giorgio correndo, de lado, segundo passo.
+# Giorgino correndo, de lado, segundo passo.
 paleta
 o #2a2230
 k #2a2329

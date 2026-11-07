@@ -93,7 +93,7 @@ pássaros, poços) é coerente, e nada exige decorar para sobreviver.
 e do nível da água exigido para cada chave e item do que como mapa de salas.
 A ordem documentada deixa o jogador planejar onde voltar.
 
-## Regras adotadas no Alttp2
+## Regras adotadas no Giorgino
 
 As regras abaixo valem para todo capítulo, e `tools/check_chapter.py`
 confere as que são mecânicas (caminho em qualquer ordem de portas, nenhuma
@@ -146,4 +146,4 @@ armadilha, bloqueios fora da beira da tela).
   de um capítulo futuro, com a mola ou a bomba como gatilho. O capítulo 4
   ficou com o degrau duplo.
 - Objetos carregados com restrições (a bola da Eagle's Tower): depende de
-  pegar e carregar, que o Giorgio ainda não faz.
+  pegar e carregar, que o Giorgino ainda não faz.
