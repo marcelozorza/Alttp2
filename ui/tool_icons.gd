@@ -6,7 +6,7 @@ class_name ToolIcons
 ## troca de paleta do Super Nintendo.
 ##
 ## As melhorias (chama forte e mola forte) usam o ícone da ferramenta comum com
-## o selo lv2 ao lado, em caixa baixa, pedido de Marcelo em 2026-11-08.
+## o selo x2 ao lado, pedido de Marcelo em 2026-11-08.
 
 const SWORD := preload("res://art/icon_sword.svg")
 const SWORD_LOCKED := preload("res://art/icon_sword_locked.svg")
@@ -22,12 +22,12 @@ const TEXTURES := {
 	Item.Id.KEY: preload("res://art/icon_key.svg"),
 	Item.Id.BOSS_KEY: preload("res://art/icon_boss_key.svg"),
 }
-const LEVEL_TWO := preload("res://art/icon_lv2.svg")
+const LEVEL_TWO := preload("res://art/icon_x2.svg")
 const UPGRADES := [Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING]
 
 
 ## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do
-## _draw de um canvas. Numa melhoria, o selo lv2 vai no canto de baixo à
+## _draw de um canvas. Numa melhoria, o selo x2 vai no canto de baixo à
 ## direita do ícone, ampliado badge_scale vezes. No HUD ele fica dentro do
 ## botão, e no baú, maior, ao lado do ícone.
 static func draw(

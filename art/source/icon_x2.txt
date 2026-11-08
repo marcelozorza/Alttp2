@@ -1,0 +1,14 @@
+# Selo x2 ao lado do ícone da chama forte e da mola forte (pedido de Marcelo
+# em 2026-11-08, no lugar de LV2, que parecia LUZ): letras de 5 pixels de
+# altura com contorno escuro.
+paleta
+o #1e1014
+w #fff4b0
+pixels
+.....ooo.
+....oowoo
+ooooowowo
+owowooowo
+oowooowoo
+owowowwwo
+ooooooooo
