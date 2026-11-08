@@ -51,7 +51,7 @@ func _physics_process(_delta: float) -> void:
 		_opened = true
 		_shape.set_deferred("disabled", true)
 	var shaking := Clock.tick - _shake_tick <= DoorArt.SHAKE_TICKS
-	if shaking or (cleared and _ticks_since_clear() <= CLEAR_ANIMATION_TICKS):
+	if shaking or (cleared and _ticks_since_clear() <= _clear_animation_ticks()):
 		queue_redraw()
 
 
@@ -68,6 +68,11 @@ func _clear_sound() -> StringName:
 ## Ticks entre o golpe certo e a passagem abrir.
 func _open_delay() -> int:
 	return 0
+
+
+## Ticks em que o desenho ainda muda depois do golpe certo.
+func _clear_animation_ticks() -> int:
+	return CLEAR_ANIMATION_TICKS
 
 
 ## Deslocamento do tremor, para os desenhos das subclasses.

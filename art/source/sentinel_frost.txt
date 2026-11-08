@@ -10,4 +10,6 @@ b #3468a1
 c #5f95ca
 d #99c1e4
 e #e8f4ff
+x #e8f4ff
+k #c8281e
 usa sentinel_shell

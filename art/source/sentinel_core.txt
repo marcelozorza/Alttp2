@@ -10,4 +10,6 @@ b #953035
 c #c4543c
 d #e58445
 e #f6c060
+x #ffe08a
+k #c8281e
 usa sentinel_shell
