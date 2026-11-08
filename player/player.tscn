@@ -37,7 +37,6 @@ offset = Vector2(-16, -40)
 
 [node name="Sword" type="Node2D" parent="Visual"]
 script = ExtResource("2_sword")
-draw_blade = false
 
 [node name="SwordLock" type="ColorRect" parent="Visual"]
 visible = false

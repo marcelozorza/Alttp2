@@ -80,22 +80,6 @@ const ART_RUNNING := [
 	preload("res://art/giorgino_side.svg"),
 	preload("res://art/giorgino_side_step.svg"),
 ]
-## Estocada de espada, de frente, de costas e de lado, e o de lado recolhendo
-## a espada depois do golpe. Da folha com espada de 2026-11-08: o desenho já
-## traz a lâmina, então a espada (player/sword.gd) não desenha a dela.
-const ART_THRUST := [
-	preload("res://art/giorgino_thrust_down.svg"),
-	preload("res://art/giorgino_thrust_up.svg"),
-	preload("res://art/giorgino_thrust_side.svg"),
-]
-const ART_THRUST_RECOVER_SIDE := preload("res://art/giorgino_thrust_side_recover.svg")
-## Parado em guarda, com a espada erguida: de frente, de costas e de lado.
-## Aparece quando ele para de andar (pedido de Marcelo em 2026-11-08).
-const ART_GUARD := [
-	preload("res://art/giorgino_guard_down.svg"),
-	preload("res://art/giorgino_guard_up.svg"),
-	preload("res://art/giorgino_guard_side.svg"),
-]
 ## Deitado, sem vida.
 const ART_FALLEN := preload("res://art/giorgino_fallen.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
@@ -778,11 +762,10 @@ func _update_visuals() -> void:
 	_update_sword_lock_bar()
 
 
-## Escolhe o desenho pela postura e pela frente: golpeando, a estocada,
-## correndo, o galope, parado, a guarda, sem vida, deitado, e andando, os de
-## pé. Andando ou correndo, alterna os dois passos, mais rápido na corrida. O
-## desenho sempre termina ART_BELOW_FEET abaixo dos pés, qualquer que seja a
-## altura.
+## Escolhe o desenho pela postura e pela frente: correndo, os desenhos
+## inclinados, sem vida, deitado, e no resto, os de pé. Andando ou correndo,
+## alterna os dois passos, mais rápido na corrida. O desenho sempre termina
+## ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
 func _update_art() -> void:
 	var running := _state == State.RUN
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 2.0
@@ -802,12 +785,6 @@ func _update_art() -> void:
 		direction = 1
 	var frames: Array = ART_RUNNING if running else ART_WALKING
 	var texture: Texture2D = frames[direction * 2 + step]
-	if not moving and not running:
-		texture = ART_GUARD[direction]
-	if _sword.is_swinging():
-		texture = ART_THRUST[direction]
-		if direction == 2 and _sword.is_retracting():
-			texture = ART_THRUST_RECOVER_SIDE
 	if _is_down():
 		texture = ART_FALLEN
 	_art.texture = texture

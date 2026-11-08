@@ -1,15 +1,15 @@
-"""Converte a folha de 20 poses do Giorgino, gerada por IA, em fontes de pixel art.
+"""Converte a folha de 16 poses do Giorgino, gerada por IA, em fontes de pixel art.
 
 Uso: python3 tools/giorgino_sheet.py <folha.png> <altura_de_pe> <saida_dir>
 Exemplo: python3 tools/giorgino_sheet.py folha.png 48 /tmp/gio
-         cp /tmp/gio/giorgino_*.txt art/source/ && python3 tools/pixel_svg.py
+         cp /tmp/gio/giorgino_stand_*.txt /tmp/gio/giorgino_{down,up,side}*.txt \
+            /tmp/gio/giorgino_fallen.txt art/source/ && python3 tools/pixel_svg.py
 
-A folha tem 4 colunas e 5 linhas, nesta ordem (linha por linha): andando de
-frente (2 passos), de costas (2), de lado (2), correndo de frente (2), de
-costas (2), de lado (2), estocada de frente, de costas, de lado e de lado
-recolhendo, guarda de frente, de costas e de lado, e deitado. É a folha de
-2026-11-08 com a espada (pedido em /mnt/project-files/giorgino/), que
-substituiu a de 16 poses sem espada do mesmo dia. Precisa de numpy e Pillow.
+A folha é um quadrado de 4 por 4 células, nesta ordem (linha por linha):
+andando de frente (2 passos), de costas (2), de lado (2), correndo de frente
+(2), de costas (2), de lado (2), latindo de frente, de costas e de lado, e
+deitado. As três poses de latido não entram no jogo (o latido foi rejeitado
+em 2026-11-08), mas são convertidas também. Precisa de numpy e Pillow.
 
 Fundo: gradiente escuro e liso. A sprite é "pixel art falsa" com blocos
 chatos e contorno escuro, então o que separa os dois é a borda: onde dois
@@ -30,11 +30,8 @@ NAMES = [
     "giorgino_stand_down", "giorgino_stand_down_step", "giorgino_stand_up", "giorgino_stand_up_step",
     "giorgino_stand_side", "giorgino_stand_side_step", "giorgino_down", "giorgino_down_step",
     "giorgino_up", "giorgino_up_step", "giorgino_side", "giorgino_side_step",
-    "giorgino_thrust_down", "giorgino_thrust_up", "giorgino_thrust_side", "giorgino_thrust_side_recover",
-    "giorgino_guard_down", "giorgino_guard_up", "giorgino_guard_side", "giorgino_fallen",
+    "giorgino_bark_down", "giorgino_bark_up", "giorgino_bark_side", "giorgino_fallen",
 ]
-COLS = 4
-ROWS = len(NAMES) // COLS
 COMMENTS = {
     "giorgino_stand_down": "andando, de frente", "giorgino_stand_down_step": "andando, de frente, passo 2",
     "giorgino_stand_up": "andando, de costas", "giorgino_stand_up_step": "andando, de costas, passo 2",
@@ -42,28 +39,19 @@ COMMENTS = {
     "giorgino_down": "correndo, de frente", "giorgino_down_step": "correndo, de frente, passo 2",
     "giorgino_up": "correndo, de costas", "giorgino_up_step": "correndo, de costas, passo 2",
     "giorgino_side": "correndo, de lado (direita)", "giorgino_side_step": "correndo, de lado, passo 2",
-    "giorgino_thrust_down": "estocada, de frente", "giorgino_thrust_up": "estocada, de costas",
-    "giorgino_thrust_side": "estocada, de lado (direita)",
-    "giorgino_thrust_side_recover": "recolhendo a espada, de lado (direita)",
-    "giorgino_guard_down": "parado em guarda, de frente", "giorgino_guard_up": "parado em guarda, de costas",
-    "giorgino_guard_side": "parado em guarda, de lado (direita)", "giorgino_fallen": "deitado, sem vida",
+    "giorgino_bark_down": "latindo, de frente", "giorgino_bark_up": "latindo, de costas",
+    "giorgino_bark_side": "latindo, de lado (direita)", "giorgino_fallen": "deitado, sem vida",
 }
 PALETTE = [
     ("k", "#2a2329"), ("d", "#1e181e"), ("b", "#5c4232"), ("w", "#f4f1ea"), ("s", "#c7c1cf"),
     ("g", "#8f8a99"), ("n", "#141016"), ("p", "#e49aa4"), ("r", "#d9578a"), ("e", "#0e0b0d"),
-    ("y", "#d4a53c"), ("o", "#8a6420"),
 ]
 PAL_RGB = np.array([[int(h[i:i+2], 16) for i in (1, 3, 5)] for _, h in PALETTE], float)
 
 im = Image.open(SRC).convert("RGB")
 a = np.array(im).astype(int)
 H, W = a.shape[:2]
-
-
-def cell_box(i):
-    """Limites da célula i na folha: linha por linha, COLS por linha."""
-    r, c = divmod(i, COLS)
-    return (r * H // ROWS, (r + 1) * H // ROWS, c * W // COLS, (c + 1) * W // COLS)
+CELL = W // 4
 
 
 def dilate(mask, r):
@@ -145,8 +133,8 @@ def foreground_mask(cell):
 
 sprites = []
 for i, name in enumerate(NAMES):
-    y0, y1, x0, x1 = cell_box(i)
-    cell = a[y0:y1, x0:x1]
+    r, c = divmod(i, 4)
+    cell = a[r * CELL:(r + 1) * CELL, c * CELL:(c + 1) * CELL]
     fg = foreground_mask(cell)
     fg = dilate(erode(fg, 2), 2)
     _, comps = components(fg)
@@ -245,8 +233,8 @@ def fill_enclosed(rows):
 
 previews = []
 for i, (name, cell, fg, box) in enumerate(sprites):
-    cy0, cy1, cx0, cx1 = cell_box(i)
-    cell_nearest = nearest[cy0:cy1, cx0:cx1]
+    r, c = divmod(i, 4)
+    cell_nearest = nearest[r * CELL:(r + 1) * CELL, c * CELL:(c + 1) * CELL]
     rows = fill_enclosed(trim(unspeckle(downscale(cell_nearest, fg, box, scale))))
     comment = "Giorgino %s, da folha de IA de 2026-11-08, reduzida e quantizada." % COMMENTS[name]
     order = [p[0] for p in PALETTE]
@@ -264,16 +252,16 @@ for i, (name, cell, fg, box) in enumerate(sprites):
     previews.append(img)
 
 Z = 4
-sheet = Image.new("RGBA", (COLS * (64 * Z + 8), ROWS * (64 * Z + 8)), (90, 60, 130, 255))
+sheet = Image.new("RGBA", (4 * (64 * Z + 8), 4 * (64 * Z + 8)), (90, 60, 130, 255))
 for i, img in enumerate(previews):
-    r, c = divmod(i, COLS)
+    r, c = divmod(i, 4)
     big = img.resize((img.width * Z, img.height * Z), Image.NEAREST)
     sheet.paste(big, (c * (64 * Z + 8) + (64 * Z - big.width) // 2, r * (64 * Z + 8) + 64 * Z - big.height), big)
 sheet.save(OUT + "/preview.png")
 # máscaras, para conferir a separação
 msheet = Image.new("L", (W, H), 0)
 for i, (name, cell, fg, box) in enumerate(sprites):
-    cy0, cy1, cx0, cx1 = cell_box(i)
-    msheet.paste(Image.fromarray(fg.astype(np.uint8) * 255), (cx0, cy0))
+    r, c = divmod(i, 4)
+    msheet.paste(Image.fromarray(fg.astype(np.uint8) * 255), (c * CELL, r * CELL))
 msheet.save(OUT + "/masks.png")
 print("preview", OUT + "/preview.png")
