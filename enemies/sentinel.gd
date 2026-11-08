@@ -14,7 +14,8 @@ extends Boss
 ## Os ataques são os do guardião de gelo: a pancada que solta a onda, evitada
 ## com a mola, e a investida em linha reta. O ritmo fica nos parâmetros da
 ## cena. O desenho é de perfil, virado para a direita, e vira para o lado em
-## que o personagem está.
+## que o personagem está. Este arquivo foi regravado em 2026-11-08 para
+## substituir uma cópia local com um caractere solto que travava o jogo.
 
 const ARMOR_TEXTURE := preload("res://art/sentinel_shell.svg")
 const FROST_TEXTURE := preload("res://art/sentinel_frost.svg")

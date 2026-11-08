@@ -73,12 +73,12 @@ PRESETS = {
         "monkey_side", "monkey_side_step", "monkey_throw_windup", "monkey_throw_windup_side",
         "monkey_throw_windup_up", "monkey_throw", "monkey_throw_side", "monkey_throw_up",
         "monkey_hit", "monkey_fallen", None, "monkey_taunt"]),
-    "armadillo": dict(cols=4, rows=3, height=30, colors=11, accents=3, comment="Tatu de pedra", names=[
+    "armadillo": dict(cols=4, rows=3, height=36, colors=11, accents=3, comment="Tatu de pedra", names=[
         "armadillo_down", "armadillo_down_step", "armadillo_up", "armadillo_up_step",
         "armadillo_side", "armadillo_side_step", "armadillo_ball", "armadillo_ball_side",
         "armadillo_hit", "armadillo_fallen", "armadillo_hide", "armadillo_threat"]),
-    "bat": dict(cols=4, rows=4, height=34, colors=10, accents=5, comment="Morcego", names=lunge_set("bat")),
-    "snake": dict(cols=4, rows=4, height=36, colors=10, accents=5, comment="Planta de espinhos, cobra",
+    "bat": dict(cols=4, rows=4, height=17, colors=10, accents=5, comment="Morcego", names=lunge_set("bat")),
+    "snake": dict(cols=4, rows=4, height=30, colors=10, accents=5, comment="Planta de espinhos, cobra",
                   names=lunge_set("snake")),
     "crab": dict(cols=4, rows=4, height=48, colors=12, accents=4, comment="Guardião, caranguejo",
                  names=boss_set("crab")),
