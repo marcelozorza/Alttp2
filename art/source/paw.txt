@@ -1,0 +1,19 @@
+# Pata do Giorgino esticada para abrir o baú, para a direita, vista de cima.
+# O jogo gira o desenho para as outras direções.
+paleta
+o #2a2230
+w #f4f1ea
+s #c7c1cf
+pixels
+................o.......
+.............ooowooo....
+ooooooooooooowwwwwwwo...
+wwwwwwwwwwwwwwwwwwwowo..
+wwwwwwwwwwwwwwwwwwwwwwo.
+wwwwwsswwwwwwwwwwwwwwwo.
+wwwwwwwwwswwwwwwwwwwwwo.
+wwwwwwwwwwwwwwwwwwwwwwo.
+wwwwwwwwwwwwwwwwwwwowo..
+ooooooooooooowwwwwwwo...
+.............ooowooo....
+................o.......

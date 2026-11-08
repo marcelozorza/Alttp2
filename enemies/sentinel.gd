@@ -7,8 +7,8 @@ extends Boss
 ##
 ## A pele de pedra cinza só cede à bomba. Por baixo, o corpo está congelado,
 ## com o azul do gelo grosso, e só a chama o derrete. Só então o núcleo quente
-## apanha da espada e da bomba. A pedra e o gelo voltam juntos depois de
-## shell_regrow_time, contados da explosão, então bomba, chama e espada
+## apanha do latido e da bomba. A pedra e o gelo voltam juntos depois de
+## shell_regrow_time, contados da explosão, então bomba, chama e latido
 ## precisam vir em sequência.
 ##
 ## Os ataques são os do guardião de gelo: a pancada que solta a onda, evitada
@@ -31,7 +31,7 @@ func reset() -> void:
 
 ## Fechada, a armadura só cede à explosão. Aberta, o gelo do núcleo só cede ao
 ## fogo. Depois disso, cada golpe causa dano conforme o multiplicador.
-func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
+func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.BARK) -> void:
 	if _state == State.DEAD:
 		return
 	var now := Clock.tick

@@ -2,9 +2,9 @@ class_name Boss
 extends MomentumBody
 ## Chefe do tutorial, o antigo capítulo 1: o guardião de gelo. É o exame das três ferramentas.
 ##
-## Coberto pela casca de gelo, ele ignora espada e bomba: só a chama quebra a
+## Coberto pela casca de gelo, ele ignora latido e bomba: só a chama quebra a
 ## casca, que volta depois de shell_regrow_time. Sem a casca, o núcleo apanha
-## da espada e mais ainda da bomba. Os ataques são sempre avisados, piscando em
+## do latido e mais ainda da bomba. Os ataques são sempre avisados, piscando em
 ## amarelo. A pancada no chão solta uma onda que só se evita no ar, com a mola.
 ## A investida corre em linha reta na direção travada durante o aviso.
 ##
@@ -63,8 +63,8 @@ const FLASH_TICKS := 6
 @export var stone_shell := false
 ## Ligada, a pancada solta a onda alta, que só o pulo da mola forte passa.
 @export var tall_waves := false
-## Multiplicador do dano da espada, sem a casca.
-@export_range(0, 10, 1) var sword_factor := 1
+## Multiplicador do dano do latido, sem a casca.
+@export_range(0, 10, 1) var bark_factor := 1
 ## Multiplicador do dano do fogo, sem a casca.
 @export_range(0, 10, 1) var fire_factor := 1
 ## Multiplicador do dano da chama forte, sem a casca.
@@ -147,7 +147,7 @@ func set_active(active: bool) -> void:
 
 ## Com a casca, só o fogo tem efeito, e ele quebra a casca. Sem a casca, cada
 ## tipo de golpe causa dano conforme o multiplicador.
-func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
+func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.BARK) -> void:
 	if _state == State.DEAD:
 		return
 	var now := Clock.tick
@@ -287,7 +287,7 @@ func _check_charge_hit() -> void:
 
 
 func _factor(kind: Hit.Kind) -> int:
-	return Hit.factor(kind, sword_factor, fire_factor, strong_fire_factor, blast_factor)
+	return Hit.factor(kind, bark_factor, fire_factor, strong_fire_factor, blast_factor)
 
 
 ## Desenho da casca: de gelo comum, de gelo grosso ou de pedra.

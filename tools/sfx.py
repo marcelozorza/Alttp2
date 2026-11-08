@@ -248,29 +248,27 @@ def yelp(pitch_from, pitch_to, seconds):
     return (formed + breath) * attack_decay(seconds, 0.008, seconds / 3.0)
 
 
-# Espada e combate ------------------------------------------------------------
+# Latido e combate ------------------------------------------------------------
 
 
 @recipe
-def sword_swing():
-    return finish(whoosh(0.16, 900.0, 3400.0, 1.3, 0.35) + 0.3 * whoosh(0.16, 3000.0, 6000.0, 2.0, 0.3))
+def bark():
+    """Latido curto: estalo de ar e voz em dente de serra caindo, com dois formantes."""
+    seconds = 0.14
+    voice = tone(ramp(560.0, 240.0, seconds), seconds, "saw")
+    formed = band(voice, 700.0, 2.5) + 0.5 * band(voice, 1600.0, 3.0)
+    body = formed * attack_decay(seconds, 0.006, 0.045)
+    return finish(mix(0.6 * burst(0.05, 1800.0, 0.012), body))
 
 
 @recipe
-def sword_hit():
-    return finish(
-        mix(thud(190.0, 70.0, 0.14, 0.035), 0.7 * burst(0.08, 2500.0, 0.015), 0.4 * click())
-    )
-
-
-@recipe
-def sword_denied():
+def bark_denied():
     buzz = low(tone(110.0, 0.14, "square"), 900.0) * attack_decay(0.14, 0.005, 0.05)
     return finish(mix(buzz, 0.3 * thud(150.0, 90.0, 0.08, 0.02)))
 
 
 @recipe
-def sword_lock():
+def bark_lock():
     goo = low(noise(0.12), ramp(2500.0, 300.0, 0.12)) * decay(0.12, 0.03)
     sag = low(tone(ramp(330.0, 110.0, 0.4), 0.4, "square"), 1200.0)
     sag *= attack_decay(0.4, 0.01, 0.12) * (1.0 + 0.3 * tone(14.0, 0.4))

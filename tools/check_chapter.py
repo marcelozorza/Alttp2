@@ -524,7 +524,7 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
         if slot not in "".join(m.rows):
             errors.append("BLOCKS cita a vaga %s, que não está no mapa" % slot)
     check_switches(m, errors)
-    # Baús: chão logo ao sul, para que a espada nunca alcance um baú através de
+    # Baús: chão logo ao sul, para que a pata nunca alcance um baú através de
     # uma parede ou de um bloqueio.
     map_locations = set(c for c in "".join(m.rows) if c in LOCATIONS)
     for location in map_locations:

@@ -17,7 +17,7 @@ extends MomentumBody
 ## perto e volta ao ponto inicial.
 ##
 ## A massa decide o resto pela física. O ugly arremessa o personagem no bote e
-## quase não se move com a espada. O minion voa longe com a espada e empurra
+## quase não se move com o latido. O minion voa longe com o latido e empurra
 ## pouco.
 ##
 ## Cada tipo de golpe tem um multiplicador de dano, que é a parte de pedra,
@@ -59,8 +59,8 @@ const WALK_FRAME_TICKS := 8
 ## Segundos até reaparecer no ponto inicial depois de derrotado. Zero desliga.
 ## No capítulo, os inimigos só voltam quando o personagem entra de novo na sala.
 @export_range(0.0, 10.0, 0.1) var respawn_time := 3.0
-## Multiplicador do dano da espada.
-@export_range(0, 10, 1) var sword_factor := 1
+## Multiplicador do dano do latido.
+@export_range(0, 10, 1) var bark_factor := 1
 ## Multiplicador do dano do fogo.
 @export_range(0, 10, 1) var fire_factor := 1
 ## Multiplicador do dano da chama forte. Em geral o dobro do fogo comum. Um
@@ -168,7 +168,7 @@ func _ready() -> void:
 
 
 ## Recebe um golpe. O empurrão vem separado, pela física.
-func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
+func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.BARK) -> void:
 	if _state == State.DEAD:
 		return
 	var factor := _factor(kind)
@@ -362,7 +362,7 @@ func _die() -> void:
 
 
 func _factor(kind: Hit.Kind) -> int:
-	return Hit.factor(kind, sword_factor, fire_factor, strong_fire_factor, blast_factor)
+	return Hit.factor(kind, bark_factor, fire_factor, strong_fire_factor, blast_factor)
 
 
 ## Amarelo piscando na preparação do bote e da granada, vermelho no bote, mais
@@ -448,4 +448,4 @@ func _draw() -> void:
 		return
 	var rect := _held_grenade_rect()
 	rect.position += _body.position - _body_rest_position
-	draw_rect(rect, Player.SWORD_LOCK_COLOR)
+	draw_rect(rect, Player.BARK_LOCK_COLOR)

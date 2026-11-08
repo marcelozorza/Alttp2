@@ -21,7 +21,7 @@ lunge_speed = 300.0
 lunge_time = 0.3
 recover_time = 0.9
 damage = 1
-sword_factor = 0
+bark_factor = 0
 fire_factor = 3
 blast_factor = 0
 

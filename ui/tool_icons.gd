@@ -1,12 +1,12 @@
 class_name ToolIcons
-## Ícones dos itens e da espada, em pixel art (`art/source/icon_*.txt`),
+## Ícones dos itens e do latido, em pixel art (`art/source/icon_*.txt`),
 ## usados no HUD e nos baús. Cada item tem um desenho de 12 pixels, e as
 ## chaves, de 7 por 12. A chave grande é a chave pequena em vermelho, a cor da
-## porta do chefe, e a espada travada é a espada com a lâmina magenta, como a
+## porta do chefe, e o latido travado é o latido com as ondas em magenta, como a
 ## troca de paleta do Super Nintendo.
 
-const SWORD := preload("res://art/icon_sword.svg")
-const SWORD_LOCKED := preload("res://art/icon_sword_locked.svg")
+const BARK := preload("res://art/icon_bark.svg")
+const BARK_LOCKED := preload("res://art/icon_bark_locked.svg")
 const TEXTURES := {
 	Item.Id.BOMB: preload("res://art/icon_bomb.svg"),
 	Item.Id.FIRE: preload("res://art/icon_fire.svg"),
@@ -27,9 +27,9 @@ static func draw(canvas: CanvasItem, id: int, center: Vector2, tint := Color.WHI
 		draw_centered(canvas, texture, center, tint)
 
 
-## Desenha a espada centrada em center, travada ou não.
-static func draw_sword(canvas: CanvasItem, center: Vector2, locked := false) -> void:
-	draw_centered(canvas, SWORD_LOCKED if locked else SWORD, center)
+## Desenha o latido centrado em center, travado ou não.
+static func draw_bark(canvas: CanvasItem, center: Vector2, locked := false) -> void:
+	draw_centered(canvas, BARK_LOCKED if locked else BARK, center)
 
 
 ## Desenha a textura com o centro em center, em pixels inteiros, para que a

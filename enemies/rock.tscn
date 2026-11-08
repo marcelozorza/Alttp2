@@ -7,7 +7,7 @@ script = ExtResource("1_script")
 flight_time = 0.8
 area_tiles = 1
 arc_height = 56.0
-sword_lock_time = 0.0
+bark_lock_time = 0.0
 damage = 1
 color = Color(0.61, 0.53, 0.42, 1)
 

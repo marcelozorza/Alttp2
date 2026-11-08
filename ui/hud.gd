@@ -5,7 +5,7 @@ extends Control
 ## botão, com o ícone em pixel art do que ele faz. À direita do losango, no
 ## capítulo, o contador de chaves pequenas, sempre à vista, mesmo em zero, e a
 ## chave grande depois de encontrada (Marcelo não achava o contador no alto,
-## 2026-11-06). A espada fica sempre no seu botão, com a
+## 2026-11-06). O latido fica sempre no seu botão, com a
 ## lâmina magenta enquanto está travada. O botão de uma ferramenta que o
 ## personagem ainda não tem aparece apagado. Uma melhoria troca o ícone da
 ## ferramenta: com a chama forte, o botão da chama mostra a chama maior de
@@ -38,7 +38,7 @@ const KEYS_POSITION := Vector2(108.0, 304.0)
 const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
-## Disco de um botão com espada ou ferramenta, e disco apagado de um botão
+## Disco de um botão com latido ou ferramenta, e disco apagado de um botão
 ## cuja ferramenta o personagem ainda não tem.
 const BUTTON_TEXTURE := preload("res://art/button_pad.svg")
 const EMPTY_BUTTON_TEXTURE := preload("res://art/button_pad_empty.svg")
@@ -61,7 +61,7 @@ const BUTTONS_CENTER := Vector2(52.0, 304.0)
 const FACE_BUTTON_OFFSETS := [
 	Vector2(0.0, 24.0), Vector2(24.0, 0.0), Vector2(-24.0, 0.0), Vector2(0.0, -24.0)
 ]
-## Ferramenta de cada ação. A espada fica de fora, por não ser uma ferramenta.
+## Ferramenta de cada ação. O latido fica de fora, por não ser uma ferramenta.
 const TOOL_ACTIONS := {
 	&"use_fire": Item.Id.FIRE,
 	&"use_bomb": Item.Id.BOMB,
@@ -163,9 +163,9 @@ func _draw_keys(player: Player) -> void:
 
 func _draw_buttons(player: Player) -> void:
 	if _button_centers.has(&"attack"):
-		var sword_center: Vector2 = _button_centers[&"attack"]
-		ToolIcons.draw_centered(self, BUTTON_TEXTURE, sword_center)
-		ToolIcons.draw_sword(self, sword_center, player.is_sword_locked())
+		var attack_center: Vector2 = _button_centers[&"attack"]
+		ToolIcons.draw_centered(self, BUTTON_TEXTURE, attack_center)
+		ToolIcons.draw_bark(self, attack_center, player.is_bark_locked())
 	for action: StringName in TOOL_ACTIONS:
 		if not _button_centers.has(action):
 			continue

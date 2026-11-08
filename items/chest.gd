@@ -1,7 +1,8 @@
 class_name Chest
 extends StaticBody2D
-## Baú que guarda um item. Abre com um golpe de espada, e o item vai direto
-## para o personagem. O conteúdo vem da tabela de itens do capítulo, nunca do
+## Baú que guarda um item. Abre quando o Giorgino estica a pata nele, pelo
+## botão de ataque com o baú na casa à frente (player/bark.gd), e o item vai
+## direto para o personagem. O conteúdo vem da tabela de itens do capítulo, nunca do
 ## mapa.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
@@ -42,10 +43,10 @@ func open_silently() -> void:
 	queue_redraw()
 
 
-## Só a espada abre o baú. Fogo e explosões não abrem, para que nenhum baú
-## seja aberto do outro lado de uma parede ou de um bloqueio.
-func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
-	if is_open or kind != Hit.Kind.SWORD:
+## Abre pela pata do personagem. Latido, fogo e explosões não abrem, para que
+## nenhum baú seja aberto do outro lado de uma parede ou de um bloqueio.
+func open_by_paw() -> void:
+	if is_open:
 		return
 	is_open = true
 	_open_tick = Clock.tick

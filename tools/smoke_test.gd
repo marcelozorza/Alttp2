@@ -313,12 +313,12 @@ func _check_bone_drops() -> void:
 	var hurt := player.health
 	var enemies: Array[Enemy] = []
 	for node: Node in chapter.get("_objects").get_children():
-		if node is Enemy and node.get("sword_factor") > 0 and enemies.size() < 3:
+		if node is Enemy and node.get("bark_factor") > 0 and enemies.size() < 3:
 			enemies.append(node as Enemy)
 	var counts := []
 	for enemy: Enemy in enemies:
 		enemy.global_position = player.global_position + Vector2(48.0, 0.0)
-		enemy.take_hit(99, Vector2.ZERO, Hit.Kind.SWORD)
+		enemy.take_hit(99, Vector2.ZERO, Hit.Kind.BARK)
 		await _frames(2)
 		counts.append(_bones(chapter).size())
 	var bones := _bones(chapter)
@@ -550,7 +550,7 @@ func _check_randomized() -> void:
 	var item_name: String = Item.Id.keys()[chest.item]
 	player.global_position = chest.global_position + Vector2(0, 28)
 	await _frames(4)
-	chest.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
+	chest.open_by_paw()
 	await _frames(4)
 	var recorded := Progress.was_opened(3, location)
 	Flow.leave_chapter(get_tree())
@@ -592,12 +592,12 @@ func _play(chapter_number: int) -> void:
 	print("--- capítulo %d: %s" % [chapter_number, chapter.call("mode_text")])
 	var player: Player = chapter.get("_player")
 	var map: ChapterMap = chapter.get("map")
-	# Baús: encosta e dá a espada em cada um.
+	# Baús: encosta e abre cada um com a pata.
 	var opened := 0
 	for chest: Chest in chapter.get("_chests"):
 		player.global_position = chest.global_position + Vector2(0, 28)
 		await _frames(4)
-		chest.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
+		chest.open_by_paw()
 		await _frames(4)
 		if chest.is_open:
 			opened += 1
@@ -715,8 +715,8 @@ func _beat_boss(boss: Boss) -> void:
 		Hit.Kind.BLAST,
 		Hit.Kind.FIRE,
 		Hit.Kind.STRONG_FIRE,
-		Hit.Kind.SWORD,
-		Hit.Kind.SWORD,
+		Hit.Kind.BARK,
+		Hit.Kind.BARK,
 		Hit.Kind.BLAST,
 	]
 	var guard := 0
