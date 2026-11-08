@@ -52,8 +52,8 @@ const LEDGE_COLOR := Color(0.34, 0.31, 0.24, 1.0)
 const GATE_COLOR := Color(0.43, 0.42, 0.47, 1.0)
 const SKULL_COLOR := Color(0.95, 0.93, 0.85, 1.0)
 const SKULL_EDGE := Color(0.1, 0.08, 0.1, 1.0)
-const PLAYER_COLOR := Color(0.9, 0.2, 0.25, 1.0)
-const PLAYER_EDGE := Color(1.0, 0.95, 0.9, 1.0)
+const PLAYER_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+const PLAYER_EDGE := Color(0.0, 0.0, 0.0, 1.0)
 const NOTHING := Color(0.0, 0.0, 0.0, 0.0)
 const BOSS_CHARACTERS := ["*", "&", "%", "$"]
 ## Itens da legenda: texto e o que a amostra mostra.
