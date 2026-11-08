@@ -33,7 +33,7 @@ func _ready() -> void:
 
 
 ## Recebe um golpe. Só o golpe certo remove o bloqueio.
-func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.BARK) -> void:
+func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if cleared:
 		return
 	if _opens_with(kind):

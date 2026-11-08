@@ -35,12 +35,12 @@ O jogo é feito para o controle, com uma coisa em cada botão de face. O teclado
 - **Mover:** analógico esquerdo ou direcional. No teclado, WASD ou setas. Sempre em 8 direções.
 - **Correr:** dois toques rápidos na mesma direção, segurando no segundo. Correndo, nenhum ataque tira vida: a corrida é a esquiva. Ela dura enquanto a direção estiver pressionada e houver fôlego: depois de 3 s correndo o personagem cansa, para de correr e só corre de novo depois de 4 s de descanso. Nada disso aparece na tela.
 - **Andar de lado:** segure L ou R, ou Shift no teclado, para manter a direção de frente.
-- **Latido:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. Late na direção da cabeça e alcança a casa à frente. Com um baú na casa à frente, o mesmo botão estica a pata e abre o baú, sem latir.
+- **Espada:** botão de baixo (A no padrão Xbox, B no SNES). No teclado, J ou Z. O golpe também abre os baús.
 - **Bomba:** botão de cima (Y no padrão Xbox, X no SNES). No teclado, L ou C.
 - **Chama:** botão da esquerda (X no padrão Xbox, Y no SNES). No teclado, K ou X.
 - **Pulo, com a mola:** botão da direita (B no padrão Xbox, A no SNES). No teclado, Espaço ou V. No ar, o personagem passa por cima dos inimigos comuns, e o bote deles não o alcança. Os chefes continuam sólidos.
 
-O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só o latido funciona.
+O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No ar, só a espada funciona.
 
 - **Vida:** os corações no alto, um a cada dois pontos, pela metade ou vazios conforme você perde vida. Cada inimigo morto tem 30% de chance de deixar um ossinho, que enche 2 pontos ao ser pego e some em 10 s, e com 3 pontos ou menos todo inimigo deixa um. Com 4 pontos ou menos, um beep discreto avisa.
 - **Minimapa e mapa:** no canto inferior direito, dentro das dungeons, um bloco por sala já visitada, com a sala atual piscando. O botão de mapa abre o mapa inteiro da dungeon numa tela própria: nas salas já vistas aparecem baús fechados e abertos, portas trancadas, porta do chefe, paredes rachadas, gelo, degraus e grades, as salas não vistas são blocos sombreados, o chefe tem uma caveira desde o começo e o Giorgino pisca. Uma legenda fica embaixo.
@@ -48,7 +48,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 
 ## Ferramentas
 
-- **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. O latido empurra a bomba. Dá para soltar 2 seguidas, e as duas voltam 3 s depois da última.
+- **Bomba:** fica no chão à frente e explode em 1,5 s. Abre paredes rachadas e também machuca o personagem. A espada empurra a bomba. Dá para soltar 2 seguidas, e as duas voltam 3 s depois da última.
 - **Chama:** bola de fogo reta. Derrete gelo e acende bombas. Dá para lançar 5 seguidas, uma de cada vez na tela, e todas voltam 3 s depois da última.
 - **Chama forte:** melhoria da chama, encontrada no capítulo 3, sem botão próprio. A bola de fogo fica maior e com o miolo branco. Faz tudo o que a chama faz, derrete o gelo grosso, causa o dobro do dano nos inimigos que o fogo afeta e é a única coisa que vence a morsa de gelo e a casca do guardião antigo.
 - **Mola:** pulo vertical, sem limite e sem ganhar distância. Encostado na face de um degrau alto, no alto do pulo e apertando para cima, o personagem sobe. Para descer, basta andar contra a face vindo de cima.
@@ -57,7 +57,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 
 ## Estrutura
 
-- `player/` personagem do jogador e o latido (`bark.gd`), que também estica a pata nos baús.
+- `player/` personagem do jogador e a espada.
 - `physics/` física de massa e momento usada pelo personagem e pelos objetos.
 - `combat/` tipos de golpe, que decidem o que cada ferramenta afeta.
 - `items/` itens e ferramentas: baú, bomba, bola de fogo e a relíquia do fim.
@@ -123,12 +123,12 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 
 ## Tons do Giorgino
 
-- **De pé, sem tom:** andando, com os itens na pata (as sprites atuais ainda mostram a espada, que sai no redesenho).
+- **De pé, sem tom:** andando, com a espada e os itens na pata.
 - **Inclinado para a frente, alaranjado:** correndo, sem tomar dano. Atacar encerra a corrida.
 - **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola. Com a mola forte, cresce mais e fica mais tempo no ar.
-- **Barra magenta acima da cabeça:** latido travado pela granada do ugly. A barra encolhe até a trava acabar, e as ferramentas seguem funcionando.
+- **Barra magenta acima da cabeça:** espada travada pela granada do ugly. A barra encolhe até a trava acabar, e as ferramentas seguem funcionando.
 
 ## Cores dos inimigos
 
@@ -146,11 +146,11 @@ Nos inimigos com desenho, as cores viram um tom sobre ele. O minion, o gatinho l
 - **Cor de areia, parado, com uma pedra acima da cabeça:** atirador de pedras. A pedra cai na casa marcada no chão e causa dano a quem estiver nela. Ele não sai do lugar.
 - **Roxo escuro voando em ziguezague, com uma sombra no chão:** morcego. Um golpe basta. A sombra diz onde ele está.
 - **Casca redonda de pedra rachada:** tatu de pedra. Só a bomba o abre, e uma basta. Ele nunca corre: avança devagar e sem parar, e machuca ao encostar.
-- **Bulbo verde com boca de dentes:** planta de espinhos. Não sai do lugar e morde quem chega perto. Três latidos a vencem, e uma bola de fogo basta.
+- **Bulbo verde com boca de dentes:** planta de espinhos. Não sai do lugar e morde quem chega perto. A espada corta em 3 golpes, e uma bola de fogo basta.
 - **Chefe azul claro:** com a casca de gelo. A chama quebra a casca e deixa o núcleo, vinho, exposto. Amarelo piscando avisa a pancada no chão, que solta uma onda (pule com a mola), e a investida.
 - **Chefe azul profundo com borda de geada:** o guardião antigo, com a casca de gelo grosso. Só a chama forte quebra a casca. Os ataques são os do guardião de gelo.
-- **Sentinela, o buldogue de pedra:** a bomba quebra a pele de pedra. O corpo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha do latido e da bomba. A pedra volta 8 s depois da explosão.
-- **Colosso de arenito rachado:** a bomba abre a casca, que volta em 6 s. O núcleo de pedra derretida apanha do latido, da chama forte e da bomba. A pancada no chão solta uma onda alta, cor de areia, que só a mola forte pula.
+- **Sentinela, o buldogue de pedra:** a bomba quebra a pele de pedra. O corpo congelado, azul, derrete com a chama. O núcleo quente, vermelho, apanha da espada e da bomba. A pedra volta 8 s depois da explosão.
+- **Colosso de arenito rachado:** a bomba abre a casca, que volta em 6 s. O núcleo de pedra derretida apanha da espada, da chama forte e da bomba. A pancada no chão solta uma onda alta, cor de areia, que só a mola forte pula.
 
 ## Cores do mundo
 
@@ -164,7 +164,7 @@ Cada dungeon tem um tema: o tutorial é a pedra azulada com tochas, o capítulo 
 - **Bloqueio num nicho entre duas paredes:** todo bloqueio de porta fica uma casa para dentro da sala, para aparecer inteiro na tela. As paredes projetam sombra no chão para o sul e para o leste.
 - **Grade de ferro escura numa passagem:** só o interruptor da sala abre. Golpes só a fazem tremer.
 - **Placa de pedra com um losango, no chão:** interruptor. Pisar abre a grade enquanto você fica em cima. Empurrar o bloco pesado, que tem o mesmo losango, até ele parar em cima abre de vez.
-- **Baú vermelho com faixa dourada:** abre com a pata, pelo botão de ataque com o baú na casa à frente.
+- **Baú marrom com faixa dourada:** abre com a espada.
 - **Porta de madeira com faixas de ferro e fechadura:** gasta uma chave pequena.
 - **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.
 - **Losango dourado:** relíquia que o chefe deixa. Tocar nela encerra o capítulo.

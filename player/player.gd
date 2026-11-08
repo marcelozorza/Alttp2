@@ -6,7 +6,7 @@ extends MomentumBody
 ## (60 vezes por segundo, padrão de Physics > Common > Physics Ticks Per Second).
 ## Assim o movimento é idêntico em qualquer máquina e taxa de quadros, condição
 ## para que técnicas avançadas de precisão sejam reproduzíveis. Pelo mesmo
-## motivo, todos os tempos (duplo toque, pulo, trava do latido) são contados em
+## motivo, todos os tempos (duplo toque, pulo, trava da espada) são contados em
 ## ticks.
 ##
 ## O movimento é sempre em 8 direções, inclusive no analógico.
@@ -19,18 +19,18 @@ extends MomentumBody
 ## contra uma parede, arremessa o personagem para trás, e ele só recupera o
 ## controle quando o atrito reduz a velocidade abaixo de recover_speed.
 ##
-## O jogo é feito para o controle, com o latido e cada ferramenta no seu
+## O jogo é feito para o controle, com a espada e cada ferramenta no seu
 ## próprio botão, definidos no mapa de entrada do projeto. O botão de uma
 ## ferramenta não faz nada antes de o personagem tê-la. Uma melhoria, como a
 ## chama forte ou a mola forte, não ganha botão: muda o que a ferramenta faz. A
 ## chama e a bomba têm cargas, que voltam todas juntas depois de um tempo sem
-## uso (ver player/tool_charges.gd). O latido e a mola não têm limite. A mola
+## uso (ver player/tool_charges.gd). A espada e a mola não têm limite. A mola
 ## dá um pulo vertical: o personagem sobe no eixo da câmera, cresce na tela e
 ## mantém o mesmo controle do chão, sem ganhar distância. Com ela, ele sobe
 ## degraus altos, e com a mola forte o pulo é mais alto e demorado, e sobe o
 ## degrau duplo (ver obstacles/ledge.gd).
 ##
-## O latido pode ficar travado por um tempo, como faz a granada do ugly. Uma
+## A espada pode ficar travada por um tempo, como faz a granada do ugly. Uma
 ## barra magenta acima da cabeça mostra quanto falta, e as ferramentas seguem
 ## funcionando.
 ##
@@ -85,12 +85,12 @@ const ART_BELOW_FEET := 8.0
 ## Ticks de cada passo, andando e correndo.
 const WALK_STEP_TICKS := 10
 const RUN_STEP_TICKS := 6
-## Cor do latido travado. A granada do ugly usa a mesma cor.
-const BARK_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
-## Cor da barra da trava ao apertar o ataque com o latido travado.
-const BARK_DENIED_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+## Cor da espada travada. A granada do ugly usa a mesma cor.
+const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
+## Cor da barra da trava ao apertar o ataque com a espada travada.
+const SWORD_DENIED_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 ## Ticks em que a barra da trava fica branca depois de um aperto sem efeito.
-const BARK_DENIED_TICKS := 6
+const SWORD_DENIED_TICKS := 6
 const BOMB_SCENE := preload("res://items/bomb.tscn")
 const FIREBALL_SCENE := preload("res://items/fireball.tscn")
 ## Desvios laterais, em pixels, tentados ao cruzar um degrau desalinhado.
@@ -224,9 +224,9 @@ var _drawn_height := 0.0
 ## pulo, os da mola comum, que também regem a queda de um degrau.
 var _air_height := 44.0
 var _air_time := 0.5
-var _bark_lock_until_tick := 0
-var _bark_lock_ticks := 1
-var _bark_denied_tick := -1000
+var _sword_lock_until_tick := 0
+var _sword_lock_ticks := 1
+var _sword_denied_tick := -1000
 var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
 ## Passo mostrado no último tick, para o som de cada passo tocar uma vez.
@@ -234,9 +234,9 @@ var _last_step := 0
 
 @onready var _visual: Node2D = $Visual
 @onready var _art: Sprite2D = $Visual/Art
-@onready var _bark: Bark = $Visual/Bark
-@onready var _bark_lock_bar: ColorRect = $Visual/BarkLock
-@onready var _bark_lock_width: float = _bark_lock_bar.size.x
+@onready var _sword: Sword = $Visual/Sword
+@onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
+@onready var _sword_lock_width: float = _sword_lock_bar.size.x
 @onready var _shadow: ColorRect = $Shadow
 @onready var _feet: CollisionShape2D = $Feet
 
@@ -384,7 +384,7 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 ## Recebe um ataque. Durante a invencibilidade e correndo, ataques são
 ## ignorados. O empurrão vem separado, pela física da batida. Sem vida, o
 ## personagem cai e avisa a cena, que mostra a tela de derrota.
-func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.BARK) -> void:
+func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD or Clock.tick < _invincible_until_tick:
 		return
 	if run_invincible and _state == State.RUN:
@@ -441,40 +441,34 @@ func _is_down() -> bool:
 	return _state == State.DEAD
 
 
-## Trava o latido por alguns segundos. Durante a invencibilidade, nada
+## Trava a espada por alguns segundos. Durante a invencibilidade, nada
 ## acontece. Uma trava nova nunca encurta a que já existe.
-func lock_bark(seconds: float) -> void:
+func lock_sword(seconds: float) -> void:
 	var now := Clock.tick
 	if now < _invincible_until_tick:
 		return
 	var until := now + GameMath.ticks(seconds)
-	if until > _bark_lock_until_tick:
-		_bark_lock_until_tick = until
-		_bark_lock_ticks = maxi(until - now, 1)
-		Sfx.play(&"bark_lock")
+	if until > _sword_lock_until_tick:
+		_sword_lock_until_tick = until
+		_sword_lock_ticks = maxi(until - now, 1)
+		Sfx.play(&"sword_lock")
 
 
-func is_bark_locked() -> bool:
-	return Clock.tick < _bark_lock_until_tick
+func is_sword_locked() -> bool:
+	return Clock.tick < _sword_lock_until_tick
 
 
-## Botão de ataque. Com um baú fechado na casa à frente, estica a pata e abre
-## o baú. Sem baú, late na direção da frente. Correr e atacar encerra a
-## corrida. Com o latido travado, o aperto só faz a barra da trava piscar, e
-## a pata continua abrindo baús.
+## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
+## Com a espada travada, o aperto só faz a barra da trava piscar.
 func _attack() -> void:
-	var chest := _bark.chest_ahead(facing)
-	if chest == null and is_bark_locked():
-		_bark_denied_tick = Clock.tick
-		Sfx.play(&"bark_denied")
+	if is_sword_locked():
+		_sword_denied_tick = Clock.tick
+		Sfx.play(&"sword_denied")
 		return
 	if _state == State.RUN:
 		_enter(State.WALK)
-	if chest:
-		_bark.paw(facing, chest)
-	else:
-		_bark.bark(facing)
-		Sfx.play(&"bark")
+	_sword.attack(facing)
+	Sfx.play(&"sword_swing")
 	_freeze_until_tick = Clock.tick + GameMath.ticks(attack_freeze_time)
 
 
@@ -484,7 +478,7 @@ func _recharge_tools() -> void:
 	_bomb_charges.recharge(now, GameMath.ticks(bomb_recharge_time))
 
 
-## Cada ferramenta responde ao seu botão. No ar, só o latido funciona.
+## Cada ferramenta responde ao seu botão. No ar, só a espada funciona.
 func _use_tools() -> void:
 	if is_airborne():
 		return
@@ -501,7 +495,7 @@ func _use_tools() -> void:
 
 
 ## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
-## atravessa as próprias bombas, mas pode empurrá-las com o latido.
+## atravessa as próprias bombas, mas pode empurrá-las com a espada.
 func _place_bomb() -> void:
 	if _bomb_charges.left(bomb_charges) <= 0:
 		return
@@ -730,7 +724,7 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 
 
 ## O desenho do Giorgino segue a frente, e um tom sobre ele indica o estado: o
-## corpo treme no desequilíbrio e fica deitado na queda. Com o latido travado,
+## corpo treme no desequilíbrio e fica deitado na queda. Com a espada travada,
 ## uma barra acima da cabeça encolhe até a trava acabar.
 func _update_visuals() -> void:
 	var tint := Color.WHITE
@@ -753,7 +747,7 @@ func _update_visuals() -> void:
 	_visual.position = Vector2(0.0, _visual_offset - _z)
 	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
 	_shadow.visible = is_airborne()
-	_update_bark_lock_bar()
+	_update_sword_lock_bar()
 
 
 ## Escolhe o desenho pela postura e pela frente: correndo, os desenhos
@@ -786,13 +780,13 @@ func _update_art() -> void:
 	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
 
 
-func _update_bark_lock_bar() -> void:
+func _update_sword_lock_bar() -> void:
 	var now := Clock.tick
-	var left := _bark_lock_until_tick - now
-	_bark_lock_bar.visible = left > 0
+	var left := _sword_lock_until_tick - now
+	_sword_lock_bar.visible = left > 0
 	if left <= 0:
 		return
-	_bark_lock_bar.size.x = _bark_lock_width * left / _bark_lock_ticks
-	_bark_lock_bar.position.x = -_bark_lock_bar.size.x / 2.0
-	var denied := now - _bark_denied_tick < BARK_DENIED_TICKS
-	_bark_lock_bar.color = BARK_DENIED_COLOR if denied else BARK_LOCK_COLOR
+	_sword_lock_bar.size.x = _sword_lock_width * left / _sword_lock_ticks
+	_sword_lock_bar.position.x = -_sword_lock_bar.size.x / 2.0
+	var denied := now - _sword_denied_tick < SWORD_DENIED_TICKS
+	_sword_lock_bar.color = SWORD_DENIED_COLOR if denied else SWORD_LOCK_COLOR

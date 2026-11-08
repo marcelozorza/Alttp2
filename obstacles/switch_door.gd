@@ -33,7 +33,7 @@ func set_open(value: bool) -> void:
 
 ## Aberta, a grade não reage a golpes. Fechada, só treme, como todo bloqueio
 ## com o golpe errado.
-func take_hit(amount: int, direction: Vector2, kind := Hit.Kind.BARK) -> void:
+func take_hit(amount: int, direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if open:
 		return
 	super(amount, direction, kind)

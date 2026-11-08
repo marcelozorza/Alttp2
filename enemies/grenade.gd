@@ -3,11 +3,11 @@ extends Node2D
 ## Granada que o ugly joga de longe. Ela voa em arco até o centro de uma casa e
 ## estoura numa área de 3 por 3 casas. A área aparece no chão assim que a
 ## granada sai da mão, e um quadrado cresce dentro dela até o estouro, como
-## aviso. Quem estiver com os pés na área no estouro fica com o latido travado.
+## aviso. Quem estiver com os pés na área no estouro fica com a espada travada.
 ## A granada não causa dano, não empurra e só afeta o personagem.
 ##
 ## A pedra do atirador (enemies/rock.tscn) é a mesma cena com outros valores:
-## cai numa casa só, causa dano em vez de travar o latido e tem a cor da pedra.
+## cai numa casa só, causa dano em vez de travar a espada e tem a cor da pedra.
 
 ## Tamanho do desenho da granada, em pixels.
 const BALL_SIZE := Vector2(12.0, 12.0)
@@ -21,8 +21,8 @@ const BURST_TICKS := 12
 @export_range(1, 7, 1) var area_tiles := 3
 ## Altura extra do arco, em pixels, além da altura da mão.
 @export_range(0.0, 128.0, 1.0) var arc_height := 40.0
-## Segundos com o latido travado para quem estiver na área. Zero não trava.
-@export_range(0.0, 10.0, 0.5) var bark_lock_time := 3.0
+## Segundos com a espada travada para quem estiver na área. Zero não trava.
+@export_range(0.0, 10.0, 0.5) var sword_lock_time := 3.0
 ## Dano em quem estiver na área. Zero não machuca.
 @export_range(0, 10, 1) var damage := 0
 ## Cor da bola e da área no chão.
@@ -99,8 +99,8 @@ func _burst() -> void:
 		var player := result["collider"] as Player
 		if not player:
 			continue
-		if bark_lock_time > 0.0:
-			player.lock_bark(bark_lock_time)
+		if sword_lock_time > 0.0:
+			player.lock_sword(sword_lock_time)
 		if damage > 0:
 			var away := player.global_position - global_position
 			var direction := away.normalized() if away != Vector2.ZERO else Vector2.DOWN

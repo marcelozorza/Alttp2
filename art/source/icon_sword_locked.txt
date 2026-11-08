@@ -1,0 +1,10 @@
+# Espada travada pela granada do ugly: a mesma espada com a lâmina magenta.
+paleta
+o #1a1620
+w #ff80f0
+s #c040b0
+g #e0b040
+y #f8e080
+h #8a5a30
+b #5a3a1c
+usa icon_sword

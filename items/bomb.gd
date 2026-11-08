@@ -2,7 +2,7 @@ class_name Bomb
 extends MomentumBody
 ## Bomba com pavio. Explode sozinha depois de fuse_time e atinge tudo num raio:
 ## causa dano, empurra os corpos pela física e abre paredes rachadas. Fogo e
-## outras explosões acendem o pavio na hora. O latido só empurra a bomba, o que
+## outras explosões acendem o pavio na hora. A espada só empurra a bomba, o que
 ## permite chutá-la para longe.
 ##
 ## O personagem atravessa as próprias bombas, para poder soltá-las aos pés.
@@ -58,7 +58,7 @@ func _ready() -> void:
 
 ## Fogo e explosões acendem o pavio. A bomba explode no tick seguinte, fora da
 ## consulta de física que a atingiu.
-func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.BARK) -> void:
+func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 	if Hit.is_fire(kind) or kind == Hit.Kind.BLAST:
 		var lit := Clock.tick - GameMath.ticks(fuse_time) + 1
 		_spawn_tick = mini(_spawn_tick, lit)
