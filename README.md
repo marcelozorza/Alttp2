@@ -107,6 +107,8 @@ python3 tools/pixel_svg.py
 
 O Godot reimporta os SVG ao voltar para o editor. Uma linha `usa outro_desenho` no lugar da grade reaproveita os pixels de outro desenho com a paleta nova: é assim que os tiles do castelo, do gelo e das ruínas (`floor_castle`, `wall_ice`, `wall_face_moss` e os demais) saem dos tiles de pedra, e a chama azul da chama comum. Os quatro quadros da explosão da bomba (`explosion_1` a `explosion_4`) não se editam à mão: saem de `python3 tools/explosion_art.py`, que gera o texto deles antes do passo acima.
 
+Os 13 quadros do Giorgino (`giorgino_*`) saem de uma folha de 16 poses gerada por IA, em 4 por 4 células. `python3 tools/giorgino_sheet.py folha.png 48 saida/` separa cada pose do fundo, reduz para 48 pixels de altura na pose de pé e quantiza na paleta do personagem. Depois é copiar os 13 arquivos (todos menos os três `giorgino_bark_*`) para `art/source/` e rodar o passo acima. Precisa de numpy e Pillow.
+
 ## Som
 
 **Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
@@ -123,8 +125,8 @@ O volume e a variação de tom de cada efeito ficam na tabela `SOUNDS` de `audio
 
 ## Tons do Giorgino
 
-- **De pé, sem tom:** andando, com a espada e os itens na pata.
-- **Inclinado para a frente, alaranjado:** correndo, sem tomar dano. Atacar encerra a corrida.
+- **De pé, sem tom:** andando. A espada é desenhada à parte, só no golpe.
+- **Nas quatro patas, galopando:** correndo, sem tomar dano. Atacar encerra a corrida.
 - **Clarão branco:** arremessado por uma batida, sem controle.
 - **Transparente piscando:** invencível depois de tomar dano.
 - **Maior, com uma sombra embaixo:** no ar, pulando com a mola. Com a mola forte, cresce mais e fica mais tempo no ar.

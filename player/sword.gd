@@ -10,15 +10,26 @@ extends Node2D
 ## O dano é calculado no plano do chão, a partir dos pés de quem empunha. Assim
 ## o golpe acerta o que está encostado e não muda durante o pulo, quando o
 ## desenho da lâmina sobe junto com o corpo.
+##
+## O desenho é art/sword.svg, uma espada apontando para a direita, girada para
+## a direção do golpe. Para os lados ela sai da pata, para baixo sai de baixo
+## do corpo e para cima sai de cima da cabeça. Ao recolher, ela desliza para
+## dentro do corpo, e a parte que já entrou não aparece.
 
 ## Centro e meia extensão do corpo desenhado do personagem, a partir da origem
-## nos pés. A lâmina sai da borda do corpo.
+## nos pés. A área de dano sai da borda do corpo.
 const BODY_CENTER := Vector2(0.0, -8.0)
 const BODY_HALF_EXTENTS := Vector2(12.0, 16.0)
 ## Meia extensão dos pés, a colisão do personagem.
 const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
-## Espessura desenhada da lâmina, em pixels.
-const BLADE_THICKNESS := 8.0
+## Desenho da espada: cabo até a coluna GUARD_X, guarda e lâmina até a ponta.
+const ART := preload("res://art/sword.svg")
+const GUARD_X := 8.0
+## De onde a guarda sai, relativo aos pés, em cada direção: na altura da pata
+## para os lados, de baixo do corpo para baixo e de cima da cabeça para cima.
+const SIDE_START := Vector2(10.0, -20.0)
+const DOWN_START := Vector2(0.0, 6.0)
+const UP_START := Vector2(0.0, -24.0)
 
 ## Comprimento da lâmina para fora do corpo, em pixels.
 @export_range(8.0, 80.0, 1.0) var reach := 24.0
@@ -40,7 +51,6 @@ var _attack_tick := -1000
 var _already_hit: Array[Object] = []
 var _hit_shape := RectangleShape2D.new()
 
-@onready var _blade: ColorRect = $Blade
 @onready var _wielder := owner as CollisionObject2D
 
 
@@ -50,13 +60,14 @@ func attack(direction: Vector2) -> void:
 	_attack_tick = Clock.tick
 	_already_hit.clear()
 	_apply_hits()
-	_update_blade()
+	queue_redraw()
 
 
 func _physics_process(_delta: float) -> void:
 	if _elapsed() < GameMath.ticks(active_time):
 		_apply_hits()
-	_update_blade()
+	if _elapsed() <= GameMath.ticks(active_time) + GameMath.ticks(retract_time):
+		queue_redraw()
 
 
 func _elapsed() -> int:
@@ -84,25 +95,50 @@ func _apply_hits() -> void:
 			body.add_impact_velocity(_direction * impulse / body.mass)
 
 
-func _update_blade() -> void:
+## Quanto da lâmina está para fora do corpo: toda ela no golpe, encolhendo
+## durante o recolhimento e nada no resto do tempo.
+func _blade_length() -> float:
 	var active := GameMath.ticks(active_time)
 	var retract := GameMath.ticks(retract_time)
 	var elapsed := _elapsed()
-	var length := 0.0
 	if elapsed < active:
-		length = reach
-	elif elapsed < active + retract:
-		length = reach * (1.0 - float(elapsed - active) / retract)
-	_blade.visible = length > 0.0
-	if _blade.visible:
-		var rect := _blade_rect(length, BLADE_THICKNESS)
-		_blade.position = rect.position
-		_blade.size = rect.size
+		return reach
+	if elapsed < active + retract:
+		return reach * (1.0 - float(elapsed - active) / retract)
+	return 0.0
+
+
+func _draw() -> void:
+	var length := _blade_length()
+	if length <= 0.0:
+		return
+	# Quanto a espada já entrou no corpo. A coluna c do desenho fica em
+	# c - GUARD_X - pulled no eixo do golpe, e só o que passa da guarda aparece.
+	# Estendida, o cabo aparece na pata, menos para cima, onde ficaria sobre a
+	# cabeça.
+	var pulled := reach - length
+	var first := GUARD_X + pulled
+	if pulled <= 0.0 and _direction != Vector2.UP:
+		first = 0.0
+	var height := float(ART.get_height())
+	var width := ART.get_width() - first
+	var region := Rect2(first, 0.0, width, height)
+	var rect := Rect2(first - GUARD_X - pulled, -height / 2.0, width, height)
+	draw_set_transform(_draw_start(), _direction.angle())
+	draw_texture_rect_region(ART, rect, region)
+
+
+func _draw_start() -> Vector2:
+	if _direction.x != 0.0:
+		return Vector2(_direction.x * SIDE_START.x, SIDE_START.y)
+	if _direction.y < 0.0:
+		return UP_START
+	return DOWN_START
 
 
 ## Área de dano no chão, relativa aos pés. Vai da borda dos pés até a ponta da
-## lâmina desenhada. Para cima, a lâmina sai do alto do corpo, então a área
-## também cobre o trecho entre os pés e a cabeça.
+## lâmina. Para cima, a lâmina sai do alto do corpo, então a área também cobre
+## o trecho entre os pés e a cabeça.
 func _hit_rect() -> Rect2:
 	var horizontal := _direction.x != 0.0
 	var edge := BODY_HALF_EXTENTS.x if horizontal else BODY_HALF_EXTENTS.y
@@ -111,13 +147,3 @@ func _hit_rect() -> Rect2:
 	if horizontal:
 		return Rect2(minf(near.x, tip.x), -hit_width / 2.0, absf(tip.x - near.x), hit_width)
 	return Rect2(-hit_width / 2.0, minf(near.y, tip.y), hit_width, absf(tip.y - near.y))
-
-
-## Retângulo da lâmina desenhada, que começa na borda do corpo e se estende na
-## direção do golpe.
-func _blade_rect(length: float, thickness: float) -> Rect2:
-	var horizontal := _direction.x != 0.0
-	var edge := BODY_HALF_EXTENTS.x if horizontal else BODY_HALF_EXTENTS.y
-	var center := BODY_CENTER + _direction * (edge + length / 2.0)
-	var size := Vector2(length, thickness) if horizontal else Vector2(thickness, length)
-	return Rect2(center - size / 2.0, size)

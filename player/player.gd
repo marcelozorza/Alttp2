@@ -52,8 +52,9 @@ signal died
 
 enum State { WALK, RUN, KNOCKBACK, DEAD }
 
-## Tons sobre o desenho do Giorgino em cada estado. Acima de 1, o tom clareia.
-const RUN_TINT := Color(1.0, 0.82, 0.62, 1.0)
+## Tons sobre o desenho do Giorgino sem vida e arremessado. Acima de 1, o tom
+## clareia. A corrida não tem tom: o desenho inclinado e os passos rápidos
+## bastam (pedido de Marcelo em 2026-11-08).
 const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
 ## Desenhos do Giorgino, nesta ordem: de frente, de costas e de lado, cada um
@@ -723,14 +724,12 @@ func _corner_nudge(direction: Vector2, speed: float, delta: float) -> Vector2:
 	return Vector2.ZERO
 
 
-## O desenho do Giorgino segue a frente, e um tom sobre ele indica o estado: o
-## corpo treme no desequilíbrio e fica deitado na queda. Com a espada travada,
-## uma barra acima da cabeça encolhe até a trava acabar.
+## O desenho do Giorgino segue a frente, e um tom sobre ele indica o dano e a
+## morte. Com a espada travada, uma barra acima da cabeça encolhe até a trava
+## acabar.
 func _update_visuals() -> void:
 	var tint := Color.WHITE
 	match _state:
-		State.RUN:
-			tint = RUN_TINT
 		State.DEAD:
 			tint = DEAD_TINT
 		State.KNOCKBACK:

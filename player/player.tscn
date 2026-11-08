@@ -30,13 +30,6 @@ offset = Vector2(-16, -40)
 [node name="Sword" type="Node2D" parent="Visual"]
 script = ExtResource("2_sword")
 
-[node name="Blade" type="ColorRect" parent="Visual/Sword"]
-visible = false
-offset_right = 8.0
-offset_bottom = 24.0
-mouse_filter = 2
-color = Color(0.86, 0.9, 0.95, 1)
-
 [node name="SwordLock" type="ColorRect" parent="Visual"]
 visible = false
 offset_left = -12.0

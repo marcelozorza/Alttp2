@@ -299,9 +299,12 @@ def bump():
 
 @recipe
 def step():
-    pad = burst(0.04, 900.0, 0.008)
-    claw = 0.25 * click(0.003, 5500.0)
-    return finish(mix(pad, at(claw, 0.004)))
+    """Passo da corrida: a almofada da pata bate no chão, com um toque de
+    unha. Mais encorpado desde 2026-11-08, quando Marcelo não ouvia o passo."""
+    pad = thud(190.0, 95.0, 0.07, 0.018)
+    scuff = 0.6 * burst(0.05, 1400.0, 0.01)
+    claw = 0.45 * click(0.003, 5500.0)
+    return finish(mix(pad, scuff, at(claw, 0.005)))
 
 
 @recipe

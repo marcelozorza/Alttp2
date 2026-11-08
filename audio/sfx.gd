@@ -16,7 +16,7 @@ const FOLDER := "res://audio/sfx/"
 ## Volume em dB e variação de tom, para mais e para menos, de cada som.
 const SOUNDS := {
 	# Giorgino
-	&"step": [-18.0, 0.12],
+	&"step": [-9.0, 0.1],
 	&"dash": [-10.0, 0.05],
 	&"bump": [-10.0, 0.08],
 	&"hurt": [-4.0, 0.05],
