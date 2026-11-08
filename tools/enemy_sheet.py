@@ -54,14 +54,8 @@ def boss_set(prefix):
 
 
 PRESETS = {
-    # O lobo e o cubo de gelo saíram daqui em 2026-11-08: foram redesenhados à
-    # mão em art/source/ e não devem ser gerados de folha nenhuma.
-    "stalactite": dict(cols=4, rows=4, height=44, colors=10, accents=4, comment="Morsa de gelo, estalactite",
-                       names=[
-        "stalactite_down", "stalactite_down_step", "stalactite_up", "stalactite_up_step",
-        "stalactite_side", "stalactite_side_step", "stalactite_lunge_down", "stalactite_lunge_down_step",
-        "stalactite_lunge_up", "stalactite_lunge_up_step", "stalactite_lunge_side", "stalactite_lunge_side_step",
-        "stalactite_windup", "stalactite_hit", "stalactite_recover", "stalactite_fallen"]),
+    # O lobo, o cubo de gelo e a estalactite saíram daqui em 2026-11-08: foram
+    # redesenhados à mão em art/source/ e não devem ser gerados de folha nenhuma.
     "monkey": dict(cols=4, rows=4, height=36, colors=10, accents=5, comment="Atirador de pedras, macaquinho",
                    names=[
         "monkey_down", "monkey_down_step", "monkey_up", "monkey_up_step",
