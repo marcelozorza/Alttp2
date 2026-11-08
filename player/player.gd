@@ -24,8 +24,9 @@ extends MomentumBody
 ## ferramenta não faz nada antes de o personagem tê-la. Uma melhoria, como a
 ## chama forte ou a mola forte, não ganha botão: muda o que a ferramenta faz. A
 ## chama e a bomba têm cargas, que voltam todas juntas depois de um tempo sem
-## uso (ver player/tool_charges.gd). A espada e a mola não têm limite. A mola
-## dá um pulo vertical: o personagem sobe no eixo da câmera, cresce na tela e
+## uso (ver player/tool_charges.gd). A espada não tem limite. A mola tem 3
+## pulos e descansa 2 s depois do terceiro (pedido de Marcelo em 2026-11-08,
+## jogando). A mola dá um pulo vertical: o personagem sobe no eixo da câmera, cresce na tela e
 ## mantém o mesmo controle do chão, sem ganhar distância. Com ela, ele sobe
 ## degraus altos, e com a mola forte o pulo é mais alto e demorado, e sobe o
 ## degrau duplo (ver obstacles/ledge.gd).
@@ -196,6 +197,9 @@ const LOW_HEALTH_DELAY := 0.3
 @export_range(1, 10, 1) var bomb_charges := 2
 ## Segundos sem usar a bomba até todas as cargas voltarem.
 @export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 3.0
+## Pulos seguidos da mola antes do descanso, e segundos do descanso.
+@export_range(1, 10, 1) var jump_charges := 3
+@export_range(0.5, 10.0, 0.5) var jump_recharge_time := 2.0
 ## Bombas no chão ao mesmo tempo, além do limite das cargas.
 @export_range(1, 5, 1) var max_bombs := 2
 ## Pontos de vida ganhos com cada coração.
@@ -246,6 +250,7 @@ var _sword_lock_ticks := 1
 var _sword_denied_tick := -1000
 var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
+var _jump_charges := ToolCharges.new()
 ## Passo mostrado no último tick, para o som de cada passo tocar uma vez.
 var _last_step := 0
 
@@ -323,6 +328,8 @@ func charges_left(id: int) -> int:
 			return _fire_charges.left(fire_charges)
 		Item.Id.BOMB:
 			return _bomb_charges.left(bomb_charges)
+		Item.Id.SPRING:
+			return _jump_charges.left(jump_charges)
 	return -1
 
 
@@ -333,6 +340,8 @@ func max_charges(id: int) -> int:
 			return fire_charges
 		Item.Id.BOMB:
 			return bomb_charges
+		Item.Id.SPRING:
+			return jump_charges
 	return 0
 
 
@@ -493,6 +502,7 @@ func _recharge_tools() -> void:
 	var now := Clock.tick
 	_fire_charges.recharge(now, GameMath.ticks(fire_recharge_time))
 	_bomb_charges.recharge(now, GameMath.ticks(bomb_recharge_time))
+	_jump_charges.recharge(now, GameMath.ticks(jump_recharge_time))
 
 
 ## Cada ferramenta responde ao seu botão. No ar, só a espada funciona.
@@ -504,6 +514,9 @@ func _use_tools() -> void:
 	if Input.is_action_just_pressed("use_bomb") and has_tool(Item.Id.BOMB):
 		_place_bomb()
 	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
+		if _jump_charges.left(jump_charges) <= 0:
+			return
+		_jump_charges.spend(Clock.tick)
 		var strong := has_tool(Item.Id.STRONG_SPRING)
 		_air_height = strong_jump_height if strong else jump_height
 		_air_time = strong_jump_time if strong else jump_time
