@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://enemies/boss.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
+size = Vector2(52, 24)
+
+[node name="ElderGuardian" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_script")
+mass = 9.0
+restitution = 0.3
+friction = 1800.0
+max_health = 16
+shell_regrow_time = 5.0
+thick_shell = true
+blast_factor = 3
+walk_speed = 60.0
+approach_time = 1.4
+slam_windup_time = 0.8
+charge_speed = 460.0
+
+[node name="Base" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_base")

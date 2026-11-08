@@ -1,0 +1,42 @@
+# Porta do chefe: pedra vermelha com o selo dourado. Abre com a chave grande.
+paleta
+o #1c0c10
+r #5e1a22
+s #84262e
+t #a8383c
+g #e0b040
+y #f6dc7a
+h #140808
+pixels
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo
+oottttttttttttttttttttttttssssoo
+oottttttttttttttttttttttttssssoo
+oottssssssssssssssssssssssrrrroo
+oottssssssssssssssssssssssrrrroo
+oottssssssssggggggggssssssssrroo
+oottssssssssggggggggssssssssrroo
+oottssssssggyyyyyyyyggssssssrroo
+oottssssssggyyyyyyyyggssssssrroo
+oottssssggyygghhhhggyyggssssrroo
+oottssssggyygghhhhggyyggssssrroo
+oottssssggyyggyyyyggyyggssssrroo
+oottssssggyyggyyyyggyyggssssrroo
+oottssssggyyggyyyyggyyggssssrroo
+oottssssggyyggyyyyggyyggssssrroo
+oottssssggyyyyhhhhyyyyggssssrroo
+oottssssggyyyyhhhhyyyyggssssrroo
+oottssssggyyyyhhhhyyyyggssssrroo
+oottssssggyyyyhhhhyyyyggssssrroo
+oottssssssggyyyyyyyyggssssssrroo
+oottssssssggyyyyyyyyggssssssrroo
+oottssssssssggggggggssssssssrroo
+oottssssssssggggggggssssssssrroo
+oottssssssssssssssssssssssrrrroo
+oottssssssssssssssssssssssrrrroo
+oottrrrrrrrrrrrrrrrrrrrrrrrrrroo
+oottrrrrrrrrrrrrrrrrrrrrrrrrrroo
+oorrrrrrrrrrrrrrrrrrrrrrrrrrrroo
+oorrrrrrrrrrrrrrrrrrrrrrrrrrrroo
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo

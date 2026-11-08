@@ -7,16 +7,24 @@ extends StaticBody2D
 ## andar contra ela vindo do norte. A travessia fica a cargo do personagem
 ## (ver player.gd). A face só informa onde ficam as bordas e a altura.
 ##
+## O degrau comum tem 32 pixels. O degrau duplo tem 64, duas casas de face, e
+## só o pulo da mola forte chega lá: o pulo comum bate na face e volta. A face
+## dupla tem a própria pedra, mais escura, para o jogador ver de longe que o
+## degrau é outro.
+##
 ## A origem fica no canto superior esquerdo. O construtor do mapa define o
-## tamanho antes de adicionar a face à cena.
+## tamanho antes de adicionar a face à cena, e a altura dela é a altura do
+## degrau.
 
-const FACE_COLOR := Color(0.38, 0.31, 0.24, 1.0)
-const STRIPE_COLOR := Color(0.31, 0.25, 0.19, 1.0)
-const LIP_COLOR := Color(0.62, 0.62, 0.54, 1.0)
-const SHADOW_COLOR := Color(0.2, 0.17, 0.13, 1.0)
+const TEXTURE := preload("res://art/ledge.svg")
+const TALL_TEXTURE := preload("res://art/tall_ledge.svg")
+## Sombra que a face projeta no chão de baixo. É o que faz o desnível ser lido
+## como altura, e não como outra cor de chão.
+const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
+const SHADOW_HEIGHT := 8.0
 
 ## Tamanho em pixels. A altura da face é também a altura do degrau.
-@export var size := Vector2(16.0, 16.0)
+@export var size := Vector2(32.0, 32.0)
 
 
 func _ready() -> void:
@@ -43,9 +51,15 @@ func bottom() -> float:
 	return global_position.y + size.y
 
 
+## Degrau duplo: a face tem duas casas de altura.
+func is_tall() -> bool:
+	return size.y >= 64.0
+
+
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), FACE_COLOR)
-	for x: int in range(2, int(size.x), 5):
-		draw_rect(Rect2(Vector2(x, 3.0), Vector2(1.0, size.y - 4.0)), STRIPE_COLOR)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, 2.0)), LIP_COLOR)
-	draw_rect(Rect2(Vector2(0.0, size.y - 1.0), Vector2(size.x, 1.0)), SHADOW_COLOR)
+	var texture := TALL_TEXTURE if is_tall() else TEXTURE
+	for x: int in int(size.x / 32.0):
+		draw_texture_rect(texture, Rect2(Vector2(x * 32.0, 0.0), Vector2(32.0, size.y)), false)
+	# Uma face mais alta projeta uma sombra mais longa.
+	var shadow := SHADOW_HEIGHT + (size.y - 32.0) / 8.0
+	draw_rect(Rect2(Vector2(0.0, size.y), Vector2(size.x, shadow)), SHADOW_COLOR)

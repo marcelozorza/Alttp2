@@ -1,0 +1,43 @@
+# Parede rachada: a face de tijolos com rachaduras claras. Abre com a bomba.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+k #2e2a40
+f #4a4562
+g #5d577a
+h #736c94
+r #c9c0a8
+pixels
+mmmmmmmmmmmmmmoommmmmmmmmmmmmmoo
+mmmmmmmmmmmmmmoommmmmmmmmmmmmmoo
+mmddddddddrrddoommmmddddddddddoo
+mmddddddddrrddoommmmddddddddddoo
+mmddddddddddrrddmmddddddddddddoo
+mmddddddddddrrddmmddddddddddddoo
+mmddddddddrrddddmmddddddddddddoo
+mmddddddddrrddddmmddddddddddddoo
+oooooooooorroooooooooooooooooooo
+oooooooooorroooooooooooooooooooo
+hhhhhhhhhhrrhhkkhhhhhhhhhhhhhhkk
+hhhhhhhhhhrrhhkkhhhhhhhhhhhhhhkk
+ggffffffffrrrrkkggffffffrrffffkk
+ggffffffffrrrrkkggffffffrrffffkk
+ggffffffffffrrkkggffffrrffffffkk
+ggffffffffffrrkkggffffrrffffffkk
+kkkkkkkkkkkkrrrrrrkkkkrrkkkkkkkk
+kkkkkkkkkkkkrrrrrrkkkkrrkkkkkkkk
+hhhhhhkkhhhhhhhhhhrrrrhhhhhhhhhh
+hhhhhhkkhhhhhhhhhhrrrrhhhhhhhhhh
+ggffffkkggffffffrrffffffkkggffff
+ggffffkkggffffffrrffffffkkggffff
+ggffffkkggffffrrffffffffkkggffff
+ggffffkkggffffrrffffffffkkggffff
+kkkkkkkkkkkkkkrrkkkkkkkkkkkkkkkk
+kkkkkkkkkkkkkkrrkkkkkkkkkkkkkkkk
+hhhhhhhhhhhhrrkkhhhhhhhhhhhhhhkk
+hhhhhhhhhhhhrrkkhhhhhhhhhhhhhhkk
+ggffffffffrrffkkggffffffffffffkk
+ggffffffffrrffkkggffffffffffffkk
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo

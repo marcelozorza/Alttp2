@@ -1,0 +1,41 @@
+# Topo de um bloco de gelo que tem outro bloco ao sul: só a superfície clara,
+# como o topo da parede.
+paleta
+o #2d5a86
+e #5f97c8
+a #9fd2f4
+b #c4e6fa
+w #f4fbff
+pixels
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo
+oobbbbwwwwbbbbbbbbbbbbbbbbbbaaoo
+oobbbbwwwwbbbbbbbbbbbbbbbbbbaaoo
+oobbwwbbbbbbbbbbbbwwbbbbbbbbaaoo
+oobbwwbbbbbbbbbbbbwwbbbbbbbbaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbwwbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbwwbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbwwbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbwwbbbbbbbbbbbbbbbbbbaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbwwbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbwwbbaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbaaaaaaaaoo
+oobbbbbbbbbbbbbbbbbbbbaaaaaaaaoo
+ooaaaaaaaaaaaaaaaaaaaaaaaaaaeeoo
+ooaaaaaaaaaaaaaaaaaaaaaaaaaaeeoo
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo

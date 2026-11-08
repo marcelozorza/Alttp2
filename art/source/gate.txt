@@ -1,0 +1,38 @@
+# Grade de ferro que fecha a entrada de uma dungeon ainda trancada.
+paleta
+k #26222c
+i #4a4652
+l #6e6a78
+pixels
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+llllllllllllllllllllllll
+llllllllllllllllllllllll
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+llllllllllllllllllllllll
+llllllllllllllllllllllll
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..ll..iill..iill..iill..
+..kk..iikk..iikk..iikk..
+..kk..iikk..iikk..iikk..

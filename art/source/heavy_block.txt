@@ -1,0 +1,48 @@
+# Bloco pesado: um cubo de pedra com o topo claro, a face na frente e um
+# losango gravado, para o jogador ligar o bloco ao interruptor. A origem fica
+# no centro da base, e o desenho sobe duas casas menos alguns pixels.
+paleta
+o #1a1826
+d #3a3650
+f #58547a
+a #6e6a90
+b #8a86a8
+h #a6a2bc
+m #2a2640
+pixels
+oohhhhhhhhhhhhhhhhhhhhhhhhhhhhoo
+oohhhhhhhhhhhhhhhhhhhhhhhhhhhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbaaaaaaaabbbbbbbbhhoo
+oohhbbbbbbbbaaaaaaaabbbbbbbbhhoo
+oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
+ooaaaaaaaaaaaaaaaaaaaaaaaaaaaaoo
+ooaaaaaaaaaaaaaaaaaaaaaaaaaaaaoo
+ooffffffffffffffffffffffffffffoo
+ooffffffffffffffffffffffffffffoo
+ooffffffffffffffmmffffffffffddoo
+ooffffffffffffffmmffffffffffddoo
+ooffffffffffffmmmmmmffffffffddoo
+ooffffffffffffmmmmmmffffffffddoo
+ooffffffffffmmmmmmmmmmffffffddoo
+ooffffffffffmmmmmmmmmmffffffddoo
+ooffffffffffffmmmmmmffffffffddoo
+ooffffffffffffmmmmmmffffffffddoo
+ooffffffffffffffmmffffffffffddoo
+ooffffffffffffffmmffffffffffddoo
+ooffffffffffffffffffffffffddddoo
+ooffffffffffffffffffffffffddddoo
+ooffffffffffffffffffffffddddddoo
+ooffffffffffffffffffffffddddddoo
+ooddddddddddddddddddddddddddddoo
+ooddddddddddddddddddddddddddddoo
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo

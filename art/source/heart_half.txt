@@ -1,0 +1,26 @@
+# Meio coração do HUD: a metade esquerda cheia e a direita vazia, um ponto.
+paleta
+o #5a1018
+r #e03848
+p #a8202c
+l #ff7080
+w #ffd0d8
+o #3a1a20
+e #1e1014
+n #4a2a30
+pixels
+..oooo....oooo..
+.olwwro..oeeeeo.
+olwwrrrooeeeeeeo
+olwrrrrreeeeeeeo
+orrrrrrreeeeeeeo
+orrrrrrreeeeeeeo
+orrrrrrreeeeeeeo
+.orrrrrreeeeeeo.
+.oprrrrreeeeeeo.
+..oprrrreeeeeo..
+...oprrreeeeo...
+....oppreeeo....
+.....oppeeo.....
+......opeo......
+.......oo.......

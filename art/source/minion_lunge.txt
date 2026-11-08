@@ -1,0 +1,39 @@
+# Minion esticado no bote.
+paleta
+o #2a2230
+r #b8521c
+d #7a2e12
+l #dd7a32
+c #f1dcb8
+p #e49aa4
+y #f2c443
+
+pixels
+........................
+........................
+..oo................oo..
+..oo................oo..
+ooppooooooooooooooooppoo
+ooppooooooooooooooooppoo
+oorrllrrddrrrrddrrrrrroo
+oorrllrrddrrrrddrrrrrroo
+oorrddddrrrrrrrrddddrroo
+oorrddddrrrrrrrrddddrroo
+oorryyoorrrrrrrryyoorroo
+oorryyoorrrrrrrryyoorroo
+oorrrrccccppppccccrrrroo
+oorrrrccccppppccccrrrroo
+..oorrccooppppooccrroo..
+..oorrccooppppooccrroo..
+oooorrrrccccccccrrrroooo
+oooorrrrccccccccrrrroooo
+ooccrrrrccccccccrrrrccoo
+ooccrrrrccccccccrrrrccoo
+ooccoorrccccccccrrooccoo
+ooccoorrccccccccrrooccoo
+..oooorrrrccccrrrroooo..
+..oooorrrrccccrrrroooo..
+....oorroorrrroorroo....
+....oorroorrrroorroo....
+......oooo....oooo......
+......oooo....oooo......

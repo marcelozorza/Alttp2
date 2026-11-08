@@ -1,61 +1,40 @@
 class_name ToolIcons
-## Desenhos provisórios dos itens, usados no HUD e nos baús, e da espada, que
-## aparece no HUD. Cada item tem uma forma e uma cor fixas, que se repetem no
-## mundo: a bomba é a mesma do chão, a chama tem a cor da bola de fogo e a
-## lâmina tem a cor da espada do personagem.
+## Ícones dos itens e da espada, em pixel art (`art/source/icon_*.txt`),
+## usados no HUD e nos baús. Cada item tem um desenho de 12 pixels, e as
+## chaves, de 7 por 12. A chave grande é a chave pequena em vermelho, a cor da
+## porta do chefe, e a espada travada é a espada com a lâmina magenta, como a
+## troca de paleta do Super Nintendo.
 
-const BOMB_COLOR := Color(0.12, 0.12, 0.17, 1.0)
-const FUSE_COLOR := Color(1.0, 0.75, 0.25, 1.0)
-const FLAME_OUTER_COLOR := Color(1.0, 0.45, 0.1, 1.0)
-const FLAME_INNER_COLOR := Color(1.0, 0.9, 0.4, 1.0)
-const SPRING_COLOR := Color(0.55, 0.85, 0.45, 1.0)
-const HEART_COLOR := Color(0.9, 0.2, 0.25, 1.0)
-const BLADE_COLOR := Color(0.86, 0.9, 0.95, 1.0)
-const HILT_COLOR := Color(0.55, 0.34, 0.16, 1.0)
-const FLAME := [Vector2(0, -6), Vector2(4, 0), Vector2(3, 4), Vector2(-3, 4), Vector2(-4, 0)]
-const FLAME_CORE := [Vector2(0, -2), Vector2(2, 1), Vector2(1, 3), Vector2(-1, 3), Vector2(-2, 1)]
-const COIL := [
-	Vector2(-4, 5), Vector2(4, 3), Vector2(-4, 1), Vector2(4, -1), Vector2(-4, -3), Vector2(4, -5)
-]
-const HEART_TIP := [Vector2(-4.6, -0.2), Vector2(4.6, -0.2), Vector2(0, 5)]
-
-
-## Desenha o ícone do item centrado em center, num quadrado de cerca de 12
-## pixels vezes factor. Só pode ser chamado dentro do _draw de canvas.
-static func draw(canvas: CanvasItem, id: int, center: Vector2, factor := 1.0) -> void:
-	match id:
-		Item.Id.BOMB:
-			canvas.draw_circle(center + Vector2(0.0, 1.0) * factor, 4.0 * factor, BOMB_COLOR)
-			var fuse := Rect2(center + Vector2(1.0, -5.0) * factor, Vector2(1.0, 2.0) * factor)
-			canvas.draw_rect(fuse, FUSE_COLOR)
-		Item.Id.FIRE:
-			canvas.draw_colored_polygon(_points(FLAME, center, factor), FLAME_OUTER_COLOR)
-			canvas.draw_colored_polygon(_points(FLAME_CORE, center, factor), FLAME_INNER_COLOR)
-		Item.Id.SPRING:
-			canvas.draw_polyline(_points(COIL, center, factor), SPRING_COLOR, maxf(1.0, factor))
-			var plate := Rect2(center + Vector2(-4.0, -6.5) * factor, Vector2(8.0, 1.5) * factor)
-			canvas.draw_rect(plate, SPRING_COLOR)
-		Item.Id.HEART:
-			canvas.draw_circle(center + Vector2(-2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)
-			canvas.draw_circle(center + Vector2(2.0, -1.0) * factor, 2.6 * factor, HEART_COLOR)
-			canvas.draw_colored_polygon(_points(HEART_TIP, center, factor), HEART_COLOR)
+const SWORD := preload("res://art/icon_sword.svg")
+const SWORD_LOCKED := preload("res://art/icon_sword_locked.svg")
+const TEXTURES := {
+	Item.Id.BOMB: preload("res://art/icon_bomb.svg"),
+	Item.Id.FIRE: preload("res://art/icon_fire.svg"),
+	Item.Id.STRONG_FIRE: preload("res://art/icon_fire_strong.svg"),
+	Item.Id.SPRING: preload("res://art/icon_spring.svg"),
+	Item.Id.STRONG_SPRING: preload("res://art/icon_spring_strong.svg"),
+	Item.Id.HEART: preload("res://art/icon_heart.svg"),
+	Item.Id.KEY: preload("res://art/icon_key.svg"),
+	Item.Id.BOSS_KEY: preload("res://art/icon_boss_key.svg"),
+}
 
 
-## Desenha a espada centrada em center, no mesmo tamanho dos itens. A lâmina
-## usa blade_color, que no HUD mostra a espada travada.
-static func draw_sword(
-	canvas: CanvasItem, center: Vector2, factor := 1.0, blade_color := BLADE_COLOR
+## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do
+## _draw de um canvas.
+static func draw(canvas: CanvasItem, id: int, center: Vector2, tint := Color.WHITE) -> void:
+	var texture: Texture2D = TEXTURES.get(id)
+	if texture:
+		draw_centered(canvas, texture, center, tint)
+
+
+## Desenha a espada centrada em center, travada ou não.
+static func draw_sword(canvas: CanvasItem, center: Vector2, locked := false) -> void:
+	draw_centered(canvas, SWORD_LOCKED if locked else SWORD, center)
+
+
+## Desenha a textura com o centro em center, em pixels inteiros, para que a
+## pixel art fique nítida.
+static func draw_centered(
+	canvas: CanvasItem, texture: Texture2D, center: Vector2, tint := Color.WHITE
 ) -> void:
-	var blade := Rect2(center + Vector2(-1.0, -6.0) * factor, Vector2(2.0, 8.0) * factor)
-	var guard := Rect2(center + Vector2(-3.0, 2.0) * factor, Vector2(6.0, 1.5) * factor)
-	var grip := Rect2(center + Vector2(-1.0, 3.5) * factor, Vector2(2.0, 2.5) * factor)
-	canvas.draw_rect(blade, blade_color)
-	canvas.draw_rect(guard, HILT_COLOR)
-	canvas.draw_rect(grip, HILT_COLOR)
-
-
-static func _points(shape: Array, center: Vector2, factor: float) -> PackedVector2Array:
-	var points := PackedVector2Array()
-	for point: Vector2 in shape:
-		points.append(center + point * factor)
-	return points
+	canvas.draw_texture(texture, (center - texture.get_size() / 2.0).floor(), tint)

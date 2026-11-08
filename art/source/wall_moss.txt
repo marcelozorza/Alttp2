@@ -1,0 +1,6 @@
+# Tema ruína com musgo (capítulo 3): pedra esverdeada. Troca de paleta de wall.
+paleta
+o #121a14
+d #1c261e
+m #263228
+usa wall

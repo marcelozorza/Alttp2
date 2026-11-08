@@ -9,3 +9,10 @@
 # Sistema operacional
 .DS_Store
 Thumbs.db
+
+# Python
+__pycache__/
+
+# Música provisória, que não é nossa e fica só na máquina de quem joga
+audio/music/local/*
+!audio/music/local/LEIA.md

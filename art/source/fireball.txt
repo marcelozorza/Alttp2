@@ -1,0 +1,24 @@
+# Bola de fogo da chama.
+paleta
+o #8a2010
+r #e04820
+a #f88830
+y #fcd860
+w #fff8d0
+pixels
+....oooooooo....
+....oooooooo....
+..oorrrrrrrroo..
+..oorrrrrrrroo..
+oorrrraaaayyrroo
+oorrrraaaayyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorraayywwyyrroo
+oorrrraaaayyrroo
+oorrrraaaayyrroo
+..oorrrrrrrroo..
+..oorrrrrrrroo..
+....oooooooo....
+....oooooooo....

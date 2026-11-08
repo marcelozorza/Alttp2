@@ -1,0 +1,61 @@
+# Giorgino andando, de frente, passo 2, da folha de IA de 2026-11-08, reduzida e quantizada.
+paleta
+k #2a2329
+d #1e181e
+b #5c4232
+w #f4f1ea
+s #c7c1cf
+g #8f8a99
+n #141016
+p #e49aa4
+r #d9578a
+e #0e0b0d
+pixels
+.....................ddddd...
+.....................ddddd...
+...................dddkkkdk..
+...................ddkkkknk..
+...................ddkkkknk..
+..................kdkkkbkdd..
+..................kdkkkbkdd..
+.........dddddddddddkkbbkkd..
+.....dddddddddddddddkkbkkkddk
+....ddddddkdkkkkkwkkkkbkkkkdd
+..dddkkkkkddkkkkkwwkkkkkkkkdd
+.dddkkbkkkkkkkkkkwwkkkkkkbbdd
+ddkkkkkbkkkkkkkkkwwkkkkkbbbdd
+ddkkkbbbkkkkkkkkkwwkkkkkkbbdd
+ddkkbbbkkkkkkkkkkwwkkkkkkkkdd
+ddkbbkndkkkkeekkkwwkkeekkkkdd
+ddkkdd.ddkkkeeekwwwkeeeekkkdd
+ddkkdd.ddkkkeeewwwwweeekkkkdd
+ddddk..ddkkkkkewwwwwekbbkkddd
+.......ddkkkkwwwwwwwwwkkkkdd.
+.......ddkkkkwwwwwwwwwwkkkdd.
+.......kdkkwwwwwengwwwwwkkkk.
+........dddwwwwwenewwwwwkkb..
+........dkdwsswwwwwwwwssddb..
+.........kddwswwwwwwwwskdd...
+..........ddwwwwwwwwwwdddb...
+..........kdrrrrrrrrrrrrdb...
+.........dkrrrrrrrrrrrrrdd...
+........kdwwwwwwwwwwwwwwwdd..
+.......kkwwwswwwwwwwwwwbwwdd.
+.......dkwwwkwwwwwwwwwbkwwdd.
+.......kdwwwkkwwswwwwwkgwwdd.
+.......kdwwwkkwwsswwwwkkwwdd.
+.......ddwwwwdwwwwwswwkkwwdd.
+.......ddswwwdwwwwsswwkkppdd.
+.......bdkwwpdwwwwswwwkdpdd..
+.........kssskwwwwwwwwddkdb..
+.........ddkksswwwwwwbdkkb...
+..........ddpsskwwwwwkkb.....
+..........kdppddkwwwwkkb.....
+..........bdkddddwwwkddb.....
+...........bkkbddwwwdnb......
+..............bnwwwwkd.......
+..............ddwwwwwdb......
+..............ddwwwwwdk......
+..............ddpswppdb......
+...............bddkddd.......
+................ddkdb........

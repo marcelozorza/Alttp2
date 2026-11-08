@@ -1,0 +1,40 @@
+# Topo da parede, o que se vê de cima: blocos escuros com a junta mais escura.
+# Redesenhado em 32 px em 2026-11-07. As faces (wall_face e wall_side) se
+# desenham por cima, do lado em que há chão.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+pixels
+mmmmmmmmmmmmmmmommmmmmmmmmmmmmmo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+oooooooooooooooooooooooooooooooo
+mmmmmmmommmmmmmmmmmmmmmommmmmmmm
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+dddddddomddddddddddddddomddddddd
+oooooooooooooooooooooooooooooooo
+mmmmmmmmmmmmmmmommmmmmmmmmmmmmmo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+oooooooooooooooooooooooooooooooo

@@ -11,13 +11,22 @@ extends MomentumBody
 ## bote, ele para, ergue a granada acima da cabeça piscando em amarelo e joga
 ## onde o personagem está. Depois de jogar, espera um tempo até a próxima.
 ##
+## Três jeitos mudam o padrão sem mudar o ciclo: quem voa (hover) sobe e
+## desce no ar com a sombra no chão, quem tem vaivém (weave) se aproxima em
+## ziguezague, e quem tem raiz (rooted) não sai do lugar, morde quem chega
+## perto e volta ao ponto inicial.
+##
 ## A massa decide o resto pela física. O ugly arremessa o personagem no bote e
 ## quase não se move com a espada. O minion voa longe com a espada e empurra
 ## pouco.
 ##
 ## Cada tipo de golpe tem um multiplicador de dano, que é a parte de pedra,
 ## papel e tesoura do combate. Multiplicador zero torna o inimigo imune: o
-## golpe só o empurra, e ele pisca em cinza.
+## golpe só o empurra, e ele pisca em cinza. A chama forte tem o próprio
+## multiplicador, para que o gelo grosso ceda só a ela.
+
+## Emitido ao morrer, com o próprio inimigo, para o capítulo contar as mortes.
+signal died(enemy: Enemy)
 
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER, STAGGER, DEAD }
 
@@ -26,6 +35,18 @@ const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
 const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
+## Tons sobre o desenho do inimigo, quando a cena tem um. Acima de 1, o tom
+## clareia.
+const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
+const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
+const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
+## Velocidade angular do vaivém, em radianos por tick.
+const WEAVE_RATE := 0.2
+## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
+## segundo.
+const ROOT_PULL := 16.0
+## Ticks de cada passo da caminhada, quando há quadros de passo.
+const WALK_FRAME_TICKS := 8
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -42,35 +63,66 @@ const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 @export_range(0, 10, 1) var sword_factor := 1
 ## Multiplicador do dano do fogo.
 @export_range(0, 10, 1) var fire_factor := 1
+## Multiplicador do dano da chama forte. Em geral o dobro do fogo comum. Um
+## inimigo de gelo grosso tem fogo comum zero e chama forte maior que zero.
+@export_range(0, 20, 1) var strong_fire_factor := 2
 ## Multiplicador do dano da explosão.
 @export_range(0, 10, 1) var blast_factor := 1
 
+@export_group("Desenhos")
+## Quadros opcionais do desenho (nó Art). Com eles, o desenho acompanha o
+## estado: os passos alternam ao andar, e cada ataque tem o seu quadro. O
+## primeiro passo é também o quadro parado. Sem quadros, o desenho fica fixo.
+## Primeiro inimigo com quadros: o minion, desenhado por Marcelo em
+## 2026-11-06.
+@export var walk_frames: Array[Texture2D] = []
+## Quadros de costas, usados ao andar para cima. Vazio usa os de frente.
+@export var back_frames: Array[Texture2D] = []
+## Preparando o bote.
+@export var windup_frame: Texture2D
+## No bote.
+@export var lunge_frame: Texture2D
+## Recuperando depois do bote.
+@export var recover_frame: Texture2D
+## Atordoado por um golpe.
+@export var hit_frame: Texture2D
+
 @export_group("Comportamento")
 ## Distância, em pixels, a partir da qual percebe o personagem.
-@export_range(0.0, 400.0, 1.0) var sight_range := 200.0
+@export_range(0.0, 800.0, 1.0) var sight_range := 400.0
 ## Distância, em pixels, em que para de se aproximar e prepara o bote.
-@export_range(0.0, 200.0, 1.0) var attack_range := 44.0
+@export_range(0.0, 400.0, 1.0) var attack_range := 88.0
 ## Velocidade de aproximação, em pixels por segundo.
-@export_range(0.0, 200.0, 1.0) var walk_speed := 40.0
+@export_range(0.0, 400.0, 1.0) var walk_speed := 80.0
 ## Segundos preparando o bote. É o aviso para o jogador.
 @export_range(0.0, 3.0, 0.05) var windup_time := 0.6
 ## Velocidade do bote, em pixels por segundo.
-@export_range(0.0, 600.0, 1.0) var lunge_speed := 180.0
+@export_range(0.0, 1200.0, 1.0) var lunge_speed := 360.0
 ## Duração do bote, em segundos.
 @export_range(0.0, 1.0, 0.01) var lunge_time := 0.25
 ## Segundos parado e vulnerável depois do bote.
 @export_range(0.0, 3.0, 0.05) var recover_time := 0.8
 ## Dano do bote.
 @export_range(1, 10, 1) var damage := 1
+## Ligado, voa: o desenho sobe e desce no ar, com a sombra no chão.
+@export var hover := false
+## Vaivém lateral ao se aproximar, em pixels por segundo. Zero anda reto.
+@export_range(0.0, 400.0, 1.0) var weave := 0.0
+## Ligado, tem raiz: não sai do lugar, ataca quem chega perto e volta ao
+## ponto inicial depois do bote.
+@export var rooted := false
+## Ligado, não dá o bote: avança devagar e sem parar, e machuca ao encostar.
+## Pedido de Marcelo em 2026-11-06 para o tatu de pedra.
+@export var contact_damage := false
 
 @export_group("Granada")
 ## Granada que ele joga de longe. Vazio, ele não joga nada.
 @export var grenade_scene: PackedScene
 ## Distância mínima, em pixels, para jogar a granada. Mais perto, ele segue se
 ## aproximando para o bote.
-@export_range(0.0, 400.0, 1.0) var throw_min_range := 64.0
+@export_range(0.0, 800.0, 1.0) var throw_min_range := 128.0
 ## Distância máxima, em pixels, para jogar a granada.
-@export_range(0.0, 400.0, 1.0) var throw_max_range := 160.0
+@export_range(0.0, 800.0, 1.0) var throw_max_range := 320.0
 ## Segundos com a granada erguida antes de jogar. É o aviso para o jogador.
 @export_range(0.0, 3.0, 0.05) var throw_windup_time := 0.6
 ## Segundos parado depois de jogar.
@@ -102,11 +154,17 @@ var _hurt_shape := RectangleShape2D.new()
 @onready var _eye: ColorRect = $Eye
 @onready var _health_bar: ColorRect = $HealthBar
 @onready var _health_bar_width: float = _health_bar.size.x
+## Desenho do inimigo, opcional. Sem ele, o corpo e o olho provisórios
+## aparecem no lugar.
+@onready var _art: Sprite2D = get_node_or_null("Art")
 
 
 func _ready() -> void:
+	# Camada dos inimigos comuns, por cima da qual o personagem pula.
+	collision_layer = Layers.ENEMY
+	collision_mask = Layers.SCENERY | Layers.ENEMY
 	health = max_health
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(first_throw_delay)
+	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 
 
 ## Recebe um golpe. O empurrão vem separado, pela física.
@@ -115,13 +173,17 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 		return
 	var factor := _factor(kind)
 	if factor == 0:
-		_immune_tick = Engine.get_physics_frames()
+		_immune_tick = Clock.tick
+		Sfx.play(&"immune")
 		return
 	health -= amount * factor
-	_hit_tick = Engine.get_physics_frames()
+	_hit_tick = Clock.tick
 	if health <= 0:
+		Sfx.play(&"enemy_die")
 		_die()
-	elif stagger_time > 0.0:
+		return
+	Sfx.play(&"enemy_hit")
+	if stagger_time > 0.0:
 		_enter(State.STAGGER)
 
 
@@ -132,7 +194,7 @@ func reset() -> void:
 	velocity = Vector2.ZERO
 	visible = true
 	_base.set_deferred("disabled", false)
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(first_throw_delay)
+	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 	_enter(State.IDLE)
 
 
@@ -150,15 +212,19 @@ func _physics_process(delta: float) -> void:
 	if _state != State.DEAD:
 		match _state:
 			State.APPROACH:
-				velocity = _approach_direction * walk_speed
+				velocity = _approach_direction * walk_speed + _weave_velocity()
 			State.LUNGE:
 				# O bote segue pela física: só batidas mudam a velocidade.
 				pass
 			_:
 				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		if rooted and _state != State.LUNGE:
+			velocity = (_home - global_position) * ROOT_PULL
 		move_with_impacts()
 		if _state == State.LUNGE and not _lunge_landed:
 			_check_lunge_hit()
+		elif _state == State.APPROACH and contact_damage:
+			_check_contact_hit()
 	_update_visuals()
 
 
@@ -166,7 +232,7 @@ func _update_state() -> void:
 	var player := get_tree().get_first_node_in_group("player") as Node2D
 	var to_player := (player.global_position - global_position) if player else Vector2.ZERO
 	var in_sight := player != null and to_player.length() <= sight_range
-	var elapsed := Engine.get_physics_frames() - _state_tick
+	var elapsed := Clock.tick - _state_tick
 	match _state:
 		State.IDLE:
 			if in_sight:
@@ -176,7 +242,7 @@ func _update_state() -> void:
 			_look_direction = _approach_direction
 			if not in_sight:
 				_enter(State.IDLE)
-			elif to_player.length() <= attack_range:
+			elif to_player.length() <= attack_range and not contact_damage:
 				_lunge_direction = GameMath.snap_8(to_player)
 				_look_direction = _lunge_direction
 				_enter(State.WINDUP)
@@ -210,21 +276,35 @@ func _update_state() -> void:
 				reset()
 
 
+## Vaivém perpendicular à aproximação, para o inimigo que voa em ziguezague.
+func _weave_velocity() -> Vector2:
+	if weave <= 0.0:
+		return Vector2.ZERO
+	return _approach_direction.orthogonal() * sin(Clock.tick * WEAVE_RATE) * weave
+
+
+## Altura do desenho acima dos pés, para quem voa.
+func _hover_height() -> float:
+	if not hover:
+		return 0.0
+	return 6.0 + sin(Clock.tick * 0.15) * 4.0
+
+
 ## Durante o bote, procura o personagem numa área um pouco maior que a base.
 ## Um bote acerta no máximo uma vez.
 func _check_lunge_hit() -> void:
-	var base_shape := _base.shape as RectangleShape2D
-	_hurt_shape.size = base_shape.size + Vector2(4.0, 4.0)
-	var query := PhysicsShapeQueryParameters2D.new()
-	query.shape = _hurt_shape
-	query.transform = Transform2D(0.0, _base.global_position)
-	var excluded: Array[RID] = [get_rid()]
-	query.exclude = excluded
-	for result: Dictionary in get_world_2d().direct_space_state.intersect_shape(query):
-		var target := result["collider"] as Player
-		if target:
-			target.take_hit(damage, _lunge_direction)
-			_lunge_landed = true
+	var target := Hit.player_in_reach(self, _base, _hurt_shape)
+	if target:
+		target.take_hit(damage, _lunge_direction)
+		_lunge_landed = true
+
+
+## Quem machuca ao encostar acerta sempre que toca o personagem. A
+## invencibilidade depois do dano é o que espaça os golpes.
+func _check_contact_hit() -> void:
+	var target := Hit.player_in_reach(self, _base, _hurt_shape)
+	if target:
+		target.take_hit(damage, _approach_direction)
 
 
 ## Joga só quem tem granada, depois da espera desde a última, longe o bastante
@@ -232,7 +312,7 @@ func _check_lunge_hit() -> void:
 func _can_throw(distance: float) -> bool:
 	return (
 		grenade_scene != null
-		and Engine.get_physics_frames() >= _next_throw_tick
+		and Clock.tick >= _next_throw_tick
 		and distance >= throw_min_range
 		and distance <= throw_max_range
 	)
@@ -241,7 +321,8 @@ func _can_throw(distance: float) -> bool:
 ## A granada sai da mão, acima da cabeça, e cai onde o personagem está agora.
 ## Ela fica com os efeitos do chão, que somem ao trocar de sala.
 func _throw(target: Vector2) -> void:
-	_next_throw_tick = Engine.get_physics_frames() + GameMath.ticks(throw_cooldown)
+	_next_throw_tick = Clock.tick + GameMath.ticks(throw_cooldown)
+	Sfx.play(&"grenade_throw")
 	var grenade := grenade_scene.instantiate() as Grenade
 	var layer := get_tree().get_first_node_in_group("floor_effects")
 	if layer:
@@ -255,13 +336,21 @@ func _throw(target: Vector2) -> void:
 func _held_grenade_rect() -> Rect2:
 	var size := Grenade.BALL_SIZE
 	var center_x := _body_rest_position.x + _body.size.x / 2.0
-	var bottom := _health_bar.position.y - 2.0
+	var bottom := _health_bar.position.y - 4.0
 	return Rect2(Vector2(center_x - size.x / 2.0, bottom - size.y), size)
 
 
+## Troca de estado. A preparação do bote e da granada e o bote têm som, para
+## o jogador ouvir o aviso mesmo olhando para outro lado.
 func _enter(state: State) -> void:
+	if state != _state:
+		match state:
+			State.WINDUP, State.THROW_WINDUP:
+				Sfx.play(&"enemy_windup")
+			State.LUNGE:
+				Sfx.play(&"enemy_lunge")
 	_state = state
-	_state_tick = Engine.get_physics_frames()
+	_state_tick = Clock.tick
 
 
 func _die() -> void:
@@ -269,52 +358,92 @@ func _die() -> void:
 	velocity = Vector2.ZERO
 	visible = false
 	_base.set_deferred("disabled", true)
+	died.emit(self)
 
 
 func _factor(kind: Hit.Kind) -> int:
-	match kind:
-		Hit.Kind.FIRE:
-			return fire_factor
-		Hit.Kind.BLAST:
-			return blast_factor
-		Hit.Kind.SHOCKWAVE:
-			return 0
-	return sword_factor
+	return Hit.factor(kind, sword_factor, fire_factor, strong_fire_factor, blast_factor)
 
 
-## Visual provisório: amarelo piscando na preparação do bote e da granada,
-## vermelho no bote, mais escuro parado depois de atacar, branco ao ser atingido
-## e cinza quando o golpe não o afeta. O olho mostra para onde ele vai e a
-## barra acima mostra a vida.
+## Amarelo piscando na preparação do bote e da granada, vermelho no bote, mais
+## escuro parado depois de atacar, branco ao ser atingido e cinza quando o golpe
+## não o afeta. Com desenho, as cores viram tons sobre ele. Sem desenho, o
+## corpo provisório muda de cor e o olho mostra para onde ele vai. A barra
+## acima mostra a vida.
 func _update_visuals() -> void:
-	var elapsed := Engine.get_physics_frames() - _state_tick
+	var elapsed := Clock.tick - _state_tick
 	var color := _body_color
+	var tint := Color.WHITE
 	var shake := Vector2.ZERO
 	match _state:
 		State.WINDUP, State.THROW_WINDUP:
 			var blink := posmod(elapsed, 8) < 4
 			color = WINDUP_COLOR if blink else _body_color
-			shake = Vector2(1.0 if blink else -1.0, 0.0)
+			tint = WINDUP_COLOR if blink else Color.WHITE
+			shake = Vector2(2.0 if blink else -2.0, 0.0)
 		State.LUNGE:
 			color = LUNGE_COLOR
+			tint = LUNGE_COLOR
 		State.RECOVER, State.THROW_RECOVER:
 			color = _body_color.darkened(0.35)
-	if Engine.get_physics_frames() - _hit_tick < GameMath.ticks(hit_flash_time):
+			tint = RECOVER_TINT
+	if Clock.tick - _hit_tick < GameMath.ticks(hit_flash_time):
 		color = HIT_COLOR
-	elif Engine.get_physics_frames() - _immune_tick < GameMath.ticks(hit_flash_time):
+		tint = HIT_TINT
+	elif Clock.tick - _immune_tick < GameMath.ticks(hit_flash_time):
 		color = IMMUNE_COLOR
+		tint = IMMUNE_COLOR
+	if _art:
+		_body.visible = false
+		_eye.visible = false
+		_art.modulate = tint
+		_art.position = shake + Vector2(0.0, -_hover_height()).round()
+		var frame := _frame_for_state()
+		if frame:
+			_art.texture = frame
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
 	var body_center := _body.position + _body.size / 2.0
 	_eye.position = body_center + _look_direction * half - _eye.size / 2.0
 	_health_bar.size.x = _health_bar_width * float(maxi(health, 0)) / max_health
-	if grenade_scene:
+	if grenade_scene or hover:
 		queue_redraw()
 
 
-## A granada erguida aparece durante o aviso e treme junto com o corpo.
+## Escolhe o quadro do desenho pelo estado. Sem quadros, devolve nulo e o
+## desenho fica como está. Andando, alterna os passos. De costas quando olha
+## para cima e há quadros de costas.
+func _frame_for_state() -> Texture2D:
+	if walk_frames.is_empty():
+		return null
+	match _state:
+		State.STAGGER:
+			if hit_frame:
+				return hit_frame
+		State.WINDUP, State.THROW_WINDUP:
+			if windup_frame:
+				return windup_frame
+		State.LUNGE:
+			if lunge_frame:
+				return lunge_frame
+		State.RECOVER, State.THROW_RECOVER:
+			if recover_frame:
+				return recover_frame
+	var frames := walk_frames
+	if _look_direction.y < 0.0 and not back_frames.is_empty():
+		frames = back_frames
+	var step := 0
+	if _state == State.APPROACH and velocity.length() > 2.0:
+		step = posmod(floori(float(Clock.tick) / WALK_FRAME_TICKS), frames.size())
+	return frames[step]
+
+
+## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
+## aviso e treme junto com o corpo.
 func _draw() -> void:
+	if hover and _state != State.DEAD:
+		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
 	if _state != State.THROW_WINDUP:
 		return
 	var rect := _held_grenade_rect()

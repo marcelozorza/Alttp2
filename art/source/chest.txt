@@ -1,0 +1,48 @@
+# Baú fechado, inspirado no baú vermelho e dourado que Marcelo mandou em
+# 2026-11-07: tampa abaulada, corpo de tábuas vermelhas, cantoneiras e
+# fechadura douradas. Redesenhado em 32 por 32 quando a resolução dobrou,
+# no mesmo dia. A base fica na penúltima linha, com a sombra na última.
+# Abre com a espada.
+paleta
+o #2a1208
+q #8c1a12
+r #c8281e
+h #e8503c
+d #8a5a10
+g #e0a020
+y #f8e070
+k #1a0c06
+b #5a3a1a
+pixels
+................................
+................................
+................................
+................................
+................................
+.......oooooooooooooooooo.......
+.....oogggggggggggggggggoo......
+....oghhrrrrrrrrrrrrrrrhhgo.....
+...ogyhrrrrrrrrrrrrrrrrrhqgo....
+...ogyrrrrrrrrrrrrrrrrrrrqgo....
+..ogyrrrrrrrrrrrrrrrrrrrrqqgo...
+..ogggggggggggggggggggggggggo...
+..oddddddddddyyyyydddddddddddo..
+..oyggdhhhhhhyggggdhhhhhhyggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdrrrrrrygkkgdrrrrrryggdo..
+..oyggdqqqqqqygkggdqqqqqqyggdo..
+..oyggdhhhhhhddddddhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oddddddddddddddddddddddddddo..
+..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
+..oooooooooooooooooooooooooooo..
+.oooooooooooooooooooooooooooooo.
+...oooooooooooooooooooooooooo...

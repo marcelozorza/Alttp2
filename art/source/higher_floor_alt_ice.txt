@@ -1,0 +1,8 @@
+# Tema geleira (capítulo 2): pedra azul. Troca de paleta de floor_alt, chão mais alto.
+paleta
+s #4a5e7e
+c #5e7498
+a #7890b4
+b #93aacc
+x #6c84a6
+usa floor_alt

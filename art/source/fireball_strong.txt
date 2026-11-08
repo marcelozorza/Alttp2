@@ -1,0 +1,32 @@
+# Bola de fogo da chama forte: maior, com o miolo branco.
+paleta
+o #8a2010
+r #e04820
+a #f88830
+y #fcd860
+w #fff8d0
+pixels
+........oooooooo........
+........oooooooo........
+....oooorrrrrrrroooo....
+....oooorrrrrrrroooo....
+..oorrrraaaaaaaarrrroo..
+..oorrrraaaaaaaarrrroo..
+..oorraaaayyyyaaaarroo..
+..oorraaaayyyyaaaarroo..
+oorraayyyywwwwyyyyaarroo
+oorraayyyywwwwyyyyaarroo
+oorraayywwwwwwwwyyaarroo
+oorraayywwwwwwwwyyaarroo
+oorraayywwwwwwwwyyaarroo
+oorraayywwwwwwwwyyaarroo
+oorraayyyywwwwyyyyaarroo
+oorraayyyywwwwyyyyaarroo
+..oorraaaayyyyaaaarroo..
+..oorraaaayyyyaaaarroo..
+..oorrrraaaaaaaarrrroo..
+..oorrrraaaaaaaarrrroo..
+....oooorrrrrrrroooo....
+....oooorrrrrrrroooo....
+........oooooooo........
+........oooooooo........

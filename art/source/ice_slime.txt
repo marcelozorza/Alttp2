@@ -1,0 +1,33 @@
+# Inimigo de gelo: uma geleia azul clara, a mesma cor do bloco de gelo.
+paleta
+o #2d5a86
+e #5f97c8
+a #9fd2f4
+b #c4e6fa
+w #f4fbff
+k #14304a
+pixels
+................................
+................................
+..........oooooooooooo..........
+..........oooooooooooo..........
+......oooobbbbwwwwbbbbaaoooo....
+......oooobbbbwwwwbbbbaaoooo....
+....oobbwwwwbbbbbbbbbbbbaaeeoo..
+....oobbwwwwbbbbbbbbbbbbaaeeoo..
+..oobbwwbbbbbbbbbbbbbbbbbbaaeeoo
+..oobbwwbbbbbbbbbbbbbbbbbbaaeeoo
+..oobbbbbbbbkkbbbbbbkkbbbbaaeeoo
+..oobbbbbbbbkkbbbbbbkkbbbbaaeeoo
+oobbbbbbbbbbkkbbbbbbkkbbbbaaeeoo
+oobbbbbbbbbbkkbbbbbbkkbbbbaaeeoo
+oobbaabbbbbbbbbbbbbbbbbbbbaaeeoo
+oobbaabbbbbbbbbbbbbbbbbbbbaaeeoo
+ooaaaabbbbbbbbkkkkkkbbbbaaaaeeoo
+ooaaaabbbbbbbbkkkkkkbbbbaaaaeeoo
+ooaaaaaaaabbbbbbbbbbbbaaaaeeeeoo
+ooaaaaaaaabbbbbbbbbbbbaaaaeeeeoo
+..ooeeaaaaaaaaaaaaaaaaaaeeeeoo..
+..ooeeaaaaaaaaaaaaaaaaaaeeeeoo..
+....oooooooooooooooooooooooooo..
+....oooooooooooooooooooooooooo..

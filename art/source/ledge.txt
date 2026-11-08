@@ -1,0 +1,45 @@
+# Face do degrau alto, vista de frente. Repete na horizontal. A beira clara é
+# o chão de cima, e a face é a mesma pedra do chão alto na sombra, escurecendo
+# para baixo como um barranco. O degrau desenha ainda uma sombra no chão de
+# baixo (ver obstacles/ledge.gd).
+paleta
+l #b3a582
+t #8c7f60
+o #2a2219
+g #6b6048
+f #574e3c
+d #443d30
+c #332d24
+pixels
+llllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllll
+tttttttttttttttttttttttttttttttt
+tttttttttttttttttttttttttttttttt
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+ggggggggffggggggggggggffgggggggg
+ggggggggffggggggggggggffgggggggg
+ggggggggffggggggggggggffgggggggg
+ggggggggffggggggggggggffgggggggg
+ggffggggffggggggffggggffggggggff
+ggffggggffggggggffggggffggggggff
+ggffggggffggggggffggggffggggggff
+ggffggggffggggggffggggffggggggff
+ffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff
+ffddffffffffffddffffffffffddffff
+ffddffffffffffddffffffffffddffff
+ffddffffffffffddffffffffffddffff
+ffddffffffffffddffffffffffddffff
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+cccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccc
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo

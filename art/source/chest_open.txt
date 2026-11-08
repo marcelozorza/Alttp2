@@ -1,0 +1,46 @@
+# Baú aberto, bem diferente do fechado (pedido de Marcelo em 2026-11-07): a
+# tampa fica erguida atrás, mostrando o forro escuro com a moldura dourada,
+# e a boca do baú é escura. O corpo é mais baixo que o do baú fechado.
+paleta
+o #2a1208
+q #8c1a12
+r #c8281e
+h #e8503c
+d #8a5a10
+g #e0a020
+y #f8e070
+k #1a0c06
+b #5a3a1a
+pixels
+................................
+................................
+...oooooooooooooooooooooooooo...
+..ogggggggggggggggggggggggggo...
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
+..ogggggggggggggggggggggggggo...
+..oyyyyyyyyyyyyyyyyyyyyyyyyyyo..
+..okkkkkkkkkkkkkkkkkkkkkkkkkko..
+..okkkkkkkkkkkkkkkkkkkkkkkkkko..
+..okbbbbbbbbbbbbbbbbbbbbbbbbko..
+..okkkddddddddddddddddddddkkko..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oyggdqqqqqqqqqqqqqqqqqqyggdo..
+..oyggdhhhhhhhhhhhhhhhhhhyggdo..
+..oyggdrrrrrrrrrrrrrrrrrryggdo..
+..oddddddddddddddddddddddddddo..
+..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
+..oqqqqqqqqqqqqqqqqqqqqqqqqqqo..
+.oooooooooooooooooooooooooooooo.
+...oooooooooooooooooooooooooo...

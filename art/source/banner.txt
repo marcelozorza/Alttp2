@@ -1,0 +1,52 @@
+# Estandarte vermelho do castelo, pendurado na parede, com o brasão dourado.
+paleta
+g #c8a040
+r #a01c2a
+m #7a1420
+y #e8c050
+o #3a0a10
+pixels
+gggggggggggggggggggg
+gggggggggggggggggggg
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrryyrrrrrr..
+..rrrrrrrryyrrrrrr..
+..rrrrrryyyyyyrrrr..
+..rrrrrryyyyyyrrrr..
+..rrrryyyyyyyyyyrr..
+..rrrryyyyyyyyyyrr..
+..rrrrrryyyyyyrrrr..
+..rrrrrryyyyyyrrrr..
+..rrrrrrrryyrrrrrr..
+..rrrrrrrryyrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrmmmmmmmmmmmmrr..
+..rrmmmmmmmmmmmmrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..rrrrrrrrrrrrrrrr..
+..oorrrrrrrrrrrroo..
+..oorrrrrrrrrrrroo..
+..oorrrrrrrrrrrroo..
+..oorrrrrrrrrrrroo..
+..oooorrrrrrrroooo..
+..oooorrrrrrrroooo..
+....oorrrrrrrroo....
+....oorrrrrrrroo....
+....oooorrrroooo....
+....oooorrrroooo....
+......oooooooo......
+......oooooooo......

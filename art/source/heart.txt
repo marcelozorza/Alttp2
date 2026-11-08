@@ -1,0 +1,25 @@
+# Coração cheio do HUD, dois pontos de vida (Marcelo pediu corações de volta,
+# com mais detalhe, em 2026-11-07). Luz do alto à esquerda: brilho claro no
+# lóbulo esquerdo e sombra na ponta e à direita.
+paleta
+o #5a1018
+r #e03848
+p #a8202c
+l #ff7080
+w #ffd0d8
+pixels
+..oooo....oooo..
+.olwwro..orrrro.
+olwwrrroorrrrrpo
+olwrrrrrrrrrrrpo
+orrrrrrrrrrrrrpo
+orrrrrrrrrrrrppo
+orrrrrrrrrrrrppo
+.orrrrrrrrrrppo.
+.oprrrrrrrrrppo.
+..oprrrrrrrppo..
+...oprrrrrppo...
+....opprrppo....
+.....oppppo.....
+......oppo......
+.......oo.......

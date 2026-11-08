@@ -1,0 +1,18 @@
+# Ossinho que um inimigo deixa ao morrer: recupera vida do Giorgino.
+paleta
+o #4a3728
+w #f6f1e4
+s #d8cfb8
+pixels
+..oooo........oooo..
+..oooo........oooo..
+oowwwwoo....oowwwwoo
+oowwwwoo....oowwwwoo
+..oowwwwwwwwwwwwoo..
+..oowwwwwwwwwwwwoo..
+..oowwssssssssssoo..
+..oowwssssssssssoo..
+oowwssoo....oossssoo
+oowwssoo....oossssoo
+..oooo........oooo..
+..oooo........oooo..

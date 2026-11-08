@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://enemies/grenade.gd" id="1_script"]
+
+[node name="Rock" type="Node2D"]
+script = ExtResource("1_script")
+flight_time = 0.8
+area_tiles = 1
+arc_height = 56.0
+sword_lock_time = 0.0
+damage = 1
+color = Color(0.61, 0.53, 0.42, 1)
+
+[node name="Ball" type="ColorRect" parent="."]
+z_index = 1
+offset_right = 12.0
+offset_bottom = 12.0
+mouse_filter = 2
+color = Color(0.61, 0.53, 0.42, 1)

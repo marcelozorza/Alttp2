@@ -1,0 +1,42 @@
+# Interruptor no chão, solto: uma placa de pedra um pouco levantada, com a
+# borda clara e um losango no meio, o mesmo do bloco pesado.
+paleta
+o #1a1826
+d #3a3650
+f #58547a
+b #8a86a8
+h #a6a2bc
+m #2a2640
+pixels
+................................
+................................
+....oooooooooooooooooooooooo....
+....oooooooooooooooooooooooo....
+..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
+..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
+..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhbbbbbbbbbbmmbbbbbbbbffoo..
+..oohhbbbbbbbbbbmmbbbbbbbbffoo..
+..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbmmmmmmmmmmbbbbffoo..
+..oohhbbbbbbmmmmmmmmmmbbbbffoo..
+..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbbbbmmbbbbbbbbffoo..
+..oohhbbbbbbbbbbmmbbbbbbbbffoo..
+..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhffffffffffffffffffffddoo..
+..oohhffffffffffffffffffffddoo..
+..ooddddddddddddddddddddddddoo..
+..ooddddddddddddddddddddddddoo..
+....oooooooooooooooooooooooo....
+....oooooooooooooooooooooooo....
+................................
+................................
+................................
+................................
+................................
+................................

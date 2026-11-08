@@ -1,27 +1,30 @@
 class_name ChapterMap
 extends RefCounted
-## Grade de um capítulo lida de linhas de texto, com a lógica de alcance que
-## garante que toda seed tenha caminho.
+## Grade de um capítulo lida de linhas de texto.
 ##
-## Cada caractere é uma casa de 16 pixels:
-## - "#" parede, " " fora do mapa, "." chão, ":" chão alto, o topo de um degrau.
+## Cada caractere é uma casa de 32 pixels:
+## - "#" parede, " " fora do mapa, "." chão, ":" chão alto, o topo de um degrau,
+##   "^" chão mais alto, o topo de um degrau duplo.
 ## - "@" início do personagem.
-## - "A" a "Z" baús. O conteúdo vem da distribuição, nunca do mapa.
-## - "1" a "9" bloqueios. O tipo de cada um vem dos dados do capítulo. Casas
-##   com o mesmo número formam um só bloqueio.
-## - "m" minion, "u" ugly, "i" inimigo de gelo, "*" chefe, "c" caixa leve.
+## - "A" a "Z" baús. O conteúdo vem dos itens do capítulo, nunca do mapa.
+## - SLOTS: bloqueios, os algarismos de 1 a 9 e as letras minúsculas que não
+##   são inimigos. O tipo de cada um vem dos dados do capítulo. Casas com o
+##   mesmo caractere formam um só bloqueio.
+## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "s" atirador
+##   de pedras, "x" tatu de pedra, "y" morcego, "z" planta de espinhos, "c"
+##   caixa leve, "0" bloco pesado e "=" interruptor no chão.
+## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
+##   chefes.
 ##
-## As regras de alcance são as mesmas do jogo: parede rachada passa com a
-## bomba, gelo passa com a chama, e a face de degrau passa de baixo para cima
-## só com a mola e de cima para baixo sempre. Um baú conta como alcançado se
-## alguma casa vizinha for alcançada.
+## A conferência de que o capítulo tem caminho até o fim fica fora do jogo, em
+## tools/check_chapter.py, que lê os mesmos dados.
 
-enum Block { CRACKED, ICE, LEDGE }
+enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE }
 
 ## Tamanho de uma casa, em pixels.
-const TILE := 16
+const TILE := 32
 const LOCATIONS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const SLOTS := "123456789"
+const SLOTS := "123456789abdefghjklnopqrtv"
 const STEPS := [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 const NO_CELL := Vector2i(-1, -1)
 
@@ -69,98 +72,28 @@ func block_at(cell: Vector2i) -> int:
 	return _blocks.get(tile(cell), -1)
 
 
-## Tipo do bloqueio de uma vaga, pelo número.
+## Tipo do bloqueio de uma vaga, pelo caractere.
 func block_type(slot: String) -> int:
 	return _blocks.get(slot, -1)
 
 
-## Chão alto: o topo de um degrau, ou um baú ao lado de chão alto.
-func is_high(cell: Vector2i) -> bool:
-	if tile(cell) == ":":
-		return true
-	if not is_location(tile(cell)):
-		return false
-	for step: Vector2i in STEPS:
-		if tile(cell + step) == ":":
-			return true
-	return false
-
-
-## Diz se dá para ficar na casa com as ferramentas dadas.
-func is_walkable(cell: Vector2i, tools: int) -> bool:
+## Nível do chão: 0 no chão comum, 1 no chão alto (":"), o topo de um degrau,
+## e 2 no chão mais alto ("^"), o topo de um degrau duplo. Um baú, um inimigo
+## ou um bloqueio toma o caractere da casa, então fica no nível do chão mais
+## alto ao lado dele.
+func height_level(cell: Vector2i) -> int:
 	var character := tile(cell)
-	if character == "#" or character == " " or is_location(character):
-		return false
-	match block_at(cell):
-		Block.CRACKED:
-			return Item.has(tools, Item.Id.BOMB)
-		Block.ICE:
-			return Item.has(tools, Item.Id.FIRE)
-		Block.LEDGE:
-			return false
-	return true
-
-
-## Casas alcançáveis a partir de start com as ferramentas dadas, num dicionário
-## usado como conjunto.
-func reachable(start: Vector2i, tools: int) -> Dictionary:
-	var reached := {start: true}
-	var frontier: Array[Vector2i] = [start]
-	while not frontier.is_empty():
-		var cell: Vector2i = frontier.pop_back()
-		for step: Vector2i in STEPS:
-			var next := _step(cell, step, tools)
-			if next != NO_CELL and not reached.has(next):
-				reached[next] = true
-				frontier.append(next)
-	return reached
-
-
-## Baús com alguma casa vizinha alcançada.
-func reached_locations(reached: Dictionary) -> Array[String]:
-	var found: Array[String] = []
-	for y: int in height:
-		for x: int in _rows[y].length():
-			var character := _rows[y][x]
-			if not is_location(character):
-				continue
-			for step: Vector2i in STEPS:
-				if reached.has(Vector2i(x, y) + step):
-					found.append(character)
-					break
-	return found
-
-
-## Simula a partida: abre tudo o que alcança, ganha as ferramentas e repete até
-## não haver novidade. A distribuição é vencível se, no fim, a casa do alvo for
-## alcançada com as ferramentas exigidas, um conjunto de bits de Item.
-func is_beatable(distribution: Dictionary, goal: String, goal_tools: int) -> bool:
-	var start := find("@")
-	var tools := 0
-	var collected := {}
-	var reached := {}
-	var progressed := true
-	while progressed:
-		progressed = false
-		reached = reachable(start, tools)
-		for location: String in reached_locations(reached):
-			if collected.has(location):
-				continue
-			collected[location] = true
-			progressed = true
-			var item: int = distribution.get(location, Item.Id.NONE)
-			if item in Item.TOOLS:
-				tools |= Item.bit(item)
-	return reached.has(find(goal)) and (tools & goal_tools) == goal_tools
-
-
-func _step(cell: Vector2i, step: Vector2i, tools: int) -> Vector2i:
-	var next := cell + step
-	if block_at(next) != Block.LEDGE:
-		return next if is_walkable(next, tools) else NO_CELL
-	# Face de degrau: atravessa de uma vez até a casa do outro lado.
-	var climbing := step == Vector2i.UP and Item.has(tools, Item.Id.SPRING)
-	if not climbing and step != Vector2i.DOWN:
-		return NO_CELL
-	var beyond := next + step
-	return beyond if is_walkable(beyond, tools) else NO_CELL
+	if character == "^":
+		return 2
+	if character == ":":
+		return 1
+	if character == "." or character == "#" or character == " ":
+		return 0
+	var level := 0
+	for step: Vector2i in STEPS:
+		var neighbor := tile(cell + step)
+		if neighbor == "^":
+			return 2
+		if neighbor == ":":
+			level = 1
+	return level

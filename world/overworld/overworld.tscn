@@ -1,19 +1,19 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://world/chapter_one/chapter_one.gd" id="1_script"]
+[ext_resource type="Script" path="res://world/overworld/overworld.gd" id="1_script"]
 [ext_resource type="Script" path="res://world/map_view.gd" id="2_map_view"]
 [ext_resource type="Script" path="res://ui/hud.gd" id="3_hud"]
-[ext_resource type="PackedScene" path="res://ui/end_screen.tscn" id="4_end_screen"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="4_pause_menu"]
+[ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="5_defeat_screen"]
 
-[node name="ChapterOne" type="Node2D"]
+[node name="Overworld" type="Node2D"]
 script = ExtResource("1_script")
 
 [node name="MapView" type="Node2D" parent="."]
 script = ExtResource("2_map_view")
+outdoor = true
 
 [node name="Walls" type="StaticBody2D" parent="."]
-
-[node name="Obstacles" type="Node2D" parent="."]
 
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
 
@@ -29,12 +29,18 @@ position_smoothing_speed = 8.0
 [node name="Hud" type="Control" parent="HudLayer"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 4.0
-offset_bottom = 4.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 8.0
+offset_bottom = 8.0
 mouse_filter = 2
 script = ExtResource("3_hud")
 show_bar = true
 
-[node name="EndScreen" parent="." instance=ExtResource("4_end_screen")]
+[node name="PauseMenu" parent="." instance=ExtResource("4_pause_menu")]
+exit_text = "Menu principal"
+exit_to_title = true
+
+[node name="DefeatScreen" parent="." instance=ExtResource("5_defeat_screen")]
+exit_text = "Menu principal"
+exit_to_title = true

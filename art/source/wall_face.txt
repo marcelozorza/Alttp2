@@ -1,0 +1,47 @@
+# Face da parede que olha para o sul, com o chão logo abaixo: 8 px de topo e
+# 24 px de tijolos iluminados, com a aresta clara junto do topo e o rodapé
+# escuro junto do chão. O MapView usa a faixa de baixo e, espelhada na
+# vertical, a face da parede do sul da sala. Redesenhada em 32 px em
+# 2026-11-07, quando as paredes passaram a ter face nos quatro lados, como
+# no castelo de Hyrule do A Link to the Past.
+paleta
+o #15131e
+d #1f1c2b
+m #282438
+k #2e2a40
+f #4a4562
+g #5d577a
+h #736c94
+pixels
+mmmmmmmmmmmmmmmommmmmmmmmmmmmmmo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+mddddddddddddddomddddddddddddddo
+hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+gggggggggggggggggggggggggggggggg
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+ghhhhhhhhhhhhhhkghhhhhhhhhhhhhhk
+gggggggggggggggkgggggggggggggggk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+hhhhhhhkghhhhhhhhhhhhhhkghhhhhhh
+gggggggkgggggggggggggggkgggggggg
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
+fffffffkgffffffffffffffkgfffffff
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+ghhhhhhhhhhhhhhkghhhhhhhhhhhhhhk
+gggggggggggggggkgggggggggggggggk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+gffffffffffffffkgffffffffffffffk
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

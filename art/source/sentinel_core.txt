@@ -1,0 +1,13 @@
+# Sentinela com o núcleo exposto e quente: agora a espada e a bomba ferem.
+paleta
+o #15131e
+q #8c1a12
+r #c8281e
+y #f6dc7a
+w #f4f1ea
+a #5e1a22
+b #953035
+c #c4543c
+d #e58445
+e #f6c060
+usa sentinel_shell

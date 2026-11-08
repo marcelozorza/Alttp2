@@ -1,0 +1,13 @@
+# Sentinela sem a pedra: o corpo congelado, azul do gelo grosso. Derrete com a chama.
+paleta
+o #15131e
+q #8c1a12
+r #c8281e
+y #f6dc7a
+w #f4f1ea
+a #16335f
+b #3468a1
+c #5f95ca
+d #99c1e4
+e #e8f4ff
+usa sentinel_shell

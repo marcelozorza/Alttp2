@@ -1,0 +1,39 @@
+# Botão do HUD: disco escuro com relevo, onde fica o ícone do item.
+paleta
+o #101018
+e #50506a
+f #262636
+d #1a1a26
+pixels
+..........oooooooooooo..........
+..........oooooooooooo..........
+......ooooeeeeeeeeeeeeoooo......
+......ooooeeeeeeeeeeeeoooo......
+....ooeeeeffffffffffffeeeeoo....
+....ooeeeeffffffffffffeeeeoo....
+..ooeeffffffffffffffffffffddoo..
+..ooeeffffffffffffffffffffddoo..
+..ooeeffffffffffffffffffffddoo..
+..ooeeffffffffffffffffffffddoo..
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+ooeeffffffffffffffffffffffffddoo
+..ooddffffffffffffffffffffddoo..
+..ooddffffffffffffffffffffddoo..
+..ooddffffffffffffffffffffddoo..
+..ooddffffffffffffffffffffddoo..
+....ooddddffffffffffffddddoo....
+....ooddddffffffffffffddddoo....
+......ooooddddddddddddoooo......
+......ooooddddddddddddoooo......
+..........oooooooooooo..........
+..........oooooooooooo..........

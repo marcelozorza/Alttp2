@@ -1,0 +1,39 @@
+# Tatu de pedra: uma casca redonda de pedra rachada, com as rachaduras claras
+# da parede rachada, que só a bomba abre. Enrola e rola em linha reta.
+paleta
+o #15121a
+d #3a3240
+s #5a5066
+a #76687c
+h #948698
+c #c8bcc0
+e #f4e0a0
+pixels
+..........oooooooooooo..........
+..........oooooooooooo..........
+......ooooaaaahhhhaaaaoooo......
+......ooooaaaahhhhaaaaoooo......
+....ooaaaahhhhhhhhhhhhaaaaoo....
+....ooaaaahhhhhhhhhhhhaaaaoo....
+..ooaaaahhhhcchhhhhhhhhhaaaaoo..
+..ooaaaahhhhcchhhhhhhhhhaaaaoo..
+..ooaahhhhhhcchhhhhhhhhhhhaaoo..
+..ooaahhhhhhcchhhhhhhhhhhhaaoo..
+ooaaaahhhhhhhhcchhhhhhhhhhaaaaoo
+ooaaaahhhhhhhhcchhhhhhhhhhaaaaoo
+ooaahhhhhhhhhhhhcccccchhhhhhaaoo
+ooaahhhhhhhhhhhhcccccchhhhhhaaoo
+ooaahhhhhhhhhhhhhhhhhhcccchhaaoo
+ooaahhhhhhhhhhhhhhhhhhcccchhaaoo
+ooaaaahhhhhhhhhhhhhhhhhhhhaaaaoo
+ooaaaahhhhhhhhhhhhhhhhhhhhaaaaoo
+..ooaaaasshhhhhhhhhhhhssaaaaoo..
+..ooaaaasshhhhhhhhhhhhssaaaaoo..
+..ooaaaassssssssssssssssssaaoo..
+..ooaaaassssssssssssssssssaaoo..
+....ooddddssddddddssddddoooo....
+....ooddddssddddddssddddoooo....
+......ooooddeeooooddeeoooo......
+......ooooddeeooooddeeoooo......
+........oooo..oooo..oooo........
+........oooo..oooo..oooo........

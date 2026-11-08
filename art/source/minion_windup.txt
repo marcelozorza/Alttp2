@@ -1,0 +1,39 @@
+# Minion agachado, preparando o bote.
+paleta
+o #2a2230
+r #b8521c
+d #7a2e12
+l #dd7a32
+c #f1dcb8
+p #e49aa4
+y #f2c443
+
+pixels
+........................
+........................
+........................
+........................
+oooo................oooo
+oooo................oooo
+ooppooooooooooooooooppoo
+ooppooooooooooooooooppoo
+oorrllrrddrrrrddrrrrrroo
+oorrllrrddrrrrddrrrrrroo
+oorrddddrrrrrrrrddddrroo
+oorrddddrrrrrrrrddddrroo
+oorryyoorrrrrrrryyoorroo
+oorryyoorrrrrrrryyoorroo
+oorrrrccccppppccccrrrroo
+oorrrrccccppppccccrrrroo
+..oorrrrccooooccrrrroo..
+..oorrrrccooooccrrrroo..
+oorrrrrrccccccccrrrrrroo
+oorrrrrrccccccccrrrrrroo
+oorrddrrrrccccrrrrddrroo
+oorrddrrrrccccrrrrddrroo
+oorrrrrrrrrrrrrrrrrrrroo
+oorrrrrrrrrrrrrrrrrrrroo
+ooccccoorrrrrrrrooccccoo
+ooccccoorrrrrrrrooccccoo
+..oooo..oooooooo..oooo..
+..oooo..oooooooo..oooo..
