@@ -1,0 +1,47 @@
+# Tatu de pedra, down, da folha de IA de 2026-11-08, reduzida e quantizada.
+paleta
+a #050303
+b #1d1511
+c #392f28
+d #4b382e
+e #524239
+f #5d5048
+g #70594b
+h #76665c
+i #83746b
+j #998578
+k #bea691
+l #d2ae86
+m #bd9674
+n #a17a5d
+pixels
+..........aaaaa..........
+........aaakjiaaa........
+.......aakkjjifhdaa......
+.....aakjjjieccfgga......
+....eajjjckkmiifbgdac....
+....ajjcklmmjihghcbda....
+...ahkkkhmmiihhehhffca...
+..bffjjjjjjihhhdhhggeca..
+..ajkjjihiccccdehhhffca..
+.abjjjihekkmjihbeefefbda.
+.ajbiihkjjjjiiffhdbeebfa.
+.aljnnakjijiihfhheanahfa.
+ajjimlmajihaafehealnafgea
+amiimecnaaakjiaaalcgaffea
+ajifngcmaikjihhhancgafffa
+aheeanbghijmiihfgacgbebfa
+ajjjfaagmijjihhgmgaadfeea
+ahjihaglmmjihiffmncadfeda
+.aiifbenlmhiihhmmacaffeda
+.ahieamallgiiihlnagaffeb.
+.aahfbmaamfiihfnaagbffca.
+.agabbnaaamjihnaabdacaca.
+..agccanaammmmnaagacdda..
+..acbbbahblmmmgddaaaacb..
+.annngcaabmmmmeaabcdnffa.
+.alglbga.aammmaa.akalaja.
+.akajaaa..ammna..baaaaaa.
+..aaaca...ammna.....a....
+..........angfa..........
+...........aaa...........

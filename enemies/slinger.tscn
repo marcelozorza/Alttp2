@@ -2,7 +2,19 @@
 
 [ext_resource type="Script" path="res://enemies/enemy.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://enemies/rock.tscn" id="2_rock"]
-[ext_resource type="Texture2D" path="res://art/slinger.svg" id="3_art"]
+[ext_resource type="Texture2D" path="res://art/monkey_down.svg" id="10_monkey_down"]
+[ext_resource type="Texture2D" path="res://art/monkey_down_step.svg" id="11_monkey_down_step"]
+[ext_resource type="Texture2D" path="res://art/monkey_hit.svg" id="12_monkey_hit"]
+[ext_resource type="Texture2D" path="res://art/monkey_side.svg" id="13_monkey_side"]
+[ext_resource type="Texture2D" path="res://art/monkey_side_step.svg" id="14_monkey_side_step"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw.svg" id="15_monkey_throw"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw_side.svg" id="16_monkey_throw_side"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw_up.svg" id="17_monkey_throw_up"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw_windup.svg" id="18_monkey_throw_windup"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw_windup_side.svg" id="19_monkey_throw_windup_side"]
+[ext_resource type="Texture2D" path="res://art/monkey_throw_windup_up.svg" id="20_monkey_throw_windup_up"]
+[ext_resource type="Texture2D" path="res://art/monkey_up.svg" id="21_monkey_up"]
+[ext_resource type="Texture2D" path="res://art/monkey_up_step.svg" id="22_monkey_up_step"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(24, 16)
@@ -30,6 +42,14 @@ throw_recover_time = 0.6
 throw_cooldown = 2.2
 first_throw_delay = 1.2
 
+walk_frames = Array[Texture2D]([ExtResource("10_monkey_down"), ExtResource("11_monkey_down_step")])
+back_frames = Array[Texture2D]([ExtResource("21_monkey_up"), ExtResource("22_monkey_up_step")])
+side_frames = Array[Texture2D]([ExtResource("13_monkey_side"), ExtResource("14_monkey_side_step")])
+throw_windup_frames = Array[Texture2D]([ExtResource("18_monkey_throw_windup"), ExtResource("20_monkey_throw_windup_up"), ExtResource("19_monkey_throw_windup_side")])
+throw_recover_frames = Array[Texture2D]([ExtResource("15_monkey_throw"), ExtResource("17_monkey_throw_up"), ExtResource("16_monkey_throw_side")])
+hit_frame = ExtResource("12_monkey_hit")
+anchor_feet = true
+
 [node name="Body" type="ColorRect" parent="."]
 offset_left = -14.0
 offset_top = -24.0
@@ -47,16 +67,16 @@ color = Color(0.1, 0.1, 0.05, 1)
 
 [node name="HealthBar" type="ColorRect" parent="."]
 offset_left = -14.0
-offset_top = -32.0
+offset_top = -44.0
 offset_right = 14.0
-offset_bottom = -30.0
+offset_bottom = -40.0
 mouse_filter = 2
 color = Color(0.4, 0.85, 0.4, 1)
 
 [node name="Art" type="Sprite2D" parent="."]
-texture = ExtResource("3_art")
+texture = ExtResource("10_monkey_down")
 centered = false
-offset = Vector2(-16, -26)
+offset = Vector2(-23, -34)
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -8)

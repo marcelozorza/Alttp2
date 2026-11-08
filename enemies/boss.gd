@@ -33,11 +33,6 @@ enum State {
 }
 
 const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
-const SHELL_TEXTURE := preload("res://art/guardian_shell.svg")
-const THICK_SHELL_TEXTURE := preload("res://art/guardian_thick_shell.svg")
-const CORE_TEXTURE := preload("res://art/guardian_core.svg")
-const COLOSSUS_SHELL_TEXTURE := preload("res://art/colossus_shell.svg")
-const COLOSSUS_CORE_TEXTURE := preload("res://art/colossus_core.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés.
 const ART_BELOW_FEET := 0.0
 ## Tons sobre o desenho. Acima de 1, o tom clareia.
@@ -63,6 +58,16 @@ const FLASH_TICKS := 6
 @export var stone_shell := false
 ## Ligada, a pancada solta a onda alta, que só o pulo da mola forte passa.
 @export var tall_waves := false
+
+@export_group("Desenhos")
+## Quadros com a casca e com o núcleo exposto (enemies/boss_frames.gd): o
+## desenho acompanha o que o chefe faz. Desde 2026-11-08, o caranguejo (gelo e
+## gelo grosso por troca de paleta) e o cérbero. A sentinela tem os seus.
+@export var shell_frames: BossFrames
+@export var core_frames: BossFrames
+## Ticks de cada passo andando e na investida.
+@export_range(2, 20, 1) var walk_frame_ticks := 10
+@export_range(2, 20, 1) var charge_frame_ticks := 4
 ## Multiplicador do dano da espada, sem a casca.
 @export_range(0, 10, 1) var sword_factor := 1
 ## Multiplicador do dano do fogo, sem a casca.
@@ -290,16 +295,41 @@ func _factor(kind: Hit.Kind) -> int:
 	return Hit.factor(kind, sword_factor, fire_factor, strong_fire_factor, blast_factor)
 
 
-## Desenho da casca: de gelo comum, de gelo grosso ou de pedra.
+## Desenho da casca, no quadro do estado de agora.
 func _shell_texture() -> Texture2D:
-	if stone_shell:
-		return COLOSSUS_SHELL_TEXTURE
-	return THICK_SHELL_TEXTURE if thick_shell else SHELL_TEXTURE
+	return _frame_from(shell_frames)
 
 
 ## Desenho do núcleo exposto.
 func _core_texture() -> Texture2D:
-	return COLOSSUS_CORE_TEXTURE if stone_shell else CORE_TEXTURE
+	return _frame_from(core_frames)
+
+
+## Quadro do conjunto para o estado de agora. Um quadro que falta cai no
+## primeiro de andar.
+func _frame_from(frames: BossFrames) -> Texture2D:
+	var frame: Texture2D = null
+	var elapsed := Clock.tick - _state_tick
+	match _state:
+		State.SLAM_WINDUP:
+			frame = frames.slam_windup_frame
+		State.SLAM_RECOVER:
+			frame = frames.slam_frame
+		State.CHARGE_WINDUP:
+			frame = frames.charge_windup_frame
+		State.CHARGE:
+			if not frames.charge_frames.is_empty():
+				var step := floori(float(elapsed) / charge_frame_ticks)
+				frame = frames.charge_frames[posmod(step, frames.charge_frames.size())]
+		State.CHARGE_RECOVER:
+			frame = frames.recover_frame
+		State.APPROACH:
+			if velocity.length() > 2.0 and not frames.walk_frames.is_empty():
+				var step := floori(float(Clock.tick) / walk_frame_ticks)
+				frame = frames.walk_frames[posmod(step, frames.walk_frames.size())]
+	if frame == null and not frames.walk_frames.is_empty():
+		frame = frames.walk_frames[0]
+	return frame
 
 
 ## Canto do desenho em relação à origem, nos pés: centrado e terminando um

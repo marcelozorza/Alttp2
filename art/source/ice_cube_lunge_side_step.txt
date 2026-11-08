@@ -1,0 +1,42 @@
+# Inimigo de gelo, cubo, lunge side step, da folha de IA de 2026-11-08, reduzida e quantizada.
+paleta
+a #a8b4c7
+b #c9e6fa
+c #c9edfd
+e #d8f6fe
+g #e9fbfe
+i #f6fdfe
+j #fdfefe
+k #81c6fa
+l #469eef
+m #2376cd
+n #07297e
+pixels
+.............................mnnnnm........
+..................nnnnnnnnnnnnllknnnn......
+...............mnnnnnnnnklkkkkkllkkknnm....
+..............nnnkkkkklllllkkkkllllllnnn...
+............nnnkkbkkllllllkkkkkkllmmmlknn..
+..........mnnnkcibbklllkkkkkkllllllllkkknn.
+........mnnkkkjiibbkkkkkkkklllllllkkkkllnn.
+.......nnnkkbjjibbkkkkkkkllllllkkkklllmmknn
+......nnkkbkkbbbbbbcbkkkkkkkkkkkkkllllmmknn
+.....mnkkkklkkkkkkkkkkbbegbbklllllllllmmlnn
+.....nlklllmlllkkkkkkkkkkkekklmlllllkkmmlnn
+....mnklllmmmlllkkkkklllkkbklmnmlllkbklllnn
+....nnklmmmmmmmlllklllllllkkmmmnnnnnnnlnlnn
+...nnllmmmmmmmlllkllllmmmllkllmnnaannnnmmnn
+...nnlmmmmmmlllllkllllmmmllkllmmnajabnnmlnn
+..nnkllmmmllllllklllllmmmmlklllmnnbjnmmmlnn
+.nnkklllllllllkkllkllmmmmmlbklllmmnmmmllnn.
+nnkkkkkkkkkklklmmlllmmmmmmlklnnllllmmmnlnn.
+nneebllllmmmklmmmmllmmmmmmlklmnnnllnmnnnn..
+nnllllmmmmmmklmmmmmmmmmmmmlklmnlnnnnnnnnn..
+.mnnnllllmmmklmmmmmmmmmmmmlkmmnnnnnnkmblnn.
+...mnnnnnllkklmmmmmmmmmmmmkkmmmnncnnmkklnn.
+.......mnnnknllllmmmmmmmmllkmmmmnkknklllnn.
+..........nnnnnnnnlllllmllbkmmmmmmklllknn..
+................nnnnnllkkkkklmmllllllnnn...
+...................nnnnmkbbmlllknnnnn......
+......................mnnnnnnnnnnn.........
+........................mnnnnnn............

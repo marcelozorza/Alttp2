@@ -1,0 +1,18 @@
+# Guardião antigo, caranguejo de gelo grosso (troca de paleta), shell slam, da folha de IA de 2026-11-08, reduzida e quantizada.
+paleta
+a #040413
+b #120209
+c #26040b
+d #33060f
+e #000626
+g #26172b
+h #4a141b
+i #041137
+j #3b3550
+k #7f8494
+l #dbeef4
+m #37629f
+n #422f60
+o #ae272d
+p #461d3c
+usa crab_shell_slam

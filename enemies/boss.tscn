@@ -1,6 +1,40 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://enemies/boss.gd" id="1_script"]
+[ext_resource type="Script" path="res://enemies/boss_frames.gd" id="2_frames"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_walk.svg" id="10_crab_shell_walk"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_walk_step.svg" id="11_crab_shell_walk_step"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_slam_windup.svg" id="12_crab_shell_slam_windup"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_slam.svg" id="13_crab_shell_slam"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_charge_windup.svg" id="14_crab_shell_charge_windup"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_charge.svg" id="15_crab_shell_charge"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_charge_step.svg" id="16_crab_shell_charge_step"]
+[ext_resource type="Texture2D" path="res://art/crab_shell_recover.svg" id="17_crab_shell_recover"]
+[ext_resource type="Texture2D" path="res://art/crab_core_walk.svg" id="18_crab_core_walk"]
+[ext_resource type="Texture2D" path="res://art/crab_core_walk_step.svg" id="19_crab_core_walk_step"]
+[ext_resource type="Texture2D" path="res://art/crab_core_slam_windup.svg" id="20_crab_core_slam_windup"]
+[ext_resource type="Texture2D" path="res://art/crab_core_slam.svg" id="21_crab_core_slam"]
+[ext_resource type="Texture2D" path="res://art/crab_core_charge_windup.svg" id="22_crab_core_charge_windup"]
+[ext_resource type="Texture2D" path="res://art/crab_core_charge.svg" id="23_crab_core_charge"]
+[ext_resource type="Texture2D" path="res://art/crab_core_charge_step.svg" id="24_crab_core_charge_step"]
+
+[sub_resource type="Resource" id="BossFrames_shell"]
+script = ExtResource("2_frames")
+walk_frames = Array[Texture2D]([ExtResource("10_crab_shell_walk"), ExtResource("11_crab_shell_walk_step")])
+slam_windup_frame = ExtResource("12_crab_shell_slam_windup")
+slam_frame = ExtResource("13_crab_shell_slam")
+charge_windup_frame = ExtResource("14_crab_shell_charge_windup")
+charge_frames = Array[Texture2D]([ExtResource("15_crab_shell_charge"), ExtResource("16_crab_shell_charge_step")])
+recover_frame = ExtResource("17_crab_shell_recover")
+
+[sub_resource type="Resource" id="BossFrames_core"]
+script = ExtResource("2_frames")
+walk_frames = Array[Texture2D]([ExtResource("18_crab_core_walk"), ExtResource("19_crab_core_walk_step")])
+slam_windup_frame = ExtResource("20_crab_core_slam_windup")
+slam_frame = ExtResource("21_crab_core_slam")
+charge_windup_frame = ExtResource("22_crab_core_charge_windup")
+charge_frames = Array[Texture2D]([ExtResource("23_crab_core_charge"), ExtResource("24_crab_core_charge_step")])
+recover_frame = ExtResource("22_crab_core_charge_windup")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(52, 24)
@@ -11,6 +45,9 @@ script = ExtResource("1_script")
 mass = 8.0
 restitution = 0.3
 friction = 1800.0
+
+shell_frames = SubResource("BossFrames_shell")
+core_frames = SubResource("BossFrames_core")
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -12)

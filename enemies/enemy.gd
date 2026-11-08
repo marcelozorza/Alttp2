@@ -102,6 +102,10 @@ const LUNGE_FRAME_TICKS := 4
 @export var throw_windup_frame: Texture2D
 ## Logo depois de jogar a granada. Vazio usa recover_frame.
 @export var throw_recover_frame: Texture2D
+## Erguendo e logo depois de jogar, por direção: de frente, de costas e de
+## lado (para a direita). Com três quadros, valem no lugar dos dois acima.
+@export var throw_windup_frames: Array[Texture2D] = []
+@export var throw_recover_frames: Array[Texture2D] = []
 ## Ligado, cada quadro tem o próprio tamanho e é desenhado centrado nos pés,
 ## com a base do desenho feet_offset pixels abaixo da origem. Desligado, vale
 ## o offset do nó Art. O lobo (ugly) usa, desde 2026-11-08.
@@ -465,6 +469,8 @@ func _state_frame() -> Texture2D:
 				frame = _directional(lunge_frames, lunge_back_frames, lunge_side_frames)[0]
 		State.THROW_WINDUP:
 			frame = throw_windup_frame if throw_windup_frame else windup_frame
+			if throw_windup_frames.size() == 3:
+				frame = throw_windup_frames[_direction_index()]
 		State.LUNGE:
 			frame = lunge_frame
 			if not lunge_frames.is_empty():
@@ -473,6 +479,8 @@ func _state_frame() -> Texture2D:
 				frame = lunge[posmod(lunge_step, lunge.size())]
 		State.THROW_RECOVER:
 			frame = throw_recover_frame if throw_recover_frame else recover_frame
+			if throw_recover_frames.size() == 3:
+				frame = throw_recover_frames[_direction_index()]
 		State.RECOVER:
 			frame = recover_frame
 	return frame
@@ -491,6 +499,13 @@ func _directional(
 	return front
 
 
+## Índice da direção do olhar numa lista de frente, de costas e de lado.
+func _direction_index() -> int:
+	if absf(_look_direction.x) > absf(_look_direction.y):
+		return 2
+	return 1 if _look_direction.y < 0.0 else 0
+
+
 ## O quadro de agora é de lado, e por isso espelha quando olha para a esquerda.
 func _uses_side_frame() -> bool:
 	if absf(_look_direction.x) <= absf(_look_direction.y):
@@ -500,6 +515,10 @@ func _uses_side_frame() -> bool:
 			return not side_frames.is_empty()
 		State.WINDUP, State.LUNGE:
 			return not lunge_side_frames.is_empty()
+		State.THROW_WINDUP:
+			return throw_windup_frames.size() == 3
+		State.THROW_RECOVER:
+			return throw_recover_frames.size() == 3
 	return false
 
 
@@ -508,7 +527,10 @@ func _uses_side_frame() -> bool:
 func _draw() -> void:
 	if hover and _state != State.DEAD:
 		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
-	if _state != State.THROW_WINDUP or (_art and throw_windup_frame):
+	if (
+		_state != State.THROW_WINDUP
+		or (_art and (throw_windup_frame or not throw_windup_frames.is_empty()))
+	):
 		return
 	var rect := _held_grenade_rect()
 	rect.position += _body.position - _body_rest_position

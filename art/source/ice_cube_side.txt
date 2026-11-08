@@ -1,0 +1,45 @@
+# Inimigo de gelo, cubo, side, da folha de IA de 2026-11-08, reduzida e quantizada.
+paleta
+a #a8b4c7
+b #c9e6fa
+c #c9edfd
+d #daeffb
+f #e7f6fc
+h #f4fafb
+i #f6fdfe
+j #fdfefe
+k #81c6fa
+l #469eef
+m #2376cd
+n #07297e
+pixels
+...........mnnnnnnnm...........
+......mnnnnnnnnnlnnnnnm........
+....nnnnkkkllllllkkkknnnn......
+...nnkkcdbkklllkkklllllnnnnn...
+..nnkkcidbkklkkkkkklllmmmlnnn..
+.nnkccjjjbckkkkkkllllmmmmlkbnn.
+nnkkbbifdbkkkkkkllllllllkkkbnn.
+nnkkbibbbckkkkkllllkkkkkklllknn
+nnlkkbbkkkkbbbkkkkkkkllllmmmknn
+nnlkkkkkklkkkbbbkklllllllmmmlnn
+nnlllllklllkkbbkkllllmmlllmmlnn
+nnllllllllllkkbllmnmllllkllllnn
+nnkllllllllllkkllmnnnlllkklllnn
+nnklmmmlklmmllklmmmnnnnlkklmlnn
+nnlmmmmkllmmmlkklmmnmannnnlmlnn
+nnlmmmmkmmmmmlbklllnnjbknnnmlnn
+.nkmmmmlmlmmmllklllmnlhhbnmmlnn
+.nklmmllkmmmmmlklllmmnnnnmmlknn
+.nklmmmmlmmmmmlklnmmmlmllllllnn
+mnlllmmmmlmmmmklmnnnllmnllnnnn.
+nnbllmmmmmmmmmklmmnlnmmnnnnnnn.
+nlkllmmmmmmmmlklmmnlnnnnnnncnn.
+nlklmammmmmmllklmmnmnknnhnmknn.
+nnlklmmmmmmmllklmmmnnknkklmknn.
+.nnllllmmmmlllklmmmmmllmllllnn.
+..nnnnkkllmllkklmmmmmllllllnn..
+...mnnnnllklkkkklmmmmllllnnn...
+.......nnnnkklklllklnnnnnn.....
+..........nnnllllnnnnnm........
+............nnnnnn.............
