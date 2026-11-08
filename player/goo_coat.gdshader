@@ -8,14 +8,16 @@ uniform sampler2D goo : repeat_enable, filter_nearest;
 // 0 sem gosma, 1 com gosma.
 uniform float amount = 0.0;
 
+// No fragment do Godot 4, COLOR já chega multiplicado pela textura, então a
+// sprite não é lida de novo, só a transparência dela para saber onde pintar.
 void fragment() {
-	vec4 sprite = texture(TEXTURE, UV);
+	float sprite_alpha = texture(TEXTURE, UV).a;
 	vec2 pixel = floor(UV / TEXTURE_PIXEL_SIZE);
 	vec2 goo_size = vec2(textureSize(goo, 0));
 	vec4 coat = vec4(0.0);
 	if (pixel.y < goo_size.y) {
 		coat = texture(goo, (pixel + 0.5) / goo_size);
 	}
-	float cover = coat.a * amount * sprite.a;
-	COLOR = vec4(mix(sprite.rgb, coat.rgb, cover), sprite.a) * COLOR;
+	float cover = coat.a * amount * step(0.5, sprite_alpha);
+	COLOR.rgb = mix(COLOR.rgb, coat.rgb, cover);
 }
