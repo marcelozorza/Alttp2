@@ -212,11 +212,30 @@ def trim(rows):
     return [r[cols[0]:cols[-1] + 1] for r in rows]
 
 
+def fill_enclosed(rows):
+    # vão fechado no meio do desenho é pelo escuro, não fundo: a cabeça de costas perdia o miolo
+    h, w = len(rows), len(rows[0])
+    grid = [list(r) for r in rows]
+    outside = set()
+    stack = [(y, x) for y in range(h) for x in range(w) if y in (0, h - 1) or x in (0, w - 1)]
+    while stack:
+        y, x = stack.pop()
+        if (y, x) in outside or not (0 <= y < h and 0 <= x < w) or grid[y][x] != ".":
+            continue
+        outside.add((y, x))
+        stack += [(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)]
+    for y in range(h):
+        for x in range(w):
+            if grid[y][x] == "." and (y, x) not in outside:
+                grid[y][x] = "k"
+    return ["".join(r) for r in grid]
+
+
 previews = []
 for i, (name, cell, fg, box) in enumerate(sprites):
     r, c = divmod(i, 4)
     cell_nearest = nearest[r * CELL:(r + 1) * CELL, c * CELL:(c + 1) * CELL]
-    rows = trim(unspeckle(downscale(cell_nearest, fg, box, scale)))
+    rows = fill_enclosed(trim(unspeckle(downscale(cell_nearest, fg, box, scale))))
     comment = "Giorgino %s, da folha de IA de 2026-11-08, reduzida e quantizada." % COMMENTS[name]
     order = [p[0] for p in PALETTE]
     used = sorted({ch for row in rows for ch in row if ch != "."}, key=order.index)
