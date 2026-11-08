@@ -1,0 +1,13 @@
+# Selo LV2 ao lado do ícone da chama forte e da mola forte (pedido de Marcelo
+# em 2026-11-08): letras de 3 por 5 com contorno escuro.
+paleta
+o #1e1014
+w #fff4b0
+pixels
+ooo.oooooooo.
+owo.owowowwoo
+owo.owowooowo
+owo.owowoowoo
+owooowowowooo
+owwwoowoowwwo
+ooooooooooooo

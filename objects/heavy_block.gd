@@ -7,11 +7,20 @@ extends Pushable
 ## não prender o jogador.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
+##
+## Enquanto anda, faz barulho de pedra arrastada, um trecho a cada
+## DRAG_SOUND_TICKS (pedido de Marcelo em 2026-11-08).
 
 ## Massa do bloco travado, que nenhuma batida move.
 const LOCKED_MASS := 1000.0
+## Ticks entre dois trechos do barulho de arrasto, e a velocidade mínima, em
+## pixels por segundo, para soar.
+const DRAG_SOUND_TICKS := 12
+const DRAG_SOUND_SPEED := 4.0
 
 var locked := false
+
+var _next_drag_tick := 0
 
 @onready var _home := global_position
 
@@ -47,3 +56,6 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 	super(delta)
+	if velocity.length() > DRAG_SOUND_SPEED and Clock.tick >= _next_drag_tick:
+		Sfx.play(&"block_drag")
+		_next_drag_tick = Clock.tick + DRAG_SOUND_TICKS

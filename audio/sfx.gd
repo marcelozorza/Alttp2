@@ -69,6 +69,7 @@ const SOUNDS := {
 	&"save": [-5.0, 0.0],
 	&"switch_press": [-8.0, 0.0],
 	&"switch_release": [-10.0, 0.0],
+	&"block_drag": [-10.0, 0.08],
 	# Menus
 	&"menu_move": [-12.0, 0.0],
 	&"menu_confirm": [-8.0, 0.0],

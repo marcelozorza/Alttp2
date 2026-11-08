@@ -74,4 +74,4 @@ func _draw() -> void:
 	var elapsed := Clock.tick - _open_tick
 	if elapsed <= SHOW_ITEM_TICKS:
 		var rise := minf(elapsed, 20.0)
-		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 20.0 - rise))
+		ToolIcons.draw(self, item, Vector2(0.0, -SIZE.y - 20.0 - rise), Color.WHITE, 2)

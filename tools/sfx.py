@@ -611,6 +611,18 @@ def switch_press():
 
 
 @recipe
+def block_drag():
+    """Bloco pesado arrastado no chão de pedra: ronco grave de atrito com
+    estalos de pedra raspando. Toca em sequência enquanto o bloco anda,
+    pedido de Marcelo em 2026-11-08."""
+    seconds = 0.22
+    rumble = low(noise(seconds), 260.0, 1.2) * hump(seconds, 0.4) * 1.4
+    grind = band(noise(seconds), 900.0, 2.0) * hump(seconds, 0.5) * 0.35
+    grit = 0.5 * crackle(seconds, 9, 700.0, 2400.0)
+    return finish(mix(rumble, grind, grit), 0.7)
+
+
+@recipe
 def switch_release():
     """Interruptor voltando: a pancada ao contrário, mais leve."""
     return finish(mix(0.6 * click(0.003, 3000.0), thud(110.0, 170.0, 0.1, 0.03)))
