@@ -4,6 +4,9 @@ extends CanvasLayer
 ## de mapa (Back no controle de Xbox, Select no de SNES, M ou Tab no teclado)
 ## ou pelo botão Mapa do menu de pausa, e para o jogo enquanto está aberta. O
 ## mesmo botão, ou o de pausa, fecha: aberta pelo menu de pausa, volta a ele.
+## Desde 2026-11-08 o botão de pausa também abre o mapa direto, como tela de
+## pausa: o título vira "Pausa", o de confirmar abre o menu de pausa, e o de
+## pausa ou o de mapa voltam ao jogo.
 ##
 ## O mapa inteiro é desenhado casa por casa, ampliado o máximo que cabe na
 ## tela. Nas salas em que o personagem já esteve aparece o detalhe: o chão em
@@ -75,6 +78,9 @@ const LEGEND := [
 var _canvas: Control
 ## Menu que abriu o mapa e volta quando ele fecha, ou nulo.
 var _return_to: CanvasLayer
+## Aberto pelo botão de pausa, com o menu de pausa a um botão de distância.
+var _as_pause := false
+var _pause_menu: CanvasLayer
 
 
 func _ready() -> void:
@@ -103,15 +109,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("map") or event.is_action_pressed("pause"):
 			close()
 			get_viewport().set_input_as_handled()
+		elif _as_pause and event.is_action_pressed("ui_accept"):
+			_open_pause_menu()
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("map") and not get_tree().paused and not _player_is_dead():
 		open()
 		get_viewport().set_input_as_handled()
 
 
 ## Abre o mapa e para o jogo. Com return_to, o menu que chamou volta ao fechar,
-## e o jogo já estava parado por ele.
-func open(return_to: CanvasLayer = null) -> void:
-	_return_to = return_to
+## e o jogo já estava parado por ele. Com as_pause, o mapa é a tela de pausa:
+## fechar volta ao jogo, e o botão de confirmar abre o menu return_to.
+func open(return_to: CanvasLayer = null, as_pause := false) -> void:
+	_as_pause = as_pause
+	_return_to = null if as_pause else return_to
+	_pause_menu = return_to if as_pause else null
 	if not get_tree().paused:
 		get_tree().paused = true
 		Music.set_paused(true)
@@ -121,6 +133,7 @@ func open(return_to: CanvasLayer = null) -> void:
 
 func close() -> void:
 	visible = false
+	_as_pause = false
 	if _return_to:
 		_return_to.visible = true
 		_return_to.call("refocus")
@@ -128,6 +141,15 @@ func close() -> void:
 	else:
 		Music.set_paused(false)
 		get_tree().paused = false
+
+
+## Troca o mapa pelo menu de pausa, com o jogo ainda parado.
+func _open_pause_menu() -> void:
+	visible = false
+	_as_pause = false
+	if _pause_menu:
+		_pause_menu.call("show_menu")
+	_pause_menu = null
 
 
 func _player_is_dead() -> bool:
@@ -152,12 +174,22 @@ func _draw_map() -> void:
 	_canvas.draw_string(
 		font,
 		Vector2(0.0, 24.0),
-		"Mapa",
+		"Pausa" if _as_pause else "Mapa",
 		HORIZONTAL_ALIGNMENT_CENTER,
 		SCREEN.x,
 		TITLE_FONT_SIZE,
 		TEXT_COLOR
 	)
+	if _as_pause:
+		_canvas.draw_string(
+			font,
+			Vector2(MARGIN, 24.0),
+			"A: menu",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			LABEL_FONT_SIZE,
+			TEXT_COLOR
+		)
 	var chapter := _chapter()
 	if chapter == null:
 		return

@@ -2,7 +2,21 @@
 
 [ext_resource type="Script" path="res://enemies/enemy.gd" id="1_script"]
 [ext_resource type="PackedScene" path="res://enemies/grenade.tscn" id="2_grenade"]
-[ext_resource type="Texture2D" path="res://art/ugly.svg" id="3_art"]
+[ext_resource type="Texture2D" path="res://art/wolf_down.svg" id="4_wolf_down"]
+[ext_resource type="Texture2D" path="res://art/wolf_down_step.svg" id="5_wolf_down_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_up.svg" id="6_wolf_up"]
+[ext_resource type="Texture2D" path="res://art/wolf_up_step.svg" id="7_wolf_up_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_side.svg" id="8_wolf_side"]
+[ext_resource type="Texture2D" path="res://art/wolf_side_step.svg" id="9_wolf_side_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_down.svg" id="10_wolf_lunge_down"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_down_step.svg" id="11_wolf_lunge_down_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_up.svg" id="12_wolf_lunge_up"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_up_step.svg" id="13_wolf_lunge_up_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_side.svg" id="14_wolf_lunge_side"]
+[ext_resource type="Texture2D" path="res://art/wolf_lunge_side_step.svg" id="15_wolf_lunge_side_step"]
+[ext_resource type="Texture2D" path="res://art/wolf_throw_windup.svg" id="16_wolf_throw_windup"]
+[ext_resource type="Texture2D" path="res://art/wolf_throw.svg" id="17_wolf_throw"]
+[ext_resource type="Texture2D" path="res://art/wolf_hit.svg" id="18_wolf_hit"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(36, 20)
@@ -26,6 +40,17 @@ sword_factor = 1
 fire_factor = 1
 blast_factor = 3
 grenade_scene = ExtResource("2_grenade")
+walk_frames = Array[Texture2D]([ExtResource("4_wolf_down"), ExtResource("5_wolf_down_step")])
+back_frames = Array[Texture2D]([ExtResource("6_wolf_up"), ExtResource("7_wolf_up_step")])
+recover_frame = ExtResource("17_wolf_throw")
+hit_frame = ExtResource("18_wolf_hit")
+side_frames = Array[Texture2D]([ExtResource("8_wolf_side"), ExtResource("9_wolf_side_step")])
+lunge_frames = Array[Texture2D]([ExtResource("10_wolf_lunge_down"), ExtResource("11_wolf_lunge_down_step")])
+lunge_back_frames = Array[Texture2D]([ExtResource("12_wolf_lunge_up"), ExtResource("13_wolf_lunge_up_step")])
+lunge_side_frames = Array[Texture2D]([ExtResource("14_wolf_lunge_side"), ExtResource("15_wolf_lunge_side_step")])
+throw_windup_frame = ExtResource("16_wolf_throw_windup")
+throw_recover_frame = ExtResource("17_wolf_throw")
+anchor_feet = true
 
 [node name="Body" type="ColorRect" parent="."]
 offset_left = -20.0
@@ -44,16 +69,16 @@ color = Color(0.1, 0.05, 0.1, 1)
 
 [node name="HealthBar" type="ColorRect" parent="."]
 offset_left = -20.0
-offset_top = -56.0
+offset_top = -64.0
 offset_right = 20.0
-offset_bottom = -52.0
+offset_bottom = -60.0
 mouse_filter = 2
 color = Color(0.4, 0.85, 0.4, 1)
 
 [node name="Art" type="Sprite2D" parent="."]
-texture = ExtResource("3_art")
+texture = ExtResource("4_wolf_down")
 centered = false
-offset = Vector2(-20, -44)
+offset = Vector2(-23, -54)
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10)

@@ -6,6 +6,12 @@ extends Node2D
 ## aviso. Quem estiver com os pés na área no estouro fica com a espada travada.
 ## A granada não causa dano, não empurra e só afeta o personagem.
 ##
+## Com o nó Blob (a cena da granada), ela é uma bola de gosma magenta: voa
+## mudando de forma, a marca do alvo é a borda pontilhada da poça, o estouro é
+## um respingo e a poça pegajosa fica no chão um pouco e some. A poça é só
+## desenho: o efeito acontece todo no estouro. Pedido de Marcelo em 2026-11-08.
+## Desenhos em tools/goo_art.py.
+##
 ## A pedra do atirador (enemies/rock.tscn) é a mesma cena com outros valores:
 ## cai numa casa só, causa dano em vez de travar a espada e tem a cor da pedra.
 
@@ -14,6 +20,25 @@ const BALL_SIZE := Vector2(12.0, 12.0)
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Ticks em que o estouro fica visível.
 const BURST_TICKS := 12
+const GOO_BLOB: Array[Texture2D] = [
+	preload("res://art/goo_blob_1.svg"),
+	preload("res://art/goo_blob_2.svg"),
+]
+const GOO_SPLASH: Array[Texture2D] = [
+	preload("res://art/goo_splash_1.svg"),
+	preload("res://art/goo_splash_2.svg"),
+	preload("res://art/goo_splash_3.svg"),
+]
+const GOO_PUDDLE := preload("res://art/goo_puddle.svg")
+const GOO_TARGET := preload("res://art/goo_target.svg")
+## Ticks de cada forma da bola de gosma no voo.
+const GOO_BLOB_TICKS := 6
+## Ticks de cada quadro do respingo.
+const GOO_SPLASH_TICKS := 4
+## Ticks em que a poça fica no chão depois do respingo, e quantos deles são
+## de sumir aos poucos.
+const GOO_PUDDLE_TICKS := 90
+const GOO_FADE_TICKS := 30
 
 ## Segundos no ar, da mão até o chão. É o tempo para sair da área.
 @export_range(0.1, 2.0, 0.05) var flight_time := 0.7
@@ -35,10 +60,13 @@ var _burst_tick := -1
 var _area_shape := RectangleShape2D.new()
 
 @onready var _ball: ColorRect = $Ball
+@onready var _blob := get_node_or_null("Blob") as Sprite2D
 
 
 func _ready() -> void:
 	_ball.color = color
+	if _blob:
+		_ball.visible = false
 
 
 ## Lança a granada. Ela sai de from, os pés de quem joga, à altura from_height,
@@ -54,7 +82,7 @@ func launch(from: Vector2, from_height: float, target: Vector2) -> void:
 
 func _physics_process(_delta: float) -> void:
 	if _burst_tick >= 0:
-		if Clock.tick - _burst_tick >= BURST_TICKS:
+		if Clock.tick - _burst_tick >= _burst_ticks():
 			queue_free()
 	elif _progress() >= 1.0:
 		_burst()
@@ -79,6 +107,17 @@ func _update_ball() -> void:
 	var t := _progress()
 	var height := _from_height * (1.0 - t) + arc_height * 4.0 * t * (1.0 - t)
 	_ball.position = _ground_offset() - Vector2(0.0, height) - BALL_SIZE / 2.0
+	if _blob:
+		_blob.position = _ball.position + BALL_SIZE / 2.0
+		var shape := floori(float(Clock.tick - _launch_tick) / GOO_BLOB_TICKS) % GOO_BLOB.size()
+		_blob.texture = GOO_BLOB[shape]
+
+
+## Ticks entre o estouro e o fim, com o respingo e a poça na gosma.
+func _burst_ticks() -> int:
+	if _blob:
+		return GOO_SPLASH_TICKS * GOO_SPLASH.size() + GOO_PUDDLE_TICKS
+	return BURST_TICKS
 
 
 ## Área do estouro, relativa ao centro.
@@ -91,6 +130,8 @@ func _burst() -> void:
 	_burst_tick = Clock.tick
 	Sfx.play(&"grenade_burst")
 	_ball.visible = false
+	if _blob:
+		_blob.visible = false
 	_area_shape.size = _area().size
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = _area_shape
@@ -111,6 +152,9 @@ func _burst() -> void:
 ## até a borda durante o voo e a sombra da granada. No estouro, a área toda
 ## brilha e some.
 func _draw() -> void:
+	if _blob:
+		_draw_goo()
+		return
 	var area := _area()
 	if _burst_tick >= 0:
 		var fade := 1.0 - float(Clock.tick - _burst_tick) / BURST_TICKS
@@ -121,3 +165,27 @@ func _draw() -> void:
 	var filled := area.size * _progress()
 	draw_rect(Rect2(-filled / 2.0, filled), Color(color, 0.2))
 	draw_rect(Rect2(_ground_offset() - Vector2(6.0, 2.0), Vector2(12.0, 4.0)), SHADOW_COLOR)
+
+
+## Gosma: antes do estouro, a borda pontilhada da poça, a poça crescendo
+## transparente do centro e a sombra da bola. Depois, o respingo e a poça,
+## que some aos poucos no fim.
+func _draw_goo() -> void:
+	if _burst_tick >= 0:
+		var elapsed := Clock.tick - _burst_tick
+		var splash := elapsed / GOO_SPLASH_TICKS
+		if splash < GOO_SPLASH.size():
+			_draw_centered(GOO_SPLASH[splash], 1.0, 1.0)
+			return
+		var left := _burst_ticks() - elapsed
+		_draw_centered(GOO_PUDDLE, 1.0, minf(float(left) / GOO_FADE_TICKS, 1.0))
+		return
+	_draw_centered(GOO_TARGET, 1.0, 0.9)
+	_draw_centered(GOO_PUDDLE, _progress(), 0.25)
+	draw_rect(Rect2(_ground_offset() - Vector2(6.0, 2.0), Vector2(12.0, 4.0)), SHADOW_COLOR)
+
+
+## Desenha a textura centrada na área, na escala e transparência dadas.
+func _draw_centered(texture: Texture2D, scale_factor: float, alpha: float) -> void:
+	var size := texture.get_size() * scale_factor
+	draw_texture_rect(texture, Rect2(-size / 2.0, size), false, Color(1.0, 1.0, 1.0, alpha))

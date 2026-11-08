@@ -3,6 +3,13 @@
 [ext_resource type="Script" path="res://player/player.gd" id="1_script"]
 [ext_resource type="Script" path="res://player/sword.gd" id="2_sword"]
 [ext_resource type="Texture2D" path="res://art/giorgino_stand_down.svg" id="3_art"]
+[ext_resource type="Shader" path="res://player/goo_coat.gdshader" id="4_goo_shader"]
+[ext_resource type="Texture2D" path="res://art/goo_coat.svg" id="5_goo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_goo"]
+shader = ExtResource("4_goo_shader")
+shader_parameter/goo = ExtResource("5_goo")
+shader_parameter/amount = 0.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
 size = Vector2(24, 16)
@@ -23,6 +30,7 @@ color = Color(0, 0, 0, 0.35)
 [node name="Visual" type="Node2D" parent="."]
 
 [node name="Art" type="Sprite2D" parent="Visual"]
+material = SubResource("ShaderMaterial_goo")
 texture = ExtResource("3_art")
 centered = false
 offset = Vector2(-16, -40)

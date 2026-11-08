@@ -47,6 +47,8 @@ const WEAVE_RATE := 0.2
 const ROOT_PULL := 16.0
 ## Ticks de cada passo da caminhada, quando há quadros de passo.
 const WALK_FRAME_TICKS := 8
+## Ticks de cada passo do bote, mais rápido que andar.
+const LUNGE_FRAME_TICKS := 4
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -86,6 +88,25 @@ const WALK_FRAME_TICKS := 8
 @export var recover_frame: Texture2D
 ## Atordoado por um golpe.
 @export var hit_frame: Texture2D
+## Quadros de lado, virados para a direita, usados ao andar para os lados. O
+## desenho espelha para a esquerda. Vazio usa os de frente.
+@export var side_frames: Array[Texture2D] = []
+## Passos do bote por direção: de frente, de costas e de lado (para a
+## direita). Com eles, o bote alterna os passos na direção do salto, a
+## preparação usa o primeiro passo e lunge_frame fica sem uso.
+@export var lunge_frames: Array[Texture2D] = []
+@export var lunge_back_frames: Array[Texture2D] = []
+@export var lunge_side_frames: Array[Texture2D] = []
+## Erguendo a granada. Com ele, a granada não é desenhada à parte, porque já
+## está na mão do desenho.
+@export var throw_windup_frame: Texture2D
+## Logo depois de jogar a granada. Vazio usa recover_frame.
+@export var throw_recover_frame: Texture2D
+## Ligado, cada quadro tem o próprio tamanho e é desenhado centrado nos pés,
+## com a base do desenho feet_offset pixels abaixo da origem. Desligado, vale
+## o offset do nó Art. O lobo (ugly) usa, desde 2026-11-08.
+@export var anchor_feet := false
+@export_range(-16, 16, 1) var feet_offset := 2
 
 @export_group("Comportamento")
 ## Distância, em pixels, a partir da qual percebe o personagem.
@@ -401,6 +422,10 @@ func _update_visuals() -> void:
 		var frame := _frame_for_state()
 		if frame:
 			_art.texture = frame
+			_art.flip_h = _uses_side_frame() and _look_direction.x < 0.0
+			if anchor_feet:
+				var size := frame.get_size()
+				_art.offset = Vector2(-floorf(size.x / 2.0), feet_offset - size.y)
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
@@ -413,30 +438,69 @@ func _update_visuals() -> void:
 
 ## Escolhe o quadro do desenho pelo estado. Sem quadros, devolve nulo e o
 ## desenho fica como está. Andando, alterna os passos. De costas quando olha
-## para cima e há quadros de costas.
+## para cima e há quadros de costas, e de lado quando olha mais para o lado e
+## há quadros de lado.
 func _frame_for_state() -> Texture2D:
 	if walk_frames.is_empty():
 		return null
-	match _state:
-		State.STAGGER:
-			if hit_frame:
-				return hit_frame
-		State.WINDUP, State.THROW_WINDUP:
-			if windup_frame:
-				return windup_frame
-		State.LUNGE:
-			if lunge_frame:
-				return lunge_frame
-		State.RECOVER, State.THROW_RECOVER:
-			if recover_frame:
-				return recover_frame
-	var frames := walk_frames
-	if _look_direction.y < 0.0 and not back_frames.is_empty():
-		frames = back_frames
+	var special := _state_frame()
+	if special:
+		return special
+	var frames := _directional(walk_frames, back_frames, side_frames)
 	var step := 0
 	if _state == State.APPROACH and velocity.length() > 2.0:
 		step = posmod(floori(float(Clock.tick) / WALK_FRAME_TICKS), frames.size())
 	return frames[step]
+
+
+## Quadro próprio do estado de ataque ou de golpe, ou nulo para andar.
+func _state_frame() -> Texture2D:
+	var frame: Texture2D = null
+	match _state:
+		State.STAGGER:
+			frame = hit_frame
+		State.WINDUP:
+			frame = windup_frame
+			if not lunge_frames.is_empty():
+				frame = _directional(lunge_frames, lunge_back_frames, lunge_side_frames)[0]
+		State.THROW_WINDUP:
+			frame = throw_windup_frame if throw_windup_frame else windup_frame
+		State.LUNGE:
+			frame = lunge_frame
+			if not lunge_frames.is_empty():
+				var lunge := _directional(lunge_frames, lunge_back_frames, lunge_side_frames)
+				var lunge_step := floori(float(Clock.tick - _state_tick) / LUNGE_FRAME_TICKS)
+				frame = lunge[posmod(lunge_step, lunge.size())]
+		State.THROW_RECOVER:
+			frame = throw_recover_frame if throw_recover_frame else recover_frame
+		State.RECOVER:
+			frame = recover_frame
+	return frame
+
+
+## Quadros para a direção do olhar: de lado quando olha mais para o lado, de
+## costas quando olha para cima, de frente no resto. Lista vazia cai na de
+## frente.
+func _directional(
+	front: Array[Texture2D], back: Array[Texture2D], side: Array[Texture2D]
+) -> Array[Texture2D]:
+	if not side.is_empty() and absf(_look_direction.x) > absf(_look_direction.y):
+		return side
+	if not back.is_empty() and _look_direction.y < 0.0:
+		return back
+	return front
+
+
+## O quadro de agora é de lado, e por isso espelha quando olha para a esquerda.
+func _uses_side_frame() -> bool:
+	if absf(_look_direction.x) <= absf(_look_direction.y):
+		return false
+	match _state:
+		State.APPROACH, State.IDLE:
+			return not side_frames.is_empty()
+		State.WINDUP, State.LUNGE:
+			return not lunge_side_frames.is_empty()
+	return false
 
 
 ## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
@@ -444,7 +508,7 @@ func _frame_for_state() -> Texture2D:
 func _draw() -> void:
 	if hover and _state != State.DEAD:
 		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
-	if _state != State.THROW_WINDUP:
+	if _state != State.THROW_WINDUP or (_art and throw_windup_frame):
 		return
 	var rect := _held_grenade_rect()
 	rect.position += _body.position - _body_rest_position

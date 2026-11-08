@@ -5,22 +5,22 @@ r #e03848
 p #a8202c
 l #ff7080
 w #ffd0d8
-o #3a1a20
-e #1e1014
-n #4a2a30
+q #e0b8c0
+e #6a4650
+n #8a6670
 pixels
-..oooo....oooo..
-.olwwro..oeeeeo.
-olwwrrrooeeeeeeo
-olwrrrrreeeeeeeo
-orrrrrrreeeeeeeo
-orrrrrrreeeeeeeo
-orrrrrrreeeeeeeo
-.orrrrrreeeeeeo.
-.oprrrrreeeeeeo.
-..oprrrreeeeeo..
-...oprrreeeeo...
-....oppreeeo....
-.....oppeeo.....
-......opeo......
-.......oo.......
+..oooo....qqqq..
+.olwwro..qeeeeq.
+olwwrrroqeeeeeeq
+olwrrrrreeeeeeeq
+orrrrrrreeeeeeeq
+orrrrrrreeeeeeeq
+orrrrrrreeeeeeeq
+.orrrrrreeeeeeq.
+.oprrrrreeeeeeq.
+..oprrrreeeeeq..
+...oprrreeeeq...
+....oppreeeq....
+.....oppeeq.....
+......opeq......
+.......oq.......

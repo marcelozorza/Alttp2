@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://enemies/grenade.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/goo_blob_1.svg" id="2_blob"]
 
 [node name="Grenade" type="Node2D"]
 script = ExtResource("1_script")
@@ -11,3 +12,7 @@ offset_right = 12.0
 offset_bottom = 12.0
 mouse_filter = 2
 color = Color(0.95, 0.35, 0.85, 1)
+
+[node name="Blob" type="Sprite2D" parent="."]
+z_index = 1
+texture = ExtResource("2_blob")

@@ -783,6 +783,8 @@ func _update_sword_lock_bar() -> void:
 	var now := Clock.tick
 	var left := _sword_lock_until_tick - now
 	_sword_lock_bar.visible = left > 0
+	# Gosma da granada do ugly no corpo enquanto a espada está travada.
+	(_art.material as ShaderMaterial).set_shader_parameter("amount", 1.0 if left > 0 else 0.0)
 	if left <= 0:
 		return
 	_sword_lock_bar.size.x = _sword_lock_width * left / _sword_lock_ticks

@@ -5,9 +5,11 @@ extends CanvasLayer
 ## ao mundo no jogo contínuo e ao menu de título no treino, e perde o que foi
 ## feito no capítulo. No mundo e na sala de teste, sair leva ao menu de título.
 ##
-## O botão Mapa esconde este menu e abre a tela de mapa (ui/map_screen.gd),
-## que volta para cá ao fechar. Ele só aparece onde há uma tela de mapa na
-## cena, no grupo "map_screen".
+## Onde há uma tela de mapa na cena (grupo "map_screen"), o botão de pausa
+## abre direto o mapa (ui/map_screen.gd), pedido de Marcelo em 2026-11-08, e
+## este menu fica um botão adiante: no mapa, o botão de confirmar mostra o
+## menu. O botão Mapa do menu volta ao mapa. Sem tela de mapa, como no mundo,
+## a pausa abre este menu direto.
 ##
 ## Não abre enquanto outra tela, como a de fim, a de derrota ou a de mapa,
 ## estiver com o jogo parado, nem com o personagem sem vida, para a tela de
@@ -43,12 +45,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible:
 		resume()
 	elif not get_tree().paused and not _player_is_dead():
-		open()
+		var map_screen := _map_screen()
+		if map_screen:
+			get_tree().paused = true
+			Music.set_paused(true)
+			map_screen.call("open", self, true)
+		else:
+			open()
+		get_viewport().set_input_as_handled()
 
 
 func open() -> void:
 	get_tree().paused = true
 	Music.set_paused(true)
+	show_menu()
+
+
+## Mostra o menu com o jogo já parado, também quando vem do mapa.
+func show_menu() -> void:
 	visible = true
 	Sfx.play(&"menu_confirm")
 	refocus()
