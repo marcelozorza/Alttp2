@@ -1,11 +1,13 @@
 # Guardião antigo, de gelo grosso: os pixels de crab_shell_recover com paleta azul-marinho.
 paleta
-b #1e4a8a
-d #122a55
-k #081030
+d #0e2248
+g #1e4a8a
+k #060a20
 l #3a74b8
+m #7a1a3a
 o #060a20
-r #060a20
-w #6aa0d8
+p #6aa0d8
+s #e86a8a
+w #ffffff
 y #f2c443
 usa crab_shell_recover

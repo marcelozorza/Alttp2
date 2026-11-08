@@ -1,48 +1,57 @@
-# Ugly, o lobo cinza, grade de 24 por 30 escrita em dobro.
-# Redesenhado à mão em 2026-11-08, segunda passada com mais volume e detalhe, por pedido de Marcelo.
+# Ugly, o lobo cinza, versão cute: cabeça grande, olhos com brilho, corpo pequeno.
+# Desenhado à mão em 2026-11-08 a pedido de Marcelo. Grade em 1x escrita em dobro.
 paleta
-g #5e5868
-k #3a3542
-l #8b8497
+c #f2ead8
+d #4a4555
+g #6e6880
+l #9a94aa
 o #1d1a22
 pixels
-....oooo................................oooo....
-....oooo................................oooo....
-..oolllloo............................oolllloo..
-..oolllloo............................oolllloo..
-..oollgglloo........................oollggggoo..
-..oollgglloo........................oollggggoo..
-..oollgggglloo....................oollgggglloo..
-..oollgggglloo....................oollgggglloo..
-..oollgggggglloooooooooooooooooooooollggggggoo..
-..oollgggggglloooooooooooooooooooooollggggggoo..
-..oollggggggllllllllllllllllllllllllggggggggoo..
-..oollggggggllllllllllllllllllllllllggggggggoo..
-..oollllggggggggggggggggggggggggggggggggggggoo..
-..oollllggggggggggggggggggggggggggggggggggggoo..
-..oollggggggggggggggggggggggggggggggggggggggoo..
-..oollggggggggggggggggggggggggggggggggggggggoo..
-..ookkggggggggggggggggggggggggggllggggggggkkoo..
-..ookkggggggggggggggggggggggggggllggggggggkkoo..
-....ookkggggggggggggllggggggggggggggggggkkoo....
-....ookkggggggggggggllggggggggggggggggggkkoo....
-......ooggggggggggggggggggllggggggggggggoo......
-......ooggggggggggggggggggllggggggggggggoo......
-....oooollgggggggggggggggggggggggggggggglloooo..
-....oooollgggggggggggggggggggggggggggggglloooo..
-..oollllggggggggggllgggggggggggggggggggggglllloo
-..oollllggggggggggllgggggggggggggggggggggglllloo
-..oollggggggkkkkkkkkkkkkkkkkkkkkkkkkkkllggggggoo
-..oollggggggkkkkkkkkkkkkkkkkkkkkkkkkkkllggggggoo
-..oollggggkkooooooooooooooooooooooooooggggggkkoo
-..oollggggkkooooooooooooooooooooooooooggggggkkoo
-..oollggggoo........................oollggggoo..
-..oollggggoo........................oollggggoo..
-..oollggggoo........................oollggggoo..
-..oollggggoo........................oollggggoo..
-..oollgggglloooo................oooollggggggoooo
-..oollgggglloooo................oooollggggggoooo
-..ookkkkkkkkoo....................ookkkkkkkkoo..
-..ookkkkkkkkoo....................ookkkkkkkkoo..
-..oooooooooooo....................oooooooooooo..
-..oooooooooooo....................oooooooooooo..
+......oo................................oo......
+......oo................................oo......
+....ooddoo............................oolloo....
+....ooddoo............................oolloo....
+....ooddlloo........................oollggoo....
+....ooddlloo........................oollggoo....
+....ooddgglloo....................oollggggoo....
+....ooddgglloo....................oollggggoo....
+....ooddgggglloo................oollggggggoo....
+....ooddgggglloo................oollggggggoo....
+....oogggggggglloooooooooooooooollggggggggoo....
+....oogggggggglloooooooooooooooollggggggggoo....
+..ooddggggggggggllllllllllllllllgggggggggglloo..
+..ooddggggggggggllllllllllllllllgggggggggglloo..
+..ooggggggggggggggggggggggggggggggggggggggggoo..
+..ooggggggggggggggggggggggggggggggggggggggggoo..
+ooddgggggggggggggggggggggggggggggggggggggggglloo
+ooddgggggggggggggggggggggggggggggggggggggggglloo
+ooddggggggggggggggggggggggggggggggggggggggggddoo
+ooddggggggggggggggggggggggggggggggggggggggggddoo
+..ooggggggggggggggggggggggggggggggggggggggggoo..
+..ooggggggggggggggggggggggggggggggggggggggggoo..
+ooddggggggggggggooooooooooooooooggggggggggggddoo
+ooddggggggggggggooooooooooooooooggggggggggggddoo
+..ooggggggggggoollllllllllllllooooooggggggggoo..
+..ooggggggggggoollllllllllllllooooooggggggggoo..
+ooddggggggggooddggggggggggggoollllllooggggggddoo
+ooddggggggggooddggggggggggggoollllllooggggggddoo
+..ooddggggggooddggggggggggoollggggddooggggddoo..
+..ooddggggggooddggggggggggoollggggddooggggddoo..
+....ooddggggooddggggggggooddggggddooggggddoo....
+....ooddggggooddggggggggooddggggddooggggddoo....
+......ooddggggooddggggggooddggddooggggddoo......
+......ooddggggooddggggggooddggddooggggddoo......
+........ooddddooddddddddooccccooooddddoo........
+........ooddddooddddddddooccccooooddddoo........
+..........oooooooooooooooooooooooooooo..........
+..........oooooooooooooooooooooooooooo..........
+..oooooooo............................oooooooo..
+..oooooooo............................oooooooo..
+ooddlllllloo........................oollllllddoo
+ooddlllllloo........................oollllllddoo
+ooddggggggoo........................ooggggggddoo
+ooddggggggoo........................ooggggggddoo
+ooccccccccoo........................ooccccccccoo
+ooccccccccoo........................ooccccccccoo
+..oooooooo............................oooooooo..
+..oooooooo............................oooooooo..

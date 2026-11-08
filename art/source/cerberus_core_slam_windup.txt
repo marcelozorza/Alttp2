@@ -1,12 +1,18 @@
 # Colosso com o peito em brasa: os pixels de cerberus_shell_slam_windup com outra paleta.
 paleta
+a #3a3744
+b #4a4658
 c #e8e0d0
-d #26232e
+d #24212c
+e #595568
 f #ff8a1e
-g #4a4658
+g #3a3646
 h #ffd24a
-l #6e6a80
+l #5c5772
+m #5a1420
 o #0e0c10
-p #6a6578
 r #ffd24a
+s #b04050
+t #e8708a
+w #ffffff
 usa cerberus_shell_slam_windup

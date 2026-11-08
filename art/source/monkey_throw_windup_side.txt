@@ -5,6 +5,7 @@ c #e8c89a
 k #7a1a1a
 l #c08048
 o #2a1a14
+p #f0a0a0
 r #9c5a2c
 s #6e6660
 t #938a82
@@ -18,9 +19,9 @@ pixels
 .....oorrrrrrrrrro....
 ...oorrrrrrrrrcccco...
 ..orlorrrrrrrccccccoo.
-..orloorrrrrrcowccccco
-...ooorrrrrrrccccccccc
-.....orrrrrrrcccckkkkc
+..orloorrrrrrcwoccccco
+...ooorrrrrrrcoocccccc
+.....orrrrrrrpccpkkkkc
 ......orrrrrrrccccwwcc
 .......oorrrrrrrrrooo.
 ......oorrrrrrrrrroo..
