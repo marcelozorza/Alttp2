@@ -14,7 +14,9 @@ extends Node2D
 ## O desenho é art/sword.svg, uma espada apontando para a direita, girada para
 ## a direção do golpe. Para os lados ela sai da pata, para baixo sai de baixo
 ## do corpo e para cima sai de cima da cabeça. Ao recolher, ela desliza para
-## dentro do corpo, e a parte que já entrou não aparece.
+## dentro do corpo, e a parte que já entrou não aparece. Desde a folha com
+## espada de 2026-11-08 o Giorgino desliga esse desenho (draw_blade), porque
+## as poses de estocada já trazem a lâmina, e só a área de dano fica aqui.
 
 ## Centro e meia extensão do corpo desenhado do personagem, a partir da origem
 ## nos pés. A área de dano sai da borda do corpo.
@@ -45,6 +47,9 @@ const UP_START := Vector2(0.0, -24.0)
 @export_range(0.0, 0.5, 0.01) var active_time := 0.1
 ## Segundos da animação de recolher, sem dano.
 @export_range(0.0, 0.5, 0.01) var retract_time := 0.08
+## Desenha a lâmina à parte. Desligado quando o desenho de quem empunha já
+## traz a espada.
+@export var draw_blade := true
 
 var _direction := Vector2.DOWN
 var _attack_tick := -1000
@@ -72,6 +77,16 @@ func _physics_process(_delta: float) -> void:
 
 func _elapsed() -> int:
 	return Clock.tick - _attack_tick
+
+
+## Verdadeiro do golpe ao fim do recolhimento.
+func is_swinging() -> bool:
+	return _elapsed() <= GameMath.ticks(active_time) + GameMath.ticks(retract_time)
+
+
+## Verdadeiro só durante o recolhimento, depois do tempo de dano.
+func is_retracting() -> bool:
+	return is_swinging() and _elapsed() >= GameMath.ticks(active_time)
 
 
 func _apply_hits() -> void:
@@ -110,7 +125,7 @@ func _blade_length() -> float:
 
 func _draw() -> void:
 	var length := _blade_length()
-	if length <= 0.0:
+	if length <= 0.0 or not draw_blade:
 		return
 	# Quanto a espada já entrou no corpo. A coluna c do desenho fica em
 	# c - GUARD_X - pulled no eixo do golpe, e só o que passa da guarda aparece.
