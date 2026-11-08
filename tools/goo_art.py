@@ -10,10 +10,9 @@ tenha textura de líquido pegajoso. Saem quatro desenhos:
 - goo_puddle: a poça pegajosa que fica no chão depois do estouro, com borda
   escura, brilhos, bolhas e fios.
 - goo_target: só a borda pontilhada da poça, a marca de onde a gosma vai cair.
-- goo_coat: a gosma grudada no Giorgino enquanto a espada está travada, 48x48.
-  O shader player/goo_coat.gdshader pinta esse desenho só onde a sprite tem
-  pixel, a partir do alto dela, então a gosma cobre a cabeça e escorre pelo
-  corpo em qualquer pose.
+
+A gosma grudada no Giorgino enquanto a espada está travada fica em
+tools/giorgino_goo_art.py, pintada quadro a quadro sobre os desenhos dele.
 
 Os desenhos do estouro são feitos em 48 por 48 e ampliados 2 vezes, para
 96 por 96, a área de 3 por 3 casas, como a explosão da bomba. As formas são
@@ -214,27 +213,8 @@ def build():
             if dist[y][x] == 1 and (x + y) % 3 != 0:
                 target[y][x] = "p"
     out["goo_target"] = (target, SCALE)
-    out["goo_coat"] = (coat(random.Random(21)), 1)
     return out
 
-
-def coat(rng):
-    """Capa de gosma de cima para baixo: cobre o alto, com a borda de baixo
-    irregular, escorridos finos e respingos soltos mais embaixo."""
-    size = 48
-    circles = [(x, rng.uniform(4.0, 9.0), rng.uniform(4.0, 6.5)) for x in range(-2, size + 4, 5)]
-    for x in range(1, size, 7):
-        length = rng.uniform(12.0, 24.0)
-        y = 8.0
-        while y < length:
-            circles.append((x + rng.uniform(-0.6, 0.6), y, 1.4))
-            y += 1.0
-        circles.append((x, length, 2.3))
-    for _ in range(6):
-        circles.append((rng.uniform(2.0, 46.0), rng.uniform(26.0, 42.0), rng.uniform(1.4, 2.2)))
-    grid = paint(circles, size, rng, 5)
-    # sem contorno escuro: a gosma fica por cima do contorno da sprite
-    return [["d" if ch == "o" else ch for ch in row] for row in grid]
 
 
 def main():

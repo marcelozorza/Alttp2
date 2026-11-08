@@ -82,6 +82,27 @@ const ART_RUNNING := [
 ]
 ## Deitado, sem vida.
 const ART_FALLEN := preload("res://art/giorgino_fallen.svg")
+## Os mesmos desenhos sujos da gosma da granada do ugly, mostrados enquanto a
+## espada está travada (pedido de Marcelo em 2026-11-08: a gosma tem que ser
+## desenho, não efeito por cima). Gerados por tools/giorgino_goo_art.py a
+## partir dos desenhos limpos, na mesma ordem.
+const ART_GOO_WALKING := [
+	preload("res://art/giorgino_goo_stand_down.svg"),
+	preload("res://art/giorgino_goo_stand_down_step.svg"),
+	preload("res://art/giorgino_goo_stand_up.svg"),
+	preload("res://art/giorgino_goo_stand_up_step.svg"),
+	preload("res://art/giorgino_goo_stand_side.svg"),
+	preload("res://art/giorgino_goo_stand_side_step.svg"),
+]
+const ART_GOO_RUNNING := [
+	preload("res://art/giorgino_goo_down.svg"),
+	preload("res://art/giorgino_goo_down_step.svg"),
+	preload("res://art/giorgino_goo_up.svg"),
+	preload("res://art/giorgino_goo_up_step.svg"),
+	preload("res://art/giorgino_goo_side.svg"),
+	preload("res://art/giorgino_goo_side_step.svg"),
+]
+const ART_GOO_FALLEN := preload("res://art/giorgino_goo_fallen.svg")
 ## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
 const ART_BELOW_FEET := 8.0
 ## Ticks de cada passo, andando e correndo.
@@ -135,6 +156,9 @@ const LOW_HEALTH_DELAY := 0.3
 ## corrida é a esquiva, e o fôlego é o que a limita. A física da batida
 ## continua, então correr contra um inimigo ainda ricocheteia.
 @export var run_invincible := true
+## Ligado, nenhum golpe tira vida: a galeria de testes usa. A física da
+## batida continua.
+@export var invulnerable := false
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -398,6 +422,8 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 	if _state == State.DEAD or Clock.tick < _invincible_until_tick:
 		return
 	if run_invincible and _state == State.RUN:
+		return
+	if invulnerable:
 		return
 	health -= amount
 	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
@@ -783,10 +809,14 @@ func _update_art() -> void:
 		direction = 0
 	elif facing.y < 0.0:
 		direction = 1
+	# Com a espada travada, a versão suja de gosma de cada desenho.
+	var goo := is_sword_locked()
 	var frames: Array = ART_RUNNING if running else ART_WALKING
+	if goo:
+		frames = ART_GOO_RUNNING if running else ART_GOO_WALKING
 	var texture: Texture2D = frames[direction * 2 + step]
 	if _is_down():
-		texture = ART_FALLEN
+		texture = ART_GOO_FALLEN if goo else ART_FALLEN
 	_art.texture = texture
 	_art.flip_h = facing.x < 0.0 and (direction == 2 or _is_down())
 	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
@@ -796,8 +826,6 @@ func _update_sword_lock_bar() -> void:
 	var now := Clock.tick
 	var left := _sword_lock_until_tick - now
 	_sword_lock_bar.visible = left > 0
-	# Gosma da granada do ugly no corpo enquanto a espada está travada.
-	(_art.material as ShaderMaterial).set_shader_parameter("amount", 1.0 if left > 0 else 0.0)
 	if left <= 0:
 		return
 	_sword_lock_bar.size.x = _sword_lock_width * left / _sword_lock_ticks

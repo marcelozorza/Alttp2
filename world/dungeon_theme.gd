@@ -100,6 +100,19 @@ static func for_chapter(chapter: int) -> DungeonTheme:
 			return stone()
 
 
+## Tema pelo nome usado nos dados: "stone", "castle", "ice" ou "moss".
+static func by_name(theme_name: String) -> DungeonTheme:
+	match theme_name:
+		"castle":
+			return castle()
+		"ice":
+			return ice()
+		"moss":
+			return moss()
+		_:
+			return stone()
+
+
 static func stone() -> DungeonTheme:
 	var theme := DungeonTheme.new()
 	theme.load_tiles("")

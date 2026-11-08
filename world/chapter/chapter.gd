@@ -120,6 +120,8 @@ func _ready() -> void:
 				_room_rects[Vector2i(x, y)] = rect
 	_map_view.map = map
 	_map_view.theme = DungeonTheme.for_chapter(data.number)
+	for screen: Vector2i in data.room_themes:
+		_map_view.room_themes[screen] = DungeonTheme.by_name(data.room_themes[screen])
 	_map_view.queue_redraw()
 	MapWalls.build(map, _walls)
 	_build_cells()
@@ -133,6 +135,7 @@ func _ready() -> void:
 		for id: int in data.starting_tools:
 			tools |= Item.bit(id)
 		_player.restore(tools, _player.max_health)
+	_player.invulnerable = data.no_damage
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
 	_camera.reset_smoothing()
@@ -155,6 +158,8 @@ func _physics_process(_delta: float) -> void:
 func mode_text() -> String:
 	if data.number == ChapterData.TUTORIAL:
 		return "Tutorial"
+	if data.number == ChapterData.GALLERY:
+		return "Galeria"
 	return "Cap. %d" % data.number
 
 

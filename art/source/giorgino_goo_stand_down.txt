@@ -1,0 +1,65 @@
+# Giorgino sujo de gosma, cópia de giorgino_stand_down com a gosma pintada por
+# tools/giorgino_goo_art.py. Mude o gerador e rode de novo, ou edite à mão.
+paleta
+k #2a2329
+d #1e181e
+b #5c4232
+w #f4f1ea
+s #c7c1cf
+n #141016
+p #e49aa4
+r #d9578a
+e #0e0b0d
+D #8e2280
+P #d24cbc
+L #ef80dc
+H #ffd2f4
+pixels
+...................DHLD....
+...................DPPPH...
+..................DPPPPPD..
+..................DPPPPPD..
+.................HPPPPPPD..
+.................DPPPPPPD..
+.................DPPPPPPD..
+.......DLLLHLLLLHPPPPPPPD..
+....HLLPDDPPPPPPPPPPPPDDPD.
+...dDPPDDdDPPPPPPPPPPDkDDPD
+...dDPPDPkDPPPPPPPPPPDkkDPD
+.kkkDPPDkkDPPPPPPPPPPDkbDPD
+kkkkDPPDkkDPPPPPPPPPPDkbDPD
+kkbkDPPDkkDPPPPPPPPPPDkbDPD
+kkkkDPPDkkDPPPPPPPPPPDkkDPD
+kkkkDPPDkkDPPPPPPPPPPDkkDPD
+kkkdDPPDkkDPPPPPPPPPPDkkDPD
+kkkd.DPDkkDPPPPPPPPPPDkkDPD
+.....DDDkkDPPPPPDDPPDDkkDPD
+.....dDDkkDPDDPDwwDDwDkkDD.
+.....dDDkkDDwDDDwwDDwkkkDD.
+.....bddkwDDwwDDewDDwwddDD.
+......dddwDDwwDDnwDDwwddD..
+......bddwDsDwDDwwDDswddD..
+.......kddDLPLPPDwDDwddd...
+........dDPPPPPPPLPDdddb...
+.......bHPPPPPPPPPPDrrkb...
+.......dDPPPPPPPPPPDrrkd...
+......kdwDPPPPPPPPDwwwwdd..
+.....kkwDPPPPPPPPPDwwwwwdd.
+.....kkwDDPPPPPPPDwwwkwwdd.
+.....kkwPDDPPPPPPDHwkdwwdd.
+.....ddwwkDDPDPPDwwwddwwdd.
+.....ddwwkPDDwDDwwwwddwwdd.
+.....ddwwkkwDwwDsswwkdwwdd.
+.....ddwsddwPwwwsswwkkssdd.
+.....bkkpddwwwwwwwwwdkskdb.
+......bddkkwwwwwwwwwddpdb..
+.......dkkkwwwwwwwwwwddd...
+.......kkkwwwwwwwwwwwwkb...
+.......kdwwwwwkkkwwwwwkd...
+.......dddwsswdddwwswwdd...
+.......kdwwsswdddwwswwdd...
+.......kkkwwwwddkwwwwwdd...
+........kkswwpddkssspkk....
+........ddssspkkdssspkk....
+.........bddddkbddkkdd.....
+..........ddbdb.bdbkdb.....

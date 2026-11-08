@@ -22,6 +22,7 @@ func _ready() -> void:
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
 	column.add_child(MenuKit.button("Tutorial", _on_tutorial))
 	column.add_child(MenuKit.button("Treino", _on_training))
+	column.add_child(MenuKit.button("Galeria", _on_gallery))
 	first.grab_focus.call_deferred()
 
 
@@ -47,3 +48,10 @@ func _on_tutorial() -> void:
 
 func _on_training() -> void:
 	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
+
+
+## A galeria: as quatro salas de teste com todos os elementos do jogo, uma
+## por tema, sem perder vida (pedido de Marcelo em 2026-11-08).
+func _on_gallery() -> void:
+	RunSettings.chapter = ChapterData.GALLERY
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)

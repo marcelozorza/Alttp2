@@ -64,15 +64,16 @@ const FRAME := 2.0
 @export var outdoor := false
 
 var map: ChapterMap
-## Tema da dungeon. Sem um, a pedra do tutorial.
+## Tema da dungeon. Sem um, a pedra do tutorial. Enquanto desenha, aponta
+## para o tema da casa em questão (ver room_themes).
 var theme: DungeonTheme
+## Tema por sala de uma tela (Vector2i para DungeonTheme), para um capítulo
+## que mistura temas, como a galeria. As salas fora do dicionário usam theme.
+var room_themes := {}
 
-var _flames: Flames
-
-
-func _ready() -> void:
-	_flames = Flames.new()
-	add_child(_flames)
+var _default_theme: DungeonTheme
+## Um nó de chamas por tema, porque cada tema tem a sua chama.
+var _flames_by_theme := {}
 
 
 func _draw() -> void:
@@ -80,6 +81,7 @@ func _draw() -> void:
 		return
 	if not theme:
 		theme = DungeonTheme.stone()
+	_default_theme = theme
 	var tile := float(ChapterMap.TILE)
 	for y: int in map.height:
 		for x: int in map.width:
@@ -87,6 +89,7 @@ func _draw() -> void:
 			var character := map.tile(cell)
 			if character == " ":
 				continue
+			theme = _theme_at(cell)
 			var origin := Vector2(cell) * tile
 			if outdoor:
 				_draw_outdoor(cell, character, origin)
@@ -101,6 +104,15 @@ func _draw() -> void:
 			_draw_wall_shadows(cell, origin)
 	if not outdoor:
 		_draw_decor()
+	theme = _default_theme
+
+
+## Tema da casa: o da sala de uma tela em que ela está, ou o padrão.
+func _theme_at(cell: Vector2i) -> DungeonTheme:
+	var screen := Vector2i(
+		floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y)
+	)
+	return room_themes.get(screen, _default_theme)
 
 
 ## Casa do mundo. A mata é a parede, e o resto é chão de grama, caminho ou
@@ -265,27 +277,37 @@ static func _chance(cell: Vector2i, salt: int) -> int:
 ## Os adornos do tema, por cima dos tiles e das sombras.
 func _draw_decor() -> void:
 	_draw_carpets()
-	var flame_positions: Array[Vector2] = []
+	var flame_positions := {}
 	for y: int in map.height:
 		_draw_wall_row(y, flame_positions)
 	for y: int in map.height:
 		for x: int in map.width:
 			var cell := Vector2i(x, y)
+			theme = _theme_at(cell)
 			if _is_plain(cell):
 				_draw_floor_decor(cell)
-	_flames.frames = theme.flames
-	_flames.positions = flame_positions
+	for flames: Flames in _flames_by_theme.values():
+		flames.positions = []
+	for flame_theme: DungeonTheme in flame_positions:
+		var flames: Flames = _flames_by_theme.get(flame_theme)
+		if not flames:
+			flames = Flames.new()
+			add_child(flames)
+			_flames_by_theme[flame_theme] = flames
+		flames.frames = flame_theme.flames
+		flames.positions = flame_positions[flame_theme]
 
 
 ## Arandelas, peças penduradas e estalactites nas faces de parede de uma
 ## fileira, com um vão entre dois adornos.
-func _draw_wall_row(y: int, flame_positions: Array[Vector2]) -> void:
+func _draw_wall_row(y: int, flame_positions: Dictionary) -> void:
 	var tile := float(ChapterMap.TILE)
 	var last_prop := -WALL_PROP_GAP
 	for x: int in map.width:
 		var cell := Vector2i(x, y)
 		if map.tile(cell) != "#" or not _faces_floor(cell):
 			continue
+		theme = _theme_at(cell)
 		var origin := Vector2(cell) * tile
 		var decorated := false
 		if x - last_prop >= WALL_PROP_GAP:
@@ -297,12 +319,14 @@ func _draw_wall_row(y: int, flame_positions: Array[Vector2]) -> void:
 
 
 ## Uma arandela ou uma peça pendurada na face, se o sorteio der. Diz se pôs.
-func _draw_wall_prop(cell: Vector2i, origin: Vector2, flame_positions: Array[Vector2]) -> bool:
+func _draw_wall_prop(cell: Vector2i, origin: Vector2, flame_positions: Dictionary) -> bool:
 	if theme.sconce and _chance(cell, 1) * theme.sconce_spacing < 100:
 		var corner := DungeonTheme.centered(theme.sconce, origin)
 		draw_texture(theme.sconce, corner)
 		if not theme.flames.is_empty():
-			flame_positions.append(corner + theme.flame_offset)
+			var positions: Array[Vector2] = flame_positions.get(theme, [] as Array[Vector2])
+			positions.append(corner + theme.flame_offset)
+			flame_positions[theme] = positions
 		return true
 	if theme.hangings.is_empty() or _chance(cell, 2) >= theme.hanging_chance:
 		return false
@@ -340,14 +364,15 @@ func _draw_floor_decor(cell: Vector2i) -> void:
 
 ## Tapete no centro de cada tela de sala cujo centro é chão liso e baixo.
 func _draw_carpets() -> void:
-	if not theme.carpet:
-		return
 	var tile := float(ChapterMap.TILE)
 	var screens := Vector2i(
 		ceili(float(map.width) / ROOM_TILES.x), ceili(float(map.height) / ROOM_TILES.y)
 	)
 	for sy: int in screens.y:
 		for sx: int in screens.x:
+			theme = _theme_at(Vector2i(sx, sy) * ROOM_TILES)
+			if not theme.carpet:
+				continue
 			var corner := Vector2i(sx, sy) * ROOM_TILES + (ROOM_TILES - CARPET_TILES) / 2
 			var area := Rect2i(corner, CARPET_TILES)
 			if not _is_flat(area):

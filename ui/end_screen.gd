@@ -30,6 +30,8 @@ func _ready() -> void:
 	var title := "Capítulo concluído"
 	if RunSettings.chapter == ChapterData.TUTORIAL:
 		title = "Tutorial concluído"
+	elif RunSettings.chapter == ChapterData.GALLERY:
+		title = "Galeria"
 	_title = MenuKit.label(title, 32)
 	column.add_child(_title)
 	_summary = MenuKit.label("", 20)

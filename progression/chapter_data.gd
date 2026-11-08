@@ -24,6 +24,10 @@ const SOURCES := [
 ]
 const TUTORIAL_SOURCE := preload("res://world/tutorial/tutorial_data.gd")
 const TUTORIAL := 0
+## A galeria, a área de testes com todos os elementos do jogo, fora do mundo e
+## das seeds (world/gallery/gallery_data.gd).
+const GALLERY_SOURCE := preload("res://world/gallery/gallery_data.gd")
+const GALLERY := -1
 
 ## Número do capítulo, a partir de 1. Zero é o tutorial.
 var number := 1
@@ -39,6 +43,11 @@ var rooms: Array = []
 ## Casa do chefe e as ferramentas que ele exige, como Item.Id.
 var goal := ""
 var goal_tools: Array = []
+## Tema de cada sala de uma tela (Vector2i para nome de tema), quando o
+## capítulo mistura temas, como a galeria. Vazio, o tema vem do número.
+var room_themes := {}
+## O personagem não perde vida, como na galeria.
+var no_damage := false
 
 
 static func count() -> int:
@@ -49,7 +58,10 @@ static func count() -> int:
 static func load_number(chapter: int) -> ChapterData:
 	var data := ChapterData.new()
 	var source: Script = TUTORIAL_SOURCE
-	if chapter != TUTORIAL:
+	if chapter == GALLERY:
+		data.number = GALLERY
+		source = GALLERY_SOURCE
+	elif chapter != TUTORIAL:
 		data.number = clampi(chapter, 1, SOURCES.size())
 		source = SOURCES[data.number - 1]
 	else:
@@ -62,4 +74,6 @@ static func load_number(chapter: int) -> ChapterData:
 	data.rooms = constants.get("ROOMS", [])
 	data.goal = constants.get("GOAL", "")
 	data.goal_tools = constants.get("GOAL_TOOLS", [])
+	data.room_themes = constants.get("ROOM_THEMES", {})
+	data.no_damage = constants.get("NO_DAMAGE", false)
 	return data
