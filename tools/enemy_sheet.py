@@ -54,10 +54,9 @@ def boss_set(prefix):
 
 
 PRESETS = {
-    # O lobo, o cubo de gelo, a estalactite, o macaco e o tatu saíram daqui em
+    # O lobo, o cubo de gelo, a estalactite, o macaco, o tatu e o morcego saíram daqui em
     # 2026-11-08: foram redesenhados à mão em art/source/ e não devem ser
     # gerados de folha nenhuma.
-    "bat": dict(cols=4, rows=4, height=17, colors=10, accents=5, comment="Morcego", names=lunge_set("bat")),
     "snake": dict(cols=4, rows=4, height=30, colors=10, accents=5, comment="Planta de espinhos, cobra",
                   names=lunge_set("snake")),
     "crab": dict(cols=4, rows=4, height=48, colors=12, accents=4, comment="Guardião, caranguejo",

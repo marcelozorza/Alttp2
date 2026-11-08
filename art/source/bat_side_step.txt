@@ -1,34 +1,25 @@
-# Morcego, side step, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Morcego: de lado, passo 2.
+# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
+# folhas de IA: corpo roxo, orelhas grandes, olhos amarelos e asas claras.
 paleta
-a #05000a
-b #0d0413
-c #190923
-d #230e30
-e #2d103c
-f #2c173a
-g #391a4a
-h #41234c
-i #522f55
-j #7c5a71
-k #b87279
-l #934a89
-m #773984
-n #622b77
-o #4a2064
+c #d8b0e8
+d #4a2a63
+o #1a1026
+p #7a4a9c
+w #ffffff
+y #f2c443
 pixels
-.................bb....f....
-.................amm...nc...
-.................nlim.cnn...
-.................nljmooona..
-.................clklmgono..
-........bbaaalh..blklmogog..
-......mmmmomnnl...nkljmnmn..
-....cmmnonmnnonccbcnlnmmnnn.
-...mmomllllnmmoboogannaamnoa
-..nnmlllllnnllonnobgnmkkabab
-.mnllllllnnlkloggggonnmkkjca
-cnaa.alllnllklmgggggnakjjjjf
-a......clolbllmgggnggnkaakf.
-........nd.bggeggnogcokkck..
-...........bcdgabgga..bmb...
-............ddd.............
+................o......o....
+...............odo....odo...
+..............odpo....odpo..
+..............odpo....odpo..
+.............oodppooopddoo..
+.............opppppppppppo..
+...oooo......opyypppppppppo.
+.occcoooo....oppppppppwwwppo
+occccccccooooppppppppwwwwppo
+occccccccccooppppppppppwwpo.
+.oooooooooooopppppppppppo...
+..............oppppppppo....
+...............oopppoo......
+.................oo.........

@@ -1,33 +1,23 @@
-# Morcego, lunge up, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Morcego: mergulhando para cima.
+# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
+# folhas de IA: corpo roxo, orelhas grandes, olhos amarelos e asas claras.
 paleta
-a #05000a
-b #0d0413
-c #190923
-d #230e30
-e #2d103c
-g #391a4a
-i #522f55
-l #934a89
-m #773984
-n #622b77
-o #4a2064
+c #d8b0e8
+d #4a2a63
+o #1a1026
+p #7a4a9c
 pixels
-..n..........a..
-.amm........mm..
-.anmn......nlm..
-.anlln....nllo..
-..nmlnb..amlmn..
-..bnlng..onmng..
-..bgnggooggnga..
-...ggonnnnogg...
-....annnnnna....
-nn.aonnnnnnob.ba
-annnbonnnnnonnna
-amonogonnngaomma
-ammnangononanmmb
-.omnnnogeonnnmo.
-.omooogaegoonmo.
-..onocobdgaono..
-...ondc..cmno...
-....oai..cbi....
-.....a....a.....
+............o......o................
+...........odo....odo...............
+..........oddo....oddo..............
+..........oddo....oddo..............
+.........ooddpooopddoo..............
+...........ooppppppppppoo...........
+oo.........oopppdddppppoo.........oo
+occoo......oopppdddppppoo......oocco
+occcccooo..oopppdddppppoo..oooccccco
+occcccccccoooppppppppppoooccccccccco
+.oooooooooooooppppppppooooooooooooo.
+............oppppppppo..............
+.............oopppoo................
+...............oo...................
