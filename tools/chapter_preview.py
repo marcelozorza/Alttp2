@@ -38,6 +38,9 @@ CHAPTERS = [
     ("capitulo_2", "world/chapter_two/chapter_two_data.gd", "_ice"),
     ("capitulo_3", "world/chapter_three/chapter_three_data.gd", "_moss"),
 ]
+## A galeria mistura os quatro temas, um por tela (ROOM_THEMES nos dados).
+GALLERY = ("galeria", "world/gallery/gallery_data.gd")
+THEME_SUFFIX = {"stone": "", "castle": "_castle", "ice": "_ice", "moss": "_moss"}
 THEMES = {
     "": dict(sconce="torch", flame="flame_1", spacing=5, floor_props=["bones_pile"]),
     "_castle": dict(sconce="candelabra", spacing=6, hangings=["banner"], hanging_chance=18, carpet=True),
@@ -80,7 +83,12 @@ def read_data(path):
     text = (ROOT / path).read_text(encoding="utf-8")
     rows = re.findall(r'^\t"([^"]*)",$', text.split("const MAP := [")[1].split("\n]")[0], re.M)
     blocks = dict(re.findall(r'"(.)": ChapterMap\.Block\.(\w+)', text.split("const BLOCKS := {")[1].split("}")[0]))
-    return rows, blocks
+    room_themes = {}
+    if "const ROOM_THEMES := {" in text:
+        body = text.split("const ROOM_THEMES := {")[1].split("}")[0]
+        for sx, sy, name in re.findall(r'Vector2i\((\d+), (\d+)\): "(\w+)"', body):
+            room_themes[(int(sx), int(sy))] = THEME_SUFFIX[name]
+    return rows, blocks, room_themes
 
 
 def chance(x, y, salt):
@@ -90,13 +98,21 @@ def chance(x, y, salt):
 
 
 class Chapter:
-    def __init__(self, rows, blocks, suffix):
+    def __init__(self, rows, blocks, suffix, room_themes=None):
         self.rows, self.blocks, self.suffix = rows, blocks, suffix
         self.theme = THEMES[suffix]
+        self.default_suffix = suffix
+        self.room_themes = room_themes or {}
         self.height = len(rows)
         self.width = max(len(r) for r in rows)
         self.img = Image.new("RGBA", (self.width * TILE, self.height * TILE), (0, 0, 0, 255))
         self.draw = ImageDraw.Draw(self.img, "RGBA")
+
+    def select(self, x, y):
+        """Escolhe o tema da tela onde está a casa, quando o capítulo mistura temas."""
+        if self.room_themes:
+            self.suffix = self.room_themes.get((x // ROOM[0], y // ROOM[1]), self.default_suffix)
+            self.theme = THEMES[self.suffix]
 
     def tile(self, x, y):
         if 0 <= y < self.height and 0 <= x < len(self.rows[y]):
@@ -139,6 +155,7 @@ class Chapter:
                 ch = self.tile(x, y)
                 if ch == " ":
                     continue
+                self.select(x, y)
                 if ch == "#":
                     self.wall(x, y)
                     continue
@@ -183,14 +200,14 @@ class Chapter:
             self.draw.rectangle((ox, oy + top, ox + SHADOW - 1, oy + TILE - 1), fill=SHADOW_COLOR)
 
     def decor(self):
-        t = self.theme
-        if t.get("carpet"):
-            self.carpets()
+        self.carpets()
         for y in range(self.height):
             last = -2
             for x in range(self.width):
                 if self.tile(x, y) != "#" or not self.is_floor(x, y + 1):
                     continue
+                self.select(x, y)
+                t = self.theme
                 ox, oy = x * TILE, y * TILE
                 done = False
                 if x - last >= 2:
@@ -202,6 +219,7 @@ class Chapter:
         for y in range(self.height):
             for x in range(self.width):
                 if self.tile(x, y) in PLAIN_FLOOR:
+                    self.select(x, y)
                     self.floor_decor(x, y)
 
     def wall_prop(self, x, y, ox, oy):
@@ -246,6 +264,9 @@ class Chapter:
         screens = (-(-self.width // ROOM[0]), -(-self.height // ROOM[1]))
         for sy in range(screens[1]):
             for sx in range(screens[0]):
+                self.select(sx * ROOM[0], sy * ROOM[1])
+                if not self.theme.get("carpet"):
+                    continue
                 cx = sx * ROOM[0] + (ROOM[0] - CARPET[0]) // 2
                 cy = sy * ROOM[1] + (ROOM[1] - CARPET[1]) // 2
                 cells = [(x, y) for y in range(cy, cy + CARPET[1]) for x in range(cx, cx + CARPET[0])]
@@ -273,7 +294,7 @@ class Chapter:
                 elif ch in ENEMIES:
                     self.sprite(ENEMIES[ch], ox, oy)
                 elif ch == "@":
-                    self.sprite("giorgino_guard_down", ox, oy)
+                    self.sprite("giorgino_stand_down", ox, oy)
 
     def sprite(self, name, ox, oy):
         img = art(name)
@@ -304,7 +325,7 @@ def main(arguments):
     out.mkdir(parents=True, exist_ok=True)
     images = []
     for key, path, suffix in CHAPTERS:
-        rows, blocks = read_data(path)
+        rows, blocks, _ = read_data(path)
         img = Chapter(rows, blocks, suffix).render()
         img.save(out / f"{key}.png")
         print(key, img.size)
@@ -321,6 +342,11 @@ def main(arguments):
         y += small.height + gap
     sheet.save(out / "quatro_dungeons.png")
     print("quatro", sheet.size)
+    key, path = GALLERY
+    rows, blocks, room_themes = read_data(path)
+    img = Chapter(rows, blocks, "", room_themes).render()
+    img.save(out / f"{key}.png")
+    print(key, img.size)
 
 
 if __name__ == "__main__":
