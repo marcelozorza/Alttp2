@@ -1,36 +1,23 @@
-# Tatu de pedra, fallen, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Tatu de pedra: caído de barriga para cima.
+# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
+# folhas de IA: carapaça de placas em faixas, focinho claro e garras.
 paleta
-a #050303
-b #1d1511
-c #392f28
-d #4b382e
-e #524239
-f #5d5048
-g #70594b
-h #76665c
-i #83746b
-j #998578
-k #bea691
-l #d2ae86
-m #bd9674
-n #a17a5d
+c #c6ae92
+g #6e6660
+k #141010
+l #938a82
+o #241c1a
 pixels
-.......aa..................
-......aclaa......aaa.......
-......aegna......kala......
-......agega......ankl......
-......angeaaaaaaangga......
-....ajanngallllnannga......
-.aaajjecanllllllmngda....aa
-abllahgnmllllnlmnmgc....aja
-abnhgbbmmllnllllnlna....aha
-.bggegdnlllnlllmlmmf...ajha
-.amnfgcnlmnllmmaanngaaaehha
-.anngdbnnmmlmnaalaabhccihda
-..agdihaggnmnnabblaaijihda.
-..aaahajjbbngegnedchbhfda..
-...affahhfchbamngbadeedcb..
-...adfbefehhfbnngdbdddaa...
-....bebfecdfdccgddccda.....
-......aaddcdedddcaaa.......
-........aaaaaaaaa..........
+.ooo.................ooo.
+occco...oooooooo....occco
+ooooooooglllllgoooooooooo
+.occcoglllllllllgocccco..
+..ooooooooooooooooooooo..
+..ogggggggggggggggggggo..
+..ollllllllllllllllllo...
+..oooooooooooooooooooo...
+...ogggggggggggggggo.....
+....ooccccccccccoo.......
+.....ockcoockcooo........
+.....occcccccco..........
+......ooooooooo..........
