@@ -1,13 +1,12 @@
-# Colosso, o cérbero com o núcleo em brasa: andando, passo 2.
-# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
-# folhas de IA. A grade é 30 por 28, escrita aqui em dobro. A letra f é o
-# peito, cinza na casca e laranja no núcleo.
+# Colosso com o peito em brasa: os pixels de cerberus_shell_walk_step com outra paleta.
 paleta
 c #e8e0d0
-d #22202a
+d #26232e
 f #ff8a1e
-g #3a3744
-l #595568
+g #4a4658
+h #ffd24a
+l #6e6a80
 o #0e0c10
+p #6a6578
 r #ffd24a
 usa cerberus_shell_walk_step

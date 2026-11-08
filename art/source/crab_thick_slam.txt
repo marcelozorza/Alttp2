@@ -1,11 +1,11 @@
-# Guardião, o caranguejo na versão de gelo grosso: batendo as pinças no chão.
-# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
-# folhas de IA. A grade é 44 por 24, escrita aqui em dobro.
+# Guardião antigo, de gelo grosso: os pixels de crab_shell_slam com paleta azul-marinho.
 paleta
-b #1d4274
-d #102445
-k #050e24
-l #3c6a9c
-o #060a1c
-y #c8a030
+b #1e4a8a
+d #122a55
+k #081030
+l #3a74b8
+o #060a20
+r #060a20
+w #6aa0d8
+y #f2c443
 usa crab_shell_slam

@@ -1,11 +1,11 @@
-# Guardião, o caranguejo com o núcleo vermelho exposto: andando, passo 2.
-# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
-# folhas de IA. A grade é 44 por 24, escrita aqui em dobro.
+# Guardião com o núcleo exposto (vermelho): os pixels de crab_shell_walk_step com outra paleta.
 paleta
 b #b02a28
 d #6b1620
 k #45060c
 l #e06a42
 o #2a0a0e
+r #45060c
+w #ffd2a0
 y #f2c443
 usa crab_shell_walk_step
