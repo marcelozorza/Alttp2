@@ -2,11 +2,12 @@ class_name MapScreen
 extends CanvasLayer
 ## Tela do mapa da dungeon (pedido de Marcelo em 2026-11-07). Abre com o botão
 ## de mapa (Back no controle de Xbox, Select no de SNES, M ou Tab no teclado)
-## ou pelo botão Mapa do menu de pausa, e para o jogo enquanto está aberta. O
-## mesmo botão, ou o de pausa, fecha: aberta pelo menu de pausa, volta a ele.
-## Desde 2026-11-08 o botão de pausa também abre o mapa direto, como tela de
-## pausa: o título vira "Pausa", o de confirmar abre o menu de pausa, e o de
-## pausa ou o de mapa voltam ao jogo.
+## e para o jogo enquanto está aberta. O mesmo botão, ou o de pausa, fecha.
+## O botão de pausa abre a mesma tela como pausa (pedido de Marcelo em
+## 2026-11-08, "redesenhar o menu para caber junto na tela de pause com o
+## mapa"): o mapa à esquerda e, no painel da direita, o título "Pausa", o modo
+## de jogo, a seed, os botões Continuar e Sair e a legenda. Aberta pelo botão
+## de mapa, o painel mostra só o título "Mapa", o modo e a legenda.
 ##
 ## O mapa inteiro é desenhado casa por casa, ampliado o máximo que cabe na
 ## tela. Nas salas em que o personagem já esteve aparece o detalhe: o chão em
@@ -18,10 +19,11 @@ extends CanvasLayer
 ## mapa do Link to the Past, e o personagem é um ponto que pisca. A legenda
 ## fica embaixo.
 
-## Altura reservada ao título, no alto, e à legenda, embaixo, em pixels.
-const TITLE_HEIGHT := 32.0
-const LEGEND_HEIGHT := 40.0
+## Margem em volta do mapa e largura do painel da direita, em pixels.
 const MARGIN := 8.0
+const PANEL_WIDTH := 168.0
+const PANEL_COLOR := Color(0.09, 0.09, 0.13, 1.0)
+const LEGEND_LINE := 15.0
 const SCREEN := Vector2(640.0, 360.0)
 const TITLE_FONT_SIZE := 20
 const LABEL_FONT_SIZE := 16
@@ -76,11 +78,14 @@ const LEGEND := [
 ]
 
 var _canvas: Control
-## Menu que abriu o mapa e volta quando ele fecha, ou nulo.
-var _return_to: CanvasLayer
-## Aberto pelo botão de pausa, com o menu de pausa a um botão de distância.
+## Aberto pelo botão de pausa: o painel mostra os botões do menu.
 var _as_pause := false
+## Menu de pausa da cena, dono da ação de sair.
 var _pause_menu: CanvasLayer
+var _buttons: VBoxContainer
+var _seed_label: Label
+## Onde a legenda começa, abaixo do texto e dos botões do painel.
+var _legend_top := 0.0
 
 
 func _ready() -> void:
@@ -97,6 +102,15 @@ func _ready() -> void:
 	_canvas.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_canvas.draw.connect(_draw_map)
 	add_child(_canvas)
+	_buttons = VBoxContainer.new()
+	_buttons.add_theme_constant_override("separation", 6)
+	_buttons.position = Vector2(SCREEN.x - PANEL_WIDTH + MARGIN, 76.0)
+	_buttons.size = Vector2(PANEL_WIDTH - 2.0 * MARGIN, 0.0)
+	add_child(_buttons)
+	_seed_label = MenuKit.label("", LABEL_FONT_SIZE)
+	_seed_label.position = Vector2(SCREEN.x - PANEL_WIDTH, 48.0)
+	_seed_label.size = Vector2(PANEL_WIDTH, 20.0)
+	add_child(_seed_label)
 
 
 func _process(_delta: float) -> void:
@@ -109,24 +123,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.is_action_pressed("map") or event.is_action_pressed("pause"):
 			close()
 			get_viewport().set_input_as_handled()
-		elif _as_pause and event.is_action_pressed("ui_accept"):
-			_open_pause_menu()
-			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("map") and not get_tree().paused and not _player_is_dead():
 		open()
 		get_viewport().set_input_as_handled()
 
 
-## Abre o mapa e para o jogo. Com return_to, o menu que chamou volta ao fechar,
-## e o jogo já estava parado por ele. Com as_pause, o mapa é a tela de pausa:
-## fechar volta ao jogo, e o botão de confirmar abre o menu return_to.
-func open(return_to: CanvasLayer = null, as_pause := false) -> void:
-	_as_pause = as_pause
-	_return_to = null if as_pause else return_to
-	_pause_menu = return_to if as_pause else null
+## Abre o mapa e para o jogo. Com pause_menu, é a tela de pausa: o painel
+## ganha os botões Continuar e o de sair do menu de pausa.
+func open(pause_menu: CanvasLayer = null) -> void:
+	_as_pause = pause_menu != null
+	_pause_menu = pause_menu
 	if not get_tree().paused:
 		get_tree().paused = true
 		Music.set_paused(true)
+	_build_buttons()
 	visible = true
 	Sfx.play(&"menu_confirm")
 
@@ -134,22 +144,37 @@ func open(return_to: CanvasLayer = null, as_pause := false) -> void:
 func close() -> void:
 	visible = false
 	_as_pause = false
-	if _return_to:
-		_return_to.visible = true
-		_return_to.call("refocus")
-		_return_to = null
-	else:
-		Music.set_paused(false)
-		get_tree().paused = false
+	_pause_menu = null
+	Music.set_paused(false)
+	get_tree().paused = false
 
 
-## Troca o mapa pelo menu de pausa, com o jogo ainda parado.
-func _open_pause_menu() -> void:
+## Botões do painel, refeitos a cada abertura: só na pausa.
+func _build_buttons() -> void:
+	for child: Node in _buttons.get_children():
+		_buttons.remove_child(child)
+		child.queue_free()
+	_seed_label.text = ""
+	if Progress.active and Progress.seed != 0:
+		_seed_label.text = "Seed %06d" % Progress.seed
+	var top := 76.0 if _seed_label.text != "" else 58.0
+	_buttons.position.y = top
+	_legend_top = top
+	if not _as_pause:
+		return
+	var resume := MenuKit.button("Continuar", close)
+	_buttons.add_child(resume)
+	_buttons.add_child(MenuKit.button(_pause_menu.get("exit_text"), _on_exit))
+	_legend_top = top + 2.0 * 34.0 + 12.0
+	resume.grab_focus()
+
+
+func _on_exit() -> void:
+	var menu := _pause_menu
 	visible = false
 	_as_pause = false
-	if _pause_menu:
-		_pause_menu.call("show_menu")
 	_pause_menu = null
+	menu.call("leave")
 
 
 func _player_is_dead() -> bool:
@@ -161,44 +186,43 @@ func _chapter() -> Node:
 	return get_tree().get_first_node_in_group("chapter")
 
 
-## Pixels por casa: o maior inteiro com que o mapa inteiro cabe na área entre
-## o título e a legenda.
+## Área do mapa: a tela à esquerda do painel, com margem.
+static func map_area() -> Rect2:
+	return Rect2(
+		Vector2(MARGIN, MARGIN), SCREEN - Vector2(PANEL_WIDTH + 2.0 * MARGIN, 2.0 * MARGIN)
+	)
+
+
+## Pixels por casa: o maior inteiro com que o mapa inteiro cabe na área à
+## esquerda do painel.
 static func scale_for(map: ChapterMap) -> int:
-	var area := SCREEN - Vector2(2.0 * MARGIN, TITLE_HEIGHT + LEGEND_HEIGHT)
+	var area := map_area().size
 	var fit := minf(area.x / maxi(map.width, 1), area.y / maxi(map.height, 1))
 	return clampi(floori(fit), MIN_SCALE, MAX_SCALE)
 
 
 func _draw_map() -> void:
 	var font := ThemeDB.fallback_font
+	var panel := Rect2(SCREEN.x - PANEL_WIDTH, 0.0, PANEL_WIDTH, SCREEN.y)
+	_canvas.draw_rect(panel, PANEL_COLOR)
 	_canvas.draw_string(
 		font,
-		Vector2(0.0, 24.0),
+		Vector2(panel.position.x, 26.0),
 		"Pausa" if _as_pause else "Mapa",
 		HORIZONTAL_ALIGNMENT_CENTER,
-		SCREEN.x,
+		PANEL_WIDTH,
 		TITLE_FONT_SIZE,
 		TEXT_COLOR
 	)
-	if _as_pause:
-		_canvas.draw_string(
-			font,
-			Vector2(MARGIN, 24.0),
-			"A: menu",
-			HORIZONTAL_ALIGNMENT_LEFT,
-			-1,
-			LABEL_FONT_SIZE,
-			TEXT_COLOR
-		)
 	var chapter := _chapter()
 	if chapter == null:
 		return
 	_canvas.draw_string(
 		font,
-		Vector2(0.0, 24.0),
+		Vector2(panel.position.x, 46.0),
 		chapter.call("mode_text"),
-		HORIZONTAL_ALIGNMENT_RIGHT,
-		SCREEN.x - MARGIN,
+		HORIZONTAL_ALIGNMENT_CENTER,
+		PANEL_WIDTH,
 		LABEL_FONT_SIZE,
 		TEXT_COLOR
 	)
@@ -206,9 +230,7 @@ func _draw_map() -> void:
 	var room_tiles: Vector2i = chapter.call("room_tiles")
 	var scale := scale_for(map)
 	var size := Vector2(map.width, map.height) * scale
-	var area := Rect2(
-		Vector2(MARGIN, TITLE_HEIGHT), SCREEN - Vector2(2.0 * MARGIN, TITLE_HEIGHT + LEGEND_HEIGHT)
-	)
+	var area := map_area()
 	var origin := (area.position + (area.size - size) / 2.0).floor()
 	var visited := {}
 	for room: Rect2i in chapter.call("visited_rooms"):
@@ -341,39 +363,23 @@ func _draw_skull(corner: Vector2, side: float) -> void:
 	_canvas.draw_rect(Rect2((corner + Vector2(0.56, 0.27) * side).round(), eye), SKULL_EDGE)
 
 
-## Legenda centralizada embaixo, em quantas linhas precisar.
+## Legenda no painel da direita, um item por linha, abaixo dos botões.
 func _draw_legend(font: Font) -> void:
 	var swatch := 10.0
-	var gap := 14.0
-	var line_height := 16.0
-	var rows: Array = [[]]
-	var widths: Array = [0.0]
-	for item: Array in LEGEND:
-		var text_width := (
-			font.get_string_size(item[0], HORIZONTAL_ALIGNMENT_LEFT, -1, LEGEND_FONT_SIZE).x
+	var x := SCREEN.x - PANEL_WIDTH + 2.0 * MARGIN
+	for i: int in LEGEND.size():
+		var item: Array = LEGEND[i]
+		var y := _legend_top + i * LEGEND_LINE
+		_draw_swatch(item[1], Rect2(Vector2(x, y), Vector2(swatch, swatch)))
+		_canvas.draw_string(
+			font,
+			Vector2(x + swatch + 6.0, y + swatch),
+			item[0],
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			LEGEND_FONT_SIZE,
+			TEXT_COLOR
 		)
-		var width := swatch + 4.0 + text_width
-		if widths[-1] + width + gap > SCREEN.x - 2.0 * MARGIN and not rows[-1].is_empty():
-			rows.append([])
-			widths.append(0.0)
-		rows[-1].append([item, width])
-		widths[-1] += width + gap
-	var top := SCREEN.y - LEGEND_HEIGHT + 4.0
-	for i: int in rows.size():
-		var x := floorf((SCREEN.x - (widths[i] - gap)) / 2.0)
-		var y := top + i * line_height
-		for entry: Array in rows[i]:
-			_draw_swatch(entry[0][1], Rect2(Vector2(x, y), Vector2(swatch, swatch)))
-			_canvas.draw_string(
-				font,
-				Vector2(x + swatch + 4.0, y + swatch),
-				entry[0][0],
-				HORIZONTAL_ALIGNMENT_LEFT,
-				-1,
-				LEGEND_FONT_SIZE,
-				TEXT_COLOR
-			)
-			x += entry[1] + gap
 
 
 func _draw_swatch(kind: String, rect: Rect2) -> void:

@@ -242,34 +242,50 @@ func _check_replay() -> void:
 func _check_pause_and_defeat() -> void:
 	var chapter: Node = get_tree().current_scene
 	var pause: PauseMenu = chapter.get_node("PauseMenu")
+	var map_screen: MapScreen = chapter.get_node("MapScreen")
 	await _joy(JOY_BUTTON_START)
-	print("PAUSA: aberta %s, jogo parado %s" % [pause.visible, get_tree().paused])
+	print(
+		(
+			"PAUSA: mapa com menu %s, menu separado escondido %s, jogo parado %s"
+			% [
+				map_screen.visible and _button("Continuar", map_screen) != null,
+				not pause.visible,
+				get_tree().paused
+			]
+		)
+	)
 	await _frames(10)
 	await _joy(JOY_BUTTON_START)
-	print("PAUSA: fechada %s, jogo parado %s" % [not pause.visible, get_tree().paused])
-	var map_screen: MapScreen = chapter.get_node("MapScreen")
+	print("PAUSA: fechada %s, jogo solto %s" % [not map_screen.visible, not get_tree().paused])
 	await _joy(JOY_BUTTON_BACK)
-	print("MAPA: aberto %s, jogo parado %s" % [map_screen.visible, get_tree().paused])
+	print(
+		(
+			"MAPA: aberto %s, sem botões %s, jogo parado %s"
+			% [
+				map_screen.visible,
+				_button("Continuar", map_screen) == null,
+				get_tree().paused,
+			]
+		)
+	)
 	await _frames(10)
 	await _joy(JOY_BUTTON_BACK)
 	print("MAPA: fechado %s, jogo solto %s" % [not map_screen.visible, not get_tree().paused])
 	await _joy(JOY_BUTTON_START)
-	await _press("Mapa")
+	var resume := _button("Continuar", map_screen)
+	if resume:
+		resume.pressed.emit()
+	await _frames(10)
 	print(
 		(
-			"MAPA: pela pausa aberto %s, pausa escondida %s, escala %d"
-			% [map_screen.visible, not pause.visible, MapScreen.scale_for(chapter.get("map"))]
+			"PAUSA: Continuar fecha %s, jogo solto %s, escala %d"
+			% [
+				not map_screen.visible,
+				not get_tree().paused,
+				MapScreen.scale_for(chapter.get("map")),
+			]
 		)
 	)
-	await _joy(JOY_BUTTON_START)
-	print(
-		(
-			"MAPA: de volta à pausa %s, jogo parado %s"
-			% [pause.visible and not map_screen.visible, get_tree().paused]
-		)
-	)
-	await _joy(JOY_BUTTON_START)
-	print("PAUSA: fechada de novo %s, jogo solto %s" % [not pause.visible, not get_tree().paused])
 	var player: Player = chapter.get("_player")
 	var defeat: DefeatScreen = chapter.get_node("DefeatScreen")
 	var start := player.global_position

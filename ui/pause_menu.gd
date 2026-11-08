@@ -1,15 +1,14 @@
 class_name PauseMenu
 extends CanvasLayer
 ## Menu de pausa. O botão de pausa (Start ou Esc) para o jogo e mostra as
-## opções: continuar, ver o mapa no capítulo, ou sair. No capítulo, sair leva
-## ao mundo no jogo contínuo e ao menu de título no treino, e perde o que foi
-## feito no capítulo. No mundo e na sala de teste, sair leva ao menu de título.
+## opções: continuar ou sair. No capítulo, sair leva ao mundo no jogo contínuo
+## e ao menu de título no treino, e perde o que foi feito no capítulo. No mundo
+## e na sala de teste, sair leva ao menu de título.
 ##
 ## Onde há uma tela de mapa na cena (grupo "map_screen"), o botão de pausa
-## abre direto o mapa (ui/map_screen.gd), pedido de Marcelo em 2026-11-08, e
-## este menu fica um botão adiante: no mapa, o botão de confirmar mostra o
-## menu. O botão Mapa do menu volta ao mapa. Sem tela de mapa, como no mundo,
-## a pausa abre este menu direto.
+## abre o mapa com o menu ao lado, numa tela só (ui/map_screen.gd, pedido de
+## Marcelo em 2026-11-08), e este menu não aparece: o mapa usa as opções e a
+## saída daqui. Sem tela de mapa, como no mundo, a pausa abre este menu.
 ##
 ## Não abre enquanto outra tela, como a de fim, a de derrota ou a de mapa,
 ## estiver com o jogo parado, nem com o personagem sem vida, para a tela de
@@ -32,9 +31,7 @@ func _ready() -> void:
 	if Progress.active and Progress.seed != 0:
 		column.add_child(MenuKit.label("Seed %06d" % Progress.seed, 16))
 	_buttons.append(MenuKit.button("Continuar", resume))
-	if _map_screen():
-		_buttons.append(MenuKit.button("Mapa", _on_map))
-	_buttons.append(MenuKit.button(exit_text, _on_exit))
+	_buttons.append(MenuKit.button(exit_text, leave))
 	for button: Button in _buttons:
 		column.add_child(button)
 
@@ -49,7 +46,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if map_screen:
 			get_tree().paused = true
 			Music.set_paused(true)
-			map_screen.call("open", self, true)
+			map_screen.call("open", self)
 		else:
 			open()
 		get_viewport().set_input_as_handled()
@@ -58,18 +55,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func open() -> void:
 	get_tree().paused = true
 	Music.set_paused(true)
-	show_menu()
-
-
-## Mostra o menu com o jogo já parado, também quando vem do mapa.
-func show_menu() -> void:
 	visible = true
 	Sfx.play(&"menu_confirm")
-	refocus()
-
-
-## Devolve o foco ao primeiro botão, ao abrir e ao voltar da tela de mapa.
-func refocus() -> void:
 	_buttons[0].grab_focus()
 
 
@@ -88,15 +75,8 @@ func resume() -> void:
 	get_tree().paused = false
 
 
-func _on_map() -> void:
-	var map_screen := _map_screen()
-	if map_screen == null:
-		return
-	visible = false
-	map_screen.call("open", self)
-
-
-func _on_exit() -> void:
+## Sai do capítulo ou do jogo. Também usado pelo botão de sair do mapa.
+func leave() -> void:
 	Music.set_paused(false)
 	if exit_to_title:
 		Flow.go_to_title(get_tree())
