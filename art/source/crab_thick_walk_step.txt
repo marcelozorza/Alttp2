@@ -1,16 +1,11 @@
-# Guardião antigo, caranguejo de gelo grosso (troca de paleta), shell walk step, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Guardião, o caranguejo na versão de gelo grosso: andando, passo 2.
+# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
+# folhas de IA. A grade é 44 por 24, escrita aqui em dobro.
 paleta
-a #040413
-b #120209
-d #33060f
-e #000626
-g #26172b
-i #041137
-j #3b3550
-k #7f8494
-l #dbeef4
-m #37629f
-n #422f60
-o #ae272d
-p #461d3c
+b #1d4274
+d #102445
+k #050e24
+l #3c6a9c
+o #060a1c
+y #c8a030
 usa crab_shell_walk_step
