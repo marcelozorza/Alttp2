@@ -1,42 +1,38 @@
-# Inimigo de gelo, cubo, lunge side step, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Inimigo de gelo, o cubo: investindo de lado, passo 2.
+# Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
+# folhas de IA: cubo de 30 por 30 com brilho no alto, cara de olhos
+# raivosos e dentes, rachaduras claras e base sombreada.
 paleta
-a #a8b4c7
-b #c9e6fa
-c #c9edfd
-e #d8f6fe
-g #e9fbfe
-i #f6fdfe
-j #fdfefe
-k #81c6fa
-l #469eef
-m #2376cd
-n #07297e
+b #2f6fc4
+c #ffffff
+k #0b1c45
+l #5ba6ef
+o #10306b
+w #bfe4ff
 pixels
-.............................mnnnnm........
-..................nnnnnnnnnnnnllknnnn......
-...............mnnnnnnnnklkkkkkllkkknnm....
-..............nnnkkkkklllllkkkkllllllnnn...
-............nnnkkbkkllllllkkkkkkllmmmlknn..
-..........mnnnkcibbklllkkkkkkllllllllkkknn.
-........mnnkkkjiibbkkkkkkkklllllllkkkkllnn.
-.......nnnkkbjjibbkkkkkkkllllllkkkklllmmknn
-......nnkkbkkbbbbbbcbkkkkkkkkkkkkkllllmmknn
-.....mnkkkklkkkkkkkkkkbbegbbklllllllllmmlnn
-.....nlklllmlllkkkkkkkkkkkekklmlllllkkmmlnn
-....mnklllmmmlllkkkkklllkkbklmnmlllkbklllnn
-....nnklmmmmmmmlllklllllllkkmmmnnnnnnnlnlnn
-...nnllmmmmmmmlllkllllmmmllkllmnnaannnnmmnn
-...nnlmmmmmmlllllkllllmmmllkllmmnajabnnmlnn
-..nnkllmmmllllllklllllmmmmlklllmnnbjnmmmlnn
-.nnkklllllllllkkllkllmmmmmlbklllmmnmmmllnn.
-nnkkkkkkkkkklklmmlllmmmmmmlklnnllllmmmnlnn.
-nneebllllmmmklmmmmllmmmmmmlklmnnnllnmnnnn..
-nnllllmmmmmmklmmmmmmmmmmmmlklmnlnnnnnnnnn..
-.mnnnllllmmmklmmmmmmmmmmmmlkmmnnnnnnkmblnn.
-...mnnnnnllkklmmmmmmmmmmmmkkmmmnncnnmkklnn.
-.......mnnnknllllmmmmmmmmllkmmmmnkknklllnn.
-..........nnnnnnnnlllllmllbkmmmmmmklllknn..
-................nnnnnllkkkkklmmllllllnnn...
-...................nnnnmkbbmlllknnnnn......
-......................mnnnnnnnnnnn.........
-........................mnnnnnn............
+....oooooooooooooooooo....
+..oowwwwwwwwwwwwwwwwwwoo..
+.owwwwwwwwwwwwwwwwwwwwwwo.
+owwwwllllllllllllllllwwwwo
+owwllllllllllllllllllllllo
+ollllllllllllllllllllllllo
+ollllooooooolllllloooooooo
+olllloccccoollllllooccccoo
+ollllocccccollllllocccccoo
+ollllooooooolllllloooooooo
+ollllllllllllllllllllllllo
+olllllloooooooooooooooollo
+ollllllocckkcckkcckkccollo
+ollllllokkkkkkkkkkkkkkollo
+ollllllokkkkkkkkkkkkkkollo
+ollllllokkcckkcckkcckkollo
+olllllloooooooooooooooollo
+ollllllllllllllllllllllllo
+ollllllllllllllllllllllllo
+ollwlllllllllllllllllllllo
+olllwlllllllllllwllllllllo
+olllwwlllllllllllwlllllllo
+olllllwllllllllllllllllllo
+obbbbbbbbbbbbbbbbbbbbbbbbo
+..oobbbbbbbbbbbbbbbbbboo..
+....oooooooooooooooooo....

@@ -54,10 +54,8 @@ def boss_set(prefix):
 
 
 PRESETS = {
-    # O lobo (ugly) saiu daqui em 2026-11-08: foi redesenhado à mão em
-    # art/source/wolf_*.txt e não deve ser gerado de folha nenhuma.
-    "ice_cube": dict(cols=4, rows=4, height=30, colors=10, accents=4, comment="Inimigo de gelo, cubo",
-                     names=lunge_set("ice_cube")),
+    # O lobo e o cubo de gelo saíram daqui em 2026-11-08: foram redesenhados à
+    # mão em art/source/ e não devem ser gerados de folha nenhuma.
     "stalactite": dict(cols=4, rows=4, height=44, colors=10, accents=4, comment="Morsa de gelo, estalactite",
                        names=[
         "stalactite_down", "stalactite_down_step", "stalactite_up", "stalactite_up_step",
