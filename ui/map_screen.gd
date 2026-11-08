@@ -41,6 +41,7 @@ const WALL_COLOR := Color(0.2, 0.2, 0.26, 1.0)
 const UNSEEN_COLOR := Color(0.3, 0.29, 0.34, 1.0)
 const UNSEEN_EDGE := Color(0.17, 0.16, 0.2, 1.0)
 const CHEST_COLOR := Color(0.88, 0.63, 0.13, 1.0)
+const CHEST_OPEN_COLOR := Color(0.47, 0.31, 0.06, 1.0)
 const CHEST_EDGE := Color(0.16, 0.07, 0.03, 1.0)
 const LOCKED_COLOR := Color(0.73, 0.75, 0.8, 1.0)
 const BOSS_DOOR_COLOR := Color(0.66, 0.22, 0.24, 1.0)
@@ -280,17 +281,15 @@ static func _cell_color(chapter: Node, map: ChapterMap, cell: Vector2i) -> Color
 	return FLOOR_COLORS[map.height_level(cell)]
 
 
-## Baú fechado: quadrado dourado com borda escura. Aberto: só a borda, com o
-## chão aparecendo dentro, para ficar claramente diferente.
+## Baú fechado: quadrado dourado com borda escura. Aberto: o mesmo dourado bem
+## mais escuro, pedido de Marcelo, para não se confundir com o chão.
 func _draw_chest(rect: Rect2, is_open: bool) -> void:
+	var fill := CHEST_OPEN_COLOR if is_open else CHEST_COLOR
 	if rect.size.x < 4.0:
-		_canvas.draw_rect(rect, CHEST_EDGE if is_open else CHEST_COLOR)
+		_canvas.draw_rect(rect, fill)
 		return
 	_canvas.draw_rect(rect, CHEST_EDGE)
-	if not is_open:
-		_canvas.draw_rect(rect.grow(-1.0), CHEST_COLOR)
-	else:
-		_canvas.draw_rect(rect.grow(-1.0), FLOOR_COLORS[0])
+	_canvas.draw_rect(rect.grow(-1.0), fill)
 
 
 ## Caveira do chefe num quadrado de lado side: crânio, mandíbula e dois olhos.
