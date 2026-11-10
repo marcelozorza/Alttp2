@@ -40,3 +40,5 @@ SEED: igual de novo true, diferente da 7 true
 SEED: jogar -> overworld.tscn, seed 123456, contínuo true, modos [1, 1, 1]
 SEED: capítulo 3 baú M=HEART gravado true, de volta aberto true, ferramentas 0
 SEED: continuar -> overworld.tscn, seed 123456, mesma distribuição true
+SEED: arquivo antigo, baú C=SPRING fechado de novo true, coração aberto true
+SEED: distribuição gravada vale true, quebrada cai na gerada true

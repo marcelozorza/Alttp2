@@ -100,6 +100,71 @@ static func verify(logics: Dictionary, table: Dictionary) -> bool:
 	return true
 
 
+## Se uma distribuição gravada ainda serve aos mapas de agora: os mesmos
+## baús em cada dungeon, as chaves nos baús delas, os mesmos itens no total e
+## vencível do começo ao fim. Um arquivo de salvamento de uma versão anterior
+## do jogo pode trazer uma distribuição que os mapas novos não aceitam.
+static func fits(table: Dictionary) -> bool:
+	var logics := {}
+	var expected: Array = []
+	var found: Array = []
+	for chapter: int in range(1, ChapterData.count() + 1):
+		if not table.has(chapter):
+			return false
+		var data := ChapterData.load_number(chapter)
+		var items: Dictionary = table[chapter]
+		if items.size() != data.items.size():
+			return false
+		for letter: String in data.items:
+			if not items.has(letter):
+				return false
+			var linear: int = data.items[letter]
+			var item: int = items[letter]
+			if _is_key(linear) != _is_key(item) or (_is_key(item) and item != linear):
+				return false
+			expected.append(linear)
+			found.append(item)
+		logics[chapter] = ChapterLogic.new(data)
+	expected.sort()
+	found.sort()
+	return expected == found and verify(logics, table)
+
+
+## A distribuição em texto para o arquivo de salvamento: número do capítulo
+## e letra do baú para o nome do item, que não muda se a lista de itens
+## ganhar um item novo no meio.
+static func to_names(table: Dictionary) -> Dictionary:
+	var names := {}
+	for chapter: int in table:
+		var letters := {}
+		for letter: String in table[chapter]:
+			letters[letter] = Item.Id.keys()[table[chapter][letter]]
+		names[str(chapter)] = letters
+	return names
+
+
+## A distribuição lida do arquivo de salvamento. Vazia se o arquivo não tem
+## distribuição ou se algum nome não é de item.
+static func from_names(names: Variant) -> Dictionary:
+	if not names is Dictionary:
+		return {}
+	var table := {}
+	for chapter_text: Variant in names:
+		var letters: Variant = names[chapter_text]
+		if not chapter_text is String or not chapter_text.is_valid_int():
+			return {}
+		if not letters is Dictionary:
+			return {}
+		var items := {}
+		for letter: Variant in letters:
+			var id := Item.Id.keys().find(str(letters[letter]))
+			if not letter is String or id < 0:
+				return {}
+			items[letter] = id
+		table[int(chapter_text)] = items
+	return table
+
+
 ## Texto da distribuição, para o teste e para depurar: "1:A=KEY,B=HEART 2:...".
 static func describe(table: Dictionary) -> String:
 	var parts: Array[String] = []
@@ -170,3 +235,7 @@ static func _shuffle(values: Array, rng: RandomNumberGenerator) -> void:
 		var swap: Variant = values[i]
 		values[i] = values[j]
 		values[j] = swap
+
+
+static func _is_key(item: int) -> bool:
+	return item == Item.Id.KEY or item == Item.Id.BOSS_KEY
