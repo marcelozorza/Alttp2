@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://donvqitdqmu52"
+path="res://.godot/imported/giorgino_big.fnt-9e103aae917c8c8d197fe81fdd71eb73.fontdata"
+
+[deps]
+
+source_file="res://ui/font/giorgino_big.fnt"
+dest_files=["res://.godot/imported/giorgino_big.fnt-9e103aae917c8c8d197fe81fdd71eb73.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2
