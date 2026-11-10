@@ -9,8 +9,16 @@ extends Control
 
 func _ready() -> void:
 	Progress.active = false
-	var column := MenuKit.centered_column(self, Color(0.1, 0.11, 0.13, 1.0))
-	column.add_child(MenuKit.label("Giorgino", 48))
+	var column := MenuKit.centered_column(self, TitleArt.SKY)
+	var art := TitleArt.new()
+	art.set_anchors_preset(Control.PRESET_FULL_RECT)
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(art)
+	move_child(art, 1)
+	# O logotipo fica no alto, desenhado pela arte: a coluna começa abaixo dele.
+	var spacer := Control.new()
+	spacer.custom_minimum_size = Vector2(0.0, 44.0)
+	column.add_child(spacer)
 	var first: Button = null
 	if Progress.exists():
 		first = MenuKit.button("Continuar", _on_continue)
@@ -20,7 +28,7 @@ func _ready() -> void:
 	if not first:
 		first = new_game
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
-	column.add_child(MenuKit.button("Tutorial", _on_tutorial))
+	column.add_child(MenuKit.button("Dungeon de teste", _on_tutorial))
 	column.add_child(MenuKit.button("Treino", _on_training))
 	column.add_child(MenuKit.button("Galeria", _on_gallery))
 	first.grab_focus.call_deferred()

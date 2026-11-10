@@ -1,0 +1,41 @@
+# Logotipo do título: GIORGINO com a coleira rosa do herói.
+paleta
+a #1e181e
+b #f4f1ea
+c #d99a1c
+d #d9578a
+e #c7c1cf
+pixels
+.....aaaaaaaaaaaa........aaaaaaaaaaaa........aaaaaaaaaaaa..........aaaaaaaaaaaaaa............aaaaaaaaaaaa........aaaaaaaaaaaa....aaaa............aaaa........aaaaaaaaaaaa......
+...aaabbbbbbbbbbaaa.....aabbbbbbbbbbaa.....aaabbbbbbbbbbaaa......aaabbbbbbbbbbbbaaa........aaabbbbbbbbbbaaa.....aabbbbbbbbbbaa..aabbaaa.........aabbaa.....aaabbbbbbbbbbaaa....
+...abbbbbbbbbbbbbba.....abbbbbbbbbbbba.....abbbbbbbbbbbbbba......abbbbbbbbbbbbbbbba........abbbbbbbbbbbbbba.....abbbbbbbbbbbba..abbbbba.........abbbba.....abbbbbbbbbbbbbba....
+.aaabbbbbbbbbbbbbbaaa...abbbbbbbbbbbba...aaabbbbbbbbbbbbbbaaa...aabbbbbbbbbbbbbbbbaaa....aaabbbbbbbbbbbbbbaaa...abbbbbbbbbbbba..abbbbbaaa.......abbbba...aaabbbbbbbbbbbbbbaaa..
+.abbbbbbbbbbbbbbbbbba...aabbbbbbbbbbaac..abbbbbbbbbbbbbbbbbba...abbbbbbbbbbbbbbbbbbba....abbbbbbbbbbbbbbbbbba...aabbbbbbbbbbaac.abbbbbbba.......abbbbac..abbbbbbbbbbbbbbbbbba..
+aabbbbbbaaaaaabbbbbbaa...abbbbbbbbbbacc.aabbbbbbaaaaaabbbbbbaa..abbbbbbbaaaaaabbbbbbaa..aabbbbbbaaaaaabbbbbbaa...abbbbbbbbbbacc.abbbbbbbaaa.....abbbbac.aabbbbbbaaaaaabbbbbbaa.
+abbbbbaaaccccaaabbbbba...aaabbbbbbaaacc.abbbbbaaaccccaaabbbbba..abbbbbaaaccccaaabbbbba..abbbbbaaaccccaaabbbbba...aaabbbbbbaaacc.abbbbbbbbba.....abbbbac.abbbbbaaaccccaaabbbbba.
+abbbbbaccccccccabbbbba...ccabbbbbbacccc.abbbbbaccccccccabbbbba..abbbbbaccccccccabbbbba..abbbbbaccccccccabbbbba...ccabbbbbbacccc.abbbbbbbbbaaa...abbbbac.abbbbbaccccccccabbbbba.
+abbbbaaccccccccaaabbaac...caabbbbaaccc..abbbbaaccccccccaabbbbac.abbbbaaccccccccaabbbbac.abbbbaaccccccccaaabbaac...caabbbbaaccc..abbbbbbbbbbba...abbbbac.abbbbaaccccccccaabbbbac
+abbbbacccc....cccaaaacc...ccabbbbacccc..abbbbacccc....ccabbbbac.abbbbaaccc....caabbbbac.abbbbacccc....cccaaaacc...ccabbbbacccc..abbbbbaabbbbaa..abbbbac.abbbbacccc....ccabbbbac
+abbbbacc........ccccccc.....abbbbacc....abbbbacc........abbbbac.abbbbbac.......abbbbbac.abbbbacc........ccccccc.....abbbbacc....abbbbaaaabbbba..abbbbac.abbbbacc........abbbbac
+abbbbacc........ccccccc.....abbbbacc....abbbbacc........abbbbac.abbbbbaaa....aaabbbbbac.abbbbacc........ccccccc.....abbbbacc....abbbbaccabbbba..abbbbac.abbbbacc........abbbbac
+abbbbac..aaaaaaaaaaccc......abbbbac.....abbbbac.........abbbbac.abbbbbbbaaaaaabbbbbbaac.abbbbac..aaaaaaaaaaccc......abbbbac.....abbbbaccabbbbac.abbbbac.abbbbac.........abbbbac
+abbbbac.aabbbbbbbbaaa.......abbbbac.....abbbbac.........abbbbac.abbbbbbbbbbbbbbbbbbbacc.abbbbac.aabbbbbbbbaaa.......abbbbac.....abbbbaccabbbbac.abbbbac.abbbbac.........abbbbac
+abbbbac.abbbbbbbbbbba.......abbbbac.....abbbbac.........abbbbac.abbbbbbbbbbbbbbbbbaaacc.abbbbac.abbbbbbbbbbba.......abbbbac.....abbbbac.abbbbac.abbbbac.abbbbac.........abbbbac
+abbbbac.abbbbbbbbbbbaa......abbbbac.....abbbbac.........abbbbac.abbbbbbbbbbbbbbbbbacccc.abbbbac.abbbbbbbbbbbaa......abbbbac.....abbbbac.abbbbaaaabbbbac.abbbbac.........abbbbac
+abbbbac.aabbbbbbbbbbba......abbbbac.....abbbbac.........abbbbac.abbbbbbbbbbbbbbbaaaccc..abbbbac.aabbbbbbbbbbba......abbbbac.....abbbbac.aabbbbaabbbbbac.abbbbac.........abbbbac
+abbbbac..aaaaabbbbbbba......abbbbac.....abbbbac.........abbbbac.abbbbbaabbbbbbaaaccccc..abbbbac..aaaaabbbbbbba......abbbbac.....abbbbac..abbbbbbbbbbbac.abbbbac.........abbbbac
+abbbbac..ccccaaabbbbbac.....abbbbac.....abbbbac.........abbbbac.abbbbaaaabbbbaaccccc....abbbbac..ccccaaabbbbbac.....abbbbac.....abbbbac..aaabbbbbbbbbac.abbbbac.........abbbbac
+abbbbac..ccccccabbbbbac.....abbbbac.....abbbbac.........abbbbac.abbbbaccabbbbaaccccc....abbbbac..ccccccabbbbbac.....abbbbac.....abbbbac..ccabbbbbbbbbac.abbbbac.........abbbbac
+addddac...cccccaaddddac.....addddac.....addddac.........addddac.addddaccaaddddaaac......addddac...cccccaaddddac.....addddac.....addddac...caaadddddddac.addddac.........addddac
+addddaa.......caaddddac....aaddddaa.....addddaa........aaddddac.addddacccaddddddaaa.....addddaa.......caaddddac....aaddddaa.....addddac...cccadddddddac.addddaa........aaddddac
+abbbbba........abbbbbac....abbbbbba.....abbbbba........abbbbbac.abbbbac..aaabbbbbba.....abbbbba........abbbbbac....abbbbbba.....abbbbac.....caaabbbbbac.abbbbba........abbbbbac
+aeeeeeaaa....aaaeeeeeac..aaaeeeeeeaaa...aeeeeeaaa....aaaeeeeeac.aeeeeac..ccaeeeeeeaaa...aeeeeeaaa....aaaeeeeeac..aaaeeeeeeaaa...aeeeeac.....cccaeeeeeac.aeeeeeaaa....aaaeeeeeac
+aaeeeeeeaaaaaaeeeeeeaac..aeeeeeeeeeea...aaeeeeeeaaaaaaeeeeeeaac.aeeeeac...caaaeeeeeea...aaeeeeeeaaaaaaeeeeeeaac..aeeeeeeeeeea...aeeeeac.......caaeeeeac.aaeeeeeeaaaaaaeeeeeeaac
+.aeeeeeeeeeeeeeeeeeeacc.aaeeeeeeeeeeaa...aeeeeeeeeeeeeeeeeeeacc.aeeeeac...cccaeeeeeeaa...aeeeeeeeeeeeeeeeeeeacc.aaeeeeeeeeeeaa..aeeeeac.......ccaeeeeac..aeeeeeeeeeeeeeeeeeeacc
+.aaaeeeeeeeeeeeeeeaaacc.aeeeeeeeeeeeea...aaaeeeeeeeeeeeeeeaaacc.aeeeeac.....caaaeeeeea...aaaeeeeeeeeeeeeeeaaacc.aeeeeeeeeeeeea..aeeeeac.........aeeeeac..aaaeeeeeeeeeeeeeeaaacc
+.ccaeeeeeeeeeeeeeeacccc.aeeeeeeeeeeeea...ccaeeeeeeeeeeeeeeacccc.aeeeeac.....cccaeeeeea...ccaeeeeeeeeeeeeeeacccc.aeeeeeeeeeeeea..aeeeeac.........aeeeeac..ccaeeeeeeeeeeeeeeacccc
+..caaaeeeeeeeeeeaaaccc..aaeeeeeeeeeeaac...caaaeeeeeeeeeeaaaccc..aaeeaac.......caaaeeaac...caaaeeeeeeeeeeaaaccc..aaeeeeeeeeeeaac.aaeeaac.........aaeeaac...caaaeeeeeeeeeeaaaccc.
+..cccaaaaaaaaaaaaccccc...aaaaaaaaaaaacc...cccaaaaaaaaaaaaccccc...aaaacc.......cccaaaacc...cccaaaaaaaaaaaaccccc...aaaaaaaaaaaacc..aaaacc..........aaaacc...cccaaaaaaaaaaaaccccc.
+....cccccccccccccccc.....cccccccccccccc.....cccccccccccccccc.....cccccc.........ccccccc.....cccccccccccccccc.....cccccccccccccc..cccccc..........cccccc.....cccccccccccccccc...
+....cccccccccccccccc.....cccccccccccccc.....cccccccccccccccc.....cccccc.........ccccccc.....cccccccccccccccc.....cccccccccccccc..cccccc..........cccccc.....cccccccccccccccc...
+......cccccccccccc........cccccccccccc........cccccccccccc........cccc............cccc........cccccccccccc........cccccccccccc....cccc............cccc........cccccccccccc.....

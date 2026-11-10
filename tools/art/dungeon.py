@@ -27,6 +27,7 @@ P0, P1, P2, P3, P4 = "#1f1238", "#2e1a4f", "#55308f", "#8a59d0", "#c3a0f0"
 R0, R1, R2, R3 = "#5e1830", "#9c2338", "#d83a3f", "#f0705c"
 Y0, Y1, Y2 = "#d99a1c", "#f7c53a", "#fff1a8"
 FUR, WHITE = "#f4f1ea", "#ffffff"
+F0, F1, F2 = "#5a7fb5", "#86a9d6", "#b4cdec"
 T = 32
 
 # Por tema: tons do chão (base, luz, junta), do topo da parede (base, grão) e
@@ -34,7 +35,7 @@ T = 32
 THEMES = {
     "": {"floor": (S3, S4, S2), "top": (S0, S1), "face": (S2, S3, S0, S5)},
     "_castle": {"floor": (S5, S6, S4), "top": (P0, P1), "face": (P2, P3, P1, Y1)},
-    "_ice": {"floor": (B3, B4, B2), "top": (B0, B1), "face": (B2, B3, B1, FUR)},
+    "_ice": {"floor": (F1, F2, F0), "top": (B0, B1), "face": (B2, B3, B1, FUR)},
     "_moss": {"floor": (S4, S5, S3), "top": (G0, G1), "face": (G1, G2, G0, G3)},
 }
 HIGH = (E4, E5, E3)
@@ -76,13 +77,12 @@ def floor(theme, tones, alt):
             c.poly([(16, 12), (20, 16), (16, 20), (12, 16)], base)
     elif theme == "_ice":
         # Gelo liso: riscos de brilho em diagonal e trincas finas.
-        slab(c, 0, 0, T, T, base, base, dark)
-        streaks = [(5, 12, 6), (18, 26, 8), (22, 8, 4)] if not alt else [(8, 24, 7), (20, 14, 6)]
+        streaks = [(5, 12, 6), (18, 26, 8)] if not alt else [(20, 14, 6)]
         for x, y, n in streaks:
             for i in range(n):
                 c.px(x + i, y - i, light)
                 c.px(x + i + 1, y - i, light)
-        crack = [(27, 2), (24, 6), (26, 10)] if not alt else [(4, 4), (7, 8), (5, 13)]
+        crack = [(27, 2), (24, 6), (26, 10)] if not alt else []
         for (x0, y0), (x1, y1) in zip(crack, crack[1:]):
             c.line(x0, y0, x1, y1, dark)
     else:

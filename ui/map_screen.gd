@@ -162,9 +162,9 @@ func _build_buttons() -> void:
 	_legend_top = top
 	if not _as_pause:
 		return
-	var resume := MenuKit.button("Continuar", close)
+	var resume := MenuKit.button("Continuar", close, true)
 	_buttons.add_child(resume)
-	_buttons.add_child(MenuKit.button(_pause_menu.get("exit_text"), _on_exit))
+	_buttons.add_child(MenuKit.button(_pause_menu.get("exit_text"), _on_exit, true))
 	_legend_top = top + 2.0 * 34.0 + 12.0
 	resume.grab_focus()
 
@@ -202,11 +202,11 @@ static func scale_for(map: ChapterMap) -> int:
 
 
 func _draw_map() -> void:
-	var font := ThemeDB.fallback_font
+	var font := Fonts.SMALL
 	var panel := Rect2(SCREEN.x - PANEL_WIDTH, 0.0, PANEL_WIDTH, SCREEN.y)
 	_canvas.draw_rect(panel, PANEL_COLOR)
 	_canvas.draw_string(
-		font,
+		Fonts.BIG,
 		Vector2(panel.position.x, 26.0),
 		"Pausa" if _as_pause else "Mapa",
 		HORIZONTAL_ALIGNMENT_CENTER,

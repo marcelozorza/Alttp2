@@ -111,7 +111,7 @@ func _draw() -> void:
 		text = GameMath.time_text(Progress.run_ticks)
 	if not text.is_empty():
 		draw_string(
-			ThemeDB.fallback_font,
+			Fonts.SMALL,
 			Vector2(300.0, 18.0),
 			text,
 			HORIZONTAL_ALIGNMENT_RIGHT,
@@ -153,7 +153,7 @@ func _draw_health(player: Player) -> void:
 func _draw_keys(player: Player) -> void:
 	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
 	ToolIcons.draw(self, Item.Id.KEY, KEYS_POSITION, tint)
-	var font := ThemeDB.fallback_font
+	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
 	var text_position := KEYS_POSITION + Vector2(12.0, 8.0)
 	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)

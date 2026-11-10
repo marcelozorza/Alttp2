@@ -23,6 +23,8 @@ RAMPS = {
     "green": ["#12332f", "#1f5a3a", "#2f8a45", "#59b84c", "#a4dc5a", "#dff29a"],
     "teal": ["#1b5e63", "#2aa198", "#7fe0c8"],
     "blue": ["#141a3c", "#1a2452", "#27409a", "#3b7bdc", "#6cc3f2", "#c6efff"],
+    # Gelo fosco do chão da geleira, menos vivo que o azul.
+    "frost": ["#5a7fb5", "#86a9d6", "#b4cdec"],
     "purple": ["#1f1238", "#2e1a4f", "#55308f", "#8a59d0", "#c3a0f0"],
 }
 

@@ -453,7 +453,7 @@ func _check_training() -> void:
 func _check_tutorial() -> void:
 	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
 	await _frames(10)
-	await _press("Tutorial")
+	await _press("Dungeon de teste")
 	await _frames(10)
 	var chapter: Node = get_tree().current_scene
 	var player: Player = chapter.get("_player")

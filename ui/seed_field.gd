@@ -66,7 +66,7 @@ func _add(delta: int) -> void:
 
 
 func _draw() -> void:
-	var font := ThemeDB.fallback_font
+	var font := Fonts.BIG
 	var text := "%0*d" % [DIGITS, value]
 	for i: int in DIGITS:
 		var x := i * DIGIT_WIDTH
