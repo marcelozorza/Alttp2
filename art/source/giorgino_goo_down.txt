@@ -11,6 +11,8 @@ n #0e0b0d
 p #e49aa4
 r #d9578a
 e #0e0b0d
+C #8a5a3c
+Y #fff1a8
 D #7a1a78
 P #c038b8
 L #ee7fe0
@@ -38,15 +40,15 @@ DDPDdd.DddPkDPDDkkwwkkeeDDkkdd
 .......DddkkDDwwwwwwwwwwDDkddk
 ........ddkkDDwwwwwwwwwwDDkdd.
 .........dkkDDwwwwnnwwwwDDdd..
-.........DkHPPDwwwnnwwwwDDdd..
-.........DLPPPPLLDwwwwwwDDdd..
-..........DPPPPPPPDwwwwwskk...
-..........DPPPPPPDDwwwwwddb...
-.........DPPPPPPPPPrrrrrrdn...
-.......bDPPPPPPPPPDDrrrrrwdkb.
-.......DPPPPPPPPPDDwwwwwwwdkk.
-......dDDPPPPPPPPPPwwwwwwwwwdd
-......kdDDPDPPPPDDwwwwwdgwwwkk
+....d....DkHPPDwwwnnwwwwDDdd..
+...Dbd...DLPPPPLLDwwwwwwDDdd..
+...DbCd...DPPPPPPPDwwwwwskk...
+....dbYD.DPPPPPPPDDwwwwwddb...
+.....dbDHPPPPPPPPPPrrrrrrdn...
+......dbDPPPPPPPPPDDrrrrrwdkb.
+......dDPPPPPPPPPDDwwwwwwwdkk.
+.....ddDDPPPPPPPPPPwwwwwwwwwdd
+.....dkdDDPDPPPPDDwwwwwdgwwwkk
 ......kkPDDwDDPDsswwwwwdwwwwdd
 ......ddwwDwwDDwswwwwwddwwwwdd
 ......kkwwPwwkDwwwswwkdwwwwwkk

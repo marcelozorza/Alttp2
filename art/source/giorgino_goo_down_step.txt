@@ -9,6 +9,10 @@ s #c7c1cf
 n #0e0b0d
 r #d9578a
 e #0e0b0d
+C #8a5a3c
+Y #fff1a8
+G #d99a1c
+W #ffffff
 D #7a1a78
 P #c038b8
 L #ee7fe0
@@ -31,13 +35,13 @@ dddddddddkkkDDkkkkDDwkDPPDkkDD
 ddddd...ddkkDDeekkwDwkDPPDkkDD
 ........ddkkDDeekkwwwkDPPDkkDD
 ........ddkkDDeekwwwwwDDPDkkDD
-........ddkkDDkkbwwwwwDkDDkkDD
-........ddkkDDkwwwwwwwPwDDkdD.
-........ddkkDDkwDwwwwwwwDDkdD.
-.........ddkDPLHPLLDdwwwDDkkD.
-.........ddkDPPPPPPPDwwwDDkk..
-.........ddHPPPPPPPPPHwwDDdd..
-kkkk...nddDPPPPPPPPPPPDwkDd...
+...d....ddkkDDkkbwwwwwDkDDkkDD
+..dbd...ddkkDDkwwwwwwwPwDDkdD.
+..dbCd..ddkkDDkwDwwwwwwwDDkdD.
+...dbYd.dddkDPLHPLLDdwwwDDkkD.
+....dbCdGddkDPPPPPPPDwwwDDkk..
+.....dbGWddHPPPPPPPPPHwwDDdd..
+kkkk.dGnddDPPPPPPPPPPPDwkDd...
 ddkbdbbddwDPPPPPPPPPPDwwkkb...
 ddwbkkdkkwwDPPPPPPPPPDDrrkb...
 kdwwwkkbwwdwDPPPPPPPDrDrrwdd..
