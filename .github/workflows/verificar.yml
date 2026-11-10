@@ -1,6 +1,6 @@
 # Verificação a cada push e a cada pull request: formatação e lint dos
-# scripts, conferidor dos capítulos e o teste de fumaça no Godot sem tela,
-# as mesmas três conferências descritas no CLAUDE.md. O resultado aparece na
+# scripts, conferidor dos capítulos, conferidor da pixel art e o teste de fumaça no Godot sem tela,
+# as mesmas conferências descritas no CLAUDE.md. O resultado aparece na
 # aba Actions do GitHub e na marca ao lado de cada commit.
 name: Verificar
 
@@ -29,6 +29,8 @@ jobs:
             echo "== $dados"
             python3 tools/check_chapter.py "$dados"
           done
+      - name: Conferir a pixel art
+        run: python3 tools/check_art.py
 
   godot:
     name: Teste de fumaça no Godot
