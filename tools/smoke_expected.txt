@@ -1,0 +1,42 @@
+MENU: depois do A -> overworld.tscn contínuo: true
+MENU: depois do Start -> overworld.tscn
+ÁUDIO: barramentos Music e Sfx em [1, 2]
+ÁUDIO: 50 efeitos, sem arquivo: [], sem uso: []
+ÁUDIO: música <nenhuma>, tocando: false
+MUNDO: modos das entradas [1, 0, 0] (0 trancada, 1 aberta, 2 vencida)
+MUNDO: entrada 2 trancada -> overworld.tscn, tremeu: true
+MUNDO: pedra gravou: true, vida 6/6
+MUNDO: entrada 1 -> chapter.tscn, capítulo 1
+MUNDO: capítulo 1 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 16, ferramentas 62
+MUNDO: capítulo 2 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 24, ferramentas 62
+MUNDO: capítulo 3 vencido true, entrada 2, seguinte -1, personagem na entrada true, vida 24, ferramentas 62
+REJOGO: abertos ["HEART", "SPRING", "HEART", "HEART", "FIRE", "HEART", "HEART", "BOMB"], fechados ["KEY", "BOSS_KEY", "KEY", "KEY", "KEY", "KEY", "KEY"], vida 24/24
+PAUSA: mapa com menu true, menu separado escondido true, jogo parado true
+PAUSA: fechada true, jogo solto true
+MAPA: aberto true, sem botões true, jogo parado true
+MAPA: fechado true, jogo solto true
+PAUSA: Continuar fecha true, jogo solto true, escala 4
+DERROTA: vida 0, caído true
+DERROTA: tela true, jogo parado true
+DERROTA: de novo: cena nova true, capítulo 1, vida 24/24, no início true, jogo parado false
+PULO: inimigo a 40 px, no chão parou a 36 px, com o pulo foi a 120 px, vida 24 -> 24
+TREINO: -> training_screen.tscn
+TREINO: capítulo 2 -> chapter.tscn, contínuo false, chama true, chama forte false, vida 6
+TREINO: sala de teste -> test_room.tscn
+TUTORIAL: -> chapter.tscn, nome Dungeon de teste, contínuo false, bomba false
+CONTINUAR: -> overworld.tscn, vencidos 14, modos [2, 2, 2], vida 24
+TESTE: jogo novo no início true, textos no chão 7, entrada 0 modo 1
+TESTE: entrada 0 -> chapter.tscn, Dungeon de teste, treino true, bomba false, vida 6
+TESTE: placas 7, sem texto 0, em cima mostra true, jogo solto true, ao sair some true
+TESTE: vencida true, -> overworld.tscn, na entrada true, ferramentas 2, vida 10, modo 2
+LÓGICA: capítulo 0 esferas A,D | B,C | E | F, vencível true
+LÓGICA: capítulo 1 esferas A,C | D,E,G,H,O,P | B,I,J,K | F,L,N, vencível true
+LÓGICA: capítulo 2 esferas A,B,D,E,F,H,K | C,G,I,J, vencível true
+LÓGICA: capítulo 3 esferas A,B,C,F,G,H,J,K,L | D,E,I,M, vencível true
+SEED: 123456 -> 1:A=KEY,B=HEART,C=SPRING,D=HEART,E=KEY,F=HEART,G=HEART,H=KEY,I=KEY,J=HEART,K=HEART,L=BOSS_KEY,N=KEY,O=HEART,P=KEY 2:A=KEY,B=KEY,C=HEART,D=FIRE,E=KEY,F=BOMB,G=KEY,H=HEART,I=BOSS_KEY,J=HEART,K=KEY 3:A=KEY,B=KEY,C=STRONG_FIRE,D=HEART,E=KEY,F=KEY,G=HEART,H=KEY,I=BOSS_KEY,J=KEY,K=HEART,L=STRONG_SPRING,M=HEART
+SEED: 7 -> 1:A=KEY,B=HEART,C=BOMB,D=HEART,E=KEY,F=FIRE,G=HEART,H=KEY,I=KEY,J=STRONG_FIRE,K=HEART,L=BOSS_KEY,N=KEY,O=HEART,P=KEY 2:A=KEY,B=KEY,C=HEART,D=STRONG_SPRING,E=KEY,F=HEART,G=KEY,H=SPRING,I=BOSS_KEY,J=HEART,K=KEY 3:A=KEY,B=KEY,C=HEART,D=HEART,E=KEY,F=KEY,G=HEART,H=KEY,I=BOSS_KEY,J=KEY,K=HEART,L=HEART,M=HEART
+ITENS: mola forte antes da mola vira SPRING, duas molas fortes dão mola e mola forte true
+SEED: igual de novo true, diferente da 7 true
+SEED: jogar -> overworld.tscn, seed 123456, contínuo true, modos [1, 1, 1]
+SEED: capítulo 3 baú M=HEART gravado true, de volta aberto true, ferramentas 0
+SEED: continuar -> overworld.tscn, seed 123456, mesma distribuição true

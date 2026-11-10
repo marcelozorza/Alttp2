@@ -1,36 +1,36 @@
 # Interruptor pressionado: a placa afundou, rente ao chão, e o losango acende.
 paleta
-o #1a1826
-d #3a3650
-f #58547a
-b #6e6a90
-h #8a86a8
-m #f0c040
+o #1b1926
+d #3a3750
+f #55526f
+b #7c7b99
+h #7c7b99
+m #f7c53a
 pixels
 ................................
 ................................
-....oooooooooooooooooooooooo....
-....oooooooooooooooooooooooo....
+.....oooooooooooooooooooooo.....
+...oooooooooooooooooooooooooo...
+...oohhhhhhhhhhhhhhhhhhhhhhoo...
 ..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhhbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbmmmmmmmmbbbbbffoo..
 ..oohhbbbbbbmmmmmmmmmmbbbbffoo..
 ..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbmmmmmmmmbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
 ..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..ooohbbbbbbbbbbbbbbbbbbbbfooo..
 ..oooooooooooooooooooooooooooo..
-..oooooooooooooooooooooooooooo..
+...oooooooooooooooooooooooooo...
 ................................
 ................................
 ................................

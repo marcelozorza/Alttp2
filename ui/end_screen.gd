@@ -15,6 +15,15 @@ extends CanvasLayer
 
 ## Segundos com os botões desligados depois que a tela aparece.
 const INPUT_DELAY := 0.8
+## O que o jogador precisa saber ao sair da dungeon de teste (pedido de
+## Marcelo em 2026-11-10): o jogo original ensina as dungeons, e o jogo de
+## verdade é o Randomizado.
+const TUTORIAL_PITCH := (
+	"\n\nAgora, as três dungeons. Nelas, cada item fica sempre no mesmo baú."
+	+ "\nDepois vem o jogo de verdade, o Randomizado:"
+	+ "\ncada semente embaralha os itens e dá um jogo novo."
+	+ "\nQuem digitar a mesma semente joga o mesmo jogo. Disputem o tempo."
+)
 
 var _title: Label
 var _summary: Label
@@ -29,7 +38,7 @@ func _ready() -> void:
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.85))
 	var title := "Capítulo concluído"
 	if RunSettings.chapter == ChapterData.TUTORIAL:
-		title = "Tutorial concluído"
+		title = "Dungeon de teste concluída"
 	elif RunSettings.chapter == ChapterData.GALLERY:
 		title = "Galeria"
 	_title = MenuKit.label(title, 32)
@@ -51,6 +60,8 @@ func _ready() -> void:
 
 func show_results(time_text: String, chapter_text: String, chests_text: String) -> void:
 	_summary.text = "Tempo %s\n%s\nBaús abertos %s" % [time_text, chapter_text, chests_text]
+	if RunSettings.chapter == ChapterData.TUTORIAL:
+		_summary.text += TUTORIAL_PITCH
 	await _appear()
 
 
@@ -67,13 +78,13 @@ func show_victory(
 		_title.text = "Você venceu as três dungeons"
 		summary += (
 			"O jogo de verdade começa agora: as mesmas dungeons\n"
-			+ "com os itens embaralhados por uma seed."
+			+ "com os itens embaralhados por uma semente."
 		)
 		_random_button.text = "Jogar randomizado"
 	else:
-		_title.text = "Seed %06d vencida" % seed_value
-		summary += "Compartilhe o número da seed: quem jogar\na mesma seed joga o mesmo jogo."
-		_random_button.text = "Jogar outra seed"
+		_title.text = "Semente %06d vencida" % seed_value
+		summary += "Compartilhe o número da semente: quem jogar\na mesma semente joga o mesmo jogo."
+		_random_button.text = "Jogar outra semente"
 	_summary.text = summary
 	_random_button.visible = true
 	await _appear()

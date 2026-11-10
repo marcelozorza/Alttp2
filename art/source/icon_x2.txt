@@ -2,8 +2,8 @@
 # em 2026-11-08, no lugar de LV2, que parecia LUZ): letras de 5 pixels de
 # altura com contorno escuro.
 paleta
-o #1e1014
-w #fff4b0
+o #1e181e
+w #fff1a8
 pixels
 .....ooo.
 ....oowoo

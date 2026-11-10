@@ -1,10 +1,10 @@
 # Candelabro de três velas na parede do castelo.
 paleta
-y #ffe070
-o #ff8a1a
-w #f6f1e4
-g #c8a040
-d #6e5218
+y #f7c53a
+o #f08c2e
+w #f4f1ea
+g #d99a1c
+d #8a5a3c
 pixels
 yy......yy......yy
 yy......yy......yy
@@ -15,16 +15,16 @@ ww......ww......ww
 ww......ww......ww
 ww......ww......ww
 gg......gg......gg
-gg......gg......gg
+ggg....gggg....ggg
+ggg....gggg....ggg
 gggg..gggggg..gggg
-gggg..gggggg..gggg
-..gggggggggggggg..
-..gggggggggggggg..
+.gggggggggggggggg.
+...gggggggggggg...
 ........dd........
 ........dd........
 ........dd........
 ........dd........
 ........dd........
 ........dd........
-......gggggg......
+.......gggg.......
 ......gggggg......

@@ -1,13 +1,18 @@
 # Giorgino correndo, de frente, passo 2, da folha de IA de 2026-11-08, reduzida e quantizada.
+# Espada presa na coleira, nas costas, pintada à mão em 2026-11-10.
 paleta
 k #2a2329
 d #1e181e
 b #5c4232
 w #f4f1ea
 s #c7c1cf
-n #141016
+n #0e0b0d
 r #d9578a
 e #0e0b0d
+C #8a5a3c
+Y #fff1a8
+G #d99a1c
+W #ffffff
 pixels
 ......................kddd....
 ......................ddddk...
@@ -26,13 +31,13 @@ dddddddddkkkkkkkkkwwwkkkkkkkdd
 ddddd...ddkkkkeekkwwwkkeekkkdd
 ........ddkkkeeekkwwwkeeekkkdd
 ........ddkkkkeekwwwwweeekkkdd
-........ddkkkkkkbwwwwwwkbkkkdd
-........ddkkkkkwwwwwwwwwkkkdd.
-........ddkkkkkwwwwwwwwwkkkdd.
-.........ddkkwwwwwwndwwwwwkkk.
-.........ddkwwwwwwwnnwwwwwkk..
-.........dddwwsswwwwwwwwssdd..
-kkkk...ndddddwwwwwwwwwwwkdd...
+...d....ddkkkkkkbwwwwwwkbkkkdd
+..dbd...ddkkkkkwwwwwwwwwkkkdd.
+..dbCd..ddkkkkkwwwwwwwwwkkkdd.
+...dbYd.dddkkwwwwwwndwwwwwkkk.
+....dbCdGddkwwwwwwwnnwwwwwkk..
+.....dbGWdddwwsswwwwwwwwssdd..
+kkkk.dGndddddwwwwwwwwwwwkdd...
 ddkbdbbddwwwrdwwwwwwwwwwkkb...
 ddwbkkdkkwwwrrrrrrrrrrrrrkb...
 kdwwwkkbwwdwwrrrrrrrrrrrrwdd..

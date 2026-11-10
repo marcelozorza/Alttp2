@@ -1,9 +1,38 @@
-# Chão mais alto, o topo de um degrau duplo: a lajota ainda mais clara, dois
-# níveis acima do chão comum.
+# Chão mais alto da pedra, variação 1.
 paleta
-s #5e5444
-c #74684f
-a #8c7f60
-b #a89a78
-x #80745a
-usa floor
+a #f4f1ea
+b #ddb277
+c #f3dfa6
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccbcccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+acccccccccccccccccccccbccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccbcccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

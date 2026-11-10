@@ -1,6 +1,6 @@
 # Chave grande, da porta do chefe: a mesma chave em vermelho.
 paleta
-o #3a1010
-k #f05848
-d #a03020
+o #3b2530
+k #d83a3f
+d #9c2338
 usa icon_key

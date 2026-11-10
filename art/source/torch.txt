@@ -1,17 +1,17 @@
 # Tocha na parede: a haste de madeira e o aro de ferro. A chama é
 # flame_1 e flame_2, desenhada por cima, piscando.
 paleta
-d #3a2616
-w #6b4424
-k #2a2a30
-g #c8a040
+d #5c4232
+w #8a5a3c
+k #2a2329
+g #d99a1c
 pixels
 ..gggggg..
-..gggggg..
+.gggggggg.
 ggkkkkkkgg
 ggkkkkkkgg
-..ggwwgg..
-..ggwwgg..
+.gggwwggg.
+...gwwg...
 ....ww....
 ....ww....
 ....ww....
@@ -22,5 +22,5 @@ ggkkkkkkgg
 ....dd....
 ..kkddkk..
 ..kkddkk..
-....kk....
+...kkkk...
 ....kk....

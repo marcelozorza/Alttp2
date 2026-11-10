@@ -33,8 +33,8 @@ func _ready() -> void:
 	var column := MenuKit.centered_column(self, Color(0.12, 0.02, 0.04, 0.85))
 	column.add_child(MenuKit.label("Derrota", 32))
 	if _seed_mode():
-		column.add_child(MenuKit.label("Na seed, a morte perde tudo.", 16))
-		_buttons.append(MenuKit.button("Recomeçar a seed", _on_retry))
+		column.add_child(MenuKit.label("Na semente, a morte perde tudo.", 16))
+		_buttons.append(MenuKit.button("Recomeçar a semente", _on_retry))
 		_buttons.append(MenuKit.button("Menu", _on_exit))
 	else:
 		_buttons.append(MenuKit.button("Tentar de novo", _on_retry))
@@ -84,4 +84,4 @@ func _on_exit() -> void:
 
 
 static func _seed_mode() -> bool:
-	return Progress.active and Progress.seed != 0
+	return Progress.active and Progress.seed != 0 and not Progress.practice

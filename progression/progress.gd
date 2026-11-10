@@ -30,12 +30,19 @@ class_name Progress
 ## descartado.
 const VERSION := 2
 const BASE_HEALTH := 6
+## Sem entrada de volta: o personagem aparece no início do mundo num jogo
+## novo, ou na pedra de salvamento num jogo já começado.
+const NO_ENTRANCE := -1
 
 ## Ligado durante o jogo contínuo. O treino joga um capítulo avulso.
 static var active := false
 ## Capítulo de onde o personagem volta ao mundo, para aparecer na entrada
-## dele. Zero põe o personagem na pedra de salvamento.
-static var return_entrance := 0
+## dele, ou NO_ENTRANCE.
+static var return_entrance := NO_ENTRANCE
+## Ligado enquanto o personagem está na dungeon de teste a partir do mundo:
+## ela é um treino, com as ferramentas e a vida dela mesma, e nada do que
+## acontece lá dentro passa para o jogo. Só fica gravado que foi vencida.
+static var practice := false
 ## Arquivo de salvamento. O teste de fumaça usa outro, para não mexer no do
 ## jogador.
 static var save_path := "user://save.json"
@@ -59,7 +66,8 @@ static var opened := {}
 
 static func start_new() -> void:
 	active = true
-	return_entrance = 0
+	practice = false
+	return_entrance = NO_ENTRANCE
 	chapters_done = 0
 	tools = 0
 	max_health = BASE_HEALTH
@@ -112,6 +120,19 @@ static func item_at(chapter: int, location: String, linear_item: int) -> int:
 static func was_opened(chapter: int, location: String) -> bool:
 	var letters: String = opened.get(str(chapter), "")
 	return letters.contains(location)
+
+
+## Se o jogo já começou: algum capítulo vencido, algum baú gravado ou algum
+## tempo de relógio. Ao continuar, o personagem aparece na pedra de salvamento.
+static func has_started() -> bool:
+	return chapters_done != 0 or run_ticks > 0 or not opened.is_empty()
+
+
+## Registra a dungeon de teste vencida. Ferramentas, vida e baús não mudam.
+static func record_practice() -> void:
+	chapters_done |= 1 << ChapterData.TUTORIAL
+	return_entrance = ChapterData.TUTORIAL
+	save()
 
 
 ## Registra o capítulo vencido, com o que o personagem tem ao fim dele, e

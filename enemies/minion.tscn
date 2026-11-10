@@ -8,6 +8,11 @@
 [ext_resource type="Texture2D" path="res://art/minion_lunge.svg" id="6_lunge"]
 [ext_resource type="Texture2D" path="res://art/minion_recover.svg" id="7_recover"]
 [ext_resource type="Texture2D" path="res://art/minion_hit.svg" id="8_hit"]
+[ext_resource type="Texture2D" path="res://art/minion_back_step.svg" id="9_back_step"]
+[ext_resource type="Texture2D" path="res://art/minion_side.svg" id="10_side"]
+[ext_resource type="Texture2D" path="res://art/minion_side_step.svg" id="11_side_step"]
+[ext_resource type="Texture2D" path="res://art/minion_lunge_up.svg" id="12_lunge_up"]
+[ext_resource type="Texture2D" path="res://art/minion_lunge_side.svg" id="13_lunge_side"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(20, 12)
@@ -21,11 +26,16 @@ friction = 800.0
 max_health = 2
 stagger_time = 0.3
 walk_frames = Array[Texture2D]([ExtResource("2_art"), ExtResource("3_walk_2")])
-back_frames = Array[Texture2D]([ExtResource("4_back")])
+back_frames = Array[Texture2D]([ExtResource("4_back"), ExtResource("9_back_step")])
+side_frames = Array[Texture2D]([ExtResource("10_side"), ExtResource("11_side_step")])
+lunge_frames = Array[Texture2D]([ExtResource("6_lunge"), ExtResource("6_lunge")])
+lunge_back_frames = Array[Texture2D]([ExtResource("12_lunge_up"), ExtResource("12_lunge_up")])
+lunge_side_frames = Array[Texture2D]([ExtResource("13_lunge_side"), ExtResource("13_lunge_side")])
 windup_frame = ExtResource("5_windup")
 lunge_frame = ExtResource("6_lunge")
 recover_frame = ExtResource("7_recover")
 hit_frame = ExtResource("8_hit")
+anchor_feet = true
 attack_range = 96.0
 walk_speed = 120.0
 windup_time = 0.35
@@ -63,7 +73,7 @@ color = Color(0.4, 0.85, 0.4, 1)
 [node name="Art" type="Sprite2D" parent="."]
 texture = ExtResource("2_art")
 centered = false
-offset = Vector2(-12, -28)
+offset = Vector2(-20, -36)
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -6)

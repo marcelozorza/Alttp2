@@ -11,10 +11,11 @@ extends Node2D
 ## o golpe acerta o que está encostado e não muda durante o pulo, quando o
 ## desenho da lâmina sobe junto com o corpo.
 ##
-## O desenho é art/sword.svg, uma espada apontando para a direita, girada para
-## a direção do golpe. Para os lados ela sai da pata, para baixo sai de baixo
-## do corpo e para cima sai de cima da cabeça. Ao recolher, ela desliza para
-## dentro do corpo, e a parte que já entrou não aparece.
+## A espada não tem desenho próprio. Ela faz parte dos desenhos do Giorgino:
+## fica na pata em todas as poses, e os quadros de golpe (giorgino_thrust_*)
+## mostram o braço estendido com a lâmina sobre a área de dano. O personagem
+## pergunta a is_out() e a direction qual quadro mostrar (pedido de Marcelo em
+## 2026-11-10: a espada desenhada junto do corpo, e não saindo da cabeça).
 
 ## Centro e meia extensão do corpo desenhado do personagem, a partir da origem
 ## nos pés. A área de dano sai da borda do corpo.
@@ -22,15 +23,6 @@ const BODY_CENTER := Vector2(0.0, -8.0)
 const BODY_HALF_EXTENTS := Vector2(12.0, 16.0)
 ## Meia extensão dos pés, a colisão do personagem.
 const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
-## Desenho da espada: cabo até a coluna GUARD_X, guarda e lâmina até a ponta.
-const ART := preload("res://art/sword.svg")
-const GUARD_X := 8.0
-## De onde a guarda sai, relativo aos pés, em cada direção: na altura da pata
-## para os lados, de baixo do corpo para baixo e de cima da cabeça para cima.
-const SIDE_START := Vector2(10.0, -20.0)
-const DOWN_START := Vector2(0.0, 6.0)
-const UP_START := Vector2(0.0, -24.0)
-
 ## Comprimento da lâmina para fora do corpo, em pixels.
 @export_range(8.0, 80.0, 1.0) var reach := 24.0
 ## Largura da área de dano, em pixels. É maior que a lâmina desenhada, para
@@ -43,10 +35,12 @@ const UP_START := Vector2(0.0, -24.0)
 @export_range(0.0, 1200.0, 10.0) var impulse := 200.0
 ## Segundos em que a lâmina estendida causa dano.
 @export_range(0.0, 0.5, 0.01) var active_time := 0.1
-## Segundos da animação de recolher, sem dano.
+## Segundos em que o quadro de golpe continua à vista depois disso, sem dano.
 @export_range(0.0, 0.5, 0.01) var retract_time := 0.08
 
-var _direction := Vector2.DOWN
+## Direção do último golpe, uma das 4 direções retas.
+var direction := Vector2.DOWN
+
 var _attack_tick := -1000
 var _already_hit: Array[Object] = []
 var _hit_shape := RectangleShape2D.new()
@@ -55,19 +49,22 @@ var _hit_shape := RectangleShape2D.new()
 
 
 ## Golpeia na direção dada, uma das 4 direções retas.
-func attack(direction: Vector2) -> void:
-	_direction = direction
+func attack(toward: Vector2) -> void:
+	direction = toward
 	_attack_tick = Clock.tick
 	_already_hit.clear()
 	_apply_hits()
-	queue_redraw()
+
+
+## Verdadeiro enquanto a espada está estendida ou recolhendo. É quando o
+## personagem mostra o quadro de golpe.
+func is_out() -> bool:
+	return _elapsed() < GameMath.ticks(active_time) + GameMath.ticks(retract_time)
 
 
 func _physics_process(_delta: float) -> void:
 	if _elapsed() < GameMath.ticks(active_time):
 		_apply_hits()
-	if _elapsed() <= GameMath.ticks(active_time) + GameMath.ticks(retract_time):
-		queue_redraw()
 
 
 func _elapsed() -> int:
@@ -89,61 +86,20 @@ func _apply_hits() -> void:
 			continue
 		_already_hit.append(target)
 		if target.has_method("take_hit"):
-			target.call("take_hit", damage, _direction, Hit.Kind.SWORD)
+			target.call("take_hit", damage, direction, Hit.Kind.SWORD)
 		var body := target as MomentumBody
 		if body:
-			body.add_impact_velocity(_direction * impulse / body.mass)
-
-
-## Quanto da lâmina está para fora do corpo: toda ela no golpe, encolhendo
-## durante o recolhimento e nada no resto do tempo.
-func _blade_length() -> float:
-	var active := GameMath.ticks(active_time)
-	var retract := GameMath.ticks(retract_time)
-	var elapsed := _elapsed()
-	if elapsed < active:
-		return reach
-	if elapsed < active + retract:
-		return reach * (1.0 - float(elapsed - active) / retract)
-	return 0.0
-
-
-func _draw() -> void:
-	var length := _blade_length()
-	if length <= 0.0:
-		return
-	# Quanto a espada já entrou no corpo. A coluna c do desenho fica em
-	# c - GUARD_X - pulled no eixo do golpe, e só o que passa da guarda aparece.
-	# Estendida, o cabo aparece na pata, menos para cima, onde ficaria sobre a
-	# cabeça.
-	var pulled := reach - length
-	var first := GUARD_X + pulled
-	if pulled <= 0.0 and _direction != Vector2.UP:
-		first = 0.0
-	var height := float(ART.get_height())
-	var width := ART.get_width() - first
-	var region := Rect2(first, 0.0, width, height)
-	var rect := Rect2(first - GUARD_X - pulled, -height / 2.0, width, height)
-	draw_set_transform(_draw_start(), _direction.angle())
-	draw_texture_rect_region(ART, rect, region)
-
-
-func _draw_start() -> Vector2:
-	if _direction.x != 0.0:
-		return Vector2(_direction.x * SIDE_START.x, SIDE_START.y)
-	if _direction.y < 0.0:
-		return UP_START
-	return DOWN_START
+			body.add_impact_velocity(direction * impulse / body.mass)
 
 
 ## Área de dano no chão, relativa aos pés. Vai da borda dos pés até a ponta da
 ## lâmina. Para cima, a lâmina sai do alto do corpo, então a área também cobre
 ## o trecho entre os pés e a cabeça.
 func _hit_rect() -> Rect2:
-	var horizontal := _direction.x != 0.0
+	var horizontal := direction.x != 0.0
 	var edge := BODY_HALF_EXTENTS.x if horizontal else BODY_HALF_EXTENTS.y
-	var tip := BODY_CENTER + _direction * (edge + reach)
-	var near := _direction * (FEET_HALF_EXTENTS.x if horizontal else FEET_HALF_EXTENTS.y)
+	var tip := BODY_CENTER + direction * (edge + reach)
+	var near := direction * (FEET_HALF_EXTENTS.x if horizontal else FEET_HALF_EXTENTS.y)
 	if horizontal:
 		return Rect2(minf(near.x, tip.x), -hit_width / 2.0, absf(tip.x - near.x), hit_width)
 	return Rect2(-hit_width / 2.0, minf(near.y, tip.y), hit_width, absf(tip.y - near.y))

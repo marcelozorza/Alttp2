@@ -8,10 +8,16 @@ w #f4f1ea
 s #c7c1cf
 p #e49aa4
 r #d9578a
-D #8e2280
-P #d24cbc
-L #ef80dc
-H #ffd2f4
+C #8a5a3c
+Y #fff1a8
+G #d99a1c
+W #ffffff
+A #d6d8e6
+Z #8d8798
+D #7a1a78
+P #c038b8
+L #ee7fe0
+H #f9cfd0
 pixels
 ...................DHLD....
 ...................DPPD....
@@ -33,22 +39,22 @@ DPPDdd.DdkkkkkDPPDkkkkPkDDd
 .......DddkkkkkkDDkkkkkkkDd
 .......DddkkkkkkDDkkkkkddd.
 ........kdkkkkkkDDkkkkkddd.
-........ddkkkkwwDDwwkkddd..
-.........bdkwHwwDDwwwkddk..
-..........DHLPDrDDrrrddb...
-..........DPPPPDDrrrrrbb...
-.........DPPPPPPPwwwwwdkb..
-........DPPPPPPPPDwwwwwkkb.
-.......DPPPPPPPPDwwwwwwwdd.
-...kb.HkDPPPPPPPDwwwwwwwddb
-..ddddDDPPPPPPPPDwwwwwwwdkb
-.ddwwkPDDPPPPPPDDwwwwkwwkd.
+........ddkkkkwwDDwwkdddd..
+.........bdkwHwwDDwwdbddk..
+..........DHLPDdDDrdCbdb...
+..........DPPPPDDrdYbdbb...
+.........DPPPPPPPdCbdwdkb..
+........DPPPPPPPPDbdwwwkkb.
+.......DPPPPPPPPDGGdwwwwdd.
+...kb.HkDPPPPPPPDdGGdwwwddb
+..ddddDDPPPPPPPPDwdGdwwwdkb
+.ddwwkPDDPPPPPPDDwwdwkwwkd.
 .ddwwwkdDDPDPPDkkwwwwddwsdb
-.dddkwwdPDDwDDkkkwwwwdppdd.
-..bkkddkwwDdkDkkwwwwbkkddb.
-....dddkkkPkkddwwwwwdkkkd..
-......bkkdwwwwwwkwwddd.....
-.......kdkkwwwwwdkkkk......
+.dddkwwdPDDADDkkkwwwwdppdd.
+..bkkddkwdDZdDkkwwwwbkkddb.
+....dddkdWPdkddwwwwwdkkkd..
+......bdAAdwwwwwkwwddd.....
+.......kddkwwwwwdkkkk......
 .......ddskwwwwwdddk.......
 .......bdkkdwwwwddb........
 ........bkkkwwwwdk.........

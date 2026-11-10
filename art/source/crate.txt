@@ -1,37 +1,37 @@
 # Caixa leve de madeira: tampa clara em cima e frente mais escura.
 paleta
-o #2a1a0c
-t #c89a60
-u #a87a44
-f #8a5e30
-d #6a4420
-n #4a2e14
+o #1e181e
+t #ddb277
+u #b9824e
+f #8a5a3c
+d #8a5a3c
+n #5c4232
 pixels
 ..oooooooooooooooooooooooooooo..
-..oooooooooooooooooooooooooooo..
-oottttttttttttttttttttttttttuuoo
-oottttttttttttttttttttttttttuuoo
-oottuuuuuuuuuuuuuuuuuuuuuuuuuuoo
+.oooooooooooooooooooooooooooooo.
+oootttttttttttttttttttttttttuooo
+ootttttttttttttttttttttttttuuuoo
+ootttuuuuuuuuuuuuuuuuuuuuuuuuuoo
 oottuuuuuuuuuuuuuuuuuuuuuuuuuuoo
 oottuuttttttttttttttttttttuuuuoo
 oottuuttttttttttttttttttttuuuuoo
 oottuuuuuuuuuuuuuuuuuuuuuuuuuuoo
-oottuuuuuuuuuuuuuuuuuuuuuuuuuuoo
-oottttttttttttttttttttttttttuuoo
-oottttttttttttttttttttttttttuuoo
+ootttuuuuuuuuuuuuuuuuuuuuuuuuuoo
+ootttttttttttttttttttttttttuuuoo
+oootttttttttttttttttttttttttuooo
 oooooooooooooooooooooooooooooooo
 oooooooooooooooooooooooooooooooo
+ooofddddddddddddddddddddddddnooo
 ooffddddddddddddddddddddddddnnoo
-ooffddddddddddddddddddddddddnnoo
-ooffddffnnffffffffffffnnffddnnoo
-ooffddffnnffffffffffffnnffddnnoo
+ooffdddfnnffffffffffffnnfdddnnoo
+ooffddfnnnffffffffffffnnffddnnoo
 ooffddnnffffffffffffffnnffddnnoo
-ooffddnnffffffffffffffnnffddnnoo
-ooffddffnnffffffffffnnffffddnnoo
-ooffddffnnffffffffffnnffffddnnoo
-ooffddffffnnffffffnnffffffddnnoo
-ooffddffffnnffffffnnffffffddnnoo
+ooffddnnfffffffffffffnnnffddnnoo
+ooffddfnnnffffffffffnnnfffddnnoo
+ooffddffnnnffffffffnnnffffddnnoo
+ooffddfffnnnffffffnnnfffffddnnoo
+ooffdddfffnnffffffnnfffffdddnnoo
 ooffddddddddddddddddddddddddnnoo
-ooffddddddddddddddddddddddddnnoo
-..oooooooooooooooooooooooooooo..
+ooofddddddddddddddddddddddddnooo
+.oooooooooooooooooooooooooooooo.
 ..oooooooooooooooooooooooooooo..

@@ -1,10 +1,42 @@
-# Face lateral da parede no tema castle. Troca de paleta de wall_side.
+# Face lateral da parede do castelo. Os 24 pixels da direita são a face.
 paleta
-o #19101c
-d #251a2c
-m #30223a
-k #3a2a44
-f #5a4468
-g #6e5680
-h #86699c
-usa wall_side
+a #1f1238
+b #f7c53a
+c #d99a1c
+d #2e1a4f
+e #8a59d0
+f #55308f
+g #1e181e
+pixels
+aaaaaaaabcdddddddefffffddddddddg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaddbcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffddddddddefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcdddddddefffffddddddddg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffddddddddefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaddaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg
+aaaaaaaabcefffffdefffffdefffffdg

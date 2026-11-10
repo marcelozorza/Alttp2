@@ -1,10 +1,41 @@
-# Face lateral da parede no tema ice. Troca de paleta de wall_side.
+# Face lateral da parede da geleira. Os 24 pixels da direita são a face.
 paleta
-o #0e1830
-d #162440
-m #1e3050
-k #24385c
-f #3c5a86
-g #4e72a4
-h #6690c2
-usa wall_side
+a #141a3c
+b #f4f1ea
+c #3b7bdc
+d #1a2452
+e #27409a
+f #1e181e
+pixels
+aaaaaaaabcdddddddceeeeeddddddddf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaddbcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeeddddddddceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcdddddddceeeeeddddddddf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeeddddddddceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaddaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf
+aaaaaaaabcceeeeedceeeeedceeeeedf

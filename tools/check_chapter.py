@@ -44,7 +44,7 @@ from collections import Counter
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 SLOTS = "123456789abdefghjklnopqrtv"
-ACTORS = "muiwsc*&%$@xyz0="
+ACTORS = "muiwsc*&%$@xyz0=?"
 FLOORS = ".:^"
 LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]

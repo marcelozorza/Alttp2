@@ -1,8 +1,8 @@
 # Ícone do coração dos baús: o mesmo desenho do coração do HUD.
 paleta
-o #5a1018
-r #e03848
-p #a8202c
-l #ff7080
-w #ffd0d8
+o #5e1830
+r #d83a3f
+p #9c2338
+l #f0705c
+w #f9cfd0
 usa heart

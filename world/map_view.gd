@@ -27,16 +27,43 @@ extends Node2D
 ## chão liso. Nenhum adorno tem colisão. As chamas das tochas ficam num nó
 ## filho (world/flames.gd), porque piscam.
 ##
-## No mundo (outdoor), a parede é a mata, o chão é grama, e há caminho de
-## terra e água. A árvore com chão ao sul mostra os troncos, como a parede
-## mostra a face. As sombras seguem as mesmas regras.
+## No mundo (outdoor), cada casa de mata é uma árvore, o chão é grama, e o
+## caminho de terra, a água e os chãos das entradas ganham uma franja de
+## grama nas bordas. A água ondula em dois quadros.
 
-const GRASS := preload("res://art/grass.svg")
-const GRASS_ALT := preload("res://art/grass_alt.svg")
-const PATH := preload("res://art/path.svg")
-const WATER := preload("res://art/water.svg")
-const TREE := preload("res://art/tree.svg")
-const TREE_FACE := preload("res://art/tree_face.svg")
+const GRASS: Array[Texture2D] = [
+	preload("res://art/grass_1.svg"),
+	preload("res://art/grass_2.svg"),
+	preload("res://art/grass_3.svg"),
+	preload("res://art/grass_4.svg"),
+]
+## Chão do mundo por caractere: duas variações de cada, ou dois quadros no
+## caso da água.
+const GROUNDS := {
+	",": [preload("res://art/path_1.svg"), preload("res://art/path_2.svg")],
+	"~": [preload("res://art/water_1.svg"), preload("res://art/water_2.svg")],
+	"*": [preload("res://art/snow_1.svg"), preload("res://art/snow_2.svg")],
+	"=": [preload("res://art/paving_1.svg"), preload("res://art/paving_2.svg")],
+	";": [preload("res://art/rubble_1.svg"), preload("res://art/rubble_2.svg")],
+}
+const TREES: Array[Texture2D] = [preload("res://art/tree_1.svg"), preload("res://art/tree_2.svg")]
+const GRASS_FRINGE := preload("res://art/grass_fringe.svg")
+const GRASS_CORNER := preload("res://art/grass_corner.svg")
+## Chão escuro no meio da mata, onde nenhuma casa vizinha é clareira.
+const FOREST_FLOOR := Color("12332f")
+## Ticks entre um quadro e outro da água.
+const WATER_TICKS := 40
+## Os oito vizinhos de uma casa.
+const AROUND := [
+	Vector2i(-1, -1),
+	Vector2i(0, -1),
+	Vector2i(1, -1),
+	Vector2i(-1, 0),
+	Vector2i(1, 0),
+	Vector2i(-1, 1),
+	Vector2i(0, 1),
+	Vector2i(1, 1),
+]
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.3)
 ## Largura da sombra das paredes no chão, em pixels.
 const SHADOW_SIZE := 6.0
@@ -72,8 +99,19 @@ var theme: DungeonTheme
 var room_themes := {}
 
 var _default_theme: DungeonTheme
+## Quadro da água do mundo, 0 ou 1.
+var _water_frame := 0
 ## Um nó de chamas por tema, porque cada tema tem a sua chama.
 var _flames_by_theme := {}
+
+
+func _physics_process(_delta: float) -> void:
+	if not outdoor:
+		return
+	var frame := (Clock.tick / WATER_TICKS) % 2
+	if frame != _water_frame:
+		_water_frame = frame
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -107,6 +145,15 @@ func _draw() -> void:
 	theme = _default_theme
 
 
+## Nome do tema da casa, para os bloqueios que mudam de desenho com ele.
+func theme_name_at(cell: Vector2i) -> String:
+	var base := _default_theme if _default_theme else theme
+	var found: DungeonTheme = room_themes.get(
+		Vector2i(floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y)), base
+	)
+	return found.name if found else "stone"
+
+
 ## Tema da casa: o da sala de uma tela em que ela está, ou o padrão.
 func _theme_at(cell: Vector2i) -> DungeonTheme:
 	var screen := Vector2i(
@@ -115,21 +162,83 @@ func _theme_at(cell: Vector2i) -> DungeonTheme:
 	return room_themes.get(screen, _default_theme)
 
 
-## Casa do mundo. A mata é a parede, e o resto é chão de grama, caminho ou
-## água, com a sombra da mata vizinha.
+## Casa do mundo. A grama é a base. O caminho, a água, a neve, a calçada e
+## as lajes ganham uma franja de grama em cada lado que encosta nela, e um
+## canto arredondado onde dois lados se encontram. Cada casa de mata é uma
+## árvore, sobre a grama na beira da clareira e sobre o chão escuro no meio.
 func _draw_outdoor(cell: Vector2i, character: String, origin: Vector2) -> void:
-	match character:
-		"#":
-			draw_texture(TREE_FACE if _faces_floor(cell) else TREE, origin)
-			return
-		"~":
-			draw_texture(WATER, origin)
-		",":
-			draw_texture(PATH, origin)
-		_:
-			var alternate := (cell.x + cell.y) % 2 == 0
-			draw_texture(GRASS_ALT if alternate else GRASS, origin)
-	_draw_wall_shadows(cell, origin)
+	var tile := float(ChapterMap.TILE)
+	if character == "#":
+		if _near_clearing(cell):
+			draw_texture(GRASS[0], origin)
+		else:
+			draw_rect(Rect2(origin, Vector2(tile, tile)), FOREST_FLOOR)
+		draw_texture(TREES[_chance(cell, 11) % TREES.size()], origin)
+		return
+	var ground := _ground_of(cell)
+	if ground == ".":
+		draw_texture(_grass_at(cell), origin)
+		return
+	var textures: Array = GROUNDS[ground]
+	var index := (cell.x + cell.y) % 2
+	if ground == "~":
+		index = (index + _water_frame) % 2
+	draw_texture(textures[index], origin)
+	var center := origin + Vector2(tile, tile) / 2.0
+	var grassy: Array[bool] = []
+	for step: Vector2i in [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]:
+		grassy.append(_is_grassy(cell + step))
+	for side: int in 4:
+		if grassy[side]:
+			draw_set_transform(center, side * PI / 2.0)
+			draw_texture(GRASS_FRINGE, Vector2(-tile, -tile) / 2.0)
+	for side: int in 4:
+		# Canto entre o lado anterior e este: o primeiro é o de cima à esquerda.
+		if grassy[side] and grassy[(side + 3) % 4]:
+			draw_set_transform(center, side * PI / 2.0)
+			draw_texture(GRASS_CORNER, Vector2(-tile, -tile) / 2.0)
+	draw_set_transform(Vector2.ZERO)
+
+
+## Tipo de chão de uma casa do mundo. O início, a pedra de salvamento e as
+## entradas ficam sobre o caminho quando há caminho ao lado, senão na grama.
+func _ground_of(cell: Vector2i) -> String:
+	var character := map.tile(cell)
+	if character == "." or GROUNDS.has(character):
+		return character
+	for step: Vector2i in ChapterMap.STEPS:
+		if map.tile(cell + step) == ",":
+			return ","
+	return "."
+
+
+## Grama ou mata: os lados em que outro chão ganha a franja de grama.
+func _is_grassy(cell: Vector2i) -> bool:
+	var character := map.tile(cell)
+	if character == "#" or character == " ":
+		return true
+	if character.is_valid_int():
+		return false
+	return _ground_of(cell) == "."
+
+
+## Variação da grama: quase sempre lisa, às vezes com tufos ou flores.
+func _grass_at(cell: Vector2i) -> Texture2D:
+	var roll := _chance(cell, 9)
+	if roll < 55:
+		return GRASS[0]
+	if roll < 80:
+		return GRASS[1]
+	return GRASS[2] if roll < 91 else GRASS[3]
+
+
+## Árvore da beira da clareira: alguma das oito casas vizinhas não é mata.
+func _near_clearing(cell: Vector2i) -> bool:
+	for step: Vector2i in AROUND:
+		var character := map.tile(cell + step)
+		if character != "#" and character != " ":
+			return true
+	return false
 
 
 ## Sombra no chão junto de uma parede ao norte ou a oeste.

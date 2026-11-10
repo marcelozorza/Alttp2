@@ -78,7 +78,7 @@ color = Color(0.4, 0.85, 0.4, 1)
 [node name="Art" type="Sprite2D" parent="."]
 texture = ExtResource("4_wolf_down")
 centered = false
-offset = Vector2(-23, -54)
+offset = Vector2(-29, -50)
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10)

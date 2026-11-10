@@ -1,6 +1,7 @@
 extends Node2D
-## O mundo que liga os capítulos: uma clareira na mata com a entrada de cada
-## dungeon e a pedra de salvamento. O mapa fica em overworld_data.gd, na
+## O mundo de chegada, que liga os capítulos: a clareira do início, com as
+## regras gravadas no chão e a dungeon de teste, e a clareira grande, com a
+## pedra de salvamento e a entrada de cada dungeon. O mapa fica em overworld_data.gd, na
 ## mesma legenda dos capítulos, e a câmera segue o personagem pelo mapa
 ## inteiro, presa às bordas dele.
 ##
@@ -25,8 +26,10 @@ var map: ChapterMap
 
 var _player: Player
 var _entrances: Array[DungeonEntrance] = []
+var _stone_cell := ChapterMap.NO_CELL
 
 @onready var _map_view: MapView = $MapView
+@onready var _floor_text: FloorText = $FloorText
 @onready var _walls: StaticBody2D = $Walls
 @onready var _objects: Node2D = $Objects
 @onready var _camera: Camera2D = $Camera
@@ -36,6 +39,9 @@ func _ready() -> void:
 	map = ChapterMap.new(OverworldData.MAP, {})
 	_map_view.map = map
 	_map_view.queue_redraw()
+	_floor_text.entries = OverworldData.FLOOR_TEXTS
+	_floor_text.queue_redraw()
+	Progress.practice = false
 	MapWalls.build(map, _walls, SOLID)
 	_build_cells()
 	_player.restore(Progress.tools, Progress.max_health)
@@ -65,6 +71,7 @@ func _build_cells() -> void:
 				var stone := SAVE_STONE_SCENE.instantiate() as SaveStone
 				stone.position = _cell_center(cell) + Vector2(0.0, 12.0)
 				_objects.add_child(stone)
+				_stone_cell = cell
 			elif character.is_valid_int() and not entrances.has(character):
 				entrances[character] = cell
 	for character: String in entrances:
@@ -86,12 +93,16 @@ func _add_entrance(chapter: int, cell: Vector2i) -> void:
 	_entrances.append(entrance)
 
 
-## Ao voltar de um capítulo, o personagem aparece na entrada dele.
+## Ao voltar de um capítulo, o personagem aparece na entrada dele. Ao
+## continuar um jogo já começado, aparece ao sul da pedra de salvamento. Num
+## jogo novo, fica no início, na clareira do sul.
 func _place_player() -> void:
+	if Progress.has_started() and _stone_cell != ChapterMap.NO_CELL:
+		_player.global_position = _cell_center(_stone_cell + Vector2i.DOWN)
 	for entrance: DungeonEntrance in _entrances:
 		if entrance.chapter == Progress.return_entrance:
 			_player.global_position = entrance.exit_position()
-	Progress.return_entrance = 0
+	Progress.return_entrance = Progress.NO_ENTRANCE
 
 
 func _on_entrance_entered(chapter: int) -> void:

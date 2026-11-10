@@ -1,24 +1,32 @@
 class_name DungeonEntrance
 extends StaticBody2D
-## Entrada de uma dungeon no mundo: um portal de pedra na mata, com duas
-## casas de largura. O personagem entra ao encostar nele vindo do sul.
+## Entrada de uma dungeon no mundo: uma fachada de duas casas de largura, no
+## tema da dungeon, para o jogador saber qual é qual antes de entrar. O
+## personagem entra ao encostar nela vindo do sul.
 ##
 ## Fechada, tem uma grade de ferro na abertura e treme ao toque, como a porta
 ## trancada. Vencida, mostra a relíquia do capítulo acima do portal. A
 ## origem fica no canto superior esquerdo da casa de baixo, e o desenho passa
-## meia casa acima dela, sobre a mata.
+## uma casa acima dela, sobre a mata.
 
 signal entered(chapter: int)
 
 enum Mode { LOCKED, OPEN, DONE }
 
-const TEXTURE := preload("res://art/entrance.svg")
+## Fachada de cada dungeon, pelo número do capítulo: a de teste, o castelo, a
+## geleira e as ruínas.
+const TEXTURES: Array[Texture2D] = [
+	preload("res://art/entrance_stone.svg"),
+	preload("res://art/entrance_castle.svg"),
+	preload("res://art/entrance_ice.svg"),
+	preload("res://art/entrance_moss.svg"),
+]
 const GATE_TEXTURE := preload("res://art/gate.svg")
 const RELIC_TEXTURE := preload("res://art/relic.svg")
 const SIZE := Vector2(64.0, 32.0)
 ## Quanto o desenho sobe acima da origem.
-const ART_ABOVE := 16.0
-const GATE_OFFSET := Vector2(20.0, 14.0)
+const ART_ABOVE := 32.0
+const GATE_OFFSET := Vector2(20.0, 32.0)
 const SHAKE_COOLDOWN_TICKS := 30
 const TOUCH_MARGIN := 4.0
 
@@ -76,9 +84,9 @@ func exit_position() -> Vector2:
 
 func _draw() -> void:
 	var offset := Vector2(0.0, -ART_ABOVE) + DoorArt.shake_offset(_shake_tick)
-	draw_texture(TEXTURE, offset)
+	draw_texture(TEXTURES[clampi(chapter, 0, TEXTURES.size() - 1)], offset)
 	if mode == Mode.LOCKED:
 		draw_texture(GATE_TEXTURE, offset + GATE_OFFSET)
 	elif mode == Mode.DONE:
 		var bob := sin(Clock.tick * 0.08) * 3.0
-		draw_texture(RELIC_TEXTURE, (Vector2(20.0, -44.0 + bob)).round())
+		draw_texture(RELIC_TEXTURE, (Vector2(20.0, -60.0 + bob)).round())

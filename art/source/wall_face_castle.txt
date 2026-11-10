@@ -1,10 +1,42 @@
-# Tema castelo (capítulo 1): pedra roxa quente. Troca de paleta de wall_face.
+# Face de frente da parede do castelo. Os 24 pixels de baixo são a face.
 paleta
-o #19101c
-d #251a2c
-m #30223a
-k #3a2a44
-f #5a4468
-g #6e5680
-h #86699c
-usa wall_face
+a #1f1238
+b #2e1a4f
+c #f7c53a
+d #d99a1c
+e #8a59d0
+f #55308f
+g #1e181e
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaabbaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+cccccccccccccccccccccccccccccccc
+dddddddddddddddddddddddddddddddd
+beeeeeeeeeeeeeeebeeeeeeeeeeeeeee
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+eeeeeeeebeeeeeeeeeeeeeeebeeeeeee
+ffffffffbfffffffffffffffbfffffff
+ffffffffbfffffffffffffffbfffffff
+ffffffffbfffffffffffffffbfffffff
+ffffffffbfffffffffffffffbfffffff
+ffffffffbfffffffffffffffbfffffff
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+beeeeeeeeeeeeeeebeeeeeeeeeeeeeee
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bfffffffffffffffbfffffffffffffff
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+gggggggggggggggggggggggggggggggg

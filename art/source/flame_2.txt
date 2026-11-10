@@ -1,18 +1,18 @@
 # Chama da tocha, quadro 2.
 paleta
-y #ffe070
-o #ff8a1a
-w #fff8d0
+y #f7c53a
+o #f08c2e
+w #f3dfa6
 pixels
 ......oo..
-......oo..
+.....ooo..
+...oo.....
 ..oooo....
-..oooo....
-..ooyyoo..
-..ooyyoo..
-ooyyyyyyoo
+..ooyyo...
+.ooyyyyoo.
+oooyyyyooo
 ooyyyyyyoo
 ooyywwyyoo
-ooyywwyyoo
-..oooooo..
+oooywwyooo
+.oooooooo.
 ..oooooo..

@@ -46,6 +46,8 @@ var goal_tools: Array = []
 ## Tema de cada sala de uma tela (Vector2i para nome de tema), quando o
 ## capítulo mistura temas, como a galeria. Vazio, o tema vem do número.
 var room_themes := {}
+## Texto de cada placa de mensagem ("?" no mapa), pela casa dela.
+var messages := {}
 ## O personagem não perde vida, como na galeria.
 var no_damage := false
 
@@ -75,5 +77,6 @@ static func load_number(chapter: int) -> ChapterData:
 	data.goal = constants.get("GOAL", "")
 	data.goal_tools = constants.get("GOAL_TOOLS", [])
 	data.room_themes = constants.get("ROOM_THEMES", {})
+	data.messages = constants.get("MESSAGES", {})
 	data.no_damage = constants.get("NO_DAMAGE", false)
 	return data

@@ -1,24 +1,24 @@
 # Bola de fogo da chama.
 paleta
-o #8a2010
-r #e04820
-a #f88830
-y #fcd860
-w #fff8d0
+o #9c2338
+r #c85a1e
+a #f08c2e
+y #f7c53a
+w #f3dfa6
 pixels
 ....oooooooo....
-....oooooooo....
-..oorrrrrrrroo..
-..oorrrrrrrroo..
-oorrrraaaayyrroo
-oorrrraaaayyrroo
+...oooooooooo...
+...oorrrrrroo...
+.oorrrrrrrrrroo.
+ooorrrraaayrrooo
+oorrraaaaayyrroo
+oorrraaywwyyrroo
 oorraayywwyyrroo
 oorraayywwyyrroo
-oorraayywwyyrroo
-oorraayywwyyrroo
-oorrrraaaayyrroo
-oorrrraaaayyrroo
-..oorrrrrrrroo..
-..oorrrrrrrroo..
-....oooooooo....
+oorrraaywwyyrroo
+oorrraaaaayyrroo
+ooorrrraaayrrooo
+.oorrrrrrrrrroo.
+...oorrrrrroo...
+...oooooooooo...
 ....oooooooo....

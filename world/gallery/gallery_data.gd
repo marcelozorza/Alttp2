@@ -14,7 +14,7 @@ const MAP := [
 	"#.@...::::::.....B.##...i..55...66.w...#",
 	"#.....::::::...m...##..................#",
 	"#.....222222....*..33..................#",
-	"#..................33.........&........#",
+	"#..?...............33.........&........#",
 	"#.............11...##..................#",
 	"#.A..u..........c..##.C..............D.#",
 	"#..................##..................#",
@@ -63,6 +63,11 @@ const ROOM_THEMES := {
 	Vector2i(1, 0): "castle",
 	Vector2i(0, 1): "ice",
 	Vector2i(1, 1): "moss",
+}
+
+## Texto da placa de mensagem ("?" no mapa), pela casa dela.
+const MESSAGES := {
+	Vector2i(3, 5): "Placa de mensagem. O texto aparece enquanto o Giorgino está em cima dela.",
 }
 
 ## O Giorgino não perde vida aqui.

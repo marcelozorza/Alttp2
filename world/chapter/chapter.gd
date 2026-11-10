@@ -23,7 +23,8 @@ extends Node2D
 ## No jogo contínuo (Progress.active), o personagem chega com as ferramentas
 ## e a vida máxima salvas, os baús de coração e de ferramenta de um capítulo
 ## já vencido começam abertos, e tocar a relíquia grava o progresso. No
-## treino, ele chega com as ferramentas dos dados do capítulo.
+## treino, ele chega com as ferramentas dos dados do capítulo. A dungeon de
+## teste, mesmo aberta pelo mundo, é sempre um treino (Progress.practice).
 
 ## Tamanho de uma sala de uma tela, em casas.
 const ROOM_TILES := Vector2i(20, 10)
@@ -69,6 +70,7 @@ const BOSS_SCENES := {
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
 const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
+const MESSAGE_PLATE_SCENE := preload("res://objects/message_plate.tscn")
 
 ## Chance, em cem, de um inimigo morto deixar um ossinho que recupera vida
 ## (pedido de Marcelo em 2026-11-07, para a morte não ficar dura demais). É
@@ -124,8 +126,9 @@ func _ready() -> void:
 		_map_view.room_themes[screen] = DungeonTheme.by_name(data.room_themes[screen])
 	_map_view.queue_redraw()
 	MapWalls.build(map, _walls)
+	Progress.practice = Progress.active and data.number == ChapterData.TUTORIAL
 	_build_cells()
-	if Progress.active:
+	if _keeps_progress():
 		_player.restore(Progress.tools, Progress.max_health)
 		for chest: Chest in _chests:
 			if Progress.was_opened(data.number, chest.location_id):
@@ -154,10 +157,16 @@ func _physics_process(_delta: float) -> void:
 		_camera.position = _camera_target(true)
 
 
+## Jogo contínuo fora da dungeon de teste: o que acontece no capítulo vale
+## para o resto do jogo.
+func _keeps_progress() -> bool:
+	return Progress.active and not Progress.practice
+
+
 ## Nome do capítulo, para o HUD e para a tela de fim.
 func mode_text() -> String:
 	if data.number == ChapterData.TUTORIAL:
-		return "Tutorial"
+		return "Dungeon de teste"
 	if data.number == ChapterData.GALLERY:
 		return "Galeria"
 	return "Cap. %d" % data.number
@@ -248,6 +257,11 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		block.position = center + FloorSwitch.BLOCK_OFFSET
 		_objects.add_child(block)
 		_register(block, cell)
+	elif character == "?":
+		var plate := MESSAGE_PLATE_SCENE.instantiate() as MessagePlate
+		plate.position = center
+		plate.text = data.messages.get(cell, "")
+		_switches.add_child(plate)
 	elif character == "=":
 		var switch := FLOOR_SWITCH_SCENE.instantiate() as FloorSwitch
 		switch.position = center
@@ -295,7 +309,7 @@ func _add_chest(location: String, cell: Vector2i) -> void:
 
 ## No modo randomizado, o baú aberto fica gravado na hora.
 func _on_chest_opened(chest: Chest) -> void:
-	if Progress.active and Progress.seed != 0:
+	if _keeps_progress() and Progress.seed != 0:
 		Progress.record_chest(data.number, chest, _player)
 
 
@@ -307,6 +321,8 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 	var obstacle := scene.instantiate() as Node2D
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
+	if obstacle is CrackedWall:
+		(obstacle as CrackedWall).theme_name = _map_view.theme_name_at(area.position)
 	_obstacles.add_child(obstacle)
 	_obstacle_by_slot[slot] = obstacle
 	if obstacle is SwitchDoor:
@@ -382,14 +398,16 @@ func _spawn_relic(room: Rect2i) -> void:
 func _finish() -> void:
 	finished = true
 	get_tree().paused = true
-	if Progress.active:
+	if Progress.practice:
+		Progress.record_practice()
+	elif Progress.active:
 		Progress.record_chapter(data.number, _player, _chests)
 	var opened := 0
 	for chest: Chest in _chests:
 		if chest.is_open:
 			opened += 1
 	var chests_text := "%d/%d" % [opened, _chests.size()]
-	if Progress.active and Progress.all_done():
+	if _keeps_progress() and Progress.all_done():
 		_end_screen.show_victory(
 			GameMath.time_text(Progress.run_ticks), time_text(), chests_text, Progress.seed
 		)

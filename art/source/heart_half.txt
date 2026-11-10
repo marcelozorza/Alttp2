@@ -1,13 +1,13 @@
 # Meio coração do HUD: a metade esquerda cheia e a direita vazia, um ponto.
 paleta
-o #5a1018
-r #e03848
-p #a8202c
-l #ff7080
-w #ffd0d8
-q #e0b8c0
-e #6a4650
-n #8a6670
+o #5e1830
+r #d83a3f
+p #9c2338
+l #f0705c
+w #f9cfd0
+q #f9cfd0
+e #5c4232
+n #8d8798
 pixels
 ..oooo....qqqq..
 .olwwro..qeeeeq.

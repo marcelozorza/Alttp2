@@ -29,7 +29,7 @@ func _ready() -> void:
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.75))
 	column.add_child(MenuKit.label("Pausa", 32))
 	if Progress.active and Progress.seed != 0:
-		column.add_child(MenuKit.label("Seed %06d" % Progress.seed, 16))
+		column.add_child(MenuKit.label("Semente %06d" % Progress.seed, 16))
 	_buttons.append(MenuKit.button("Continuar", resume))
 	_buttons.append(MenuKit.button(exit_text, leave))
 	for button: Button in _buttons:
