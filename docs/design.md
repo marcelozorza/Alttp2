@@ -272,7 +272,7 @@ Ideias que Marcelo quer ver mais para frente, sem implementar agora.
 - **Modo randomizado.** As decisões pendentes estão na seção Modo randomizado: a dungeon inicial no mundo e na seed, as entradas, as melhorias e os corações no embaralhamento.
 - **Música original.** Quem compõe a trilha do lançamento e em que estilo. A provisória dá o clima que Marcelo quer como ponto de partida.
 - **Sensação do andar e da corrida.** Arranque e parada instantâneos ou com inércia, velocidade da corrida e janela do duplo toque. Esses parâmetros estão expostos no personagem (`player/player.tscn`) e podem ser ajustados com o jogo rodando. Valores iniciais: andar a 90 px/s, correr a 150 px/s, duplo toque em até 0,25 s.
-- **Invencibilidade na corrida.** Hoje não há. A esquiva funciona por velocidade e posição, o que preserva a camada de habilidade.
+- **Invencibilidade na corrida.** Hoje há (`run_invincible` no personagem): correndo, nenhum golpe acerta, e o fôlego é o limite. O texto do chão do mundo ensina isso.
 - **Valores da física.** Massa, restituição, velocidade mínima de ricochete e atrito do personagem e dos objetos. Valores iniciais: personagem com massa 1, restituição 1 e ricochete acima de 120 px/s, caixa leve com massa 0,5 e bloco pesado com massa 4.
 - **Strafe.** Botão que trava a frente (em teste) ou L e R para andar de lado. Uma terceira opção é a frente ficar travada enquanto o ataque giratório carrega, o que daria o strafe sem botão extra.
 - **Armas.** Quais armas existem, como se alternam e quais servem de chave.

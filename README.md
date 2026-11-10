@@ -13,10 +13,10 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 ## Menu
 
 - **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
-- **Novo jogo.** Começa no mundo, uma clareira com a entrada de cada dungeon ao norte, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, para na pausa e fica gravado. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e convida ao modo randomizado. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
+- **Novo jogo.** Começa no mundo, numa clareira ao sul com as regras gravadas no chão e a porta da dungeon de teste logo à frente. Mais ao norte fica a clareira grande, com a pedra de salvamento e a entrada de cada dungeon, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, para na pausa e fica gravado. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e convida ao modo randomizado. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
 - **Randomizado.** O jogo de verdade: as mesmas três dungeons do mundo, com as ferramentas e as melhorias embaralhadas entre os baús delas por uma seed, um número de 1 a 999999. Na tela da seed, esquerda e direita escolhem o dígito, cima e baixo mudam, os números do teclado digitam, Sortear sorteia outro e Jogar começa. O mesmo número dá o mesmo jogo em qualquer cópia, então dá para compartilhar. As três entradas abrem de início, as chaves ficam nas dungeons delas e cada baú de ferramenta, melhoria ou coração fica gravado na hora em que abre. A primeira mola encontrada é a mola e a segunda é a mola forte, seja qual for a ordem dos baús, e o mesmo vale para a chama. Morrer na seed perde tudo: ela recomeça do zero, no mundo. O número da seed aparece na pausa e na tela de vitória.
-- **Tutorial.** A dungeon de aprendizado, fora do mundo e sem gravar nada.
-- **Treino.** O tutorial, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
+- **Dungeon de teste.** A dungeon de aprendizado, o antigo tutorial, com placas no chão que mostram um texto enquanto o Giorgino está em cima. Também abre pela primeira porta do mundo. É sempre um treino: nada do que acontece nela passa para o jogo.
+- **Treino.** A dungeon de teste, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
 
 O tutorial e os capítulos:
 
@@ -86,7 +86,7 @@ Confere a geometria das salas e das portas, as regras de leitura visual (bloquei
 
 ## Verificação automática
 
-A cada push e a cada pull request, o GitHub roda as três conferências do projeto (`.github/workflows/verificar.yml`): formatação e lint dos scripts com o gdtoolkit, o conferidor dos quatro capítulos e o teste de fumaça no Godot 4.7.2 sem tela. O resultado aparece na aba **Actions** do repositório e na marca ao lado de cada commit: verde passou, vermelho falhou, e a página da falha mostra qual conferência quebrou e a linha do erro.
+A cada push e a cada pull request, o GitHub roda as conferências do projeto (`.github/workflows/verificar.yml`): formatação e lint dos scripts com o gdtoolkit, o conferidor dos quatro capítulos, o conferidor da pixel art (`python3 tools/check_art.py`: paleta mestra, nenhum pixel dobrado, SVG em dia) e o teste de fumaça no Godot 4.7.2 sem tela. O resultado aparece na aba **Actions** do repositório e na marca ao lado de cada commit: verde passou, vermelho falhou, e a página da falha mostra qual conferência quebrou e a linha do erro.
 
 Para rodar o teste de fumaça no seu computador, com o Godot no PATH ou com o caminho dele:
 
@@ -95,11 +95,13 @@ sh tools/run_smoke_test.sh
 sh tools/run_smoke_test.sh "C:/caminho/do/Godot_v4.7.2-stable_win64_console.exe"
 ```
 
-Ele importa o projeto, roda `tools/smoke_test.gd` e falha se aparecer `SCRIPT ERROR`, erro do motor ou se o teste não chegar ao fim.
+Ele importa o projeto, roda `tools/smoke_test.gd` e falha se aparecer `SCRIPT ERROR`, erro do motor, se o teste não chegar ao fim ou se algum valor impresso for diferente do esperado em `tools/smoke_expected.txt`. Quando uma mudança de propósito altera um valor, confira a diferença e grave o arquivo de novo com `sh tools/run_smoke_test.sh godot gravar`.
+
+Para conferir o modo randomizado em lote, `godot --headless --path . res://tools/seed_batch.tscn -- 3000` gera 3000 sementes, confere se cada uma tem saída e resume onde os itens caem.
 
 ## Editar a pixel art
 
-Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e uma grade com uma letra por pixel, em que `.` é transparente. Depois de editar, gere os SVG:
+Cada desenho fica em `art/source/` como texto: uma paleta de letras e cores e uma grade com uma letra por pixel, em que `.` é transparente. Toda cor vem da paleta mestra (`tools/art/palette.py`). Os cenários, as portas, os adornos, o logotipo e a fonte são escritos por scripts em `tools/art/` (por exemplo `cd tools/art && python3 dungeon.py`), e os personagens são desenhados à mão. Depois de editar, gere os SVG:
 
 ```
 python3 tools/pixel_svg.py
