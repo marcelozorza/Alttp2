@@ -145,6 +145,15 @@ func _draw() -> void:
 	theme = _default_theme
 
 
+## Nome do tema da casa, para os bloqueios que mudam de desenho com ele.
+func theme_name_at(cell: Vector2i) -> String:
+	var base := _default_theme if _default_theme else theme
+	var found: DungeonTheme = room_themes.get(
+		Vector2i(floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y)), base
+	)
+	return found.name if found else "stone"
+
+
 ## Tema da casa: o da sala de uma tela em que ela está, ou o padrão.
 func _theme_at(cell: Vector2i) -> DungeonTheme:
 	var screen := Vector2i(

@@ -1,32 +1,32 @@
 # Bola de fogo da chama forte: maior, com o miolo branco.
 paleta
-o #8a2010
-r #e04820
-a #f88830
-y #fcd860
-w #fff8d0
+o #9c2338
+r #c85a1e
+a #f08c2e
+y #f7c53a
+w #f3dfa6
 pixels
 ........oooooooo........
-........oooooooo........
-....oooorrrrrrrroooo....
-....oooorrrrrrrroooo....
-..oorrrraaaaaaaarrrroo..
-..oorrrraaaaaaaarrrroo..
-..oorraaaayyyyaaaarroo..
-..oorraaaayyyyaaaarroo..
-oorraayyyywwwwyyyyaarroo
-oorraayyyywwwwyyyyaarroo
+.......oooooooooo.......
+.....oooorrrrrroooo.....
+...oooorrrrrrrrrroooo...
+...oorrrraaaaaarrrroo...
+..oorrraaaaaaaaaarrroo..
+..oorrraaaayyaaaarrroo..
+.oorraaaayyyyyyaaaarroo.
+ooorraayyyywwyyyyaarrooo
+oorraayyywwwwwwyyyaarroo
+oorraayyywwwwwwyyyaarroo
 oorraayywwwwwwwwyyaarroo
 oorraayywwwwwwwwyyaarroo
-oorraayywwwwwwwwyyaarroo
-oorraayywwwwwwwwyyaarroo
-oorraayyyywwwwyyyyaarroo
-oorraayyyywwwwyyyyaarroo
-..oorraaaayyyyaaaarroo..
-..oorraaaayyyyaaaarroo..
-..oorrrraaaaaaaarrrroo..
-..oorrrraaaaaaaarrrroo..
-....oooorrrrrrrroooo....
-....oooorrrrrrrroooo....
-........oooooooo........
+oorraayyywwwwwwyyyaarroo
+oorraayyywwwwwwyyyaarroo
+ooorraayyyywwyyyyaarrooo
+.oorraaaayyyyyyaaaarroo.
+..oorrraaaayyaaaarrroo..
+..oorrraaaaaaaaaarrroo..
+...oorrrraaaaaarrrroo...
+...oooorrrrrrrrrroooo...
+.....oooorrrrrroooo.....
+.......oooooooooo.......
 ........oooooooo........

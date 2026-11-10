@@ -3,11 +3,11 @@
 # folhas de IA: corpo verde enrolado, barriga amarela, olhos amarelos,
 # presas brancas e língua vermelha.
 paleta
-d #1f4a22
-g #2f6b2f
-l #4f9440
-o #10200f
-y #c8c24a
+d #1f5a3a
+g #2f8a45
+l #2f8a45
+o #12332f
+y #f7c53a
 pixels
 ....oooooooooooooooooo......
 ..ooddddddddddddddddddoo....

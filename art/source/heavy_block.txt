@@ -2,24 +2,24 @@
 # losango gravado, para o jogador ligar o bloco ao interruptor. A origem fica
 # no centro da base, e o desenho sobe duas casas menos alguns pixels.
 paleta
-o #1a1826
-d #3a3650
-f #58547a
-a #6e6a90
-b #8a86a8
-h #a6a2bc
-m #2a2640
+o #1b1926
+d #3a3750
+f #55526f
+a #7c7b99
+b #7c7b99
+h #a9aac2
+m #262335
 pixels
 oohhhhhhhhhhhhhhhhhhhhhhhhhhhhoo
 oohhhhhhhhhhhhhhhhhhhhhhhhhhhhoo
+oohhhbbbbbbbbbbbbbbbbbbbbbbhhhoo
 oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
-oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
-oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
-oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbbbbaabbbbbbbbbbbhhoo
+oohhbbbbbbbbbaaaaaabbbbbbbbbhhoo
 oohhbbbbbbbbaaaaaaaabbbbbbbbhhoo
 oohhbbbbbbbbaaaaaaaabbbbbbbbhhoo
-oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
-oohhbbbbbbbbbbaaaabbbbbbbbbbhhoo
+oohhbbbbbbbbbaaaaaabbbbbbbbbhhoo
+oohhbbbbbbbbbbbaabbbbbbbbbbbhhoo
 oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
 oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
 oohhbbbbbbbbbbbbbbbbbbbbbbbbhhoo
@@ -28,21 +28,21 @@ ooaaaaaaaaaaaaaaaaaaaaaaaaaaaaoo
 ooaaaaaaaaaaaaaaaaaaaaaaaaaaaaoo
 ooffffffffffffffffffffffffffffoo
 ooffffffffffffffffffffffffffffoo
-ooffffffffffffffmmffffffffffddoo
-ooffffffffffffffmmffffffffffddoo
-ooffffffffffffmmmmmmffffffffddoo
-ooffffffffffffmmmmmmffffffffddoo
+ooffffffffffffffmmfffffffffffdoo
+oofffffffffffffmmmmfffffffffddoo
+oofffffffffffffmmmmfffffffffddoo
+oofffffffffffmmmmmmmmfffffffddoo
 ooffffffffffmmmmmmmmmmffffffddoo
 ooffffffffffmmmmmmmmmmffffffddoo
-ooffffffffffffmmmmmmffffffffddoo
-ooffffffffffffmmmmmmffffffffddoo
-ooffffffffffffffmmffffffffffddoo
-ooffffffffffffffmmffffffffffddoo
-ooffffffffffffffffffffffffddddoo
-ooffffffffffffffffffffffffddddoo
-ooffffffffffffffffffffffddddddoo
-ooffffffffffffffffffffffddddddoo
+oofffffffffffmmmmmmmmfffffffddoo
+oofffffffffffffmmmmfffffffffddoo
+oofffffffffffffmmmmfffffffffddoo
+ooffffffffffffffmmfffffffffdddoo
+oofffffffffffffffffffffffffdddoo
+oofffffffffffffffffffffffdddddoo
+oofffffffffffffffffffffffdddddoo
+oofffffffffffffffffffffdddddddoo
 ooddddddddddddddddddddddddddddoo
-ooddddddddddddddddddddddddddddoo
+oooddddddddddddddddddddddddddooo
 oooooooooooooooooooooooooooooooo
 oooooooooooooooooooooooooooooooo

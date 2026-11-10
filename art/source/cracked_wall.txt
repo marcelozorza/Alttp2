@@ -1,46 +1,40 @@
-# Parede rachada: a face de tijolos da parede, com rachaduras finas que
-# se ramificam a partir do alto, bordas claras e dois tijolos lascados. Abre com
-# a bomba. Redesenhada em 32 px de verdade em 2026-11-08 (antes era o desenho
-# de 16 px escrito em dobro), a pedido de Marcelo.
+# Parede rachada da pedra: só a bomba abre.
 paleta
-o #15131e
-d #1f1c2b
-m #282438
-k #2e2a40
-f #4a4562
-g #5d577a
-h #736c94
-r #b8b0cc
+a #a9aac2
+b #1b1926
+c #55526f
+d #1e181e
+e #3a3750
 pixels
-mmmmmmmmmmmmmmmommmmmmmmmmmmmmmo
-mddddddddddddddomddddddddddddddo
-mddddddddddddddomddddddddddddddo
-mddddddddddddddooodddddddddddddo
-mddddddddddddddooodddddddddddddo
-mddddddddddddddooddddddddddddddo
-mddddddddddddddooddddddddddddddo
-mddddddddddddddooddddddddddddddo
-hhhhhhhhhhhhhhhoorhhhhhhhhhhhhhh
-ggggggggggggggoorggggggggggggggg
-kkkkkkkkkkkkooookkkkkkkkkkkkkkkk
-ghhhhhhhhhhorrroorhhhhhhhhhhhhhk
-gggggggggoorgggooorggggggggggggk
-gffffffoorrfffoorrorfffffffffffk
-gffffoorrfffffoorfroorfffffffffk
-gffffrrffffffookgffrrorffffffffk
-gffffffffffffookgffffrorfffffffk
-kkkkkkkkkkkkookkkkkkkkkookkkkkkk
-hhhhhhhkghhhoorhhhhhhhhkroorhhhh
-gggggggkgggoroorgggggggkgrrggggg
-fffffffkgoorfoorfffffffkgoofffff
-fffffffkorrfffoorffffffkgfofffff
-fffffffkorffffooooorfffkgfffffff
-ffffffforffffoorrrrorffkgfffffff
-kkkkkkkkkkkkkookkkkkokkkkkkkkkkk
-ghhhhhhhhhhhhooorhhhrorhhhhhhhhk
-gggggggggggooroorggggrorgggggggk
-gfffoofffforrffoorffffrorffffffk
-gfffoooffforfffoorffffforffffffk
-gffffoffforffffoorfffffrorfffffk
-gfffffffforfffoorfffffffrffffffk
-kkkkkkkkkkkkkkookkkkkkkkkkkkkkkk
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+bccccccccccccccddccccccccccccccc
+beeeeeeeeeeeeeeddeeeeeeeeeeeeeee
+beeeeeeeeeeeeeddbeeeeeeeeeeeeeee
+beeeeeeeeeeceeddbeeeeeeeeeeeeeee
+beeeeeeeeeeeeeddbeeeeeeeeeeeeeee
+beeeeeeeeeeeeddebeeeeeeeeeeeeeee
+bbbbbbbbbbbbbddbbbbbbbbbbbbbbbbb
+ccccccccbccddcddccccccccbccccccc
+eeeeeeeebddeeeeddeeeceeebeeeeeee
+eeeeeeeddeeeeeeddeeeeeeebeeeeeee
+eeeeeeeebeeeeeeeddeeeeeebeeeeeee
+eeeeeeeebeeeeeeeeddeeeeebeeeeeee
+eeeeeeeebeeeeeeeddeddddebeeeeeee
+bbbbbbbbbbbbbbbbddbbbbbddbbbbbbb
+bccccccccccccccddccccccccccccccc
+beeeeeeeeeeeeeeddeeeeeeeeeeeeeee
+beeeeeeeeeeeeeddbeeeeeeeeeeeeeee
+beeeeeeeeeeeeeddbeeeeeeeeeeeeeee
+beeeeeeeeeeeddeddeeeeeeeeeeeeeee
+beeeeeeeeeedeeeeddeeeceeeeeeeeee
+bbbbbbbbbddbbbbbddbbbbbbbbbbbbbb
+ccccccccdccccccccddcccccbccccccc
+eeeeeeeebeeeeeeeeeddeeeebeeeeeee
+eeeeeeeebeeeeeeeeeddddeebeeeeeee
+eeeeeeeebeeeeeeeeddeeeddbeeeeeee
+eeeeeeeebeeeeeeeeddeeeeeddeeeeee
+eeeeeeeebeeeeeeeeddeeeeebeeeeeee
+bbbbbbbbbbbbbbbbddbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbddbbbbbbbbbbbbbb
+dddddddddddddddddddddddddddddddd

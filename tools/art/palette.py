@@ -16,6 +16,8 @@ RAMPS = {
     "earth": ["#3b2530", "#5c4232", "#8a5a3c", "#b9824e", "#ddb277", "#f3dfa6"],
     "red": ["#5e1830", "#9c2338", "#d83a3f", "#f0705c"],
     "pink": ["#d9578a", "#e49aa4", "#f9cfd0"],
+    # Gosma do lobo.
+    "magenta": ["#7a1a78", "#c038b8", "#ee7fe0"],
     "orange": ["#c85a1e", "#f08c2e"],
     "yellow": ["#d99a1c", "#f7c53a", "#fff1a8"],
     "green": ["#12332f", "#1f5a3a", "#2f8a45", "#59b84c", "#a4dc5a", "#dff29a"],

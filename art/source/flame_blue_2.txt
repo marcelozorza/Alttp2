@@ -1,6 +1,6 @@
 # Chama azul da geleira, quadro 2. Troca de paleta de flame_2.
 paleta
-y #9ad8ff
-o #2f7fe0
+y #6cc3f2
+o #3b7bdc
 w #ffffff
 usa flame_2

@@ -1,39 +1,39 @@
 # Minion se recuperando depois do bote.
 paleta
-o #2a2230
-r #b8521c
-d #7a2e12
-l #dd7a32
-c #f1dcb8
+o #262335
+r #c85a1e
+d #8a5a3c
+l #f08c2e
+c #f3dfa6
 p #e49aa4
-y #f2c443
+y #f7c53a
 
 pixels
 ..oo................oo..
-..oo................oo..
-ooppoo............ooppoo
-ooppoo............ooppoo
-oopprroooooooooooorrppoo
-oopprroooooooooooorrppoo
+.oooo..............oooo.
+ooppo..............oppoo
+ooppooo..........oooppoo
+oopproooooooooooooorppoo
+ooprrrroooooooooorrrrpoo
 oorrllrrddrrrrddrrrrrroo
-oorrllrrddrrrrddrrrrrroo
+oorlllrrdddrrdddrrrrrroo
+oolllrrrrddddddrrrrrrroo
 oollrrrrrrddddrrrrrrrroo
-oollrrrrrrddddrrrrrrrroo
-oorryyoorrrrrrrryyoorroo
+oorryyorrrrrrrrrryoorroo
 oorryyoorrrrrrrryyoorroo
 oorrrrccccppppccccrrrroo
-oorrrrccccppppccccrrrroo
-..oorrrrccooooccrrrroo..
-..oorrrrccooooccrrrroo..
-....oorrccccccrroo..oo..
-....oorrccccccrroo..oo..
-..oorrrrccccccrrrroorroo
-..oorrrrccccccrrrroorroo
-..ooddrrrrccrrrrddoorroo
+ooorrrrcccppppcccrrrrooo
+.oorrrrcccoooocccrrrroo.
+...oorrrcccooccrrrrroo..
+....oorrcccccccroo..oo..
+....oorrccccccrroo..ooo.
+...oorrrccccccrrrooorroo
+..oorrrrrccccrrrrroorroo
+..ooddrrrccccrrrddoorroo
 ..ooddrrrrccrrrrddoorroo
 ..oorrrrrrccrrrrrrooddoo
 ..oorrrrrrccrrrrrrooddoo
-..ooccccoorrooccccoorroo
-..ooccccoorrooccccoorroo
-....oooooooooooooooooo..
+..ooccccorrrroccccoorroo
+...ooccooorroooccooorroo
+...oooooooooooooooooooo.
 ....oooooooooooooooooo..

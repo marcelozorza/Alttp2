@@ -1,8 +1,38 @@
-# Tema castelo (capítulo 1): pedra roxa quente. Troca de paleta de floor_alt, chão mais alto.
+# Chão mais alto do castelo, variação 2.
 paleta
-s #5e4a46
-c #74605a
-a #8a766c
-b #a4927f
-x #80705f
-usa floor_alt
+a #f3dfa6
+b #b9824e
+c #ddb277
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+acccccccccccccccaccccccccccccccb
+accccccccccccccaaacccccccccccccb
+acccccccccccccaacaaccccccccccccb
+accccccccccccaacccaacccccccccccb
+acccccccccccaacccccaaccccccccccb
+accccccccccaacccccccaacccccccccb
+acccccccccaacccccccccaaccccccccb
+accccccccccaacccccccaacccccccccb
+acccccccccccaacccccaaccccccccccb
+accccccccccccaacccaacccccccccccb
+acccccccccccccaacaaccccccccccccb
+accccccccccccccaaacccccccccccccb
+acccccccccccccccaccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

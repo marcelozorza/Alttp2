@@ -1,39 +1,39 @@
 # Interruptor no chão, solto: uma placa de pedra um pouco levantada, com a
 # borda clara e um losango no meio, o mesmo do bloco pesado.
 paleta
-o #1a1826
-d #3a3650
-f #58547a
-b #8a86a8
-h #a6a2bc
-m #2a2640
+o #1b1926
+d #3a3750
+f #55526f
+b #7c7b99
+h #a9aac2
+m #262335
 pixels
 ................................
 ................................
-....oooooooooooooooooooooooo....
-....oooooooooooooooooooooooo....
+.....oooooooooooooooooooooo.....
+...oooooooooooooooooooooooooo...
+...oohhhhhhhhhhhhhhhhhhhhhhoo...
 ..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
+..oohhhbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
 ..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbmmmmmmmmbbbbbffoo..
 ..oohhbbbbbbmmmmmmmmmmbbbbffoo..
 ..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
-..oohhbbbbbbbbmmmmmmbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
+..oohhbbbbbbbmmmmmmmmbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
+..oohhbbbbbbbbbmmmmbbbbbbbffoo..
 ..oohhbbbbbbbbbbmmbbbbbbbbffoo..
 ..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhffffffffffffffffffffddoo..
-..oohhffffffffffffffffffffddoo..
+..oohhbbbbbbbbbbbbbbbbbbbfffoo..
+..oohhfffffffffffffffffffffdoo..
+..oohhfffffffffffffffffffdddoo..
 ..ooddddddddddddddddddddddddoo..
-..ooddddddddddddddddddddddddoo..
-....oooooooooooooooooooooooo....
-....oooooooooooooooooooooooo....
+...ooddddddddddddddddddddddoo...
+...oooooooooooooooooooooooooo...
+.....oooooooooooooooooooooo.....
 ................................
 ................................
 ................................

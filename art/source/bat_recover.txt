@@ -2,10 +2,10 @@
 # Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
 # folhas de IA: corpo roxo, orelhas grandes, olhos amarelos e asas claras.
 paleta
-c #d8b0e8
-d #4a2a63
-o #1a1026
-p #7a4a9c
+c #c3a0f0
+d #2e1a4f
+o #1b1926
+p #55308f
 w #ffffff
 pixels
 ............o......o................

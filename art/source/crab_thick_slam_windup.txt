@@ -1,13 +1,13 @@
 # Guardião antigo, de gelo grosso: os pixels de crab_shell_slam_windup com paleta azul-marinho.
 paleta
-d #0e2248
-g #1e4a8a
-k #060a20
-l #3a74b8
-m #7a1a3a
-o #060a20
-p #6aa0d8
-s #e86a8a
+d #141a3c
+g #27409a
+k #1b1926
+l #3b7bdc
+m #5e1830
+o #1b1926
+p #6cc3f2
+s #d9578a
 w #ffffff
-y #f2c443
+y #f7c53a
 usa crab_shell_slam_windup

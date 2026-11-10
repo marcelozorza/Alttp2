@@ -8,10 +8,10 @@ w #f4f1ea
 s #c7c1cf
 p #e49aa4
 r #d9578a
-D #8e2280
-P #d24cbc
-L #ef80dc
-H #ffd2f4
+D #7a1a78
+P #c038b8
+L #ee7fe0
+H #f9cfd0
 pixels
 ...................DHLD....
 ...................DPPD....

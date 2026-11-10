@@ -1,12 +1,12 @@
 # Atirador de pedras, o macaquinho, grade de 22 por 20 em 1x.
 # Redesenhado à mão em 2026-11-08 com metade do tamanho, por pedido de Marcelo.
 paleta
-c #e8c89a
-k #7a1a1a
-l #c08048
-o #2a1a14
-p #f0a0a0
-r #9c5a2c
+c #f3dfa6
+k #9c2338
+l #b9824e
+o #1e181e
+p #e49aa4
+r #8a5a3c
 w #ffffff
 pixels
 .....orrrrrrrro.......

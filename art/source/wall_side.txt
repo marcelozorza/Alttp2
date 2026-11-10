@@ -1,45 +1,41 @@
-# Face lateral da parede, vista em perspectiva forçada: 8 px de topo à
-# esquerda e 24 px de fiadas curtas à direita, para a parede oeste da sala.
-# O MapView espelha na horizontal para a parede leste. Desenhada em
-# 2026-11-07.
+# Face lateral da parede da pedra. Os 24 pixels da direita são a face.
 paleta
-o #15131e
-d #1f1c2b
-m #282438
-k #2e2a40
-f #4a4562
-g #5d577a
-h #736c94
+a #1b1926
+b #a9aac2
+c #55526f
+d #3a3750
+e #1e181e
+f #262335
 pixels
-mmmmmmmmhgkkkkkkkkkkkkkkkkkkkkkk
-mdddddddhgghhhhhhhhhkghhhhhhhhhk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhgkkkkkkkkkkkkkkkkkkkkkk
-mdddddddhghhhhhghhhhhhhhhkghhhhk
-mdddddddhgfffffgfffffffffkgffffk
-mdddddddhgfffffgfffffffffkgffffk
-oooooooohgfffffgfffffffffkgffffk
-mmmmmmmohgfffffgfffffffffkgffffk
-dddddddohgkkkkkkkkkkkkkkkkkkkkkk
-dddddddohgghhhhhhhhhkghhhhhhhhhk
-dddddddohggfffffffffkgfffffffffk
-dddddddohggfffffffffkgfffffffffk
-dddddddohggfffffffffkgfffffffffk
-dddddddohggfffffffffkgfffffffffk
-dddddddohgkkkkkkkkkkkkkkkkkkkkkk
-dddddddohghhhhhghhhhhhhhhkghhhhk
-dddddddohgfffffgfffffffffkgffffk
-oooooooohgfffffgfffffffffkgffffk
-mmmmmmmmhgfffffgfffffffffkgffffk
-mdddddddhgfffffgfffffffffkgffffk
-mdddddddhgkkkkkkkkkkkkkkkkkkkkkk
-mdddddddhgghhhhhhhhhkghhhhhhhhhk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhggfffffffffkgfffffffffk
-mdddddddhgkkkkkkkkkkkkkkkkkkkkkk
-oooooooohghhhhhghhhhhhhhhkghhhhk
+aaaaaaaabcaaaaaaacdddddaaaaaaaae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaffbccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddaaaaaaaacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabcaaaaaaacdddddaaaaaaaae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddaaaaaaaacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaffaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae
+aaaaaaaabccdddddacdddddacdddddae

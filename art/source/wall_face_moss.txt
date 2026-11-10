@@ -1,10 +1,40 @@
-# Tema ruína com musgo (capítulo 3): pedra esverdeada. Troca de paleta de wall_face.
+# Face de frente da parede das ruínas. Os 24 pixels de baixo são a face.
 paleta
-o #121a14
-d #1c261e
-m #263228
-k #2e3c30
-f #46584a
-g #586c5a
-h #6e8470
-usa wall_face
+a #12332f
+b #1f5a3a
+c #59b84c
+d #2f8a45
+e #1e181e
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaabbaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+cccccccccccccccccccccccccccccccc
+dddddddddddddddddddddddddddddddd
+adddddddddddddddaddddddddddddddd
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+abbbbdcdbbbbbbbbabbbbbbbbbbbbbbb
+abbbbdddbbbbbbbbabbbbbbbbbbbbbbb
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ddddddddadddddddddddddddaddddddd
+bbbbbbbbabbbbbbbbbbbbbbbabbbbbbb
+bbbbbbbbabbbbbbbbbbbbbbbabbbbbbb
+bbbbbbbbabbbbbbbbbbbbbbbabbbbbbb
+bbbbbbbbabbbbbbbbbbbbbbbabbbbbbb
+bbbbbbbbabbbbbbbbbbbbbbbabbbbbbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+adddddddddddddddaddddddddddddddd
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+abbbbbbbbbbdcdbbabbbbbbbbbbbbbbb
+abbbbbbbbbbdddbbabbbbbbbbbbbbbbb
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+abbbbbbbbbbbbbbbabbbbbbbbbbbbbbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee

@@ -1,8 +1,8 @@
 # Coração vazio do HUD, dois pontos perdidos.
 paleta
-q #e0b8c0
-e #6a4650
-n #8a6670
+q #f9cfd0
+e #5c4232
+n #8d8798
 pixels
 ..qqqq....qqqq..
 .qneeeq..qeeeeq.

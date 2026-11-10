@@ -1,8 +1,8 @@
 # Trepadeira pendurada na face da parede.
 paleta
-g #4e8a3c
-d #2e5a28
-l #78b050
+g #2f8a45
+d #1f5a3a
+l #59b84c
 pixels
 ....dd......
 ....dd......

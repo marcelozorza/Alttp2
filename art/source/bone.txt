@@ -2,9 +2,9 @@
 # Redesenhado à mão em 2026-11-08, na diagonal, inspirado numa referência de Marcelo: creme, sombra lilás e contorno escuro.
 paleta
 c #ffffff
-m #b97e93
-o #2b2230
-w #fff6d8
+m #e49aa4
+o #262335
+w #f4f1ea
 pixels
 .......oo..............
 ......omwo.............

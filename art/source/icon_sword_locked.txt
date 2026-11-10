@@ -1,13 +1,13 @@
 # Espada travada pela gosma da granada: a lâmina em magenta, como a troca de
 # paleta do Super Nintendo.
 paleta
-o #1a1620
-w #ff9af0
-l #f259d9
-s #a8309a
-g #e0b040
-y #f8e080
-d #a07020
-h #8a5a30
-b #5a3a1c
+o #1b1926
+w #ee7fe0
+l #c038b8
+s #c038b8
+g #d99a1c
+y #fff1a8
+d #b9824e
+h #8a5a3c
+b #5c4232
 usa icon_sword

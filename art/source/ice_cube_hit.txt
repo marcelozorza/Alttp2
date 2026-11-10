@@ -3,11 +3,11 @@
 # folhas de IA: cubo de 30 por 30 com brilho no alto, cara de olhos
 # raivosos e dentes, rachaduras claras e base sombreada.
 paleta
-b #2f6fc4
-k #0b1c45
-l #5ba6ef
-o #10306b
-w #bfe4ff
+b #3b7bdc
+k #141a3c
+l #6cc3f2
+o #1a2452
+w #c6efff
 pixels
 ....oooooooooooooooooo....
 ..oowwwwwwwwwwwwwwwwwwoo..

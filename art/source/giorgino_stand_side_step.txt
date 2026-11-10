@@ -5,8 +5,8 @@ d #1e181e
 b #5c4232
 w #f4f1ea
 s #c7c1cf
-g #8f8a99
-n #141016
+g #8d8798
+n #0e0b0d
 r #d9578a
 e #0e0b0d
 pixels

@@ -321,6 +321,8 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 	var obstacle := scene.instantiate() as Node2D
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
+	if obstacle is CrackedWall:
+		(obstacle as CrackedWall).theme_name = _map_view.theme_name_at(area.position)
 	_obstacles.add_child(obstacle)
 	_obstacle_by_slot[slot] = obstacle
 	if obstacle is SwitchDoor:

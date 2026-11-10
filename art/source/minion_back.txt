@@ -1,39 +1,39 @@
 # Minion de costas, quando anda para cima.
 paleta
-o #2a2230
-r #b8521c
-d #7a2e12
-l #dd7a32
-c #f1dcb8
+o #262335
+r #c85a1e
+d #8a5a3c
+l #f08c2e
+c #f3dfa6
 p #e49aa4
-y #f2c443
+y #f7c53a
 
 pixels
 ..oo................oo..
-..oo................oo..
-oorroo............oorroo
-oorroo............oorroo
-oorrrroooooooooooorrrroo
-oorrrroooooooooooorrrroo
+.oooo..............oooo.
+oorro..............orroo
+oorrroo..........oorrroo
+oorrroooooooooooooorrroo
+oorrrrroooooooooorrrrroo
 oorrllrrddrrrrddrrrrrroo
-oorrllrrddrrrrddrrrrrroo
+oorrllrdddrrrrdddrrrrroo
 oorrrrddrrrrrrrrddrrrroo
 oorrrrddrrrrrrrrddrrrroo
-oorrrrrrddrrrrddrrrrrroo
+oorrrrrdddrrrrdddrrrrroo
 oorrrrrrddrrrrddrrrrrroo
 oorrddrrrrrrrrrrrrddrroo
-oorrddrrrrrrrrrrrrddrroo
-..oorrrrrrddddrrrrrroo..
-..oorrrrrrddddrrrrrroo..
+ooorddrrrrrrrrrrrrddrooo
+.oorrrrrrrrddrrrrrrrroo.
+...oorrrrrddddrrrrroo...
 ....oorrrroooorrrroo....
-....oorrrroooorrrroo....
-..oorrrroolllloorrrroo..
+....oorrroooooorrroo....
+...oorrrroolloorrrroo...
 ..oorrrroolllloorrrroo..
 ..ooddrrooddddoorrddoo..
 ..ooddrrooddddoorrddoo..
 ..oorrrroolllloorrrroo..
-..oorrrroolllloorrrroo..
+..oorrrrooollooorrrroo..
 ..oorrrroooooooorrrroo..
 ..oorrrroooooooorrrroo..
-..ooppppoo....ooppppoo..
+..ooppppooo..oooppppoo..
 ..ooppppoo....ooppppoo..

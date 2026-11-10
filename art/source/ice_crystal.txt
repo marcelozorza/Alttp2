@@ -1,27 +1,27 @@
 # Cristais de gelo brotando do chão.
 paleta
-o #2d5a86
-e #5f97c8
-a #9fd2f4
-w #f4fbff
+o #55526f
+e #6cc3f2
+a #6cc3f2
+w #ffffff
 pixels
 ........ww..........
 ........ww..........
-......ooaaoo........
-......ooaaoo........
-......ooaaaaoo..ww..
-......ooaaaaoo..ww..
-....ooaaaawwooooaaoo
-....ooaaaawwooooaaoo
-....ooaaaaaaooaaaaoo
-....ooaaaaaaooaaaaoo
-..ww..ooaaaaooaaaaoo
-..ww..ooaaaaooaaaaoo
-ooaaoo..ooaaaaaaeeoo
-ooaaoo..ooaaaaaaeeoo
-ooaaaaooooaaaaeeeeoo
-ooaaaaooooaaaaeeeeoo
+.......oaao.........
+......ooaaaoo.......
+......ooaaaoo...ww..
+.....ooaaaaaooo.ww..
+.....ooaaawwooooaaoo
+....ooaaaawwoooaaaoo
+....ooaaaaaaoooaaaoo
+.....ooaaaaaooaaaaoo
+..ww..oaaaaaooaaaaoo
+..ww...ooaaaooaaaaoo
+ooaao...oaaaaaaaaeoo
+ooaaao..ooaaaaaeeeoo
+ooaaaoooooaaaaaeeeoo
+ooaaaaooooaaaeeeeeoo
 ooaaaaeeooeeeeeeeeoo
-ooaaaaeeooeeeeeeeeoo
-..oooooooooooooooooo
+oooaaaeeoooeeeeeeooo
+.ooooooooooooooooooo
 ..oooooooooooooooooo

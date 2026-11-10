@@ -1,7 +1,7 @@
 # Manchas de musgo sobre o chão, com transparência.
 paleta
-g #4e7a3c
-l #6a9a4c
+g #2f8a45
+l #2f8a45
 pixels
 ................................
 ................................

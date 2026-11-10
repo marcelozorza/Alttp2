@@ -1,18 +1,18 @@
 # Colosso com o peito em brasa: os pixels de cerberus_shell_charge_windup com outra paleta.
 paleta
-a #3a3744
-b #4a4658
-c #e8e0d0
-d #24212c
-e #595568
-f #ff8a1e
-g #3a3646
-h #ffd24a
-l #5c5772
-m #5a1420
-o #0e0c10
-r #ffd24a
-s #b04050
-t #e8708a
+a #3a3750
+b #3a3750
+c #f4f1ea
+d #2a2329
+e #55526f
+f #f08c2e
+g #3a3750
+h #f7c53a
+l #55526f
+m #5e1830
+o #0e0b0d
+r #f7c53a
+s #9c2338
+t #d9578a
 w #ffffff
 usa cerberus_shell_charge_windup

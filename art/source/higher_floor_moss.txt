@@ -1,8 +1,41 @@
-# Tema ruína com musgo (capítulo 3): pedra esverdeada. Troca de paleta de floor, chão mais alto.
+# Chão mais alto das ruínas, variação 1.
 paleta
-s #566448
-c #6c7a58
-a #84906a
-b #9eaa82
-x #78866a
-usa floor
+a #f4f1ea
+b #ddb277
+c #f3dfa6
+d #59b84c
+e #2f8a45
+f #a4dc5a
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccddccccccccccccccccccccccccb
+acccefeecccccccccccccccccccccccb
+accceeeecccccccccccccccccccccccb
+accceeeecccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+accccccccccccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

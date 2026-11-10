@@ -2,10 +2,10 @@
 # Desenhado à mão em 2026-11-08, depois de Marcelo recusar o recorte de
 # folhas de IA: carapaça de placas em faixas, focinho claro e garras.
 paleta
-c #c6ae92
-g #6e6660
-l #938a82
-o #241c1a
+c #ddb277
+g #5c4232
+l #8d8798
+o #1e181e
 pixels
 .......oooooooo.......
 .....oogllllgoo.......

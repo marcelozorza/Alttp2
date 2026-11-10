@@ -1,36 +1,36 @@
 # Minion apanhando.
 paleta
-o #2a2230
-r #b8521c
-d #7a2e12
-l #dd7a32
-c #f1dcb8
+o #262335
+r #c85a1e
+d #8a5a3c
+l #f08c2e
+c #f3dfa6
 p #e49aa4
-y #f2c443
+y #f7c53a
 
 pixels
 ........................
 ........................
-oooo................oooo
-oooo................oooo
+ooo..................ooo
+ooooo..............ooooo
 ooppooooooooooooooooppoo
 ooppooooooooooooooooppoo
 oorrllrrddrrrrddrrrrrroo
-oorrllrrddrrrrddrrrrrroo
+oorrllrrdddrrrddrrrrrroo
 oorrrrrrddddrrrrrrrrrroo
-oorrrrrrddddrrrrrrrrrroo
-oorroooorrrrrrrroooorroo
+oorrrrrrrdddrrrrrrrrrroo
+oorrooorrrrrrrrrrooorroo
 oorroooorrrrrrrroooorroo
 oorrrrccccppppccccrrrroo
-oorrrrccccppppccccrrrroo
-..oorrccooppppooccrroo..
-..oorrccooppppooccrroo..
+ooorrrccccppppccccrrrooo
+.oorrrcccoppppocccrrroo.
+...oorrcooppppoocrroo...
+....orrrrrccccrrrrro....
 ....oorrrrccccrrrroo....
-....oorrrrccccrrrroo....
-..ooddrrrrccccrrrrddoo..
-..ooddrrrrccccrrrrddoo..
+...oodrrrrccccrrrrdoo...
+..oodrrrrrccccrrrrrdoo..
 ..oorrrrrrccccrrrrrroo..
-..oorrrrrrccccrrrrrroo..
+..oorrrrrrrccrrrrrrroo..
 ..oorrrroorrrroorrrroo..
 ..oorrrroorrrroorrrroo..
 ..oorrrroo....oorrrroo..

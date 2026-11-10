@@ -1,15 +1,15 @@
 # Espada do HUD, desenhada em 24 pixels: lâmina de aço com brilho, guarda
 # dourada, cabo marrom e pomo.
 paleta
-o #1a1620
-w #f4f6ff
-l #c8d0e0
-s #8a94b0
-g #e0b040
-y #f8e080
-d #a07020
-h #8a5a30
-b #5a3a1c
+o #1b1926
+w #ffffff
+l #d6d8e6
+s #8d8798
+g #d99a1c
+y #fff1a8
+d #b9824e
+h #8a5a3c
+b #5c4232
 pixels
 ...........o............
 ..........olo...........

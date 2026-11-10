@@ -1,7 +1,7 @@
 # Geada sobre o chão, com transparência.
 paleta
-b #c4e6fa
-w #f4fbff
+b #c6efff
+w #ffffff
 pixels
 ................................
 ................................

@@ -1,8 +1,38 @@
-# Tema geleira (capítulo 2): pedra azul. Troca de paleta de floor_alt.
+# Chão da geleira, variação 2.
 paleta
-s #223050
-c #2a3c62
-a #354a76
-b #42598a
-x #2f4068
-usa floor_alt
+a #3b7bdc
+b #27409a
+c #6cc3f2
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaabaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaabaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaabaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaabaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaabaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaabaaaaaaaaaaaaaaaaaccaaaab
+aaaaaabaaaaaaaaaaaaaaaaaccaaaaab
+aaaaaabaaaaaaaaaaaaaaaaccaaaaaab
+aaaaabaaaaaaaaaaaaaaaaccaaaaaaab
+aaaaabaaaaaaaaaaaaaaaccaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaccaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaccaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaccaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaccaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaccaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaccaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaccaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaccaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

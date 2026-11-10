@@ -1,11 +1,11 @@
 # goo_blob_1, gosma do ugly, gerado por tools/goo_art.py.
 # Não edite à mão: mude o gerador e rode de novo.
 paleta
-o #4a0c40
-d #8e2280
-p #d24cbc
-l #ef80dc
-h #ffd2f4
+o #2e1a4f
+d #7a1a78
+p #c038b8
+l #ee7fe0
+h #f9cfd0
 pixels
 ................
 ................

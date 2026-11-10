@@ -1,13 +1,13 @@
 # Guardião com o núcleo exposto (vermelho): os pixels de crab_shell_charge com outra paleta.
 paleta
-d #6b1620
-g #b02a28
-k #2a0a0e
-l #e06a42
-m #45060c
-o #2a0a0e
-p #ffd2a0
-s #e86a8a
+d #5e1830
+g #d83a3f
+k #3b2530
+l #f0705c
+m #5e1830
+o #3b2530
+p #f3dfa6
+s #d9578a
 w #ffffff
-y #f2c443
+y #f7c53a
 usa crab_shell_charge
