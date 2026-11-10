@@ -1,0 +1,13 @@
+# Franja de grama sobre a borda de outro chão. A grama fica em cima.
+paleta
+a #59b84c
+b #a4dc5a
+c #1f5a3a
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aabaaaabaaaaabaaaaaabaaaabaaaaaa
+aaaacaaaaaacaaaaccaaaaaaaaacaaaa
+caac.caaacc.caac..caaaaccac.caac
+.cc...cac....cc....caac..c...cc.
+.......c............cc..........
+................................

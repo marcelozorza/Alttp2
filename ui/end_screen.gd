@@ -29,7 +29,7 @@ func _ready() -> void:
 	var column := MenuKit.centered_column(self, Color(0.05, 0.05, 0.08, 0.85))
 	var title := "Capítulo concluído"
 	if RunSettings.chapter == ChapterData.TUTORIAL:
-		title = "Tutorial concluído"
+		title = "Dungeon de teste concluída"
 	elif RunSettings.chapter == ChapterData.GALLERY:
 		title = "Galeria"
 	_title = MenuKit.label(title, 32)

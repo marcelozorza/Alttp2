@@ -1,0 +1,44 @@
+# Grama do mundo, variação 4. Tons chapados, tufos e flores.
+paleta
+a #59b84c
+b #a4dc5a
+c #e49aa4
+d #d99a1c
+e #1f5a3a
+f #f7c53a
+g #d83a3f
+h #2f8a45
+i #ffffff
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaabaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaacaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaacdcaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaacaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaeaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaafaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaafgfaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaafaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaeaaabaaaa
+aaaaaaaaaaaaaaaabaaaaaaaaaaaaaaa
+aaaabaaaaaaaaaahahaaaaaaaaaaaaaa
+aaaaaaaaaaaaaahahahaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaacaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaacdcaaaaaaaaaaaaaiaaaaaa
+aaaaaaaaaacaaaaaaaaaaaaaidiaaaaa
+aaaaaaaaaaeaaaaaaaaaaaaaaiaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaeaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

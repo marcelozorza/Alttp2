@@ -1,7 +1,0 @@
-# Variação da grama, um pouco mais escura, para quebrar a repetição.
-paleta
-d #2b6330
-g #3a823a
-l #4e9a44
-h #66b050
-usa grass

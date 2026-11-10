@@ -84,4 +84,4 @@ func _on_exit() -> void:
 
 
 static func _seed_mode() -> bool:
-	return Progress.active and Progress.seed != 0
+	return Progress.active and Progress.seed != 0 and not Progress.practice
