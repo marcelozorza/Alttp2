@@ -23,7 +23,7 @@ const MAP := [
 	"                    #########::#########",
 	"                    #########::#########",
 	"                    #:::::::#88#:::::::#",
-	"                    #:::::::::m::::::::#",
+	"                    #:::::::?:m::::::::#",
 	"                    #::::::::::::::::::#",
 	"                    #########99#########",
 	"                    #::::::::::::::::::#",
@@ -38,17 +38,17 @@ const MAP := [
 	"#.....m...............................4....................#",
 	"#..............m......................4....................#",
 	"#..................##....m............###...E....i.........#",
-	"#..................##............y.....##.............m....#",
+	"#..................##.........?..y.....##.....?.......m....#",
 	"#..................##..................##..................#",
 	"#########..##################..##################..#########",
 	"#########..##################..##################..#########",
 	"#.......#33#.......##########aa##########.......#66#.......#",
 	"#.....m............##..=...............##...A..............#",
 	"#..................###...m.............##.........u........#",
-	"#....................1.....................................#",
-	"#....................1.................................#####",
+	"#................?...1........................?............#",
+	"#....................1........?........................#####",
 	"#...C..............###.0...............##..............2...#",
-	"#............i.....##.........@........##..............2.B.#",
+	"#............i.....##....?....@........##..............2.B.#",
 	"#..................##..................##..............#...#",
 	"############################################################",
 ]
@@ -82,3 +82,22 @@ const ITEMS := {
 ## quebra a casca e a mola escapa das ondas. Só tools/check_chapter.py lê isto.
 const GOAL := "*"
 const GOAL_TOOLS := [Item.Id.FIRE, Item.Id.SPRING]
+
+## Texto de cada placa de mensagem ("?" no mapa), pela casa dela. As placas
+## explicam o jogo passo a passo, sem parar o jogador (pedido de Marcelo em
+## 2026-11-10): os bloqueios e os itens, o bloco e o botão, o mapa, o ossinho,
+## a diferença entre o jogo original e o Randomizado, e o chefe.
+const MESSAGES := {
+	Vector2i(30, 35):
+	"Toda dungeon tem gelo, porta trancada, parede rachada e lugar alto. Cada um pede um item.",
+	Vector2i(25, 37):
+	"Empurre o bloco até o botão do chão. Com o bloco em cima, a grade fica aberta.",
+	Vector2i(46, 34):
+	"Cada item que você achar ganha um botão. Viu um bloqueio antes? Volte lá com o item.",
+	Vector2i(30, 27):
+	"START abre o mapa, com os baús, as portas e os bloqueios das salas em que você já entrou.",
+	Vector2i(17, 34): "Inimigos às vezes deixam um ossinho. O ossinho cura.",
+	Vector2i(46, 27):
+	"Aqui, cada item fica sempre no mesmo baú. No Randomizado, uma semente embaralha os itens.",
+	Vector2i(28, 12): "O chefe pede os itens desta dungeon. Use tudo o que você achou.",
+}

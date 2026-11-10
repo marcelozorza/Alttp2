@@ -156,7 +156,7 @@ func _build_buttons() -> void:
 		child.queue_free()
 	_seed_label.text = ""
 	if Progress.active and Progress.seed != 0:
-		_seed_label.text = "Seed %06d" % Progress.seed
+		_seed_label.text = "Semente %06d" % Progress.seed
 	var top := 76.0 if _seed_label.text != "" else 58.0
 	_buttons.position.y = top
 	_legend_top = top

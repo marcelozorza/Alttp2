@@ -15,7 +15,7 @@ func _ready() -> void:
 	column.add_child(
 		MenuKit.label(
 			(
-				"As mesmas dungeons, com os itens embaralhados pela seed.\n"
+				"As mesmas dungeons, com os itens embaralhados pela semente.\n"
 				+ "O mesmo número dá o mesmo jogo em qualquer cópia."
 			),
 			16

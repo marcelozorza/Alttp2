@@ -70,6 +70,7 @@ const BOSS_SCENES := {
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
 const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
+const MESSAGE_PLATE_SCENE := preload("res://objects/message_plate.tscn")
 
 ## Chance, em cem, de um inimigo morto deixar um ossinho que recupera vida
 ## (pedido de Marcelo em 2026-11-07, para a morte não ficar dura demais). É
@@ -256,6 +257,11 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		block.position = center + FloorSwitch.BLOCK_OFFSET
 		_objects.add_child(block)
 		_register(block, cell)
+	elif character == "?":
+		var plate := MESSAGE_PLATE_SCENE.instantiate() as MessagePlate
+		plate.position = center
+		plate.text = data.messages.get(cell, "")
+		_switches.add_child(plate)
 	elif character == "=":
 		var switch := FLOOR_SWITCH_SCENE.instantiate() as FloorSwitch
 		switch.position = center

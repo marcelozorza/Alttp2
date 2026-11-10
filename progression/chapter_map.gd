@@ -12,7 +12,8 @@ extends RefCounted
 ##   mesmo caractere formam um só bloqueio.
 ## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "s" atirador
 ##   de pedras, "x" tatu de pedra, "y" morcego, "z" planta de espinhos, "c"
-##   caixa leve, "0" bloco pesado e "=" interruptor no chão.
+##   caixa leve, "0" bloco pesado, "=" interruptor no chão e "?" placa de
+##   mensagem, que mostra um texto enquanto o personagem está em cima.
 ## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
 ##   chefes.
 ##
