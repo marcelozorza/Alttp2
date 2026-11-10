@@ -10,6 +10,10 @@ Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O es
 2. No gerenciador de projetos do Godot, clique em **Importar** e selecione o arquivo `project.godot` desta pasta.
 3. Pressione **F5** para rodar. O jogo abre no menu.
 
+## Jogar sem o Godot
+
+A cada push, o GitHub monta o jogo para Windows. Na aba **Actions** do repositório, abra a execução mais recente de **Verificar** com marca verde, desça até **Artifacts** e baixe `giorgino-windows`. Dentro do zip há um só arquivo, `giorgino.exe`: é abrir e jogar. A música provisória não vai junto, porque fica fora do repositório.
+
 ## Menu
 
 - **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
