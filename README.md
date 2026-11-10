@@ -109,7 +109,7 @@ O Godot reimporta os SVG ao voltar para o editor. Uma linha `usa outro_desenho` 
 
 Os 13 quadros do Giorgino (`giorgino_*`) saem de uma folha de 16 poses gerada por IA, em 4 por 4 células. `python3 tools/giorgino_sheet.py folha.png 48 saida/` separa cada pose do fundo, reduz para 48 pixels de altura na pose de pé e quantiza na paleta do personagem. Depois é copiar os 13 arquivos (todos menos os três `giorgino_bark_*`) para `art/source/` e rodar o passo acima. Precisa de numpy e Pillow. Em 2026-11-08 Marcelo decidiu que recortar folhas de IA não serve para as sprites (ficam destoantes), então as próximas são desenhadas à mão em `art/source/`, e esse conversor fica só como registro.
 
-`python3 tools/chapter_preview.py saida/` monta uma imagem de cada capítulo a partir dos dados do mapa e da pixel art, sem o Godot, para ver as dungeons inteiras e servir de referência de redesenho. É uma aproximação do desenho de `world/map_view.gd`.
+`sh tools/capture_all.sh saida/` fotografa o mundo, a dungeon de teste, os três capítulos, a Galeria e as telas com o próprio Godot, para ver as dungeons inteiras e comparar a arte antes e depois de uma mudança. Precisa do `xvfb-run` e roda numa cópia do projeto já importada.
 
 ## Som
 

@@ -120,6 +120,7 @@ func _run() -> void:
 	await _check_training()
 	await _check_tutorial()
 	await _check_continue()
+	await _check_practice()
 	_check_logic()
 	await _check_randomized()
 	Progress.clear_file()
@@ -487,6 +488,86 @@ func _check_continue() -> void:
 	)
 
 
+## A dungeon de teste a partir do mundo: o jogo novo começa na clareira do
+## sul, com os textos gravados no chão, a entrada 0 leva à dungeon de teste
+## como treino (sem as ferramentas nem a vida do jogo), a placa de mensagem
+## mostra o texto só com o personagem em cima e sem parar o jogo, e vencer
+## grava a dungeon como vencida sem mudar ferramentas nem vida.
+func _check_practice() -> void:
+	Progress.start_new()
+	Progress.tools = Item.bit(Item.Id.BOMB)
+	Progress.max_health = 10
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(10)
+	var world: Node = get_tree().current_scene
+	var player: Player = world.get("_player")
+	var world_map: ChapterMap = world.get("map")
+	var start := (Vector2(world_map.find("@")) + Vector2(0.5, 0.5)) * ChapterMap.TILE
+	var texts: Array = world.get("_floor_text").entries
+	print(
+		(
+			"TESTE: jogo novo no início %s, textos no chão %d, entrada 0 modo %d"
+			% [player.global_position.distance_to(start) < 4.0, texts.size(), _entrance(0).mode]
+		)
+	)
+	await _walk_into(_entrance(0), player)
+	await _frames(20)
+	var chapter: Node = get_tree().current_scene
+	player = chapter.get("_player")
+	print(
+		(
+			"TESTE: entrada 0 -> %s, %s, treino %s, bomba %s, vida %d"
+			% [
+				_scene_name(),
+				chapter.call("mode_text"),
+				Progress.practice,
+				player.has_tool(Item.Id.BOMB),
+				player.max_health,
+			]
+		)
+	)
+	var plates: Array[MessagePlate] = []
+	for node: Node in chapter.get("_switches").get_children():
+		if node is MessagePlate:
+			plates.append(node)
+	var empty := 0
+	for plate: MessagePlate in plates:
+		if plate.text.is_empty():
+			empty += 1
+	var plate := plates[0]
+	player.global_position = plate.global_position
+	await _frames(MessagePlate.FADE_TICKS + 5)
+	var shown: bool = plate.get("_shown") == MessagePlate.FADE_TICKS
+	var running := not get_tree().paused
+	player.global_position = plate.global_position + Vector2(0.0, 64.0)
+	await _frames(MessagePlate.FADE_TICKS + 5)
+	print(
+		(
+			"TESTE: placas %d, sem texto %d, em cima mostra %s, jogo solto %s, ao sair some %s"
+			% [plates.size(), empty, shown, running, plate.get("_shown") == 0]
+		)
+	)
+	await _play(ChapterData.TUTORIAL)
+	await _frames(60)
+	await _press("Voltar ao mundo")
+	world = get_tree().current_scene
+	player = world.get("_player")
+	var entrance := _entrance(0)
+	print(
+		(
+			"TESTE: vencida %s, -> %s, na entrada %s, ferramentas %d, vida %d, modo %d"
+			% [
+				Progress.is_done(ChapterData.TUTORIAL),
+				_scene_name(),
+				entrance != null and player.global_position == entrance.exit_position(),
+				Progress.tools,
+				Progress.max_health,
+				entrance.mode if entrance else -1,
+			]
+		)
+	)
+
+
 ## A lógica do jogo repete a do conferidor: as esferas de cada capítulo
 ## linear, com todas as portas abertas, têm de ser as que
 ## tools/check_chapter.py imprime.
@@ -693,7 +774,7 @@ func _play(chapter_number: int) -> void:
 		if cell == Vector2i(-1, -1):
 			print("sala sem chão livre: ", room)
 			continue
-		player.global_position = (Vector2(cell) + Vector2(0.5, 0.5)) * 16.0
+		player.global_position = (Vector2(cell) + Vector2(0.5, 0.5)) * ChapterMap.TILE
 		await _frames(10)
 		for step: int in 16:
 			var action: String = ACTIONS[step % ACTIONS.size()]

@@ -24,4 +24,19 @@ if ! grep -q "^CONTINUAR" "$LOG"; then
 	echo "FALHOU: o teste de fumaça não chegou ao fim"
 	exit 1
 fi
+# Os valores impressos são comparados, linha a linha, com os de
+# tools/smoke_expected.txt. A linha do ossinho fica de fora, porque depende
+# de sorteio. Quando uma mudança de propósito altera um valor, confira a
+# diferença e grave o arquivo de novo com:
+#
+#     sh tools/run_smoke_test.sh godot gravar
+FOUND="$(mktemp)"
+grep -E "^[A-ZÁÉÍÓÚÃÕÇ ]+: " "$LOG" | grep -v -e "^OSSINHO" -e "^WARNING" -e "^ERROR" -e "^SCRIPT ERROR" > "$FOUND"
+if [ "${2:-}" = "gravar" ]; then
+	cp "$FOUND" tools/smoke_expected.txt
+	echo "Valores esperados gravados em tools/smoke_expected.txt."
+elif ! diff tools/smoke_expected.txt "$FOUND"; then
+	echo "FALHOU: algum valor do teste de fumaça mudou (esperado < e encontrado >)"
+	exit 1
+fi
 echo "Teste de fumaça sem erros."
