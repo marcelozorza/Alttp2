@@ -8,6 +8,7 @@ Uso: python3 tools/editor/build_editor.py [arquivo de saída]
 
 import base64
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -26,8 +27,24 @@ SPRITES = [
 ]
 
 
+def actor_sprites() -> dict:
+    """Desenho de cada inimigo e chefe, pelo caractere do mapa.
+
+    Segue a cena que world/chapter/chapter.gd liga a cada caractere e pega o
+    primeiro desenho de art/ dessa cena. Assim, um inimigo redesenhado ou
+    com desenho de outro nome aparece no editor ao gerar de novo.
+    """
+    chapter = (ROOT / "world/chapter/chapter.gd").read_text(encoding="utf-8")
+    result = {}
+    for char, scene in re.findall(r'"(.)": preload\("res://(enemies/\w+\.tscn)"\)', chapter):
+        found = re.search(r"res://art/(\w+)\.svg", (ROOT / scene).read_text(encoding="utf-8"))
+        if found:
+            result[char] = found.group(1)
+    return result
+
+
 def sprite_names() -> list:
-    names = list(SPRITES)
+    names = list(SPRITES) + list(actor_sprites().values())
     for base in THEMED:
         for suffix in ("", "_castle", "_ice", "_moss"):
             names.append(base + suffix)
@@ -44,7 +61,10 @@ def main() -> None:
             sprites[name] = "data:image/svg+xml;base64," + data
         else:
             print("sem desenho:", name)
-    payload = {"dungeons": all_dungeons(), "sprites": sprites}
+    missing = [n for n in SPRITES if n not in sprites]
+    if missing:
+        sys.exit("ERRO: desenhos que o editor usa e não existem mais: " + ", ".join(missing))
+    payload = {"dungeons": all_dungeons(), "sprites": sprites, "actorSprites": actor_sprites()}
     template = (HERE / "editor_template.html").read_text(encoding="utf-8")
     html = template.replace("/*DATA*/null", json.dumps(payload, ensure_ascii=False))
     out.parent.mkdir(parents=True, exist_ok=True)

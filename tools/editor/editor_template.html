@@ -250,6 +250,11 @@ const BOSSES = [
   ["%", "Guardião antigo", "crab_thick_walk"], ["$", "Colosso", "cerberus_shell_walk"],
 ];
 for (const [c, n, s] of BOSSES) def("boss:" + c, "Chefes", n, s, c, "Chefe: " + n + ". O desenho ocupa mais de uma casa.", { actor: true, boss: true });
+// Desenhos lidos das cenas do jogo ao gerar o editor, por cima da lista acima.
+for (const [c, s] of Object.entries(DATA.actorSprites || {})) {
+  const e = EL["enemy:" + c] || EL["boss:" + c];
+  if (e) e.sprite = s;
+}
 const CHAR_TO_EL = {};
 for (const e of ELEMENTS) if (e.char) CHAR_TO_EL[e.char] = e.id;
 

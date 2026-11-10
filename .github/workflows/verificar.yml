@@ -31,6 +31,13 @@ jobs:
           done
       - name: Conferir a pixel art
         run: python3 tools/check_art.py
+      - name: Gerar o editor de dungeons
+        run: python3 tools/editor/build_editor.py build/editor_de_dungeons.html
+      - name: Guardar o editor de dungeons
+        uses: actions/upload-artifact@v4
+        with:
+          name: editor-de-dungeons
+          path: build/editor_de_dungeons.html
 
   godot:
     name: Teste de fumaça no Godot
