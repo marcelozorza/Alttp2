@@ -25,9 +25,9 @@ FRAMES = [
     "giorgino_stand_side", "giorgino_stand_side_step", "giorgino_down", "giorgino_down_step",
     "giorgino_up", "giorgino_up_step", "giorgino_side", "giorgino_side_step", "giorgino_fallen",
 ]
-## Cores da gosma, as mesmas de tools/goo_art.py. As letras maiúsculas não
+## Cores da gosma, tiradas da paleta mestra (tools/art/palette.py). As letras maiúsculas não
 ## colidem com as paletas do Giorgino.
-GOO = {"D": "#8e2280", "P": "#d24cbc", "L": "#ef80dc", "H": "#ffd2f4"}
+GOO = {"D": "#7a1a78", "P": "#c038b8", "L": "#ee7fe0", "H": "#f9cfd0"}
 ## Fração da altura do desenho coberta por inteiro, a partir do alto: só uma
 ## calota no alto da cabeça, para o rosto continuar à vista.
 CAP = 0.2

@@ -58,53 +58,6 @@ enum State { WALK, RUN, KNOCKBACK, DEAD }
 ## bastam (pedido de Marcelo em 2026-11-08).
 const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
-## Desenhos do Giorgino, nesta ordem: de frente, de costas e de lado, cada um
-## com o segundo passo logo depois. O de lado olha para a direita, e o jogo
-## espelha para a esquerda. Ele anda e corre de pé, com a espada e os itens
-## na pata: correndo, o desenho é inclinado para a frente (desenhos de
-## 2026-11-06, redesenhados por IA a partir do mapa de sprites, a pedido de
-## Marcelo, que tirou a pose de 4 patas da corrida).
-const ART_WALKING := [
-	preload("res://art/giorgino_stand_down.svg"),
-	preload("res://art/giorgino_stand_down_step.svg"),
-	preload("res://art/giorgino_stand_up.svg"),
-	preload("res://art/giorgino_stand_up_step.svg"),
-	preload("res://art/giorgino_stand_side.svg"),
-	preload("res://art/giorgino_stand_side_step.svg"),
-]
-const ART_RUNNING := [
-	preload("res://art/giorgino_down.svg"),
-	preload("res://art/giorgino_down_step.svg"),
-	preload("res://art/giorgino_up.svg"),
-	preload("res://art/giorgino_up_step.svg"),
-	preload("res://art/giorgino_side.svg"),
-	preload("res://art/giorgino_side_step.svg"),
-]
-## Deitado, sem vida.
-const ART_FALLEN := preload("res://art/giorgino_fallen.svg")
-## Os mesmos desenhos sujos da gosma da granada do ugly, mostrados enquanto a
-## espada está travada (pedido de Marcelo em 2026-11-08: a gosma tem que ser
-## desenho, não efeito por cima). Gerados por tools/giorgino_goo_art.py a
-## partir dos desenhos limpos, na mesma ordem.
-const ART_GOO_WALKING := [
-	preload("res://art/giorgino_goo_stand_down.svg"),
-	preload("res://art/giorgino_goo_stand_down_step.svg"),
-	preload("res://art/giorgino_goo_stand_up.svg"),
-	preload("res://art/giorgino_goo_stand_up_step.svg"),
-	preload("res://art/giorgino_goo_stand_side.svg"),
-	preload("res://art/giorgino_goo_stand_side_step.svg"),
-]
-const ART_GOO_RUNNING := [
-	preload("res://art/giorgino_goo_down.svg"),
-	preload("res://art/giorgino_goo_down_step.svg"),
-	preload("res://art/giorgino_goo_up.svg"),
-	preload("res://art/giorgino_goo_up_step.svg"),
-	preload("res://art/giorgino_goo_side.svg"),
-	preload("res://art/giorgino_goo_side_step.svg"),
-]
-const ART_GOO_FALLEN := preload("res://art/giorgino_goo_fallen.svg")
-## Quanto o desenho desce abaixo da origem, nos pés, em pixels.
-const ART_BELOW_FEET := 8.0
 ## Ticks de cada passo, andando e correndo.
 const WALK_STEP_TICKS := 10
 const RUN_STEP_TICKS := 6
@@ -788,10 +741,10 @@ func _update_visuals() -> void:
 	_update_sword_lock_bar()
 
 
-## Escolhe o desenho pela postura e pela frente: correndo, os desenhos
-## inclinados, sem vida, deitado, e no resto, os de pé. Andando ou correndo,
-## alterna os dois passos, mais rápido na corrida. O desenho sempre termina
-## ART_BELOW_FEET abaixo dos pés, qualquer que seja a altura.
+## Escolhe o desenho pela postura e pela frente: sem vida, deitado, no golpe,
+## o braço estendido com a espada, correndo, o galope, e no resto, de pé.
+## Andando ou correndo, alterna os dois passos, mais rápido na corrida. Os
+## desenhos e o ponto dos pés de cada um ficam em GiorginoArt.
 func _update_art() -> void:
 	var running := _state == State.RUN
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 2.0
@@ -804,22 +757,35 @@ func _update_art() -> void:
 	if step == 1 and _last_step == 0 and running and not is_airborne():
 		Sfx.play(&"step")
 	_last_step = step
-	var direction := 2
-	if facing.y > 0.0:
-		direction = 0
-	elif facing.y < 0.0:
-		direction = 1
 	# Com a espada travada, a versão suja de gosma de cada desenho.
 	var goo := is_sword_locked()
-	var frames: Array = ART_RUNNING if running else ART_WALKING
-	if goo:
-		frames = ART_GOO_RUNNING if running else ART_GOO_WALKING
-	var texture: Texture2D = frames[direction * 2 + step]
+	var toward := facing
+	var texture: Texture2D
+	var feet: Vector2
 	if _is_down():
-		texture = ART_GOO_FALLEN if goo else ART_FALLEN
+		texture = GiorginoArt.GOO_FALLEN if goo else GiorginoArt.FALLEN
+		feet = GiorginoArt.FALLEN_FEET
+	elif _sword.is_out():
+		# O golpe mantém a direção em que saiu, mesmo que a frente já tenha
+		# virado para o próximo.
+		toward = _sword.direction
+		var thrust := GiorginoArt.direction_index(toward)
+		texture = GiorginoArt.THRUST[thrust]
+		feet = GiorginoArt.THRUST_FEET[thrust]
+	else:
+		var index := GiorginoArt.direction_index(toward) * 2 + step
+		if running:
+			texture = GiorginoArt.GOO_RUNNING[index] if goo else GiorginoArt.RUNNING[index]
+			feet = GiorginoArt.RUNNING_FEET[index]
+		else:
+			texture = GiorginoArt.GOO_WALKING[index] if goo else GiorginoArt.WALKING[index]
+			feet = GiorginoArt.WALKING_FEET[index]
+	var flipped := toward.x < 0.0
 	_art.texture = texture
-	_art.flip_h = facing.x < 0.0 and (direction == 2 or _is_down())
-	_art.offset = Vector2(-texture.get_width() / 2.0, ART_BELOW_FEET - texture.get_height())
+	_art.flip_h = flipped
+	# Espelhado, o ponto dos pés também troca de lado dentro do desenho.
+	var feet_x := texture.get_width() - feet.x if flipped else feet.x
+	_art.offset = Vector2(-feet_x, -feet.y)
 
 
 func _update_sword_lock_bar() -> void:
