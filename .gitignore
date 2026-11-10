@@ -16,3 +16,6 @@ __pycache__/
 # Música provisória, que não é nossa e fica só na máquina de quem joga
 audio/music/local/*
 !audio/music/local/LEIA.md
+
+# Editor de dungeons gerado
+/tools/editor/editor_de_dungeons.html
