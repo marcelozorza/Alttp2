@@ -11,10 +11,16 @@ const FRONT_TEXTURE := preload("res://art/ice.svg")
 const TOP_TEXTURE := preload("res://art/ice_top.svg")
 ## Ticks para derreter. A passagem abre no fim.
 const MELT_TICKS := 15
-## Ticks em que a poça fica no chão depois de o gelo sumir, apagando aos poucos.
-const PUDDLE_TICKS := 40
-const PUDDLE_COLOR := Color(0.55, 0.78, 0.95, 0.45)
-const PUDDLE_SHINE := Color(0.85, 0.95, 1.0, 0.6)
+## Poça desenhada, uma por casa: cheia, secando e as últimas gotas.
+const PUDDLES: Array[Texture2D] = [
+	preload("res://art/puddle_1.svg"),
+	preload("res://art/puddle_2.svg"),
+	preload("res://art/puddle_3.svg"),
+]
+## Ticks em que a poça fica no chão depois de o gelo sumir: cheia no começo,
+## e os últimos PUDDLE_DRY_TICKS secando em dois passos.
+const PUDDLE_TICKS := 90
+const PUDDLE_DRY_TICKS := 40
 const DROP_COLOR := Color(0.75, 0.9, 1.0, 0.9)
 
 
@@ -47,8 +53,8 @@ func _clear_animation_ticks() -> int:
 
 
 ## Derretendo, o gelo afunda no chão casa por casa, como a porta trancada ao
-## abrir (pedido de Marcelo em 2026-11-08), e deixa uma poça que cresce
-## enquanto ele afunda e depois some. Gotas saltam das bordas no derretimento.
+## abrir (pedido de Marcelo em 2026-11-08), e deixa uma poça desenhada que
+## cresce enquanto ele afunda e depois seca. Gotas saltam das bordas no derretimento.
 func _draw() -> void:
 	var sink := 1.0
 	var elapsed := _ticks_since_clear()
@@ -73,23 +79,28 @@ func _draw() -> void:
 		_draw_drops(elapsed)
 
 
-## Poça rasa no chão onde estava o gelo: cresce até o gelo sumir e apaga depois.
+## Poça no chão de cada casa onde estava o gelo. É desenho, sem
+## transparência (pedido de Marcelo em 2026-11-11): cresce em dois passos
+## enquanto o gelo afunda, fica cheia e seca encolhendo.
 func _draw_puddle(elapsed: int) -> void:
-	var grow := clampf(float(elapsed) / _melt_ticks(), 0.0, 1.0)
-	var fade := 1.0 - clampf(float(elapsed - _melt_ticks()) / PUDDLE_TICKS, 0.0, 1.0)
-	if fade <= 0.0:
+	var left := _melt_ticks() + PUDDLE_TICKS - elapsed
+	if left <= 0:
 		return
-	var inset := floorf(lerpf(12.0, 2.0, grow))
-	var rect := Rect2(Vector2(inset, inset + 4.0), size - Vector2(inset, inset + 4.0) * 2.0)
-	rect.size.y += 4.0
-	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
-		return
-	draw_rect(rect, Color(PUDDLE_COLOR, PUDDLE_COLOR.a * fade))
-	var shine := Rect2(
-		rect.position + Vector2(4.0, 2.0), Vector2(minf(10.0, rect.size.x - 6.0), 2.0)
-	)
-	if shine.size.x > 0.0:
-		draw_rect(shine, Color(PUDDLE_SHINE, PUDDLE_SHINE.a * fade))
+	var grow := float(elapsed) / _melt_ticks()
+	var stage := 0
+	if grow < 0.35 or left <= PUDDLE_DRY_TICKS / 2:
+		stage = 2
+	elif grow < 0.7 or left <= PUDDLE_DRY_TICKS:
+		stage = 1
+	var tile := 32.0
+	for y: int in int(size.y / tile):
+		for x: int in int(size.x / tile):
+			# Casas vizinhas alternam o lado, para não parecerem carimbo.
+			var flip := (x + y) % 2 == 1
+			var target := Rect2(Vector2(x, y) * tile, Vector2(tile, tile))
+			if flip:
+				target = Rect2(target.position + Vector2(tile, 0.0), Vector2(-tile, tile))
+			draw_texture_rect(PUDDLES[stage], target, false)
 
 
 ## Gotas de 2 pixels que saltam das bordas e caem enquanto o gelo afunda.
