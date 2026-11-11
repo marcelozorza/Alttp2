@@ -95,6 +95,8 @@ var _visited := {}
 ## Sala maior de cada tela que faz parte de uma. As outras telas são salas.
 var _room_rects := {}
 var _room_actors := {}
+## Salas em que todos os inimigos foram derrotados. Eles não voltam mais.
+var _cleared_rooms := {}
 ## Interruptores e grades de cada sala.
 var _room_switches := {}
 var _room_gates := {}
@@ -357,9 +359,12 @@ func _enter_room(room: Rect2i) -> void:
 	_activate_room.call_deferred(room, true)
 
 
+## Numa sala limpa, os inimigos ficam desligados para sempre. Numa sala em
+## que sobrou algum, todos voltam quando o personagem sai e entra de novo.
 func _activate_room(room: Rect2i, active: bool) -> void:
+	var cleared := _cleared_rooms.has(room)
 	for actor: Node in _room_actors.get(room, []):
-		actor.call("set_active", active)
+		actor.call("set_active", active and not (cleared and actor is Enemy))
 
 
 ## Apaga as marcas no chão, como a área da granada.
@@ -375,11 +380,27 @@ func _on_boss_defeated(room: Rect2i) -> void:
 ## Sorteia um ossinho onde o inimigo caiu, sempre quando a vida está baixa. O
 ## ossinho fica com os efeitos do chão e some ao trocar de sala.
 func _on_enemy_died(enemy: Enemy) -> void:
+	_check_room_cleared(enemy)
 	if not _drops_bone():
 		return
 	var bone := BONE_DROP_SCENE.instantiate() as BoneDrop
 	bone.position = enemy.global_position
 	_floor_effects.add_child(bone)
+
+
+## A sala fica limpa quando o último inimigo dela é derrotado (pedido de
+## Marcelo em 2026-11-11). Vale até sair da dungeon.
+func _check_room_cleared(defeated: Enemy) -> void:
+	for room: Rect2i in _room_actors:
+		var actors: Array = _room_actors[room]
+		if defeated not in actors:
+			continue
+		for actor: Node in actors:
+			var enemy := actor as Enemy
+			if enemy and not enemy.is_dead():
+				return
+		_cleared_rooms[room] = true
+		return
 
 
 func _drops_bone() -> bool:

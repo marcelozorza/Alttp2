@@ -225,6 +225,11 @@ func reset() -> void:
 	_enter(State.IDLE)
 
 
+## Derrotado, à espera de reaparecer ou de a sala ser reposta.
+func is_dead() -> bool:
+	return _state == State.DEAD
+
+
 ## Liga ou desliga o inimigo quando o personagem entra ou sai da sala dele.
 ## Nos dois casos ele volta ao ponto inicial. Desligado, ele não bloqueia nada.
 func set_active(active: bool) -> void:
