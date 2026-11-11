@@ -72,7 +72,7 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `ui/` menu de título, treino, HUD, menu de pausa, tela de derrota, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
 - `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `tutorial/`, `chapter_one/`, `chapter_two/` e `chapter_three/` têm os dados do tutorial e de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
-- `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/local/` recebe a trilha provisória, fora do Git.
+- `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/tracks/` tem as trilhas, que tocam em fila.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
 - `docs/` documentação de design.
@@ -119,7 +119,7 @@ Os 13 quadros do Giorgino (`giorgino_*`) saem de uma folha de 16 poses gerada po
 
 ## Som
 
-**Música.** Ponha um arquivo .ogg, .mp3 ou .wav em `audio/music/local/` e ele toca em loop em todas as telas. Essa pasta fica fora do Git, porque o repositório é público e a trilha provisória não é nossa. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
+**Música.** Os arquivos .ogg, .mp3 ou .wav de `audio/music/tracks/` tocam em fila, em ordem alfabética, em todas as telas, e depois do último a fila volta ao primeiro. O volume da música fica no barramento Music, na aba Áudio, embaixo no editor.
 
 **Efeitos.** Os 50 efeitos são originais, montados por receitas de ruído, osciladores e filtros em `tools/sfx.py`, a 32 kHz, como o chip de som do Super Nintendo. Para mudar um som, edite a receita e gere de novo:
 
