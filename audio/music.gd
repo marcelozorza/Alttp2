@@ -2,13 +2,13 @@ extends Node
 ## Música de fundo. As trilhas tocam em fila, em todas as telas, e continuam
 ## com o jogo pausado. Fica carregada o tempo todo, como autoload Music.
 ##
-## As trilhas não entram no repositório, que é público. Basta pôr arquivos
-## .ogg, .mp3 ou .wav em audio/music/local/ para eles tocarem em ordem
-## alfabética: quando um acaba, entra o seguinte, e depois do último a fila
-## volta ao primeiro. Com um arquivo só, ele toca em loop. Sem nenhum, o
-## jogo fica sem música.
+## As trilhas são os arquivos .ogg, .mp3 ou .wav de audio/music/tracks/, em
+## ordem alfabética: quando um acaba, entra o seguinte, e depois do último a
+## fila volta ao primeiro. Com um arquivo só, ele toca em loop. Sem nenhum, o
+## jogo fica sem música. As duas trilhas de 2026-11-11 foram escolhidas por
+## Marcelo, que informou serem livres de direitos autorais.
 
-const LOCAL_FOLDER := "res://audio/music/local"
+const TRACKS_FOLDER := "res://audio/music/tracks"
 const EXTENSIONS := ["ogg", "mp3", "wav"]
 
 var _player := AudioStreamPlayer.new()
@@ -53,13 +53,13 @@ func _play_next() -> void:
 
 func _find_tracks() -> Array[AudioStream]:
 	var found: Array[AudioStream] = []
-	if not DirAccess.dir_exists_absolute(LOCAL_FOLDER):
+	if not DirAccess.dir_exists_absolute(TRACKS_FOLDER):
 		return found
-	var files := Array(ResourceLoader.list_directory(LOCAL_FOLDER))
+	var files := Array(ResourceLoader.list_directory(TRACKS_FOLDER))
 	files.sort()
 	for file: String in files:
 		if file.get_extension().to_lower() in EXTENSIONS:
-			var stream := load(LOCAL_FOLDER.path_join(file)) as AudioStream
+			var stream := load(TRACKS_FOLDER.path_join(file)) as AudioStream
 			if stream:
 				found.append(stream)
 	return found
