@@ -7,9 +7,9 @@ MUNDO: modos das entradas [1, 0, 0] (0 trancada, 1 aberta, 2 vencida)
 MUNDO: entrada 2 trancada -> overworld.tscn, tremeu: true
 MUNDO: pedra gravou: true, vida 6/6
 MUNDO: entrada 1 -> chapter.tscn, capítulo 1
-MUNDO: capítulo 1 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 16, ferramentas 62
-MUNDO: capítulo 2 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 24, ferramentas 62
-MUNDO: capítulo 3 vencido true, entrada 2, seguinte -1, personagem na entrada true, vida 24, ferramentas 62
+MUNDO: capítulo 1 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 16, ferramentas 574
+MUNDO: capítulo 2 vencido true, entrada 2, seguinte 1, personagem na entrada true, vida 24, ferramentas 574
+MUNDO: capítulo 3 vencido true, entrada 2, seguinte -1, personagem na entrada true, vida 24, ferramentas 574
 REJOGO: abertos ["HEART", "SPRING", "HEART", "HEART", "FIRE", "HEART", "HEART", "BOMB"], fechados ["KEY", "BOSS_KEY", "KEY", "KEY", "KEY", "KEY", "KEY"], vida 24/24
 PAUSA: mapa com menu true, menu separado escondido true, jogo parado true
 PAUSA: fechada true, jogo solto true
