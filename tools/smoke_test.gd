@@ -503,11 +503,15 @@ func _check_practice() -> void:
 	var player: Player = world.get("_player")
 	var world_map: ChapterMap = world.get("map")
 	var start := (Vector2(world_map.find("@")) + Vector2(0.5, 0.5)) * ChapterMap.TILE
-	var plates: Array = world.get("_plates")
+	var world_plates: Array = world.get("_plates")
 	print(
 		(
 			"TESTE: jogo novo no início %s, placas no mundo %d, entrada 0 modo %d"
-			% [player.global_position.distance_to(start) < 4.0, plates.size(), _entrance(0).mode]
+			% [
+				player.global_position.distance_to(start) < 4.0,
+				world_plates.size(),
+				_entrance(0).mode
+			]
 		)
 	)
 	await _walk_into(_entrance(0), player)
