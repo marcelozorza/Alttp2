@@ -1,16 +1,19 @@
-"""Inimigos de gelo no traço de 2026-11-10: o cubo e a estalactite, 16 e 15
-quadros na grade fina. Formas grandes e redondas, olhos grandes com brilho,
-bochecha rosada e contorno na tinta do Giorgino, como o minion e o lobo.
+"""Inimigos de gelo: o cubo e a estalactite, 16 e 15 quadros na grade fina.
 
-O cubo é um bloco de gelo de cantos redondos, com o topo mais claro e dois
-pezinhos. A estalactite é um cristal em ponta com dois cristais menores na
-base e presas de gelo, que lembram a morsa.
+Segunda versão, de 2026-11-11. Marcelo jogou a primeira e achou os dois
+"muito feios", pedindo o traço "mais fofo e menos primitivo". O que mudou:
+nada de caixa reta nem de cone de régua. O cubo é uma gelatina de gelo de
+cantos bem redondos, com bracinhos, e a estalactite é uma gota de gelo
+gordinha, de ponta curvada como um gorro. Os dois têm olhos grandes e baixos
+no rosto, com dois brilhos, bochecha rosada e boca pequena.
 
 Em cada família, todos os quadros têm o mesmo tamanho e os pés na mesma
 linha, para o corpo não pular quando o desenho troca.
 
 Uso: python3 tools/art/ice.py && python3 tools/pixel_svg.py
 """
+
+import math
 
 from canvas import Canvas
 
@@ -30,65 +33,75 @@ def flash(c):
     return c
 
 
-def eye(c, x, y, mood):
-    """Olho grande de 3 por 4 com brilho em cima à esquerda."""
+EYE = [".kk.", "wkkk", "wkkk", "kkkk", "kkwk", ".kk."]
+EYE_COLORS = {"k": INK, "w": WHITE}
+
+
+def eye(c, x, y, mood, side=1):
+    """Olho alto de 4 por 6, com um brilho grande em cima e um pequeno
+    embaixo. side é o lado de fora do rosto, para a sobrancelha brava."""
     if mood == "shut":
-        c.rect(x, y + 2, 3, 1, INK)
-    elif mood == "dizzy":
-        c.px(x, y + 1, INK)
-        c.px(x + 2, y + 1, INK)
-        c.px(x + 1, y + 2, INK)
+        # Olho fechado sorrindo, em arco.
         c.px(x, y + 3, INK)
-        c.px(x + 2, y + 3, INK)
+        c.rect(x + 1, y + 2, 2, 1, INK)
+        c.px(x + 3, y + 3, INK)
+    elif mood == "dizzy":
+        for d in range(4):
+            c.px(x + d, y + 1 + d, INK)
+            c.px(x + 3 - d, y + 1 + d, INK)
     else:
-        c.rect(x, y, 3, 4, INK)
-        c.px(x, y, WHITE)
+        c.rows(x, y, EYE, EYE_COLORS)
         if mood in ("angry", "bite"):
-            c.rect(x - 1, y - 1, 5, 1, B2)
+            # Sobrancelha inclinada, mais baixa do lado de dentro.
+            inner = x if side > 0 else x + 3
+            outer = x + 3 if side > 0 else x
+            c.line(outer + side, y - 3, inner - side, y - 1, B1)
 
 
 def face(c, x, y, mood, gap=5):
     """Cara de frente centrada em x: olhos, bochechas e boca."""
-    eye(c, x - gap - 2, y, mood)
-    eye(c, x + gap - 1, y, mood)
-    if mood in ("angry", "bite"):
-        c.px(x - gap + 1, y, B2)
-        c.px(x + gap - 1, y, B2)
-    c.rect(x - gap - 4, y + 4, 2, 2, PINK)
-    c.rect(x + gap + 2, y + 4, 2, 2, PINK)
+    eye(c, x - gap - 3, y, mood, -1)
+    eye(c, x + gap - 1, y, mood, 1)
+    c.rect(x - gap - 5, y + 6, 3, 2, PINK)
+    c.rect(x + gap + 2, y + 6, 3, 2, PINK)
     if mood == "bite":
-        c.rect(x - 3, y + 4, 6, 4, INK)
-        c.rect(x - 2, y + 6, 4, 2, RED)
-        c.px(x - 2, y + 4, WHITE)
-        c.px(x + 1, y + 4, WHITE)
+        c.ellipse(x, y + 7.5, 3, 2.5, INK)
+        c.rect(x - 1, y + 8, 2, 2, RED)
+        c.px(x - 2, y + 6, WHITE)
+        c.px(x + 1, y + 6, WHITE)
     elif mood == "angry":
-        c.rect(x - 3, y + 5, 6, 2, WHITE)
-        c.rect(x - 3, y + 4, 6, 1, INK)
-        c.rect(x - 3, y + 7, 6, 1, INK)
-        c.px(x - 1, y + 5, INK)
-        c.px(x + 1, y + 6, INK)
-    elif mood == "dizzy":
+        # Boca em arco para baixo, com um dentinho.
         c.rect(x - 2, y + 6, 4, 1, INK)
+        c.px(x - 3, y + 7, INK)
+        c.px(x + 2, y + 7, INK)
+        c.px(x - 1, y + 7, WHITE)
+    elif mood == "dizzy":
+        c.rect(x - 1, y + 7, 2, 2, INK)
     else:
-        c.px(x - 2, y + 5, INK)
-        c.rect(x - 1, y + 6, 2, 1, INK)
-        c.px(x + 1, y + 5, INK)
+        # Boquinha de gato.
+        c.px(x - 2, y + 6, INK)
+        c.px(x - 1, y + 7, INK)
+        c.px(x, y + 6, INK)
+        c.px(x + 1, y + 7, INK)
+        c.px(x + 2, y + 6, INK)
 
 
 def face_side(c, x, y, mood):
     """Cara de lado, olhando para a direita: um olho e a boca na beira."""
-    eye(c, x, y, mood)
-    c.rect(x - 4, y + 4, 2, 2, PINK)
+    eye(c, x, y, mood, -1)
+    c.rect(x - 4, y + 6, 3, 2, PINK)
     if mood == "bite":
-        c.rect(x + 3, y + 4, 4, 4, INK)
-        c.rect(x + 4, y + 6, 3, 2, RED)
-        c.px(x + 5, y + 4, WHITE)
+        c.ellipse(x + 6, y + 7.5, 2.5, 2.5, INK)
+        c.rect(x + 6, y + 8, 2, 2, RED)
+        c.px(x + 5, y + 6, WHITE)
     elif mood == "angry":
-        c.rect(x + 3, y + 5, 4, 2, WHITE)
-        c.rect(x + 3, y + 4, 4, 1, INK)
-        c.rect(x + 3, y + 7, 4, 1, INK)
+        c.rect(x + 5, y + 6, 3, 1, INK)
+        c.px(x + 4, y + 7, INK)
+        c.px(x + 6, y + 7, WHITE)
     else:
-        c.rect(x + 4, y + 6, 3, 1, INK)
+        c.px(x + 5, y + 6, INK)
+        c.px(x + 6, y + 7, INK)
+        c.px(x + 7, y + 6, INK)
 
 
 # ---------------------------------------------------------------- cubo
@@ -97,33 +110,48 @@ CW, CH = 40, 40
 CCX, CGROUND = 20, 38
 
 
-def cube_body(c, w, h, lift=0, top=7):
-    """Bloco de cantos redondos. Devolve o canto de cima à esquerda."""
+def cube_body(c, w, h, lift=0, top=7, arms=0):
+    """Gelatina de gelo de cantos bem redondos, com o topo mais claro,
+    bracinhos e dois pezinhos. arms sobe os bracinhos. Devolve o canto de
+    cima à esquerda da frente do bloco."""
     x0 = CCX - w // 2
     y0 = CGROUND - 2 - lift - h
-    # Pezinhos.
+    radius = 5.0
+    # Pezinhos e bracinhos, atrás do corpo.
     c.ellipse(CCX - w / 4, CGROUND - 1.5 - min(lift, 1), 3.5, 2, B2)
     c.ellipse(CCX + w / 4, CGROUND - 1.5 - min(lift, 1), 3.5, 2, B2)
-    c.rect(x0, y0, w, h, B4)
-    c.rect(x0, y0, w, top, B5)
-    c.rect(x0 + w - 3, y0 + top, 3, h - top, B3)
-    c.rect(x0, y0 + h - 2, w, 2, B3)
-    for dx, dy in [(0, 0), (1, 0), (0, 1), (w - 1, 0), (w - 2, 0), (w - 1, 1)]:
-        c.p[y0 + dy][x0 + dx] = None
-    for dx, dy in [(0, h - 1), (1, h - 1), (0, h - 2), (w - 1, h - 1), (w - 2, h - 1), (w - 1, h - 2)]:
-        c.p[y0 + dy][x0 + dx] = None
-    # Brilho do topo e reflexo em diagonal na frente.
-    c.rect(x0 + 3, y0 + 2, w // 3, 2, WHITE)
-    c.rect(x0 + w - 7, y0 + 3, 3, 1, WHITE)
-    c.line(x0 + 2, y0 + top + 5, x0 + 5, y0 + top + 2, B5)
-    c.line(x0 + 2, y0 + top + 8, x0 + 3, y0 + top + 7, B5)
+    arm_y = y0 + h * 0.62 - arms
+    c.ellipse(x0 - 0.5, arm_y, 2.5, 2.5, B4)
+    c.ellipse(x0 + w + 0.5, arm_y, 2.5, 2.5, B3)
+    for yy in range(h):
+        for xx in range(w):
+            # Distância ao canto redondo mais próximo.
+            cx = min(max(xx + 0.5, radius), w - radius)
+            cy = min(max(yy + 0.5, radius), h - radius)
+            if math.hypot(xx + 0.5 - cx, yy + 0.5 - cy) > radius:
+                continue
+            # A beira do topo desce no meio, como a face de cima vista de
+            # frente.
+            edge = top + 1.5 * math.sin(math.pi * (xx + 0.5) / w)
+            color = B4
+            if yy < edge:
+                color = B5
+            elif xx >= w - 3 or yy >= h - 2:
+                color = B3
+            c.px(x0 + xx, y0 + yy, color)
+    # Brilho do topo, reflexo em diagonal e uma bolha.
+    c.rect(x0 + 4, y0 + 2, w // 3, 2, WHITE)
+    c.px(x0 + 3, y0 + 3, WHITE)
+    c.rect(x0 + w - 8, y0 + 3, 2, 1, WHITE)
+    c.line(x0 + 2, y0 + top + 6, x0 + 4, y0 + top + 4, B5)
+    c.px(x0 + w - 6, y0 + h - 5, B5)
     return x0, y0 + top
 
 
 def cube_front(mood="calm", w=24, h=24, lift=0):
     c = Canvas(CW, CH)
-    x0, fy = cube_body(c, w, h, lift)
-    face(c, CCX, fy + (h - 7) // 2 - 4, mood)
+    x0, fy = cube_body(c, w, h, lift, arms=4 if mood == "bite" else 0)
+    face(c, CCX, fy + max(2, (h - 7) // 2 - 5), mood)
     return finish(c)
 
 
@@ -140,8 +168,8 @@ def cube_back(w=24, h=24, lift=0):
 
 def cube_side(mood="calm", w=24, h=24, lift=0):
     c = Canvas(CW, CH)
-    x0, fy = cube_body(c, w, h, lift)
-    face_side(c, x0 + w - 11, fy + (h - 7) // 2 - 4, mood)
+    x0, fy = cube_body(c, w, h, lift, arms=4 if mood == "bite" else 0)
+    face_side(c, x0 + w - 13, fy + max(2, (h - 7) // 2 - 5), mood)
     return finish(c)
 
 
@@ -149,7 +177,7 @@ def cube_recover():
     c = Canvas(CW, CH)
     c.ellipse(CCX, CGROUND - 2, 16, 2.5, B5)
     x0, fy = cube_body(c, 26, 21)
-    face(c, CCX, fy + 3, "dizzy")
+    face(c, CCX, fy + 2, "dizzy")
     c.rect(x0 + 21, fy - 3, 2, 3, WHITE)
     return finish(c)
 
@@ -191,27 +219,56 @@ SW, SH = 48, 52
 SCX, SGROUND = 24, 50
 
 
-def shard(c, x, y, s, size=9):
-    """Cristal pequeno da base, inclinado para o lado s."""
-    c.poly([(x - 3, y), (x + s * 5, y - size), (x + 4, y)], B4)
-    c.poly([(x + (1 if s > 0 else -3), y), (x + s * 5, y - size), (x + (4 if s > 0 else -1), y)], B3 if s > 0 else B5)
+def shard(c, x, y, s, size=7):
+    """Bracinho de gelo: um cristal pequeno e redondo ao lado do bulbo,
+    apontando para o lado s."""
+    c.ellipse(x + s * 1.5, y - size / 2.0, 3.0, size / 2.0, B4 if s < 0 else B3)
+    c.px(int(x + s * 2), int(y - size + 1), WHITE)
+
+
+def profile(t):
+    """Meia largura da gota, de 0 na ponta a 1 na base: um espigão fino em
+    cima e um bulbo gordinho embaixo, como uma cebola de gelo."""
+    if t < 0.42:
+        return 0.07 + 0.27 * (t / 0.42) ** 1.3
+    return 0.34 + 0.66 * math.sin((t - 0.42) / 0.58 * math.pi / 2.0) ** 0.75
 
 
 def crystal(c, tip, height, half, lift=0):
-    """Cristal principal em ponta, com a face esquerda clara e a direita
-    escura. tip é o desvio da ponta em x. Devolve o y da base."""
+    """Gota de gelo gordinha, de ponta curvada para o lado de tip, com a
+    face esquerda clara e a direita escura. Devolve o y da base."""
     base = SGROUND - 7 - lift
     top = base - height
-    tx = SCX + tip
-    c.ellipse(SCX, base, half, 4.5, B3)
-    c.poly([(SCX - half, base), (tx, top), (SCX + half, base)], B4)
-    c.poly([(SCX + 2, base), (tx, top), (SCX + half, base)], B3)
-    c.poly([(SCX - half + 2, base), (tx, top), (SCX - half // 2, base)], B5)
-    c.line(SCX - 1 + tip // 2, base - 17, tx, top + 2, WHITE)
-    c.ellipse(SCX - 2, base + 1, half - 2, 3, B4)
-    c.ellipse(SCX + half / 2, base + 1.5, half / 2 - 1, 2.5, B3)
+    belly = 5
+    for i in range(height + belly):
+        y = top + i
+        if i < height:
+            t = (i + 0.5) / height
+            hw = half * profile(t)
+            cx = SCX + tip * (1.0 - t) ** 2
+        else:
+            # Fundo redondo, abaixo da linha da base.
+            k = (i - height + 0.5) / belly
+            hw = half * math.sqrt(max(0.0, 1.0 - k * k))
+            cx = SCX
+        for x in range(int(math.floor(cx - hw)), int(math.ceil(cx + hw))):
+            u = (x + 0.5 - cx) / max(hw, 0.5)
+            if abs(u) > 1.0:
+                continue
+            color = B4
+            if u < -0.45:
+                color = B5
+            elif u > 0.4 or i >= height + belly - 2:
+                color = B3
+            c.px(x, y, color)
+    # Brilho comprido na face clara e a ponta branca.
+    for i in range(int(height * 0.3), int(height * 0.7)):
+        t = (i + 0.5) / height
+        c.px(int(SCX + tip * (1.0 - t) ** 2 - half * profile(t) * 0.62), top + i, WHITE)
+    tx = int(SCX + tip)
     c.px(tx, top, WHITE)
     c.px(tx, top + 1, WHITE)
+    c.px(SCX + half // 2, base - 2, B5)
     return base
 
 
@@ -223,9 +280,9 @@ def feet(c, lift=0):
 
 def tusks(c, x, y):
     """Presas de gelo, que caem dos lados da boca."""
-    for dx in (-4, 3):
-        c.rect(x + dx, y, 2, 3, WHITE)
-        c.px(x + dx + (0 if dx < 0 else 1), y + 3, WHITE)
+    for dx in (-5, 3):
+        c.rect(x + dx, y, 2, 2, WHITE)
+        c.px(x + dx + (0 if dx < 0 else 1), y + 2, WHITE)
 
 
 def spike_front(mood="calm", height=34, half=13, lift=0, tip=0):
@@ -234,8 +291,8 @@ def spike_front(mood="calm", height=34, half=13, lift=0, tip=0):
     shard(c, SCX - 12, SGROUND - 6 - lift, -1)
     shard(c, SCX + 12, SGROUND - 6 - lift, 1)
     base = crystal(c, tip, height, half, lift)
-    face(c, SCX, base - 12, mood, 4)
-    tusks(c, SCX, base - 5 if mood in ("calm", "shut", "dizzy") else base - 3)
+    face(c, SCX, base - 11, mood, 4)
+    tusks(c, SCX, base - 1)
     return finish(c)
 
 
@@ -255,27 +312,45 @@ def spike_side(mood="calm", height=34, half=13, lift=0, tip=2):
     feet(c, lift)
     shard(c, SCX - 11, SGROUND - 6 - lift, -1)
     base = crystal(c, tip, height, half, lift)
-    face_side(c, SCX + 3, base - 12, mood)
-    if mood != "bite":
-        c.rect(SCX + 8, base - 5, 2, 3, WHITE)
-        c.px(SCX + 9, base - 2, WHITE)
+    face_side(c, SCX + 1, base - 11, mood)
+    c.rect(SCX + 7, base - 1, 2, 2, WHITE)
+    c.px(SCX + 8, base + 1, WHITE)
     return finish(c)
 
 
 def spear_side(step=0):
-    """Bote de lado: o cristal deita e voa de ponta para a direita."""
+    """Bote de lado: a gota deita e voa de ponta para a direita."""
     c = Canvas(SW, SH)
-    y = SGROUND - 16 - step
-    x0 = SCX - 16 + step * 2
-    c.ellipse(x0, y, 4.5, 11, B3)
-    c.poly([(x0, y - 11), (x0 + 36, y + 2), (x0, y + 11)], B4)
-    c.poly([(x0, y + 3), (x0 + 36, y + 2), (x0, y + 11)], B3)
-    c.poly([(x0, y - 9), (x0 + 36, y + 2), (x0, y - 5)], B5)
-    c.line(x0 + 2, y - 2, x0 + 33, y + 1, WHITE)
-    c.ellipse(x0 - 1, y - 1, 3, 9, B4)
-    face_side(c, x0 + 9, y - 6, "bite")
-    for dy in (-9, 0, 9):
-        c.rect(x0 - 12 - step * 2, y + dy, 5, 1, B5)
+    cy = SGROUND - 16 - step
+    x0 = SCX - 15 + step * 2
+    length, half, belly = 34, 11, 5
+    for i in range(length + belly):
+        x = x0 + length - 1 - i
+        if i < length:
+            t = (i + 0.5) / length
+            hw = half * profile(t)
+            mid = cy - 3.0 * (1.0 - t) ** 2
+        else:
+            k = (i - length + 0.5) / belly
+            hw = half * math.sqrt(max(0.0, 1.0 - k * k))
+            mid = cy
+        for y in range(int(math.floor(mid - hw)), int(math.ceil(mid + hw))):
+            v = (y + 0.5 - mid) / max(hw, 0.5)
+            if abs(v) > 1.0:
+                continue
+            color = B4
+            if v < -0.45:
+                color = B5
+            elif v > 0.4 or i >= length + belly - 2:
+                color = B3
+            c.px(x, y, color)
+    for i in range(int(length * 0.3), int(length * 0.7)):
+        t = (i + 0.5) / length
+        c.px(x0 + length - 1 - i, int(cy - 3.0 * (1.0 - t) ** 2 - half * profile(t) * 0.62), WHITE)
+    c.px(x0 + length - 1, cy - 3, WHITE)
+    face_side(c, x0 + 6, cy - 6, "bite")
+    for dy in (-8, 0, 8):
+        c.rect(x0 - 12 - step * 2, cy + dy, 5, 1, B5)
     return finish(c)
 
 
@@ -286,7 +361,7 @@ def spike_recover():
     shard(c, SCX + 12, SGROUND - 6, 1, 6)
     base = crystal(c, 5, 29, 14)
     face(c, SCX, base - 11, "dizzy", 4)
-    tusks(c, SCX, base - 4)
+    tusks(c, SCX, base - 1)
     c.rect(SCX + 14, base - 22, 2, 3, WHITE)
     return finish(c)
 
