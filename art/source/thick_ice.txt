@@ -1,11 +1,10 @@
 # Gelo grosso: topo e face.
 paleta
-a #6cc3f2
+a #3b7bdc
 b #c6efff
 c #27409a
 d #1a2452
-e #f4f1ea
-f #1e181e
+e #1e181e
 pixels
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -22,20 +21,20 @@ cccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccc
 cccccccccccccdcccccccccccdcccccc
 cccccccccccccdcccccccccccdcccccc
-cccccccccecccdcccccccccccdcccccc
-ccccccccbecccdcccccccccccdcccccc
-ccccccceeeeecdcccccccccccdcccccc
-cccccccccebcadccccccccccadcccccc
-cccccccccecacdcacccccccacdcccccc
+cccccccccccccdcccccccccccdcccccc
+cccccccccccccdcccccccccccdcccccc
+cccccccccccccdcccccccccccdcccccc
+ccccccccccccadccccccccccadcccccc
+cccccccccccacdcacccccccacdcccccc
 ccccccccccaccdacccccccaccdcccccc
 cccccccccacccdcccccccacccdcccccc
 ccccccccacccadccccccaccccdcccccc
-cccccccacccacdccccccccccedcccccc
-ccccccacccaccdcccccccccbedcccccc
-cccccacccacccdcccccccceeeeeccccc
-ccccacccaccccdccccccccccebcccccc
-cccccccacccccdccccccccccedcccccc
+cccccccacccacdcccccccccccdcccccc
+ccccccacccaccdcccccccccccdcccccc
+cccccacccacccdcccccccccccdcccccc
+ccccacccaccccdcccccccccccdcccccc
+cccccccacccccdcccccccccccdcccccc
 cccccccccccccdcccccccccccdcccccc
 cccccccccccccdcccccccccccdcccccc
 dddddddddddddddddddddddddddddddd
-ffffffffffffffffffffffffffffffff
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee

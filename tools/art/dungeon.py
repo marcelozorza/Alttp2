@@ -254,17 +254,16 @@ def gate_door():
 
 def ice(thick, top_only):
     """Bloco de gelo: o topo claro e, na frente, a face com brilhos. O gelo
-    grosso é mais escuro e tem cristais brancos, para mostrar que a chama
-    comum não basta."""
-    top, face, deep, shine = (B5, B4, B3, WHITE) if not thick else (B4, B2, B1, B5)
+    grosso é o mesmo desenho, dois tons mais escuro, para mostrar que a chama
+    comum não basta. Ele tinha cristais brancos e o topo da cor da face do
+    gelo comum, e Marcelo não entendeu do que se tratava (2026-11-11): "tem
+    que ser como o primeiro, mas mais escuro"."""
+    top, face, deep, shine = (B5, B4, B3, WHITE) if not thick else (B3, B2, B1, B5)
     c = Canvas(T, T, top)
     for x, y, n in [(4, 6, 4), (20, 4, 3)]:
         for i in range(n):
             c.px(x + i, y - (i // 2), shine)
     if top_only:
-        if thick:
-            star(c, 22, 20)
-            star(c, 8, 24)
         return c
     c.rect(0, 11, T, 21, face)
     c.rect(0, 10, T, 1, shine)
@@ -275,18 +274,7 @@ def ice(thick, top_only):
         c.rect(x, 13, 1, 17, deep)
     c.rect(0, 30, T, 1, deep)
     c.rect(0, 31, T, 1, INK)
-    if thick:
-        star(c, 9, 17)
-        star(c, 24, 25)
     return c
-
-
-def star(c, x, y):
-    for d in range(-2, 3):
-        c.px(x + d, y, FUR)
-        c.px(x, y + d, FUR)
-    c.px(x - 1, y - 1, B5)
-    c.px(x + 1, y + 1, B5)
 
 
 def main():
