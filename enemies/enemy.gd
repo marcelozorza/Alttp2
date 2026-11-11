@@ -33,12 +33,14 @@ enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER
 ## Cores provisórias dos estados.
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
-const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+const HIT_COLOR := Color(1.0, 0.25, 0.25, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 ## Tons sobre o desenho do inimigo, quando a cena tem um. Acima de 1, o tom
 ## clareia.
 const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
-const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
+## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
+## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
+const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Velocidade angular do vaivém, em radianos por tick.
 const WEAVE_RATE := 0.2

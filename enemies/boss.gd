@@ -37,7 +37,9 @@ const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
 const ART_BELOW_FEET := 0.0
 ## Tons sobre o desenho. Acima de 1, o tom clareia.
 const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
-const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
+## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
+## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
+const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
 ## Nuvens a mais quando o chefe é vencido: o desvio de cada uma, em pixels, a
 ## partir do centro do desenho, e os ticks entre uma e outra.
 const DEATH_PUFF_SHIFTS: Array[Vector2] = [
