@@ -27,6 +27,10 @@ SHEETS = "/mnt/project-files/inimigos/"
 PIXEL = 4.23
 INK = "#1e181e"
 WHITE = "#ffffff"
+# Tamanhos relativos pedidos por Marcelo em 2026-11-11, numa montagem com o
+# Giorgino ao lado: cobra, tatu e morcego com três quartos do tamanho da
+# folha. Ler a folha com um passo maior que o pixel dela encolhe o desenho.
+SMALL = PIXEL / 0.75
 
 # Inimigo: pasta da folha, cores da paleta mestra que o decalque pode usar,
 # cores escuras que podem virar contorno, e os quadros na ordem das casas da
@@ -55,6 +59,12 @@ FAMILIES = {
     ),
     "wolf": dict(
         folder="lobo_ref",
+        # Três folhas de 4 poses, com o lobo grande: na montagem de Marcelo
+        # ele tem quase uma vez e meia a altura do Giorgino.
+        sheets=["grande_a.jpg", "grande_b.jpg", "grande_c.jpg"],
+        pixel=4.8,
+        # As linhas destas folhas são mais grossas.
+        margin=6,
         text="Lobo (ugly)",
         colors=[INK, "#3a3750", "#55526f", "#7c7b99", "#a9aac2", "#d6d8e6", WHITE, "#f7c53a",
                 "#9c2338", "#d83a3f", "#7a1a78", "#c038b8", "#ee7fe0"],
@@ -80,6 +90,7 @@ FAMILIES = {
         },
     ),
     "bat": dict(
+        pixel=SMALL,
         folder="morcego_ref",
         text="Morcego",
         colors=[INK, "#2e1a4f", "#55308f", "#8a59d0", "#c3a0f0", "#f7c53a", WHITE, "#d83a3f"],
@@ -105,6 +116,7 @@ FAMILIES = {
         },
     ),
     "snake": dict(
+        pixel=SMALL,
         folder="cobra_ref",
         text="Cobra",
         colors=[INK, "#12332f", "#1f5a3a", "#2f8a45", "#d99a1c", "#f3dfa6", "#f7c53a", WHITE,
@@ -131,6 +143,7 @@ FAMILIES = {
         },
     ),
     "armadillo": dict(
+        pixel=SMALL,
         folder="tatu_ref",
         text="Tatu de pedra",
         colors=[INK, "#3a3750", "#55526f", "#7c7b99", "#a9aac2", "#8a5a3c", "#b9824e", "#ddb277",
@@ -240,7 +253,7 @@ FAMILIES = {
 }
 
 
-def cells(path):
+def cells(path, margin=0):
     """Casas da folha, por linha, achadas pelas linhas cinza que as separam."""
     image = np.asarray(Image.open(path).convert("RGB")).astype(int)
     background = np.median(image.reshape(-1, 3), axis=0)
@@ -255,7 +268,7 @@ def cells(path):
                 edges.append(mark)
             last = mark
         edges.append(length)
-        return [(a + 5, b - 4) for a, b in zip(edges, edges[1:]) if b - a > 100]
+        return [(a + 5 + margin, b - 4 - margin) for a, b in zip(edges, edges[1:]) if b - a > 100]
 
     boxes = []
     for top, bottom in cuts(line, 1, image.shape[0]):
@@ -311,13 +324,15 @@ def support_middle(c):
 
 def build(name):
     family = FAMILIES[name]
-    sheet = SHEETS + family["folder"] + "/ref_12.jpg"
-    boxes = family.get("boxes") or cells(sheet)
+    folder = SHEETS + family["folder"] + "/"
+    boxes = []
+    for sheet in family.get("sheets", ["ref_12.jpg"]):
+        boxes += [(folder + sheet, box) for box in family.get("boxes") or cells(folder + sheet, family.get("margin", 0))]
     if len(boxes) != len(family["frames"]):
         sys.exit("%s: a folha tem %d casas, esperava %d" % (name, len(boxes), len(family["frames"])))
     drawn = {}
-    for box, frame in zip(boxes, family["frames"]):
-        c = trace.trace(sheet, box, PIXEL, family["colors"])
+    for (sheet, box), frame in zip(boxes, family["frames"]):
+        c = trace.trace(sheet, box, family.get("pixel", PIXEL), family["colors"])
         if family.get("thin_lines"):
             for _ in range(2):
                 thin = [
