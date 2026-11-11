@@ -235,6 +235,10 @@ FAMILIES = {
         soft=[INK, "#3b2530"],
         # O fundo preso dentro da curva do rabo sai. A pedra fica.
         holes=("#a9aac2", ("#55526f", "#7c7b99")),
+        # Um tom mais escuro em tudo: o rosto e a barriga tinham a cor do piso
+        # de areia das ruínas e o macaco parecia vazado (Marcelo, 2026-11-11).
+        recolor=[("#5c4232", "#3b2530"), ("#8a5a3c", "#5c4232"), ("#b9824e", "#8a5a3c"),
+                 ("#ddb277", "#b9824e"), ("#f3dfa6", "#ddb277")],
         frames=[
             ("monkey_down", "de frente, passo 1"),
             ("monkey_down_step", "de frente, passo 2"),
@@ -409,6 +413,8 @@ def build(name):
         despeckle(c)
         if family.get("shrink"):
             c = shrink(c)
+        for old, new in family.get("recolor", []):
+            c.replace(old, new)
         middle = frame[2] if len(frame) > 2 else support_middle(c)
         drawn[frame[0]] = (c, middle, frame[1])
     half = max(max(middle, c.w - middle) for c, middle, _ in drawn.values())
