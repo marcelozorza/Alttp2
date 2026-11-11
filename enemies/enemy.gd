@@ -381,6 +381,11 @@ func _enter(state: State) -> void:
 func _die() -> void:
 	_enter(State.DEAD)
 	velocity = Vector2.ZERO
+	# O inimigo some na hora, e a nuvem fica no lugar dele.
+	if _art:
+		DeathPuff.spawn(self, _art.texture, _art.position + _art.offset, _art.flip_h)
+	else:
+		DeathPuff.spawn(self, null, Vector2.ZERO, false)
 	visible = false
 	_base.set_deferred("disabled", true)
 	died.emit(self)
