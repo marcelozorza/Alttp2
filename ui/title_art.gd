@@ -52,4 +52,4 @@ func _draw() -> void:
 			continue
 		draw_texture(TREES[column % 2], Vector2(column * TILE, top - 6.0))
 		draw_texture(TREES[(column + 1) % 2], Vector2(column * TILE, top + TILE - 2.0))
-	draw_texture(HERO, Vector2(180.0, SCREEN.y - 72.0))
+	draw_texture(HERO, Vector2(194.0, SCREEN.y - 58.0))
