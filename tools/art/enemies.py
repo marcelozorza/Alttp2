@@ -29,8 +29,9 @@ INK = "#1e181e"
 WHITE = "#ffffff"
 # Tamanhos relativos pedidos por Marcelo em 2026-11-11, numa montagem com o
 # Giorgino ao lado: cobra, tatu e morcego com três quartos do tamanho da
-# folha. Ler a folha com um passo maior que o pixel dela encolhe o desenho.
-SMALL = PIXEL / 0.75
+# folha. Ler a folha com um passo maior que o pixel dela amassava o traço,
+# então essas famílias são decalcadas no tamanho da folha e reduzidas por
+# shrink(), que refaz o contorno ("shrink" na família).
 
 # Inimigo: pasta da folha, cores da paleta mestra que o decalque pode usar,
 # cores escuras que podem virar contorno, e os quadros na ordem das casas da
@@ -90,7 +91,7 @@ FAMILIES = {
         },
     ),
     "bat": dict(
-        pixel=SMALL,
+        shrink=True,
         folder="morcego_ref",
         text="Morcego",
         colors=[INK, "#2e1a4f", "#55308f", "#8a59d0", "#c3a0f0", "#f7c53a", WHITE, "#d83a3f"],
@@ -116,7 +117,7 @@ FAMILIES = {
         },
     ),
     "snake": dict(
-        pixel=SMALL,
+        shrink=True,
         folder="cobra_ref",
         text="Cobra",
         colors=[INK, "#12332f", "#1f5a3a", "#2f8a45", "#d99a1c", "#f3dfa6", "#f7c53a", WHITE,
@@ -143,7 +144,7 @@ FAMILIES = {
         },
     ),
     "armadillo": dict(
-        pixel=SMALL,
+        shrink=True,
         folder="tatu_ref",
         text="Tatu de pedra",
         colors=[INK, "#3a3750", "#55526f", "#7c7b99", "#a9aac2", "#8a5a3c", "#b9824e", "#ddb277",
@@ -316,6 +317,65 @@ def despeckle(c):
                     c.p[y][x] = other
 
 
+def shrink(c):
+    """Reduz o desenho a três quartos, limpo: 3 pixels novos para cada 4 da
+    folha. Ler a folha com passo maior amassa o traço (linhas que dobram ou
+    somem), e Marcelo pediu em 2026-11-11 o tatu redesenhado do tamanho
+    certo. Aqui cada pixel novo pega a cor que mais aparece na área dele, o
+    contorno é refeito com 1 pixel por fora da silhueta e as linhas de dentro
+    são afinadas para 1 pixel."""
+    w, h = (c.w * 3 + 3) // 4, (c.h * 3 + 3) // 4
+    out = Canvas(w, h)
+    ink = [[0.0] * w for _ in range(h)]
+    for ty in range(h):
+        for tx in range(w):
+            votes, inside, lines = {}, 0, 0
+            for sy in range(ty * 4, ty * 4 + 4):
+                for sx in range(tx * 4, tx * 4 + 4):
+                    color = c.get(sx // 3, sy // 3)
+                    if color is None:
+                        continue
+                    inside += 1
+                    if color == INK:
+                        if not trace.is_edge(c, sx // 3, sy // 3):
+                            lines += 1
+                    else:
+                        votes[color] = votes.get(color, 0) + 1
+            if inside >= 8:
+                out.p[ty][tx] = max(votes, key=votes.get) if votes else INK
+                ink[ty][tx] = lines / 16.0
+    # Cor de quem ficou só com tinta: a do vizinho colorido mais perto.
+    for ty in range(h):
+        for tx in range(w):
+            if out.p[ty][tx] == INK:
+                near = [out.get(tx + dx, ty + dy) for dx, dy in ((0, 1), (1, 0), (0, -1), (-1, 0))]
+                near = [color for color in near if color not in (None, INK)]
+                if near:
+                    out.p[ty][tx] = near[0]
+    # Linhas de dentro: onde a tinta cobre boa parte do pixel, afinadas.
+    marks = {(x, y) for y in range(h) for x in range(w) if out.p[y][x] and ink[y][x] >= 0.4}
+    changed = True
+    while changed:
+        changed = False
+        for x, y in sorted(marks, key=lambda p: ink[p[1]][p[0]]):
+            block = [
+                [(x + dx + ox, y + dy + oy) for dx in (0, 1) for dy in (0, 1)]
+                for ox in (-1, 0)
+                for oy in (-1, 0)
+            ]
+            if any(all(p in marks for p in cells4) for cells4 in block):
+                marks.discard((x, y))
+                changed = True
+                break
+    for x, y in marks:
+        out.p[y][x] = INK
+    for y in range(h):
+        for x in range(w):
+            if out.p[y][x] and trace.is_edge(out, x, y):
+                out.p[y][x] = INK
+    return out.crop()
+
+
 def support_middle(c):
     """Meio das três linhas de baixo do desenho: onde ele pisa."""
     xs = [x for y in range(c.h - 3, c.h) for x in range(c.w) if c.p[y][x] is not None]
@@ -347,6 +407,8 @@ def build(name):
             open_holes(c, *family["holes"])
         c = trace.clean(c, family["soft"])
         despeckle(c)
+        if family.get("shrink"):
+            c = shrink(c)
         middle = frame[2] if len(frame) > 2 else support_middle(c)
         drawn[frame[0]] = (c, middle, frame[1])
     half = max(max(middle, c.w - middle) for c, middle, _ in drawn.values())
