@@ -25,7 +25,7 @@ TREINO: capítulo 2 -> chapter.tscn, contínuo false, chama true, chama forte fa
 TREINO: sala de teste -> test_room.tscn
 TUTORIAL: -> chapter.tscn, nome Dungeon de teste, contínuo false, bomba false
 CONTINUAR: -> overworld.tscn, vencidos 14, modos [2, 2, 2], vida 24
-TESTE: jogo novo no início true, textos no chão 7, entrada 0 modo 1
+TESTE: jogo novo no início true, placas no mundo 7, entrada 0 modo 1
 TESTE: entrada 0 -> chapter.tscn, Dungeon de teste, treino true, bomba false, vida 6
 TESTE: placas 7, sem texto 0, em cima mostra true, jogo solto true, ao sair some true
 TESTE: vencida true, -> overworld.tscn, na entrada true, ferramentas 2, vida 10, modo 2

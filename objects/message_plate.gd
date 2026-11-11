@@ -7,7 +7,8 @@ extends Area2D
 ##
 ## A origem fica no centro da casa. Ela fica na camada dos interruptores,
 ## acima do chão e abaixo dos objetos, e a caixa de texto fica por cima de
-## tudo. A caixa nunca sai da sala de uma tela em que a placa está.
+## tudo. A caixa nunca sai da sala de uma tela em que a placa está. No mundo
+## de chegada, que não tem salas, room_pixels é o mapa inteiro.
 
 const TEXTURE := preload("res://art/message_plate.svg")
 const LIT_TEXTURE := preload("res://art/message_plate_lit.svg")
@@ -34,6 +35,8 @@ const TEXT_COLOR := Color("f4f1ea")
 const GLOW := Color(1.0, 0.95, 0.66, 1.0)
 
 var text := ""
+## Tamanho da sala que prende a caixa de texto, em pixels.
+var room_pixels := ROOM_PIXELS
 
 var _shown := 0
 var _stood := false
@@ -83,11 +86,11 @@ func _draw_box() -> void:
 	)
 	var line_count := maxi(1, roundi(lines.y / LINE_HEIGHT))
 	var size := Vector2(TEXT_WIDTH, line_count * LINE_HEIGHT) + PADDING * 2.0
-	var room := (global_position / ROOM_PIXELS).floor() * ROOM_PIXELS
+	var room := (global_position / room_pixels).floor() * room_pixels
 	var corner := global_position + Vector2(-size.x / 2.0, -GAP_ABOVE - size.y)
 	if corner.y < room.y + 8.0:
 		corner.y = global_position.y + GAP
-	corner.x = clampf(corner.x, room.x + 8.0, room.x + ROOM_PIXELS.x - size.x - 8.0)
+	corner.x = clampf(corner.x, room.x + 8.0, room.x + room_pixels.x - size.x - 8.0)
 	# A caixa sobe um pouco enquanto aparece.
 	corner.y += (1.0 - alpha) * 4.0
 	var rect := Rect2((corner - global_position).round(), size)

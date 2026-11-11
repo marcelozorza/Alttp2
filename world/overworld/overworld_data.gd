@@ -2,8 +2,8 @@ class_name OverworldData
 ## Mapa do mundo de chegada, que liga as dungeons. Redesenhado em 2026-11-10 a
 ## pedido de Marcelo: o personagem começa numa clareira ao sul, e a primeira
 ## porta que ele vê, logo ao norte, é a da dungeon de teste. No caminho até
-## ela, as regras iniciais estão gravadas em lajes no chão, para serem lidas
-## andando, sem parar o jogo. Passando a dungeon de teste, a clareira grande
+## ela, placas no chão mostram as regras iniciais enquanto ele pisa nelas,
+## sem parar o jogo. Passando a dungeon de teste, a clareira grande
 ## tem a pedra de salvamento, um lago e as três dungeons na linha de árvores
 ## ao norte, cada uma com a fachada e o chão do tema dela.
 ##
@@ -42,15 +42,18 @@ const MAP := [
 	"########################################",
 ]
 
-## Textos gravados em lajes no chão: o centro da laje, em casas, e o texto.
-## Só as regras que valem desde o primeiro passo. Os itens o jogador descobre
-## sozinho, e os nomes dos botões seguem o controle do Super Nintendo.
-const FLOOR_TEXTS := [
-	[Vector2(18.0, 22.75), "Botão B: espada."],
-	[Vector2(18.0, 21.65), "Toque 2 vezes na direção para correr."],
-	[Vector2(18.0, 20.55), "Correndo, nenhum golpe te acerta."],
-	[Vector2(18.0, 19.45), "O fôlego acaba. Descanse e corra de novo."],
-	[Vector2(18.0, 18.45), "Aprenda aqui dentro."],
-	[Vector2(21.6, 11.5), "A pedra guarda o jogo e cura."],
+## Placas de mensagem no chão: o centro da placa, em casas, e o texto, que só
+## aparece enquanto o personagem pisa nela (pedido de Marcelo em 2026-11-11:
+## as lajes com o texto sempre à vista saíram). Só as regras que valem desde o
+## primeiro passo. Os itens o jogador descobre sozinho, e os nomes dos botões
+## seguem o controle do Super Nintendo. As cinco primeiras ficam no meio do
+## caminho de duas casas que leva à porta de teste.
+const MESSAGES := [
+	[Vector2(18.0, 22.5), "Botão B: espada."],
+	[Vector2(18.0, 21.5), "Toque 2 vezes na direção para correr."],
+	[Vector2(18.0, 20.5), "Correndo, nenhum golpe te acerta."],
+	[Vector2(18.0, 19.5), "O fôlego acaba. Descanse e corra de novo."],
+	[Vector2(18.0, 18.5), "Aprenda aqui dentro."],
+	[Vector2(20.5, 11.5), "A pedra guarda o jogo e cura."],
 	[Vector2(18.0, 7.5), "Três dungeons. Em cada uma, um chefe."],
 ]

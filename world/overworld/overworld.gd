@@ -1,6 +1,6 @@
 extends Node2D
 ## O mundo de chegada, que liga os capítulos: a clareira do início, com as
-## regras gravadas no chão e a dungeon de teste, e a clareira grande, com a
+## placas de mensagem no chão e a dungeon de teste, e a clareira grande, com a
 ## pedra de salvamento e a entrada de cada dungeon. O mapa fica em overworld_data.gd, na
 ## mesma legenda dos capítulos, e a câmera segue o personagem pelo mapa
 ## inteiro, presa às bordas dele.
@@ -21,15 +21,17 @@ const SOLID := "#~"
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const ENTRANCE_SCENE := preload("res://world/overworld/entrance.tscn")
 const SAVE_STONE_SCENE := preload("res://world/overworld/save_stone.tscn")
+const MESSAGE_PLATE_SCENE := preload("res://objects/message_plate.tscn")
 
 var map: ChapterMap
 
 var _player: Player
 var _entrances: Array[DungeonEntrance] = []
+var _plates: Array[MessagePlate] = []
 var _stone_cell := ChapterMap.NO_CELL
 
 @onready var _map_view: MapView = $MapView
-@onready var _floor_text: FloorText = $FloorText
+@onready var _plate_layer: Node2D = $Plates
 @onready var _walls: StaticBody2D = $Walls
 @onready var _objects: Node2D = $Objects
 @onready var _camera: Camera2D = $Camera
@@ -39,11 +41,10 @@ func _ready() -> void:
 	map = ChapterMap.new(OverworldData.MAP, {})
 	_map_view.map = map
 	_map_view.queue_redraw()
-	_floor_text.entries = OverworldData.FLOOR_TEXTS
-	_floor_text.queue_redraw()
 	Progress.practice = false
 	MapWalls.build(map, _walls, SOLID)
 	_build_cells()
+	_build_plates()
 	_player.restore(Progress.tools, Progress.max_health)
 	_place_player()
 	_camera.make_current()
@@ -76,6 +77,18 @@ func _build_cells() -> void:
 				entrances[character] = cell
 	for character: String in entrances:
 		_add_entrance(int(character), entrances[character])
+
+
+## Placas de mensagem, numa camada abaixo dos objetos. A caixa de texto de
+## cada uma fica presa ao mapa inteiro, porque o mundo não se divide em salas.
+func _build_plates() -> void:
+	for entry: Array in OverworldData.MESSAGES:
+		var plate := MESSAGE_PLATE_SCENE.instantiate() as MessagePlate
+		plate.position = (entry[0] as Vector2) * ChapterMap.TILE
+		plate.text = entry[1]
+		plate.room_pixels = Vector2(map.width, map.height) * ChapterMap.TILE
+		_plate_layer.add_child(plate)
+		_plates.append(plate)
 
 
 func _add_entrance(chapter: int, cell: Vector2i) -> void:

@@ -489,7 +489,7 @@ func _check_continue() -> void:
 
 
 ## A dungeon de teste a partir do mundo: o jogo novo começa na clareira do
-## sul, com os textos gravados no chão, a entrada 0 leva à dungeon de teste
+## sul, com as placas de mensagem no chão, a entrada 0 leva à dungeon de teste
 ## como treino (sem as ferramentas nem a vida do jogo), a placa de mensagem
 ## mostra o texto só com o personagem em cima e sem parar o jogo, e vencer
 ## grava a dungeon como vencida sem mudar ferramentas nem vida.
@@ -503,11 +503,11 @@ func _check_practice() -> void:
 	var player: Player = world.get("_player")
 	var world_map: ChapterMap = world.get("map")
 	var start := (Vector2(world_map.find("@")) + Vector2(0.5, 0.5)) * ChapterMap.TILE
-	var texts: Array = world.get("_floor_text").entries
+	var plates: Array = world.get("_plates")
 	print(
 		(
-			"TESTE: jogo novo no início %s, textos no chão %d, entrada 0 modo %d"
-			% [player.global_position.distance_to(start) < 4.0, texts.size(), _entrance(0).mode]
+			"TESTE: jogo novo no início %s, placas no mundo %d, entrada 0 modo %d"
+			% [player.global_position.distance_to(start) < 4.0, plates.size(), _entrance(0).mode]
 		)
 	)
 	await _walk_into(_entrance(0), player)

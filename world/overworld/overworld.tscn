@@ -5,7 +5,6 @@
 [ext_resource type="Script" path="res://ui/hud.gd" id="3_hud"]
 [ext_resource type="PackedScene" path="res://ui/pause_menu.tscn" id="4_pause_menu"]
 [ext_resource type="PackedScene" path="res://ui/defeat_screen.tscn" id="5_defeat_screen"]
-[ext_resource type="Script" path="res://world/floor_text.gd" id="6_floor_text"]
 
 [node name="Overworld" type="Node2D"]
 script = ExtResource("1_script")
@@ -14,12 +13,11 @@ script = ExtResource("1_script")
 script = ExtResource("2_map_view")
 outdoor = true
 
-[node name="FloorText" type="Node2D" parent="."]
-script = ExtResource("6_floor_text")
-
 [node name="Walls" type="StaticBody2D" parent="."]
 
 [node name="FloorEffects" type="Node2D" parent="." groups=["floor_effects"]]
+
+[node name="Plates" type="Node2D" parent="."]
 
 [node name="Objects" type="Node2D" parent="."]
 y_sort_enabled = true
