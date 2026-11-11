@@ -38,6 +38,11 @@ const PERMANENT := [
 ## Cada melhoria e a ferramenta que ela melhora.
 const UPGRADES := {Id.STRONG_FIRE: Id.FIRE, Id.STRONG_SPRING: Id.SPRING, Id.STRONG_BOMB: Id.BOMB}
 
+## Melhorias que só o baú delas dá: a ferramenta repetida não vira a melhoria.
+## A bomba forte fica aqui enquanto não entra nas dungeons, porque as três têm
+## um baú de bomba e a segunda bomba já daria a forte sem Marcelo decidir onde.
+const CHEST_ONLY := [Id.STRONG_BOMB]
+
 
 ## Bit do item num conjunto de ferramentas guardado como inteiro.
 static func bit(id: int) -> int:
@@ -56,7 +61,7 @@ static func progressive(tools: int, id: int) -> int:
 		var base: int = UPGRADES[upgrade]
 		if id == upgrade and not has(tools, base):
 			return base
-		if id == base and has(tools, base):
+		if id == base and has(tools, base) and upgrade not in CHEST_ONLY:
 			return upgrade
 	return id
 

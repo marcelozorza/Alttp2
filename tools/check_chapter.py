@@ -61,6 +61,8 @@ def bit(name):
 
 
 UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING", "STRONG_BOMB": "BOMB"}
+# Melhorias que a ferramenta repetida não dá, como em items/item.gd.
+CHEST_ONLY = ["STRONG_BOMB"]
 
 
 def collect(tools, item):
@@ -71,7 +73,7 @@ def collect(tools, item):
         if item == upgrade and not tools & bit(base):
             item = base
             break
-        if item == base and tools & bit(base):
+        if item == base and tools & bit(base) and upgrade not in CHEST_ONLY:
             item = upgrade
             break
     return tools | bit(item)
