@@ -50,9 +50,9 @@ LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 UP, DOWN = (0, -1), (0, 1)
 # A ordem de Item.Id em items/item.gd.
-ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY"]
-PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY"]
-BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE"]
+ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY", "STRONG_BOMB"]
+PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY", "STRONG_BOMB"]
+BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE", "BOARDED"]
 LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 
@@ -60,7 +60,7 @@ def bit(name):
     return 1 << ITEM_IDS.index(name)
 
 
-UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING"}
+UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING", "STRONG_BOMB": "BOMB"}
 
 
 def collect(tools, item):
@@ -163,6 +163,8 @@ class Map:
             return reached_nodes is not None and source is not None and source in reached_nodes
         if kind == "CRACKED":
             return bool(tools & bit("BOMB"))
+        if kind == "BOARDED":
+            return bool(tools & bit("STRONG_BOMB"))
         if kind == "ICE":
             return bool(tools & (bit("FIRE") | bit("STRONG_FIRE")))
         if kind == "THICK_ICE":

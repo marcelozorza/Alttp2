@@ -57,7 +57,7 @@ func _physics_process(_delta: float) -> void:
 
 ## Diz se o golpe remove o bloqueio.
 func _opens_with(kind: Hit.Kind) -> bool:
-	return kind == Hit.Kind.BLAST
+	return Hit.is_blast(kind)
 
 
 ## Som do golpe certo.

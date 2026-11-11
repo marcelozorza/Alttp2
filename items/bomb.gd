@@ -10,9 +10,15 @@ extends MomentumBody
 ## A explosão é pixel art em quatro quadros (tools/explosion_art.py),
 ## desenhada com o raio padrão de 52 px. Mudar blast_radius muda o dano, não o
 ## desenho.
+##
+## A bomba forte (strong) é a mesma bomba com a explosão forte, que abre a
+## parede rachada com tábua e causa o dobro do dano nos inimigos. O raio e o
+## dano no personagem são os mesmos. Ela e a explosão dela são avermelhadas.
 
 const TEXTURE := preload("res://art/bomb.svg")
 const WARNING_COLOR := Color(0.95, 0.25, 0.2, 1.0)
+## Tom da bomba forte e da explosão dela.
+const STRONG_TINT := Color(1.0, 0.55, 0.5, 1.0)
 const SPARK_COLOR := Color(1.0, 0.75, 0.25, 1.0)
 ## Centro do desenho e da explosão, a partir da origem na base.
 const CENTER := Vector2(0.0, -8.0)
@@ -41,6 +47,9 @@ const WARNING_TIME := 0.5
 ## Empurrão da explosão, em pixels por segundo para massa 1.
 @export_range(0.0, 1600.0, 10.0) var blast_impulse := 480.0
 
+## Bomba forte: definido pelo personagem ao soltar a bomba.
+var strong := false
+
 var _spawn_tick := 0
 var _blast_tick := -1
 var _blast_shape := CircleShape2D.new()
@@ -59,7 +68,7 @@ func _ready() -> void:
 ## Fogo e explosões acendem o pavio. A bomba explode no tick seguinte, fora da
 ## consulta de física que a atingiu.
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
-	if Hit.is_fire(kind) or kind == Hit.Kind.BLAST:
+	if Hit.is_fire(kind) or Hit.is_blast(kind):
 		var lit := Clock.tick - GameMath.ticks(fuse_time) + 1
 		_spawn_tick = mini(_spawn_tick, lit)
 
@@ -92,6 +101,7 @@ func _explode() -> void:
 	query.transform = Transform2D(0.0, global_position + CENTER)
 	var excluded: Array[RID] = [get_rid()]
 	query.exclude = excluded
+	var kind := Hit.Kind.STRONG_BLAST if strong else Hit.Kind.BLAST
 	var handled: Array[Object] = []
 	for result: Dictionary in get_world_2d().direct_space_state.intersect_shape(query, 64):
 		var target: Object = result["collider"]
@@ -102,7 +112,7 @@ func _explode() -> void:
 		var away := (target_node.global_position - global_position) if target_node else Vector2.ZERO
 		var direction := away.normalized() if away != Vector2.ZERO else Vector2.DOWN
 		if target.has_method("take_hit"):
-			target.call("take_hit", damage, direction, Hit.Kind.BLAST)
+			target.call("take_hit", damage, direction, kind)
 		var body := target as MomentumBody
 		if body:
 			body.add_impact_velocity(direction * blast_impulse / body.mass)
@@ -110,15 +120,16 @@ func _explode() -> void:
 
 func _draw() -> void:
 	var now := Clock.tick
+	var base_tint := STRONG_TINT if strong else Color.WHITE
 	if _blast_tick >= 0:
 		var frame := mini((now - _blast_tick) / BLAST_FRAME_TICKS, BLAST_FRAMES.size() - 1)
 		var corner := CENTER - Vector2(BLAST_FRAME_SIZE, BLAST_FRAME_SIZE) / 2.0
-		draw_texture(BLAST_FRAMES[frame], corner)
+		draw_texture(BLAST_FRAMES[frame], corner, base_tint)
 		return
 	var remaining := GameMath.ticks(fuse_time) - (now - _spawn_tick)
 	var warning := remaining <= GameMath.ticks(WARNING_TIME) and posmod(remaining, 6) < 3
 	# O desenho tem 10 por 10 pixels, com o corpo centrado em CENTER.
-	var tint := WARNING_COLOR if warning else Color.WHITE
+	var tint := WARNING_COLOR if warning else base_tint
 	draw_texture(TEXTURE, CENTER + Vector2(-10.0, -12.0), tint)
 	if posmod(now, 4) < 2:
 		draw_rect(Rect2(CENTER + Vector2(4.0, -14.0), Vector2(2.0, 2.0)), SPARK_COLOR)

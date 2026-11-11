@@ -40,7 +40,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 		return
 	var now := Clock.tick
 	if _shell:
-		if kind == Hit.Kind.BLAST:
+		if Hit.is_blast(kind):
 			_shell = false
 			_frost = true
 			_shell_break_tick = now

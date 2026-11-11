@@ -184,6 +184,8 @@ func _draw_buttons(player: Player) -> void:
 
 ## Item desenhado no botão da ferramenta: a melhoria, se o personagem a tem.
 func _shown_item(player: Player, id: int) -> int:
+	if id == Item.Id.BOMB and player.has_tool(Item.Id.STRONG_BOMB):
+		return Item.Id.STRONG_BOMB
 	if id == Item.Id.FIRE and player.has_tool(Item.Id.STRONG_FIRE):
 		return Item.Id.STRONG_FIRE
 	if id == Item.Id.SPRING and player.has_tool(Item.Id.STRONG_SPRING):

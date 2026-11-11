@@ -181,7 +181,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 ## casca de pedra, só à explosão.
 func _breaks_shell(kind: Hit.Kind) -> bool:
 	if stone_shell:
-		return kind == Hit.Kind.BLAST
+		return Hit.is_blast(kind)
 	if thick_shell:
 		return kind == Hit.Kind.STRONG_FIRE
 	return Hit.is_fire(kind)

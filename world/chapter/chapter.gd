@@ -41,6 +41,7 @@ const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
 ## com duas casas de altura.
 const OBSTACLE_SCENES := {
 	ChapterMap.Block.CRACKED: preload("res://obstacles/cracked_wall.tscn"),
+	ChapterMap.Block.BOARDED: preload("res://obstacles/boarded_wall.tscn"),
 	ChapterMap.Block.ICE: preload("res://obstacles/ice_block.tscn"),
 	ChapterMap.Block.THICK_ICE: preload("res://obstacles/thick_ice.tscn"),
 	ChapterMap.Block.LEDGE: LEDGE_SCENE,

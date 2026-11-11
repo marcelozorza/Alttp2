@@ -191,7 +191,8 @@ const NO_HOLD := -1
 ## Pontos de vida ganhos com cada coração.
 @export_range(1, 6, 1) var heart_bonus := 2
 ## Ferramentas desde o início. Útil na sala de teste.
-@export_flags("Bomba", "Chama", "Mola", "Chama forte", "Mola forte") var starting_tools := 0
+@export_flags("Bomba", "Chama", "Mola", "Chama forte", "Mola forte", "Bomba forte:256")
+var starting_tools := 0
 
 @export_group("Quinas")
 ## Distância máxima, em pixels, para escorregar pela quina ao esbarrar numa
@@ -585,6 +586,7 @@ func _place_bomb() -> void:
 	if get_tree().get_nodes_in_group("bombs").size() >= max_bombs:
 		return
 	var bomb := BOMB_SCENE.instantiate() as Bomb
+	bomb.strong = has_tool(Item.Id.STRONG_BOMB)
 	bomb.position = position + facing * 12.0
 	get_parent().add_child(bomb)
 	bomb.add_collision_exception_with(self)

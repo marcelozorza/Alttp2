@@ -8,7 +8,7 @@ Cada tema tem a lajota e o tijolo com forma própria, e não só outra paleta.
 Uso: python3 tools/art/dungeon.py && python3 tools/pixel_svg.py
 """
 
-from canvas import Canvas
+from canvas import Canvas, load
 
 INK = "#1e181e"
 S0, S1, S2, S3, S4, S5, S6 = (
@@ -177,6 +177,24 @@ def cracked_wall(theme, top, tones):
     return c
 
 
+def boarded_wall(theme):
+    """Parede rachada com uma tábua pregada por cima da rachadura: a pista de
+    que a bomba comum não basta, só a bomba forte abre. Parte do desenho da
+    parede rachada em art/source, que foi retocado à mão."""
+    c = load("cracked_wall" + theme)
+    c.rect(4, 12, 24, 8, INK)
+    c.rect(5, 13, 22, 6, E3)
+    c.rect(5, 13, 22, 1, E4)
+    c.rect(5, 18, 22, 1, E2)
+    for x in (11, 19):
+        c.px(x, 15, E2)
+        c.px(x + 1, 16, E2)
+    for x in (7, 24):
+        for y in (14, 17):
+            c.px(x, y, S5)
+    return c
+
+
 def ledge(tall):
     """Face do degrau: a mesma pedra quente do chão alto, na sombra."""
     h = 64 if tall else 32
@@ -290,6 +308,7 @@ def main():
         wall_face(theme, parts["top"], parts["face"]).save("wall_face" + theme, "Face de frente da parede %s. Os 24 pixels de baixo são a face." % text)
         wall_side(theme, parts["top"], parts["face"]).save("wall_side" + theme, "Face lateral da parede %s. Os 24 pixels da direita são a face." % text)
         cracked_wall(theme, parts["top"], parts["face"]).save("cracked_wall" + theme, "Parede rachada %s: só a bomba abre." % text)
+        boarded_wall(theme).save("boarded_wall" + theme, "Parede rachada com tábua %s: só a bomba forte abre." % text)
     ledge(False).save("ledge", "Face do degrau, 32 de altura.")
     ledge(True).save("tall_ledge", "Face do degrau duplo, 64 de altura, mais escura.")
     locked_door().save("locked_door", "Porta trancada, uma casa.")

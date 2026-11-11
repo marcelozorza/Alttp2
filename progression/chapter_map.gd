@@ -20,7 +20,7 @@ extends RefCounted
 ## A conferência de que o capítulo tem caminho até o fim fica fora do jogo, em
 ## tools/check_chapter.py, que lê os mesmos dados.
 
-enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE }
+enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE, BOARDED }
 
 ## Tamanho de uma casa, em pixels.
 const TILE := 32

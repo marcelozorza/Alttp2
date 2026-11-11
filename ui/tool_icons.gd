@@ -10,10 +10,12 @@ class_name ToolIcons
 
 const SWORD := preload("res://art/icon_sword.svg")
 const SWORD_LOCKED := preload("res://art/icon_sword_locked.svg")
+const BOMB := preload("res://art/icon_bomb.svg")
 const FIRE := preload("res://art/icon_fire.svg")
 const SPRING := preload("res://art/icon_spring.svg")
 const TEXTURES := {
-	Item.Id.BOMB: preload("res://art/icon_bomb.svg"),
+	Item.Id.BOMB: BOMB,
+	Item.Id.STRONG_BOMB: BOMB,
 	Item.Id.FIRE: FIRE,
 	Item.Id.STRONG_FIRE: FIRE,
 	Item.Id.SPRING: SPRING,
@@ -23,7 +25,7 @@ const TEXTURES := {
 	Item.Id.BOSS_KEY: preload("res://art/icon_boss_key.svg"),
 }
 const LEVEL_TWO := preload("res://art/icon_x2.svg")
-const UPGRADES := [Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING]
+const UPGRADES := [Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING, Item.Id.STRONG_BOMB]
 
 
 ## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do
