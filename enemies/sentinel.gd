@@ -4,8 +4,10 @@ extends Boss
 ## de coleira de pontas. É o exame das três ferramentas juntas, numa ordem que
 ## o jogador lê pelo próprio desenho.
 ##
-## A pele de pedra cinza só cede à bomba. Por baixo, o corpo está congelado,
-## com o azul do gelo grosso, e só a chama o derrete. Só então o núcleo quente
+## São três estágios que se leem pela cor (pedido de Marcelo em 2026-11-11).
+## Ele começa como uma estátua de cimento rachada, que só cede à bomba. Por
+## baixo, o corpo está preso no gelo, com o azul do gelo grosso, e só a chama
+## o derrete. Só então aparece o Rottweiler de verdade, preto e fogo, que
 ## apanha da espada e da bomba. A pedra e o gelo voltam juntos depois de
 ## shell_regrow_time, contados da explosão, então bomba, chama e espada
 ## precisam vir em sequência.
@@ -18,8 +20,8 @@ extends Boss
 ## regravado em 2026-11-08 para substituir uma cópia local com um caractere
 ## solto que travava o jogo.
 
-## Quadros do corpo congelado, entre a pele (shell_frames) e o núcleo quente
-## (core_frames).
+## Quadros do corpo preso no gelo, entre a estátua (shell_frames) e a forma
+## original (core_frames).
 @export var frost_frames: BossFrames
 
 ## Ligado enquanto o núcleo está congelado, depois que a armadura caiu.
@@ -67,7 +69,7 @@ func _update_state() -> void:
 
 
 ## O desenho mostra a camada de fora: a pedra enquanto fechada, e por baixo o
-## gelo ou o núcleo quente. O resto do desenho (avisos, dano, a pedra piscando
+## gelo ou a forma original. O resto do desenho (avisos, dano, a pedra piscando
 ## antes de voltar) é o do chefe comum.
 func _core_texture() -> Texture2D:
 	return _frame_from(frost_frames if _frost else core_frames)

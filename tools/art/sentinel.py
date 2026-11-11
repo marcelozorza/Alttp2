@@ -7,8 +7,9 @@ aqui: pelo num tom só, olhos, dentes, língua e as rachaduras.
 
 São 8 poses (dois passos, empinado e pancada, agachado, dois passos da
 investida e cansado) em 3 camadas, que são trocas de cor do mesmo desenho:
-a pele (shell), com as rachaduras de borda clara da parede quebrável, o
-corpo congelado (frost) e o núcleo quente (core). Todos os quadros têm o
+a estátua de cimento (shell), com as rachaduras de borda clara da parede
+quebrável, o corpo preso no gelo (frost) e a forma original, preto e fogo
+(core), que é a que apanha. Todos os quadros têm o
 mesmo tamanho, com os pés na mesma linha e o meio do corpo no meio do
 quadro, para o desenho ficar sobre a área de contato também espelhado.
 
@@ -33,21 +34,26 @@ SHADE, CRACK, CRACK_EDGE, EYE = "shade", "crack", "edge", "eye"
 W, H = 80, 64
 CX, GROUND = 40, 62
 
+# Três estágios que se leem pela cor (pedido de Marcelo em 2026-11-11): a
+# estátua de cimento, rachada, que só a bomba quebra, o corpo preso no gelo,
+# que só a chama derrete, e o Rottweiler de verdade, que apanha da espada.
+SPECK = "speck"
 LAYERS = {
     "shell": {
-        SHADE: INK, CRACK: INK, CRACK_EDGE: "#a9aac2", EYE: GOLD,
+        SHADE: "#55526f", COAT: "#7c7b99", SPECK: "#8b8aa8", TAN: "#a9aac2", TAN_DARK: "#8b8aa8",
+        RED: "#55526f", RED_DARK: "#3a3750", GOLD: "#d6d8e6", WHITE: "#d6d8e6", PINK: "#a9aac2",
+        CRACK: INK, CRACK_EDGE: "#d6d8e6", EYE: "#d6d8e6",
     },
     "frost": {
-        SHADE: "#27409a", COAT: "#3b7bdc", TAN: "#c6efff", TAN_DARK: "#86a9d6",
+        SHADE: "#27409a", COAT: "#3b7bdc", SPECK: "#6cc3f2", TAN: "#c6efff", TAN_DARK: "#86a9d6",
+        RED: "#27409a", RED_DARK: "#1a2452", GOLD: "#c6efff", PINK: "#c6efff",
         CRACK: "#c6efff", CRACK_EDGE: "#ffffff", EYE: WHITE,
     },
     "core": {
-        SHADE: "#9c2338", COAT: "#d83a3f", TAN: "#f7c53a", TAN_DARK: "#f08c2e",
-        RED: "#5e1830", RED_DARK: "#3b2530", GOLD: "#fff1a8",
-        CRACK: "#f7c53a", CRACK_EDGE: "#fff1a8", EYE: "#fff1a8",
+        SHADE: "#1b1926", SPECK: COAT, CRACK: COAT, CRACK_EDGE: COAT, EYE: GOLD,
     },
 }
-NAMES = {"shell": "pele rachada", "frost": "corpo congelado", "core": "núcleo quente"}
+NAMES = {"shell": "estátua de cimento", "frost": "preso no gelo", "core": "forma original"}
 
 # Pose: folha, recorte, coluna do decalque que fica no meio do quadro, canto
 # da cabeça (para os retoques), retoques da cabeça e rachaduras do corpo.
@@ -113,6 +119,11 @@ def draw(pose, folder):
         for x in range(c.w):
             if c.p[y][x] == INK and not trace.is_edge(c, x, y):
                 c.p[y][x] = SHADE
+    # Grãos do cimento e brilhos do gelo, sempre nos mesmos lugares.
+    for y in range(c.h):
+        for x in range(c.w):
+            if c.p[y][x] == COAT and (x * 7 + y * 13) % 11 == 0 and (x + y * 3) % 4 == 0:
+                c.p[y][x] = SPECK
     for line in pose["cracks"]:
         marks = []
         for (x0, y0), (x1, y1) in zip(line, line[1:]):
