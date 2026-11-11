@@ -9,7 +9,7 @@ pontos soltos e alinha os quadros de cada inimigo: todos do mesmo tamanho,
 com a base na mesma linha e o meio do apoio no meio do quadro.
 
 Substitui os geradores por formas de 2026-11-10 (minion, lobo, morcego,
-cobra, tatu, cubo de gelo e estalactite). Sem as folhas este script não roda, e o texto
+cobra, tatu, cubo de gelo, estalactite e macaco). Sem as folhas este script não roda, e o texto
 em art/source é a fonte.
 
 Uso: python3 tools/art/enemies.py [inimigo ...] && python3 tools/pixel_svg.py
@@ -213,6 +213,30 @@ FAMILIES = {
             "stalactite_lunge_side_step": "stalactite_lunge_side",
         },
     ),
+    "monkey": dict(
+        folder="macaco_ref",
+        text="Macaco atirador",
+        colors=[INK, "#3b2530", "#5c4232", "#8a5a3c", "#b9824e", "#ddb277", "#f3dfa6", WHITE,
+                "#55526f", "#7c7b99", "#a9aac2"],
+        soft=[INK, "#3b2530"],
+        # O fundo preso dentro da curva do rabo sai. A pedra fica.
+        holes=("#a9aac2", ("#55526f", "#7c7b99")),
+        frames=[
+            ("monkey_down", "de frente, passo 1"),
+            ("monkey_down_step", "de frente, passo 2"),
+            ("monkey_up", "de costas, passo 1"),
+            ("monkey_up_step", "de costas, passo 2"),
+            ("monkey_side", "de lado, olhando para a direita, passo 1"),
+            ("monkey_side_step", "de lado, passo 2"),
+            ("monkey_throw_windup", "de frente, a pedra erguida"),
+            ("monkey_throw", "de frente, depois de arremessar"),
+            ("monkey_throw_windup_up", "de costas, a pedra erguida"),
+            ("monkey_throw_up", "de costas, depois de arremessar"),
+            ("monkey_throw_windup_side", "de lado, a pedra erguida"),
+            ("monkey_throw_side", "de lado, depois de arremessar"),
+        ],
+        copies={"monkey_hit": "monkey_down_step"},
+    ),
 }
 
 
@@ -238,6 +262,30 @@ def cells(path):
         for left, right in cuts(line[top:bottom], 0, image.shape[1]):
             boxes.append((left, top, right, bottom))
     return boxes
+
+
+def open_holes(c, color, keep_near):
+    """Tira as manchas da cor do fundo presas dentro do desenho, menos as que
+    encostam nas cores de keep_near."""
+    seen = set()
+    for y in range(c.h):
+        for x in range(c.w):
+            if c.p[y][x] != color or (x, y) in seen:
+                continue
+            piece, todo, keep = [], [(x, y)], False
+            seen.add((x, y))
+            while todo:
+                px, py = todo.pop()
+                piece.append((px, py))
+                for near in ((px + 1, py), (px - 1, py), (px, py + 1), (px, py - 1)):
+                    if c.get(*near) in keep_near:
+                        keep = True
+                    if c.get(*near) == color and near not in seen:
+                        seen.add(near)
+                        todo.append(near)
+            if not keep:
+                for px, py in piece:
+                    c.p[py][px] = None
 
 
 def despeckle(c):
@@ -280,6 +328,8 @@ def build(name):
                 ]
                 for x, y in thin:
                     c.p[y][x] = None
+        if family.get("holes"):
+            open_holes(c, *family["holes"])
         c = trace.clean(c, family["soft"])
         despeckle(c)
         middle = frame[2] if len(frame) > 2 else support_middle(c)
