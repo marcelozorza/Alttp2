@@ -1,8 +1,13 @@
-"""Nuvem de quando um inimigo é vencido, em 4 quadros de 32 por 32.
+"""Efeitos pequenos desenhados: a nuvem do inimigo vencido, em 4 quadros de
+32 por 32, e as gotas de suor do Giorgino cansado, em 2 quadros.
 
 Pedido de Marcelo em 2026-11-11: nenhum inimigo tinha animação de morte, o
 gato só desaparecia. A nuvem estoura no lugar do inimigo: um tufo pequeno,
 um tufo grande, o tufo se abrindo em bolas e, por fim, só as faíscas.
+
+As gotas (pedido de Marcelo em 2026-11-11: o Giorgino precisa demonstrar
+que ficou cansado) saltam da cabeça dele enquanto ele anda devagar depois de
+perder o fôlego.
 
 Uso: python3 tools/art/puff.py && python3 tools/pixel_svg.py
 """
@@ -13,6 +18,7 @@ from canvas import Canvas
 
 INK = "#1e181e"
 WHITE, LIGHT, SHADE = "#ffffff", "#d6d8e6", "#a9aac2"
+DROP, SHINE = "#6cc3f2", "#c6efff"
 SIZE = 32
 CENTER = 16
 
@@ -67,7 +73,31 @@ def frames():
     return list(zip([first, second, third, fourth], texts))
 
 
+def drop(c, x, y, lean):
+    """Gota de suor com a ponta para cima, inclinada para o lado lean."""
+    c.px(x + lean, y - 2, DROP)
+    c.rect(x, y - 1, 2, 1, DROP)
+    c.rect(x - 1 if lean > 0 else x, y, 3, 2, DROP)
+    c.px(x if lean > 0 else x + 1, y, SHINE)
+
+
+def sweat():
+    near = Canvas(30, 12)
+    drop(near, 6, 7, -1)
+    drop(near, 22, 7, 1)
+    far = Canvas(30, 12)
+    drop(far, 3, 4, -1)
+    drop(far, 25, 4, 1)
+    drop(far, 9, 8, -1)
+    drop(far, 19, 8, 1)
+    return [(near, "Suor do Giorgino cansado: duas gotas saindo da cabeça."),
+            (far, "Suor do Giorgino cansado: as gotas mais longe e duas novas.")]
+
+
 def main():
+    for index, (canvas, text) in enumerate(sweat()):
+        canvas.outline(INK)
+        canvas.save("tired_sweat_%d" % (index + 1), text + "\nGerado por tools/art/puff.py.")
     for index, (canvas, text) in enumerate(frames()):
         canvas.outline(INK)
         canvas.save("death_puff_%d" % (index + 1), text + "\nGerado por tools/art/puff.py.")

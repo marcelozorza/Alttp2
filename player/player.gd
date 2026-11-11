@@ -61,6 +61,13 @@ const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
 ## Ticks de cada passo, andando e correndo.
 const WALK_STEP_TICKS := 10
 const RUN_STEP_TICKS := 6
+## Cansado, os passos ficam arrastados.
+const TIRED_STEP_TICKS := 16
+## Gotas de suor do cansaço, alternadas a cada SWEAT_TICKS.
+const SWEAT_FRAMES: Array[Texture2D] = [
+	preload("res://art/tired_sweat_1.svg"), preload("res://art/tired_sweat_2.svg")
+]
+const SWEAT_TICKS := 8
 ## Cor da espada travada. A granada do ugly usa a mesma cor.
 const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
 ## Cor da barra da trava ao apertar o ataque com a espada travada.
@@ -105,6 +112,12 @@ const LOW_HEALTH_DELAY := 0.3
 ## Cansado, o duplo toque não faz nada, e nada aparece na tela de propósito
 ## (pedido de Marcelo em 2026-11-06): é só a sensação de ter de esperar.
 @export_range(0.0, 20.0, 0.5) var run_rest_time := 4.0
+## Segundos de cansaço depois que o fôlego acaba (pedido de Marcelo em
+## 2026-11-11): ele anda a tired_speed, mais lento que o andar normal, e
+## gotas de suor saltam da cabeça. Zero desliga o cansaço.
+@export_range(0.0, 10.0, 0.5) var tired_time := 3.0
+## Velocidade andando cansado, em pixels por segundo.
+@export_range(20.0, 600.0, 1.0) var tired_speed := 100.0
 ## Correndo, nenhum ataque tira vida (decisão de Marcelo em 2026-11-06): a
 ## corrida é a esquiva, e o fôlego é o que a limita. A física da batida
 ## continua, então correr contra um inimigo ainda ricocheteia.
@@ -188,6 +201,7 @@ var _run_direction := Vector2.ZERO
 var _breath := 1.0
 ## Cansado: sem correr até o fôlego encher de novo.
 var _winded := false
+var _tired_until_tick := -1000
 var _previous_direction := Vector2.ZERO
 var _last_press_direction := Vector2.ZERO
 var _last_press_tick := 0
@@ -219,6 +233,7 @@ var _last_step := 0
 @onready var _art: Sprite2D = $Visual/Art
 @onready var _sword: Sword = $Visual/Sword
 @onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
+@onready var _sweat: Sprite2D = $Visual/Sweat
 @onready var _sword_lock_width: float = _sword_lock_bar.size.x
 @onready var _shadow: ColorRect = $Shadow
 @onready var _feet: CollisionShape2D = $Feet
@@ -350,6 +365,11 @@ func is_airborne() -> bool:
 
 
 ## Sem vida, caído, à espera da tela de derrota.
+## Verdadeiro nos segundos de cansaço depois que o fôlego da corrida acaba.
+func is_tired() -> bool:
+	return Clock.tick < _tired_until_tick
+
+
 func is_dead() -> bool:
 	return _state == State.DEAD
 
@@ -587,6 +607,8 @@ func _is_free_at(target: Vector2) -> bool:
 func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
 	var speed := run_speed if _state == State.RUN else walk_speed
+	if is_tired():
+		speed = tired_speed
 	if Clock.tick < _freeze_until_tick:
 		# Parado durante o golpe, mas ainda pode virar para o próximo.
 		move_direction = Vector2.ZERO
@@ -638,6 +660,7 @@ func _breathe() -> void:
 		_breath = maxf(0.0, _breath - 1.0 / GameMath.ticks(run_time))
 		if _breath == 0.0:
 			_winded = true
+			_tired_until_tick = Clock.tick + GameMath.ticks(tired_time)
 			_enter(State.WALK)
 	else:
 		_breath = minf(1.0, _breath + 1.0 / maxf(1.0, GameMath.ticks(run_rest_time)))
@@ -739,6 +762,8 @@ func _update_visuals() -> void:
 	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
 	_shadow.visible = is_airborne()
 	_update_sword_lock_bar()
+	_sweat.visible = is_tired() and not _is_down()
+	_sweat.texture = SWEAT_FRAMES[posmod(floori(float(Clock.tick) / SWEAT_TICKS), 2)]
 
 
 ## Escolhe o desenho pela postura e pela frente: sem vida, deitado, no golpe,
@@ -749,6 +774,8 @@ func _update_art() -> void:
 	var running := _state == State.RUN
 	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 2.0
 	var step_ticks := RUN_STEP_TICKS if running else WALK_STEP_TICKS
+	if is_tired():
+		step_ticks = TIRED_STEP_TICKS
 	var step := 0
 	if moving and posmod(floori(float(Clock.tick) / step_ticks), 2) == 1:
 		step = 1
