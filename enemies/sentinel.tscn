@@ -1,6 +1,58 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://enemies/sentinel.gd" id="1_script"]
+[ext_resource type="Script" path="res://enemies/boss_frames.gd" id="2_frames"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_walk.svg" id="10_shell_walk"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_walk_step.svg" id="11_shell_walk_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_slam_windup.svg" id="12_shell_slam_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_slam.svg" id="13_shell_slam"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_charge_windup.svg" id="14_shell_charge_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_charge.svg" id="15_shell_charge"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_charge_step.svg" id="16_shell_charge_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_shell_recover.svg" id="17_shell_recover"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_walk.svg" id="18_frost_walk"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_walk_step.svg" id="19_frost_walk_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_slam_windup.svg" id="20_frost_slam_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_slam.svg" id="21_frost_slam"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_charge_windup.svg" id="22_frost_charge_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_charge.svg" id="23_frost_charge"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_charge_step.svg" id="24_frost_charge_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_frost_recover.svg" id="25_frost_recover"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_walk.svg" id="26_core_walk"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_walk_step.svg" id="27_core_walk_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_slam_windup.svg" id="28_core_slam_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_slam.svg" id="29_core_slam"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_charge_windup.svg" id="30_core_charge_windup"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_charge.svg" id="31_core_charge"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_charge_step.svg" id="32_core_charge_step"]
+[ext_resource type="Texture2D" path="res://art/sentinel_core_recover.svg" id="33_core_recover"]
+
+[sub_resource type="Resource" id="BossFrames_shell"]
+script = ExtResource("2_frames")
+walk_frames = Array[Texture2D]([ExtResource("10_shell_walk"), ExtResource("11_shell_walk_step")])
+slam_windup_frame = ExtResource("12_shell_slam_windup")
+slam_frame = ExtResource("13_shell_slam")
+charge_windup_frame = ExtResource("14_shell_charge_windup")
+charge_frames = Array[Texture2D]([ExtResource("15_shell_charge"), ExtResource("16_shell_charge_step")])
+recover_frame = ExtResource("17_shell_recover")
+
+[sub_resource type="Resource" id="BossFrames_frost"]
+script = ExtResource("2_frames")
+walk_frames = Array[Texture2D]([ExtResource("18_frost_walk"), ExtResource("19_frost_walk_step")])
+slam_windup_frame = ExtResource("20_frost_slam_windup")
+slam_frame = ExtResource("21_frost_slam")
+charge_windup_frame = ExtResource("22_frost_charge_windup")
+charge_frames = Array[Texture2D]([ExtResource("23_frost_charge"), ExtResource("24_frost_charge_step")])
+recover_frame = ExtResource("25_frost_recover")
+
+[sub_resource type="Resource" id="BossFrames_core"]
+script = ExtResource("2_frames")
+walk_frames = Array[Texture2D]([ExtResource("26_core_walk"), ExtResource("27_core_walk_step")])
+slam_windup_frame = ExtResource("28_core_slam_windup")
+slam_frame = ExtResource("29_core_slam")
+charge_windup_frame = ExtResource("30_core_charge_windup")
+charge_frames = Array[Texture2D]([ExtResource("31_core_charge"), ExtResource("32_core_charge_step")])
+recover_frame = ExtResource("33_core_recover")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_base"]
 size = Vector2(48, 20)
@@ -20,6 +72,9 @@ walk_speed = 64.0
 approach_time = 1.4
 slam_windup_time = 0.8
 charge_speed = 460.0
+shell_frames = SubResource("BossFrames_shell")
+core_frames = SubResource("BossFrames_core")
+frost_frames = SubResource("BossFrames_frost")
 
 [node name="Base" type="CollisionShape2D" parent="."]
 position = Vector2(0, -10)
