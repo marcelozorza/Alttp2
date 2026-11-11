@@ -46,16 +46,34 @@ def trace(path, box, size, colors, bg_tol=38):
                 best = (error, ox, oy)
     _, ox, oy = best
     labs = [(color, palette._lab(color)) for color in colors]
-    out = Canvas(int((w - ox) / size), int((h - oy) / size))
-    for j in range(out.h):
-        for i in range(out.w):
+    nx, ny = int((w - ox) / size), int((h - oy) / size)
+    middles = [[None] * nx for _ in range(ny)]
+    for j in range(ny):
+        for i in range(nx):
             block = cell(ox, oy, i, j)
-            if not block.size:
+            if block.size:
+                middles[j][i] = np.median(block.reshape(-1, 3), axis=0)
+
+    def like_background(i, j):
+        return middles[j][i] is None or np.abs(middles[j][i] - background).sum() < bg_tol
+
+    # O fundo é só o que se liga à borda: um cinza igual ao fundo dentro do
+    # desenho continua sendo desenho.
+    outside = set()
+    todo = [(i, j) for i in range(nx) for j in (0, ny - 1)]
+    todo += [(i, j) for j in range(ny) for i in (0, nx - 1)]
+    while todo:
+        i, j = todo.pop()
+        if (i, j) in outside or not (0 <= i < nx and 0 <= j < ny) or not like_background(i, j):
+            continue
+        outside.add((i, j))
+        todo += [(i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)]
+    out = Canvas(nx, ny)
+    for j in range(ny):
+        for i in range(nx):
+            if (i, j) in outside or middles[j][i] is None:
                 continue
-            middle = np.median(block.reshape(-1, 3), axis=0)
-            if np.abs(middle - background).sum() < bg_tol:
-                continue
-            lab = palette._lab("#%02x%02x%02x" % tuple(int(v) for v in middle))
+            lab = palette._lab("#%02x%02x%02x" % tuple(int(v) for v in middles[j][i]))
             out.p[j][i] = min(labs, key=lambda t: sum((a - b) ** 2 for a, b in zip(lab, t[1])))[0]
     return out.crop()
 
