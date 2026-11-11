@@ -43,13 +43,15 @@ B5, WHITE = "#c6efff", "#ffffff"
 
 def carpet():
     """Miolo do tapete do castelo: losangos pequenos em duas fileiras
-    desencontradas, com um ponto claro no meio. Repete sem emenda."""
-    c = Canvas(32, 32, R1)
+    desencontradas, com um ponto claro no meio. Repete sem emenda. Em
+    2026-11-11 Marcelo pediu o vermelho mais escuro, porque o tapete saltava
+    do piso: o fundo desceu um tom na rampa, e os losangos e o ponto também."""
+    c = Canvas(32, 32, R0)
     for cx, cy in [(8, 8), (24, 8), (0, 24), (16, 24), (32, 24)]:
         for d in range(4):
-            c.rect(cx - 3 + d, cy - d, 7 - 2 * d, 1, R0)
-            c.rect(cx - 3 + d, cy + d, 7 - 2 * d, 1, R0)
-        c.px(cx, cy, R2)
+            c.rect(cx - 3 + d, cy - d, 7 - 2 * d, 1, "#3b2530")
+            c.rect(cx - 3 + d, cy + d, 7 - 2 * d, 1, "#3b2530")
+        c.px(cx, cy, R1)
     return c
 
 
@@ -104,7 +106,7 @@ def vine():
 
 
 def main():
-    carpet().save("carpet", "Tapete vermelho do castelo, o miolo, com losangos escuros.")
+    carpet().save("carpet", "Tapete vinho do castelo, o miolo, com losangos escuros.")
     frost().save("frost", "Geada sobre o chão, com transparência.")
     moss_patch().save("moss_patch", "Manchas de musgo sobre o chão, com transparência.")
     vine().save("vine", "Trepadeira pendurada na face da parede.")

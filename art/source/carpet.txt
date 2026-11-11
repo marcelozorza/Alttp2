@@ -1,8 +1,8 @@
-# Tapete vermelho do castelo, o miolo, com losangos escuros.
+# Tapete vinho do castelo, o miolo, com losangos escuros.
 paleta
-a #9c2338
-b #5e1830
-c #d83a3f
+a #5e1830
+b #3b2530
+c #9c2338
 pixels
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

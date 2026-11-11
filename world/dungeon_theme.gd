@@ -83,8 +83,8 @@ var cobweb: Texture2D
 var cobweb_chance := 45
 ## Tapete no centro das salas de chão liso. Nulo, sem tapete.
 var carpet: Texture2D
-var carpet_border := Color(0.84, 0.66, 0.25, 1.0)
-var carpet_edge := Color(0.25, 0.07, 0.1, 1.0)
+var carpet_border := Color(0.72, 0.51, 0.31, 1.0)
+var carpet_edge := Color(0.12, 0.09, 0.12, 1.0)
 
 
 ## Tema do capítulo pelo número. O tutorial é a pedra.
