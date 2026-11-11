@@ -9,7 +9,7 @@ pontos soltos e alinha os quadros de cada inimigo: todos do mesmo tamanho,
 com a base na mesma linha e o meio do apoio no meio do quadro.
 
 Substitui os geradores por formas de 2026-11-10 (minion, lobo, morcego,
-cobra, tatu e cubo de gelo). Sem as folhas este script não roda, e o texto
+cobra, tatu, cubo de gelo e estalactite). Sem as folhas este script não roda, e o texto
 em art/source é a fonte.
 
 Uso: python3 tools/art/enemies.py [inimigo ...] && python3 tools/pixel_svg.py
@@ -178,6 +178,41 @@ FAMILIES = {
             "ice_cube_fallen": "ice_cube_recover",
         },
     ),
+    "stalactite": dict(
+        folder="estalactite_ref",
+        text="Estalactite",
+        colors=[INK, "#27409a", "#5a7fb5", "#86a9d6", "#b4cdec", "#c6efff", WHITE, "#e49aa4",
+                "#d83a3f"],
+        soft=[INK, "#27409a"],
+        # A linha da folha passa por trás do bote de lado: sai antes da limpeza.
+        thin_lines=True,
+        # O bote de lado ocupa duas casas, então as casas vão escritas.
+        boxes=[
+            (4, 4, 252, 186), (260, 4, 508, 186), (516, 4, 764, 186), (772, 4, 1020, 186),
+            (4, 194, 252, 376), (260, 194, 508, 376), (516, 194, 764, 376), (772, 194, 1020, 376),
+            (518, 194, 764, 376), (4, 384, 252, 568), (340, 390, 624, 566), (626, 384, 766, 568),
+            (790, 384, 1020, 568),
+        ],
+        frames=[
+            ("stalactite_down", "de frente, passo 1"),
+            ("stalactite_down_step", "de frente, passo 2"),
+            ("stalactite_up", "de costas, passo 1"),
+            ("stalactite_up_step", "de costas, passo 2"),
+            ("stalactite_side", "de lado, olhando para a direita, passo 1"),
+            ("stalactite_side_step", "de lado, passo 2"),
+            ("stalactite_windup", "braços erguidos, antes do bote"),
+            ("stalactite_lunge_down", "bote de frente"),
+            ("stalactite_lunge_down_step", "bote de frente, segundo quadro"),
+            ("stalactite_lunge_up", "bote de costas"),
+            ("stalactite_lunge_side", "bote de lado, a ponta para a frente"),
+            ("stalactite_recover", "tonta depois do bote"),
+            ("stalactite_hit", "levando dano"),
+        ],
+        copies={
+            "stalactite_lunge_up_step": "stalactite_lunge_up",
+            "stalactite_lunge_side_step": "stalactite_lunge_side",
+        },
+    ),
 }
 
 
@@ -229,12 +264,23 @@ def support_middle(c):
 def build(name):
     family = FAMILIES[name]
     sheet = SHEETS + family["folder"] + "/ref_12.jpg"
-    boxes = cells(sheet)
+    boxes = family.get("boxes") or cells(sheet)
     if len(boxes) != len(family["frames"]):
         sys.exit("%s: a folha tem %d casas, esperava %d" % (name, len(boxes), len(family["frames"])))
     drawn = {}
     for box, frame in zip(boxes, family["frames"]):
-        c = trace.clean(trace.trace(sheet, box, PIXEL, family["colors"]), family["soft"])
+        c = trace.trace(sheet, box, PIXEL, family["colors"])
+        if family.get("thin_lines"):
+            for _ in range(2):
+                thin = [
+                    (x, y)
+                    for y in range(c.h)
+                    for x in range(c.w)
+                    if c.p[y][x] and c.get(x - 1, y) is None and c.get(x + 1, y) is None
+                ]
+                for x, y in thin:
+                    c.p[y][x] = None
+        c = trace.clean(c, family["soft"])
         despeckle(c)
         middle = frame[2] if len(frame) > 2 else support_middle(c)
         drawn[frame[0]] = (c, middle, frame[1])
