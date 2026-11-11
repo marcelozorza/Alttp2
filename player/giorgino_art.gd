@@ -2,6 +2,10 @@ class_name GiorginoArt
 extends RefCounted
 ## Desenhos do Giorgino e o ponto dos pés em cada um.
 ##
+## Desde 2026-11-11 os desenhos são decalcados de folhas do Magnific por
+## tools/art/giorgino.py, no tamanho grande (58 px de pé), e o script imprime
+## os pontos dos pés desta tabela.
+##
 ## A espada faz parte dos desenhos: na pata quando ele está de pé, presa na
 ## coleira quando galopa e estendida nos quadros de golpe. Por isso os quadros
 ## têm tamanhos diferentes e passam do corpo, e cada um guarda onde ficam os
@@ -21,12 +25,12 @@ const WALKING: Array[Texture2D] = [
 	preload("res://art/giorgino_stand_side_step.svg"),
 ]
 const WALKING_FEET: Array[Vector2] = [
-	Vector2(19.5, 40.0),
-	Vector2(19.5, 40.0),
-	Vector2(14.0, 38.0),
-	Vector2(13.5, 38.0),
-	Vector2(18.0, 37.0),
-	Vector2(17.5, 37.0),
+	Vector2(31.5, 54.0),
+	Vector2(31.5, 54.0),
+	Vector2(14.5, 54.0),
+	Vector2(15.5, 51.0),
+	Vector2(15.5, 49.0),
+	Vector2(16.5, 52.0),
 ]
 ## Correndo, nas quatro patas, na mesma ordem.
 const RUNNING: Array[Texture2D] = [
@@ -38,12 +42,12 @@ const RUNNING: Array[Texture2D] = [
 	preload("res://art/giorgino_side_step.svg"),
 ]
 const RUNNING_FEET: Array[Vector2] = [
-	Vector2(15.0, 38.0),
-	Vector2(15.0, 33.0),
-	Vector2(13.5, 37.0),
-	Vector2(14.0, 37.0),
-	Vector2(19.0, 31.0),
-	Vector2(20.0, 33.0),
+	Vector2(29.5, 48.0),
+	Vector2(19.5, 50.0),
+	Vector2(28.5, 50.0),
+	Vector2(14.5, 54.0),
+	Vector2(31.5, 36.0),
+	Vector2(26.5, 47.0),
 ]
 ## Golpe de espada, um quadro por direção. A lâmina cobre a área de dano de
 ## Sword: até 36 pixels para o lado, 32 para baixo e 48 para cima dos pés.
@@ -53,13 +57,13 @@ const THRUST: Array[Texture2D] = [
 	preload("res://art/giorgino_thrust_side.svg"),
 ]
 const THRUST_FEET: Array[Vector2] = [
-	Vector2(13.5, 40.0),
-	Vector2(17.0, 50.0),
-	Vector2(18.0, 37.0),
+	Vector2(9.5, 47.0),
+	Vector2(24.0, 54.0),
+	Vector2(16.5, 49.0),
 ]
 ## Deitado, sem vida, com a espada caída ao lado.
 const FALLEN: Texture2D = preload("res://art/giorgino_fallen.svg")
-const FALLEN_FEET := Vector2(25.0, 13.0)
+const FALLEN_FEET := Vector2(30.5, 14.0)
 ## Os mesmos desenhos sujos da gosma da granada do ugly, mostrados enquanto a
 ## espada está travada (pedido de Marcelo em 2026-11-08: a gosma tem que ser
 ## desenho, não efeito por cima). Gerados por tools/giorgino_goo_art.py a
