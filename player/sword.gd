@@ -30,6 +30,8 @@ const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
 const RESTART_TICKS := 2
 ## Tick de um golpe que nunca aconteceu.
 const NEVER := -1000
+## As quatro direções de uma volta do giro, na ordem em que a lâmina passa.
+const SPIN_ORDER: Array[Vector2] = [Vector2.DOWN, Vector2.LEFT, Vector2.UP, Vector2.RIGHT]
 
 ## Comprimento da lâmina para fora do corpo, em pixels.
 @export_range(8.0, 80.0, 1.0) var reach := 24.0
@@ -66,6 +68,20 @@ func attack(toward: Vector2) -> void:
 	_attack_tick = Clock.tick
 	_already_hit.clear()
 	_apply_hits()
+
+
+## Um passo do giro: a lâmina aparece na direção dada, sem recolher entre os
+## passos. Com hit_around, o golpe acerta de uma vez as quatro direções em
+## volta, cada alvo uma vez, empurrando para fora.
+func spin(toward: Vector2, hit_around: bool) -> void:
+	_restart_tick = NEVER
+	_attack_tick = Clock.tick
+	if hit_around:
+		_already_hit.clear()
+		for way: Vector2 in SPIN_ORDER:
+			direction = way
+			_apply_hits()
+	direction = toward
 
 
 ## Verdadeiro enquanto a espada está estendida ou recolhendo. É quando o

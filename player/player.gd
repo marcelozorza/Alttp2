@@ -85,6 +85,10 @@ const VISUAL_CATCH_UP := 3.0
 ## Segundos entre o som da pancada e o aviso de vida baixa, para não se
 ## misturarem.
 const LOW_HEALTH_DELAY := 0.3
+## Ticks de cada quarto de volta do giro. A volta inteira leva quatro.
+const SPIN_STEP_TICKS := 4
+## Tick de um aperto que não está valendo.
+const NO_HOLD := -1
 
 @export_group("Andar")
 ## Velocidade máxima, em pixels por segundo.
@@ -135,6 +139,14 @@ const LOW_HEALTH_DELAY := 0.3
 ## Segundos em que o personagem fica parado a cada golpe. Zero permite andar
 ## enquanto ataca.
 @export_range(0.0, 0.5, 0.01) var attack_freeze_time := 0.1
+## Giro, o ataque do desespero (pedido de Marcelo em 2026-11-11): segurar o
+## botão de ataque por spin_hold_time segundos faz o personagem girar com a
+## espada, acertando tudo em volta a cada volta. Girando, ele perde
+## spin_cost pontos de vida a cada spin_cost_time segundos. O giro nunca tira
+## o último ponto: com 1 de vida ele para. Zero em spin_hold_time desliga.
+@export_range(0.0, 3.0, 0.05) var spin_hold_time := 1.0
+@export_range(0.1, 3.0, 0.05) var spin_cost_time := 1.0
+@export_range(0, 4, 1) var spin_cost := 1
 
 @export_group("Vida")
 ## Pontos de vida.
@@ -223,6 +235,10 @@ var _air_time := 0.5
 var _sword_lock_until_tick := 0
 var _sword_lock_ticks := 1
 var _sword_denied_tick := -1000
+## Tick em que o botão de ataque foi apertado e segue apertado, e o tick em
+## que o giro começou. NO_HOLD quando não há um ou outro.
+var _attack_hold_tick := NO_HOLD
+var _spin_tick := NO_HOLD
 var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
 var _jump_charges := ToolCharges.new()
@@ -262,7 +278,9 @@ func _physics_process(delta: float) -> void:
 		_update_facing(direction)
 		if Input.is_action_just_pressed("attack"):
 			_attack()
+			_attack_hold_tick = Clock.tick
 		_use_tools()
+	_update_spin(in_control)
 	if _state == State.KNOCKBACK:
 		# Arremessado, sem controle, até o atrito parar o personagem.
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
@@ -479,6 +497,58 @@ func _attack() -> void:
 	_sword.attack(facing)
 	Sfx.play(&"sword_swing")
 	_freeze_until_tick = Clock.tick + GameMath.ticks(attack_freeze_time)
+
+
+## Giro: começa depois de o botão de ataque ficar apertado por
+## spin_hold_time, dura enquanto ele seguir apertado e cobra vida por tempo.
+## Só no chão e andando. Qualquer perda de controle, a trava da espada ou
+## soltar o botão encerram.
+func _update_spin(in_control: bool) -> void:
+	var holding := (
+		in_control
+		and spin_hold_time > 0.0
+		and _attack_hold_tick != NO_HOLD
+		and Input.is_action_pressed("attack")
+		and _state == State.WALK
+		and not is_airborne()
+		and not is_sword_locked()
+	)
+	if not holding:
+		_attack_hold_tick = NO_HOLD
+		_spin_tick = NO_HOLD
+		return
+	if _spin_tick == NO_HOLD:
+		if Clock.tick - _attack_hold_tick < GameMath.ticks(spin_hold_time) or health <= 1:
+			return
+		_spin_tick = Clock.tick
+	var elapsed := Clock.tick - _spin_tick
+	if elapsed > 0 and elapsed % GameMath.ticks(spin_cost_time) == 0:
+		_pay_spin()
+		if health <= 1:
+			_attack_hold_tick = NO_HOLD
+			_spin_tick = NO_HOLD
+			return
+	if elapsed % SPIN_STEP_TICKS == 0:
+		@warning_ignore("integer_division")
+		var quarter := (elapsed / SPIN_STEP_TICKS) % Sword.SPIN_ORDER.size()
+		_sword.spin(Sword.SPIN_ORDER[quarter], quarter == 0)
+		if quarter == 0:
+			Sfx.play(&"sword_swing")
+
+
+## O preço do giro sai direto da vida, sem invencibilidade e sem derrubar.
+func _pay_spin() -> void:
+	var before := health
+	health = maxi(health - spin_cost, 1)
+	if health < before:
+		Sfx.play(&"hurt")
+	if low_health > 0 and health <= low_health and before > low_health:
+		_low_health_tick = Clock.tick + GameMath.ticks(LOW_HEALTH_DELAY)
+
+
+## Verdadeiro enquanto o personagem gira com a espada.
+func is_spinning() -> bool:
+	return _spin_tick != NO_HOLD
 
 
 func _recharge_tools() -> void:
