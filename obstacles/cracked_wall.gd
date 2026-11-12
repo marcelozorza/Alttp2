@@ -27,6 +27,7 @@ func _draw() -> void:
 	for y: int in int(size.y / 32.0):
 		for x: int in int(size.x / 32.0):
 			draw_texture(_texture(), offset + Vector2(x, y) * 32.0)
+	DoorArt.draw_outline(self, Rect2(offset, size))
 
 
 ## Desenho de uma casa da parede, no tema da sala.

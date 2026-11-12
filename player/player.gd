@@ -86,6 +86,8 @@ const VISUAL_CATCH_UP := 3.0
 ## misturarem.
 const LOW_HEALTH_DELAY := 0.3
 ## Ticks de cada quarto de volta do giro. A volta inteira leva quatro.
+## Largura do desenho usada para a sombra no chão: o corpo, sem a espada.
+const SHADOW_WIDTH := 30.0
 const SPIN_STEP_TICKS := 4
 ## Tick de um aperto que não está valendo.
 const NO_HOLD := -1
@@ -835,7 +837,8 @@ func _update_visuals() -> void:
 	_drawn_height = move_toward(_drawn_height, _z, 8.0)
 	_visual.position = Vector2(0.0, _visual_offset - _z)
 	_visual.scale = Vector2.ONE * (1.0 + jump_growth * _drawn_height / jump_height)
-	_shadow.visible = is_airborne()
+	_shadow.visible = false
+	queue_redraw()
 	_update_sword_lock_bar()
 	_sweat.visible = is_tired() and not _is_down()
 	_sweat.texture = SWEAT_FRAMES[posmod(floori(float(Clock.tick) / SWEAT_TICKS), 2)]
@@ -900,3 +903,9 @@ func _update_sword_lock_bar() -> void:
 	_sword_lock_bar.position.x = -_sword_lock_bar.size.x / 2.0
 	var denied := now - _sword_denied_tick < SWORD_DENIED_TICKS
 	_sword_lock_bar.color = SWORD_DENIED_COLOR if denied else SWORD_LOCK_COLOR
+
+
+## Sombra no chão, sob os pés. No pulo ela fica no chão enquanto o corpo sobe.
+func _draw() -> void:
+	if not _is_down():
+		GroundShadow.draw(self, Vector2(0.0, 2.0), SHADOW_WIDTH)

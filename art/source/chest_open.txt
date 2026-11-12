@@ -1,6 +1,7 @@
 # Baú aberto, bem diferente do fechado (pedido de Marcelo em 2026-11-07): a
 # tampa fica erguida atrás, mostrando o forro escuro com a moldura dourada,
 # e a boca do baú é escura. O corpo é mais baixo que o do baú fechado.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #1e181e
 q #9c2338
@@ -13,34 +14,34 @@ k #0e0b0d
 b #5c4232
 pixels
 ................................
-................................
 ...oooooooooooooooooooooooooo...
-..ogggggggggggggggggggggggggo...
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogkkkkkkkkkkkkkkkkkkkkkkkggo..
-..ogggggggggggggggggggggggggo...
-..oyyyyyyyyyyyyyyyyyyyyyyyyyyo..
-..okkkkkkkkkkkkkkkkkkkkkkkkkko..
-..okkkkkkkkkkkkkkkkkkkkkkkkkko..
-..okbbbbbbbbbbbbbbbbbbbbbbbbko..
-..okkkddddddddddddddddddddkkko..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdqqqqqqqqqqqqqqqqqqyggdo..
-..oyggdhhhhhhhhhhhhhhhhhhyggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdqqqqqqqqqqqqqqqqqqyggdo..
-..oyggdhhhhhhhhhhhhhhhhhhyggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oddddddddddddddddddddddddddo..
-..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
-..oqqqqqqqqqqqqqqqqqqqqqqqqqqo..
+..oooooooooooooooooooooooooooo..
+.oogggggggggggggggggggggggggoo..
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogkkkkkkkkkkkkkkkkkkkkkkkggoo.
+.oogggggggggggggggggggggggggoo..
+.ooyyyyyyyyyyyyyyyyyyyyyyyyyyoo.
+.ookkkkkkkkkkkkkkkkkkkkkkkkkkoo.
+.ookkkkkkkkkkkkkkkkkkkkkkkkkkoo.
+.ookbbbbbbbbbbbbbbbbbbbbbbbbkoo.
+.ookkkddddddddddddddddddddkkkoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdqqqqqqqqqqqqqqqqqqyggdoo.
+.ooyggdhhhhhhhhhhhhhhhhhhyggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdqqqqqqqqqqqqqqqqqqyggdoo.
+.ooyggdhhhhhhhhhhhhhhhhhhyggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooddddddddddddddddddddddddddoo.
+.oobbbbbbbbbbbbbbbbbbbbbbbbbboo.
+.ooqqqqqqqqqqqqqqqqqqqqqqqqqqoo.
+oooooooooooooooooooooooooooooooo
 .oooooooooooooooooooooooooooooo.
-...oooooooooooooooooooooooooo...

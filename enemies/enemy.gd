@@ -41,7 +41,6 @@ const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
 ## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
 ## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
 const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
-const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Velocidade angular do vaivém, em radianos por tick.
 const WEAVE_RATE := 0.2
 ## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
@@ -216,6 +215,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 
 ## Volta ao ponto inicial, com a vida cheia e parado.
 func reset() -> void:
+	queue_redraw()
 	health = max_health
 	global_position = _home
 	velocity = Vector2.ZERO
@@ -387,6 +387,7 @@ func _enter(state: State) -> void:
 
 func _die() -> void:
 	_enter(State.DEAD)
+	queue_redraw()
 	velocity = Vector2.ZERO
 	# O inimigo some na hora, e a nuvem fica no lugar dele.
 	if _art:
@@ -537,8 +538,10 @@ func _uses_side_frame() -> bool:
 ## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
 ## aviso e treme junto com o corpo.
 func _draw() -> void:
-	if hover and _state != State.DEAD:
-		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
+	if _state != State.DEAD:
+		var frame := _frame_for_state() if _art else null
+		var width := frame.get_width() if frame else _body.size.x
+		GroundShadow.draw(self, Vector2.ZERO, width)
 	if (
 		_state != State.THROW_WINDUP
 		or (_art and (throw_windup_frame or not throw_windup_frames.is_empty()))

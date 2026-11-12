@@ -26,6 +26,18 @@ FAMILIES = [
     "minion", "wolf", "bat", "snake", "armadillo", "ice_cube", "stalactite", "monkey",
     "sentinel", "crab", "cerberus",
 ]
+# Objetos de cena (pedido de Marcelo em 2026-11-12: o traço grosso em tudo o
+# que está dentro da cena, para dar unidade). O código desenha esses objetos
+# em posições fixas, então o quadro deles não cresce: o anel entra no espaço
+# transparente que o quadro já tem, e onde o desenho encosta na borda do
+# quadro são os 2 pixels de dentro que viram tinta.
+OBJECTS = [
+    "chest", "chest_open", "bomb", "bone", "bones_pile", "relic", "floor_switch",
+    "floor_switch_pressed", "message_plate", "message_plate_lit", "save_stone",
+    "save_stone_lit", "torch", "candelabra", "banner", "ice_crystal", "gate", "crate",
+    "heavy_block", "icicles", "entrance_stone", "entrance_castle", "entrance_ice",
+    "entrance_moss",
+]
 # Famílias cujos vãos fechados dentro do corpo são preenchidos, e a cor usada
 # quando não há outra em volta do vão.
 # No macaco eles eram buracos: aparecia o chão entre o braço e o corpo e no
@@ -163,6 +175,46 @@ def thicken(path):
     return True
 
 
+def thicken_in_place(path):
+    """Engrossa o contorno sem mudar o tamanho do quadro."""
+    lines, first, start, palette = _read(path)
+    if MARK in lines or any(line.startswith("usa ") for line in lines):
+        return False
+    ink, start = _letter(lines, start, palette, INK)
+    grid = [list(row) for row in lines[start:]]
+    h, w = len(grid), len(grid[0])
+    outside = _outside(grid)
+    marks = set()
+    for y in range(h):
+        for x in range(w):
+            if (x, y) in outside:
+                if any(
+                    0 <= x + dx < w and 0 <= y + dy < h and grid[y + dy][x + dx] != "."
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))
+                ):
+                    marks.add((x, y))
+            elif grid[y][x] != ".":
+                if x < 2 or x >= w - 2 or y < 2 or y >= h - 2:
+                    edge = (
+                        (x < 2 and grid[y][0] != ".")
+                        or (x >= w - 2 and grid[y][w - 1] != ".")
+                        or (y < 2 and grid[0][x] != ".")
+                        or (y >= h - 2 and grid[h - 1][x] != ".")
+                    )
+                    if edge:
+                        marks.add((x, y))
+    for x, y in marks:
+        grid[y][x] = ink
+    header = lines[:first] + [MARK] + lines[first:start]
+    path.write_text("\n".join(header + ["".join(row) for row in grid]) + "\n", encoding="utf-8")
+    return True
+
+
+def apply_objects(names=OBJECTS):
+    """Engrossa os objetos de cena e devolve quantos mudou."""
+    return sum(thicken_in_place(SOURCE / (name + ".txt")) for name in names)
+
+
 def apply(families=FAMILIES):
     """Engrossa todos os quadros das famílias dadas e devolve quantos mudou."""
     count = 0
@@ -176,3 +228,4 @@ def apply(families=FAMILIES):
 
 if __name__ == "__main__":
     print("%d quadros engrossados" % apply())
+    print("%d objetos engrossados" % apply_objects())

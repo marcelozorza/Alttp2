@@ -75,6 +75,8 @@ func _draw() -> void:
 			var cell := offset + Vector2(x, y) * tile
 			var target := Rect2(cell + Vector2(0.0, tile - visible_height), source.size)
 			draw_texture_rect_region(texture, target, source)
+	if not cleared:
+		DoorArt.draw_outline(self, Rect2(offset, size))
 	if cleared:
 		_draw_drops(elapsed)
 

@@ -1,27 +1,29 @@
 # Cristais de gelo brotando do chão.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #55526f
 e #6cc3f2
 a #6cc3f2
 w #ffffff
+b #1e181e
 pixels
-........ww..........
-........ww..........
-.......oaao.........
-......ooaaaoo.......
-......ooaaaoo...ww..
-.....ooaaaaaooo.ww..
-.....ooaaawwooooaaoo
-....ooaaaawwoooaaaoo
-....ooaaaaaaoooaaaoo
-.....ooaaaaaooaaaaoo
-..ww..oaaaaaooaaaaoo
-..ww...ooaaaooaaaaoo
-ooaao...oaaaaaaaaeoo
-ooaaao..ooaaaaaeeeoo
-ooaaaoooooaaaaaeeeoo
-ooaaaaooooaaaeeeeeoo
-ooaaaaeeooeeeeeeeeoo
-oooaaaeeoooeeeeeeooo
-.ooooooooooooooooooo
-..oooooooooooooooooo
+.......bbbb.........
+.......bbbb.........
+......boaaobb.......
+.....booaaaoob..bb..
+.....booaaaoobbbwwb.
+....booaaaaaooobwwbb
+....booaaawwooooaabb
+...booaaaawwoooaaabb
+...booaaaaaaoooaaabb
+..bbbooaaaaaooaaaabb
+.bwwbboaaaaaooaaaabb
+bbwwb.booaaaooaaaabb
+bbaaob.boaaaaaaaaebb
+bbaaaobbooaaaaaeeebb
+bbaaaoooooaaaaaeeebb
+bbaaaaooooaaaeeeeebb
+bbaaaaeeooeeeeeeeebb
+bboaaaeeoooeeeeeeobb
+bobbbbbbbbbbbbbbbbbb
+.bbbbbbbbbbbbbbbbbbb

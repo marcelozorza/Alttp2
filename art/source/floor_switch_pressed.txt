@@ -1,4 +1,5 @@
 # Interruptor pressionado: a placa afundou, rente ao chão, e o losango acende.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #1b1926
 d #3a3750
@@ -6,32 +7,33 @@ f #55526f
 b #7c7b99
 h #7c7b99
 m #f7c53a
+a #1e181e
 pixels
 ................................
-................................
-.....oooooooooooooooooooooo.....
-...oooooooooooooooooooooooooo...
-...oohhhhhhhhhhhhhhhhhhhhhhoo...
-..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhhbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbmmmmmmmmbbbbbffoo..
-..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbbmmmmmmmmbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..ooohbbbbbbbbbbbbbbbbbbbbfooo..
-..oooooooooooooooooooooooooooo..
-...oooooooooooooooooooooooooo...
-................................
+.....aaaaaaaaaaaaaaaaaaaaaa.....
+...aaooooooooooooooooooooooaa...
+..aooooooooooooooooooooooooooa..
+..aoohhhhhhhhhhhhhhhhhhhhhhooa..
+.aoohhhhhhhhhhhhhhhhhhhhhhhhooa.
+.aoohhhbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbmmbbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbmmmmmmmmbbbbbffooa.
+.aoohhbbbbbbmmmmmmmmmmbbbbffooa.
+.aoohhbbbbbbmmmmmmmmmmbbbbffooa.
+.aoohhbbbbbbbmmmmmmmmbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbbmmbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aooohbbbbbbbbbbbbbbbbbbbbfoooa.
+.aooooooooooooooooooooooooooooa.
+..aooooooooooooooooooooooooooa..
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
 ................................
 ................................
 ................................

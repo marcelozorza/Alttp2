@@ -410,6 +410,7 @@ func _draw() -> void:
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
 			texture = _shell_texture()
 	var origin := _texture_offset(texture) + shake
+	GroundShadow.draw(self, Vector2.ZERO, texture.get_width())
 	if _faces_left():
 		# Largura negativa espelha o desenho no próprio lugar: o canto do
 		# retângulo continua sendo o da esquerda.

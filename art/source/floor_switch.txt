@@ -1,5 +1,6 @@
 # Interruptor no chão, solto: uma placa de pedra um pouco levantada, com a
 # borda clara e um losango no meio, o mesmo do bloco pesado.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #1b1926
 d #3a3750
@@ -7,34 +8,35 @@ f #55526f
 b #7c7b99
 h #a9aac2
 m #262335
+a #1e181e
 pixels
 ................................
-................................
-.....oooooooooooooooooooooo.....
-...oooooooooooooooooooooooooo...
-...oohhhhhhhhhhhhhhhhhhhhhhoo...
-..oohhhhhhhhhhhhhhhhhhhhhhhhoo..
-..oohhhbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbmmmmmmmmbbbbbffoo..
-..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbmmmmmmmmmmbbbbffoo..
-..oohhbbbbbbbmmmmmmmmbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbmmmmbbbbbbbffoo..
-..oohhbbbbbbbbbbmmbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbbffoo..
-..oohhbbbbbbbbbbbbbbbbbbbfffoo..
-..oohhfffffffffffffffffffffdoo..
-..oohhfffffffffffffffffffdddoo..
-..ooddddddddddddddddddddddddoo..
-...ooddddddddddddddddddddddoo...
-...oooooooooooooooooooooooooo...
-.....oooooooooooooooooooooo.....
-................................
+.....aaaaaaaaaaaaaaaaaaaaaa.....
+...aaooooooooooooooooooooooaa...
+..aooooooooooooooooooooooooooa..
+..aoohhhhhhhhhhhhhhhhhhhhhhooa..
+.aoohhhhhhhhhhhhhhhhhhhhhhhhooa.
+.aoohhhbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbmmbbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbmmmmmmmmbbbbbffooa.
+.aoohhbbbbbbmmmmmmmmmmbbbbffooa.
+.aoohhbbbbbbmmmmmmmmmmbbbbffooa.
+.aoohhbbbbbbbmmmmmmmmbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbmmmmbbbbbbbffooa.
+.aoohhbbbbbbbbbbmmbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbbffooa.
+.aoohhbbbbbbbbbbbbbbbbbbbfffooa.
+.aoohhfffffffffffffffffffffdooa.
+.aoohhfffffffffffffffffffdddooa.
+.aooddddddddddddddddddddddddooa.
+..aooddddddddddddddddddddddooa..
+..aooooooooooooooooooooooooooa..
+...aaooooooooooooooooooooooaa...
+.....aaaaaaaaaaaaaaaaaaaaaa.....
 ................................
 ................................
 ................................
