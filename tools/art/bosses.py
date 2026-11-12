@@ -15,6 +15,8 @@ Uso: python3 tools/art/bosses.py [chefe ...] && python3 tools/pixel_svg.py
 
 import sys
 
+import thicken
+
 import enemies
 import trace
 from canvas import Canvas
@@ -129,3 +131,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Um quadro regravado volta com o contorno fino.
+    thicken.apply()

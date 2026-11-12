@@ -21,6 +21,8 @@ Uso: python3 tools/art/sentinel.py [pasta das folhas] && python3 tools/pixel_svg
 
 import sys
 
+import thicken
+
 import enemies
 import trace
 from canvas import Canvas
@@ -100,3 +102,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # Um quadro regravado volta com o contorno fino.
+    thicken.apply()
