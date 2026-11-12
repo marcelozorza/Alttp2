@@ -37,10 +37,15 @@ TEXTS = {
 }
 # Gelo grosso do guardião antigo: a casca do caranguejo em azul-marinho.
 THICK = {"#c6efff": "#3b7bdc", "#6cc3f2": "#27409a", "#3b7bdc": "#1a2452", WHITE: "#6cc3f2"}
+# Caranguejo sem a casca (pedido de Marcelo em 2026-11-12): o mesmo formato,
+# com os espinhos, só que na cor do corpo e um pouco menor. Antes era outro
+# desenho, um caranguejo liso, e parecia outro bicho.
+BARE = {"#c6efff": "#d83a3f", "#6cc3f2": "#9c2338", "#3b7bdc": "#5e1830", "#27409a": "#5e1830"}
 
 # Chefe: pasta, cores da paleta mestra, cores escuras que podem virar
 # contorno e, por camada, a pose de cada quadro como (folha, casa). Em
-# "swaps", camadas que são trocas de cor de outra.
+# "swaps", camadas que são trocas de cor de outra, com True no fim quando a
+# camada também é reduzida a três quartos (enemies.shrink).
 BOSSES = {
     "crab": dict(
         folder="caranguejo_ref",
@@ -55,14 +60,11 @@ BOSSES = {
                 "charge_windup": ("ref_2.jpg", 2), "charge": ("ref_1.jpg", 4),
                 "charge_step": ("ref_1.jpg", 0), "recover": ("ref_2.jpg", 2),
             }),
-            "core": ("sem a casca", {
-                "walk": ("ref_1.jpg", 5), "walk_step": ("ref_2.jpg", 5),
-                "slam_windup": ("ref_2.jpg", 3), "slam": ("ref_2.jpg", 4),
-                "charge_windup": ("ref_2.jpg", 5), "charge": ("ref_2.jpg", 4),
-                "charge_step": ("ref_1.jpg", 5),
-            }),
         },
-        swaps={"thick": ("shell", "com a casca de gelo grosso", THICK)},
+        swaps={
+            "thick": ("shell", "com a casca de gelo grosso", THICK),
+            "core": ("shell", "sem a casca", BARE, True),
+        },
     ),
     "cerberus": dict(
         folder="cerbero_ref",
@@ -108,12 +110,14 @@ def build(name):
         frame.blit(c, half - c.w // 2, height - 1 - c.h)
         frames[key] = frame
     labels = {layer: text for layer, (text, _) in boss["layers"].items()}
-    for layer, (source, text, swap) in boss.get("swaps", {}).items():
+    for layer, (source, text, swap, *small) in boss.get("swaps", {}).items():
         labels[layer] = text
         for (other, pose), frame in list(frames.items()):
             if other == source:
                 copy = frame.copy()
                 copy.p = [[swap.get(color, color) for color in row] for row in copy.p]
+                if small:
+                    copy = enemies.shrink(copy)
                 frames[layer, pose] = copy
     for (layer, pose), frame in frames.items():
         frame.save(

@@ -492,6 +492,18 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
                 if all(m.tile((sx * ROOM_W + i, line)) == "#" for i in range(ROOM_W)):
                     errors.append("sala maior %s tem parede inteira entre as telas em y=%d" % (room, line))
     # Vagas: cada caractere forma um retângulo cheio, e o tipo existe.
+    # Chão alto só se alcança pelo degrau: ele nunca encosta no chão de outro
+    # nível (pedido de Marcelo em 2026-11-12, depois de subir por trás numa
+    # plataforma da Galeria).
+    levels = {".": 0, ":": 1, "^": 2}
+    for y, row in enumerate(m.rows):
+        for x, c in enumerate(row):
+            for nx, ny in ((x + 1, y), (x, y + 1)):
+                if ny < len(m.rows) and nx < len(m.rows[ny]):
+                    d = m.rows[ny][nx]
+                    if c in levels and d in levels and levels[c] != levels[d]:
+                        errors.append("chão de níveis diferentes encostado em (%d, %d)" % (x, y))
+
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
         xs = [c[0] for c in cells]
