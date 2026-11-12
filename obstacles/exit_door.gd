@@ -19,6 +19,9 @@ const LIGHT_DEPTH := 26.0
 
 var _touch := Area2D.new()
 var _used := false
+## Só vale depois de o jogador soltar a direção para baixo uma vez, para não
+## sair da dungeon no instante em que entra.
+var _armed := false
 
 
 func _ready() -> void:
@@ -33,7 +36,10 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if _used or not Input.is_action_pressed("move_down"):
+	if not Input.is_action_pressed("move_down"):
+		_armed = true
+		return
+	if _used or not _armed:
 		return
 	for body: Node2D in _touch.get_overlapping_bodies():
 		var player := body as Player

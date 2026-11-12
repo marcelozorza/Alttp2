@@ -17,8 +17,9 @@ extends Node2D
 ##
 ## O bloco pesado ("0") e o interruptor ("=") formam o mecanismo da grade
 ## (bloqueio GATE): a grade de uma sala abre enquanto um interruptor da sala
-## está pressionado, e de vez quando um bloco trava num interruptor. Um bloco
-## solto volta ao lugar quando o personagem entra de novo na sala.
+## está pressionado, e de vez quando um bloco trava num interruptor. O bloco
+## só tomba dentro do trilho que vai dele ao interruptor (_add_rails), e um
+## bloco solto volta ao lugar quando o personagem entra de novo na sala.
 ##
 ## No jogo contínuo (Progress.active), o personagem chega com as ferramentas
 ## e a vida máxima salvas, os baús de coração e de ferramenta de um capítulo
@@ -106,6 +107,9 @@ var _room_gates := {}
 var _chests: Array[Chest] = []
 ## Bloqueio de cada vaga do mapa, para a tela de mapa saber o que já saiu.
 var _obstacle_by_slot := {}
+## Casa de cada bloco pesado e as casas dos interruptores, para os trilhos.
+var _block_cells := {}
+var _switch_cells: Array[Vector2i] = []
 
 @onready var _map_view: MapView = $MapView
 @onready var _walls: StaticBody2D = $Walls
@@ -242,6 +246,53 @@ func _build_cells() -> void:
 	for slot: String in slots:
 		_add_obstacle(slot, slots[slot])
 	_add_exit_door()
+	_add_rails()
+
+
+## Trilho de cada bloco pesado: as casas do bloco até o interruptor mais
+## próximo da mesma sala, em linha reta ou com uma curva. O bloco só tomba
+## dentro dele. Um bloco sem caminho de chão até um interruptor fica sem
+## trilho e não anda.
+func _add_rails() -> void:
+	var view := RailView.new()
+	view.tile = ChapterMap.TILE
+	for block: HeavyBlock in _block_cells:
+		var from: Vector2i = _block_cells[block]
+		var path: Array = []
+		var best := -1
+		for to: Vector2i in _switch_cells:
+			if _room_of_cell(to) != _room_of_cell(from):
+				continue
+			var distance := absi(to.x - from.x) + absi(to.y - from.y)
+			if best >= 0 and distance >= best:
+				continue
+			var found := _rail_path(from, to, true)
+			if found.is_empty():
+				found = _rail_path(from, to, false)
+			if not found.is_empty():
+				path = found
+				best = distance
+		block.tile = ChapterMap.TILE
+		for cell: Vector2i in path:
+			block.rail[cell] = true
+			view.cells[cell] = true
+	_switches.add_child(view)
+	_switches.move_child(view, 0)
+
+
+## Casas de from a to, primeiro na horizontal ou primeiro na vertical. Vazio
+## se alguma casa do caminho não for chão no nível do bloco.
+func _rail_path(from: Vector2i, to: Vector2i, horizontal_first: bool) -> Array:
+	var corner := Vector2i(to.x, from.y) if horizontal_first else Vector2i(from.x, to.y)
+	var path: Array = [from]
+	for target: Vector2i in [corner, to]:
+		while path.back() != target:
+			var last: Vector2i = path.back()
+			var cell: Vector2i = last + (target - last).sign()
+			if not ".=0".contains(map.tile(cell)) or map.height_level(cell) != 0:
+				return []
+			path.append(cell)
+	return path
 
 
 ## Porta de saída na parede de baixo, diante do início do personagem. Só
@@ -257,10 +308,11 @@ func _add_exit_door() -> void:
 			break
 		if map.tile(cell) != ".":
 			return
-	if map.tile(cell) != "#" or map.tile(cell + Vector2i.LEFT) != "#":
-		return
+	for side: Vector2i in [Vector2i.ZERO, Vector2i.LEFT, Vector2i.RIGHT]:
+		if map.tile(cell + side) != "#":
+			return
 	var door := ExitDoor.new()
-	door.position = Vector2(cell + Vector2i.LEFT) * ChapterMap.TILE
+	door.position = Vector2(cell) * ChapterMap.TILE - Vector2(ChapterMap.TILE / 2.0, 0.0)
 	door.used.connect(_on_exit_door_used)
 	_obstacles.add_child(door)
 
@@ -289,6 +341,7 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		block.position = center + FloorSwitch.BLOCK_OFFSET
 		_objects.add_child(block)
 		_register(block, cell)
+		_block_cells[block] = cell
 	elif character == "?":
 		var plate := MESSAGE_PLATE_SCENE.instantiate() as MessagePlate
 		plate.position = center
@@ -303,6 +356,7 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		var switches: Array = _room_switches.get(room, [])
 		switches.append(switch)
 		_room_switches[room] = switches
+		_switch_cells.append(cell)
 
 
 ## O chefe nasce desligado, preso à sala dele. Todo chefe tem a propriedade
