@@ -308,11 +308,12 @@ func _add_exit_door() -> void:
 			break
 		if map.tile(cell) != ".":
 			return
-	for side: Vector2i in [Vector2i.ZERO, Vector2i.LEFT, Vector2i.RIGHT]:
-		if map.tile(cell + side) != "#":
+	for side: int in range(-2, 3):
+		if map.tile(cell + Vector2i(side, 0)) != "#":
 			return
 	var door := ExitDoor.new()
-	door.position = Vector2(cell) * ChapterMap.TILE - Vector2(ChapterMap.TILE / 2.0, 0.0)
+	var center_x := (cell.x + 0.5) * ChapterMap.TILE
+	door.position = Vector2(center_x - ExitDoor.SIZE.x / 2.0, cell.y * ChapterMap.TILE)
 	door.used.connect(_on_exit_door_used)
 	_obstacles.add_child(door)
 
