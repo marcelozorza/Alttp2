@@ -547,7 +547,7 @@ func _draw() -> void:
 			if _art.flip_h:
 				middle = _art.texture.get_width() - middle
 			width = used.size.x
-			center = Vector2(_art.offset.x + middle, _art.offset.y + used.end.y - 2.0)
+			center = Vector2(_art.offset.x + middle, _art.offset.y + used.end.y - 3.0)
 		GroundShadow.draw(self, center, width)
 	if (
 		_state != State.THROW_WINDUP

@@ -11,6 +11,10 @@ const FLATNESS := 0.38
 ## Parte da largura do desenho que a sombra ocupa.
 const WIDTH_FACTOR := 1.0
 const RINGS := 3
+## Altura máxima da oval. Sem o teto, a sombra de um bicho largo e baixo, como
+## o tatu ou o lobo, fica alta demais e ele parece flutuar (Marcelo,
+## 2026-11-12).
+const MAX_HEIGHT := 9.0
 
 ## Parte pintada de cada textura já medida, para não medir a cada quadro.
 static var _used := {}
@@ -20,7 +24,8 @@ static var _used := {}
 ## de largura. Só pode ser chamado dentro do _draw de canvas.
 static func draw(canvas: CanvasItem, center: Vector2, art_width: float) -> void:
 	var radius := art_width * WIDTH_FACTOR / 2.0
-	canvas.draw_set_transform(center, 0.0, Vector2(1.0, FLATNESS))
+	var flatness := minf(FLATNESS, MAX_HEIGHT / (radius * 2.0)) if radius > 0.0 else FLATNESS
+	canvas.draw_set_transform(center, 0.0, Vector2(1.0, flatness))
 	for i: int in RINGS:
 		canvas.draw_circle(Vector2.ZERO, radius * (1.0 - 0.2 * i), COLOR)
 	canvas.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
