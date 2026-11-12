@@ -19,8 +19,18 @@ class_name Progress
 ## distribuição da seed (progression/randomizer.gd), as três entradas do mundo
 ## abrem de início e cada baú de ferramenta, melhoria ou coração é gravado na
 ## hora em que abre, porque o jogador entra e sai das dungeons conforme acha
-## itens. As chaves continuam valendo só na visita. O arquivo guarda o número
-## da seed, e a distribuição é gerada de novo ao carregar.
+## itens. As chaves continuam valendo só na visita.
+##
+## O arquivo guarda o número da seed e também a distribuição dela (correção de
+## 2026-11-10). Antes só o número era gravado, e a distribuição era gerada de
+## novo ao continuar. Quando uma versão nova do jogo mudava o gerador ou os
+## mapas, o mesmo número passava a dar outra distribuição, e os baús já
+## abertos, gravados pela letra, continuavam abertos com outro item dentro: a
+## ferramenta que eles teriam agora nunca chegava ao jogador, e a seed não
+## fechava. Ao continuar, a distribuição gravada vale se ainda serve aos mapas
+## (Randomizer.fits). Se não serve, ou se o arquivo é de antes da correção, a
+## seed é gerada de novo e todo baú aberto de ferramenta que não bate com as
+## ferramentas do jogador volta a fechar (_reconcile_opened).
 ##
 ## O cronômetro do jogo inteiro (run_ticks) conta desde o Novo jogo, no mundo
 ## e nos capítulos, para com a pausa e é gravado junto com o resto.
@@ -188,6 +198,8 @@ static func save() -> void:
 		"seed": seed,
 		"opened": opened,
 	}
+	if seed != 0:
+		data["seed_items"] = Randomizer.to_names(seed_items)
 	file.store_string(JSON.stringify(data, "\t"))
 	file.close()
 
@@ -214,8 +226,40 @@ static func load_file() -> bool:
 		opened = saved_opened
 	seed = int(data.get("seed", 0))
 	if seed != 0:
-		seed_items = Randomizer.generate(seed)
+		seed_items = Randomizer.from_names(data.get("seed_items", {}))
+		if seed_items.is_empty() or not Randomizer.fits(seed_items):
+			seed_items = Randomizer.generate(seed)
+			_reconcile_opened()
 	return true
+
+
+## Fecha de novo os baús abertos de ferramenta que não batem com as
+## ferramentas do jogador. Para cada ferramenta, com a melhoria dela, conta os
+## baús abertos que guardam uma das duas e quantas das duas o jogador tem. Se
+## há mais baús abertos do que itens ganhos, algum baú aberto guarda agora um
+## item que o jogador nunca recebeu, e todos os baús dessa ferramenta voltam a
+## fechar. Abrir de novo um baú cujo item o jogador já tem não dá nada a mais,
+## porque os itens são progressivos.
+static func _reconcile_opened() -> void:
+	for base: int in Item.TOOLS:
+		var family: Array[int] = [base]
+		for upgrade: int in Item.UPGRADES:
+			if Item.UPGRADES[upgrade] == base:
+				family.append(upgrade)
+		var owned := 0
+		for id: int in family:
+			if Item.has(tools, id):
+				owned += 1
+		var chests: Array[Array] = []
+		for chapter: int in seed_items:
+			for letter: String in seed_items[chapter]:
+				if seed_items[chapter][letter] in family and was_opened(chapter, letter):
+					chests.append([chapter, letter])
+		if chests.size() <= owned:
+			continue
+		for chest: Array in chests:
+			var key := str(chest[0])
+			opened[key] = (opened.get(key, "") as String).replace(chest[1], "")
 
 
 static func clear_file() -> void:

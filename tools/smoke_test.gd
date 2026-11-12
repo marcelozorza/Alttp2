@@ -678,6 +678,60 @@ func _check_randomized() -> void:
 			]
 		)
 	)
+	_check_seed_save(first, other)
+
+
+## Arquivo de salvamento de uma versão anterior do jogo, que não gravava a
+## distribuição da seed: um baú de ferramenta aberto que não deu a ferramenta
+## volta a fechar ao continuar, e um de coração fica aberto. Uma distribuição
+## gravada que serve aos mapas vale no lugar da gerada, e uma que não serve
+## cai na gerada.
+func _check_seed_save(first: Dictionary, other: Dictionary) -> void:
+	var letter := ""
+	var letters: Array = first[1].keys()
+	letters.sort()
+	for candidate: String in letters:
+		if first[1][candidate] in Randomizer.PROGRESSION:
+			letter = candidate
+			break
+	Progress.start_seed(123456)
+	Progress.opened = {"1": letter + "B"}
+	Progress.save()
+	_rewrite_save("seed_items", null)
+	Progress.load_file()
+	var closed := not Progress.was_opened(1, letter)
+	var kept := Progress.was_opened(1, "B")
+	print(
+		(
+			"SEED: arquivo antigo, baú %s=%s fechado de novo %s, coração aberto %s"
+			% [letter, Item.Id.keys()[first[1][letter]], closed, kept]
+		)
+	)
+	Progress.start_seed(123456)
+	Progress.save()
+	_rewrite_save("seed_items", Randomizer.to_names(other))
+	Progress.load_file()
+	var saved_used := Randomizer.describe(Progress.seed_items) == Randomizer.describe(other)
+	var broken: Dictionary = other.duplicate(true)
+	broken[1]["A"] = Item.Id.HEART
+	_rewrite_save("seed_items", Randomizer.to_names(broken))
+	Progress.load_file()
+	var fallback := Randomizer.describe(Progress.seed_items) == Randomizer.describe(first)
+	print("SEED: distribuição gravada vale %s, quebrada cai na gerada %s" % [saved_used, fallback])
+
+
+## Troca um campo do arquivo de salvamento, ou tira o campo com null.
+func _rewrite_save(field: String, value: Variant) -> void:
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var data: Dictionary = JSON.parse_string(file.get_as_text())
+	file.close()
+	if value == null:
+		data.erase(field)
+	else:
+		data[field] = value
+	file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data, "\t"))
+	file.close()
 
 
 func _play(chapter_number: int) -> void:
