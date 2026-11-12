@@ -2,7 +2,7 @@ MENU: depois do A -> overworld.tscn contínuo: true
 MENU: depois do Start -> overworld.tscn
 ÁUDIO: barramentos Music e Sfx em [1, 2]
 ÁUDIO: 50 efeitos, sem arquivo: [], sem uso: []
-ÁUDIO: música res://audio/music/tracks/1_moodmode-8-bit-dream-land.mp3, tocando: true
+ÁUDIO: música res://audio/music/places/overworld_nickpanek-exploration-chiptune-rpg-adventure-theme.mp3, tocando: true
 MUNDO: modos das entradas [1, 0, 0] (0 trancada, 1 aberta, 2 vencida)
 MUNDO: entrada 2 trancada -> overworld.tscn, tremeu: true
 MUNDO: pedra gravou: true, vida 6/6
