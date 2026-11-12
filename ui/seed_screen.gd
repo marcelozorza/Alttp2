@@ -22,7 +22,8 @@ func _ready() -> void:
 		MenuKit.label(
 			(
 				"As mesmas dungeons, com os itens embaralhados pela semente.\n"
-				+ "O mesmo número dá o mesmo jogo em qualquer cópia."
+				+ "O mesmo número dá o mesmo jogo em qualquer cópia.\n"
+				+ "O item que falta numa dungeon pode estar em outra: as três estão abertas."
 			),
 			16
 		)
