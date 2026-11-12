@@ -183,8 +183,10 @@ const NO_HOLD := -1
 @export_range(1, 10, 1) var bomb_charges := 2
 ## Segundos sem usar a bomba até todas as cargas voltarem.
 @export_range(0.5, 10.0, 0.5) var bomb_recharge_time := 3.0
-## Pulos seguidos da mola antes do descanso, e segundos do descanso.
-@export_range(1, 10, 1) var jump_charges := 3
+## Pulos seguidos da mola antes do descanso, e segundos do descanso. Zero
+## tira o limite: o pulo funciona sem parar (pedido de Marcelo em 2026-11-12,
+## depois de jogar com 3 pulos e 2 s de descanso).
+@export_range(0, 10, 1) var jump_charges := 0
 @export_range(0.5, 10.0, 0.5) var jump_recharge_time := 2.0
 ## Bombas no chão ao mesmo tempo, além do limite das cargas.
 @export_range(1, 5, 1) var max_bombs := 2
@@ -324,7 +326,7 @@ func charges_left(id: int) -> int:
 		Item.Id.BOMB:
 			return _bomb_charges.left(bomb_charges)
 		Item.Id.SPRING:
-			return _jump_charges.left(jump_charges)
+			return _jump_charges.left(jump_charges) if jump_charges > 0 else 1
 	return -1
 
 
@@ -568,9 +570,10 @@ func _use_tools() -> void:
 	if Input.is_action_just_pressed("use_bomb") and has_tool(Item.Id.BOMB):
 		_place_bomb()
 	if Input.is_action_just_pressed("jump") and has_tool(Item.Id.SPRING):
-		if _jump_charges.left(jump_charges) <= 0:
-			return
-		_jump_charges.spend(Clock.tick)
+		if jump_charges > 0:
+			if _jump_charges.left(jump_charges) <= 0:
+				return
+			_jump_charges.spend(Clock.tick)
 		var strong := has_tool(Item.Id.STRONG_SPRING)
 		_air_height = strong_jump_height if strong else jump_height
 		_air_time = strong_jump_time if strong else jump_time
