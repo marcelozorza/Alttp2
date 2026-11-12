@@ -539,8 +539,9 @@ func _uses_side_frame() -> bool:
 ## aviso e treme junto com o corpo.
 func _draw() -> void:
 	if _state != State.DEAD:
-		var frame := _frame_for_state() if _art else null
-		var width := frame.get_width() if frame else _body.size.x
+		var width := _body.size.x
+		if _art and _art.texture:
+			width = _art.texture.get_width()
 		GroundShadow.draw(self, Vector2.ZERO, width)
 	if (
 		_state != State.THROW_WINDUP
