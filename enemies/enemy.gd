@@ -540,9 +540,15 @@ func _uses_side_frame() -> bool:
 func _draw() -> void:
 	if _state != State.DEAD:
 		var width := _body.size.x
+		var center := Vector2.ZERO
 		if _art and _art.texture:
-			width = _art.texture.get_width()
-		GroundShadow.draw(self, Vector2.ZERO, width)
+			var used := GroundShadow.used_rect(_art.texture)
+			var middle := used.position.x + used.size.x / 2.0
+			if _art.flip_h:
+				middle = _art.texture.get_width() - middle
+			width = used.size.x
+			center = Vector2(_art.offset.x + middle, _art.offset.y + used.end.y - 2.0)
+		GroundShadow.draw(self, center, width)
 	if (
 		_state != State.THROW_WINDUP
 		or (_art and (throw_windup_frame or not throw_windup_frames.is_empty()))

@@ -9,8 +9,11 @@ const COLOR := Color(0.055, 0.043, 0.05, 0.14)
 ## Altura da oval em relação à largura.
 const FLATNESS := 0.38
 ## Parte da largura do desenho que a sombra ocupa.
-const WIDTH_FACTOR := 0.8
+const WIDTH_FACTOR := 1.0
 const RINGS := 3
+
+## Parte pintada de cada textura já medida, para não medir a cada quadro.
+static var _used := {}
 
 
 ## Desenha a sombra centrada em center, para um desenho com art_width pixels
@@ -21,3 +24,15 @@ static func draw(canvas: CanvasItem, center: Vector2, art_width: float) -> void:
 	for i: int in RINGS:
 		canvas.draw_circle(Vector2.ZERO, radius * (1.0 - 0.2 * i), COLOR)
 	canvas.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## Retângulo da parte pintada da textura, sem as margens transparentes. Um
+## desenho com margem larga, como o do lobo, teria a sombra maior que o corpo.
+static func used_rect(texture: Texture2D) -> Rect2i:
+	if not _used.has(texture):
+		var image := texture.get_image()
+		var rect := Rect2i(Vector2i.ZERO, Vector2i(texture.get_size()))
+		if image:
+			rect = image.get_used_rect()
+		_used[texture] = rect
+	return _used[texture]

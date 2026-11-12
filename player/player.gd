@@ -87,7 +87,9 @@ const VISUAL_CATCH_UP := 3.0
 const LOW_HEALTH_DELAY := 0.3
 ## Ticks de cada quarto de volta do giro. A volta inteira leva quatro.
 ## Largura do desenho usada para a sombra no chão: o corpo, sem a espada.
-const SHADOW_WIDTH := 30.0
+const SHADOW_WIDTH := 34.0
+## Centro da sombra, na altura dos pés do desenho.
+const SHADOW_CENTER := Vector2(0.0, 8.0)
 const SPIN_STEP_TICKS := 4
 ## Tick de um aperto que não está valendo.
 const NO_HOLD := -1
@@ -908,4 +910,4 @@ func _update_sword_lock_bar() -> void:
 ## Sombra no chão, sob os pés. No pulo ela fica no chão enquanto o corpo sobe.
 func _draw() -> void:
 	if not _is_down():
-		GroundShadow.draw(self, Vector2(0.0, 2.0), SHADOW_WIDTH)
+		GroundShadow.draw(self, SHADOW_CENTER, SHADOW_WIDTH)

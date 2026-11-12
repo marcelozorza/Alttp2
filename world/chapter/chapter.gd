@@ -26,6 +26,8 @@ extends Node2D
 ## treino, ele chega com as ferramentas dos dados do capítulo. A dungeon de
 ## teste, mesmo aberta pelo mundo, é sempre um treino (Progress.practice).
 
+## Distância máxima, em casas, do início até a parede da porta de saída.
+const EXIT_DOOR_REACH := 4
 ## Tamanho de uma sala de uma tela, em casas.
 const ROOM_TILES := Vector2i(20, 10)
 ## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
@@ -239,6 +241,33 @@ func _build_cells() -> void:
 				_add_actor(character, cell)
 	for slot: String in slots:
 		_add_obstacle(slot, slots[slot])
+	_add_exit_door()
+
+
+## Porta de saída na parede de baixo, diante do início do personagem. Só
+## entra quando a parede está a até EXIT_DOOR_REACH casas do início, com chão
+## livre no caminho, o que deixa a Galeria sem porta.
+func _add_exit_door() -> void:
+	var cell := map.find("@")
+	if cell == ChapterMap.NO_CELL:
+		return
+	for step: int in EXIT_DOOR_REACH:
+		cell += Vector2i.DOWN
+		if map.tile(cell) == "#":
+			break
+		if map.tile(cell) != ".":
+			return
+	if map.tile(cell) != "#" or map.tile(cell + Vector2i.LEFT) != "#":
+		return
+	var door := ExitDoor.new()
+	door.position = Vector2(cell + Vector2i.LEFT) * ChapterMap.TILE
+	door.used.connect(_on_exit_door_used)
+	_obstacles.add_child(door)
+
+
+func _on_exit_door_used() -> void:
+	if not finished:
+		Flow.leave_chapter(get_tree())
 
 
 func _add_actor(character: String, cell: Vector2i) -> void:
