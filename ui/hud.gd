@@ -33,7 +33,7 @@ const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
 const HEART_STEP := Vector2(18.0, 16.0)
 ## Corações que cabem numa linha, antes do cronômetro.
 const HEALTH_ROW := 12
-## Altura da aba das chaves, acima do minimapa.
+## Altura da aba das chaves, pendurada sob a barra, embaixo dos corações.
 const KEYS_TAB_HEIGHT := 28.0
 ## Chave e número apagados, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.62, 0.62, 0.68, 1.0)
@@ -102,7 +102,7 @@ func _draw() -> void:
 		_draw_health(player)
 		_draw_buttons(player)
 		if chapter:
-			_draw_keys(player, chapter)
+			_draw_keys(player)
 	var text := ""
 	if chapter:
 		var time: String = chapter.call("time_text")
@@ -152,20 +152,21 @@ func _draw_health(player: Player) -> void:
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a
-## chave grande depois, quando o personagem a tem. Fica numa aba escura logo
-## acima do minimapa, alinhada com a borda esquerda dele, para ler bem sobre
-## qualquer chão (pedido de Marcelo em 2026-11-13).
-func _draw_keys(player: Player, chapter: Node) -> void:
+## chave grande depois, quando o personagem a tem. Fica numa aba escura
+## pendurada sob a barra do alto, embaixo dos corações, para ler bem sobre
+## qualquer chão (pedido de Marcelo em 2026-11-13, depois de uma passagem
+## pela aba acima do minimapa no mesmo dia).
+func _draw_keys(player: Player) -> void:
 	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
 	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
 	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
-	var map_top := MINIMAP_CORNER.y - Minimap.rooms_size(chapter, Minimap.HUD_CELL).y - 4.0
-	var left := MINIMAP_CORNER.x - 4.0
+	var left := 0.0
+	var top := BAR_SIZE.y
 	var boss_key := player.has_tool(Item.Id.BOSS_KEY)
 	var width := 30.0 + text_width + (30.0 if boss_key else 6.0)
-	draw_rect(Rect2(left, map_top - KEYS_TAB_HEIGHT, width, KEYS_TAB_HEIGHT), Minimap.BACKGROUND)
-	var middle := map_top - KEYS_TAB_HEIGHT / 2.0
+	draw_rect(Rect2(left, top, width, KEYS_TAB_HEIGHT), BAR_COLOR)
+	var middle := top + KEYS_TAB_HEIGHT / 2.0 - 2.0
 	ToolIcons.draw(self, Item.Id.KEY, Vector2(left + 14.0, middle), tint)
 	var text_position := Vector2(left + 28.0, middle + 8.0)
 	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
