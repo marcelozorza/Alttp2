@@ -381,7 +381,9 @@ func _check_jump_over() -> void:
 	var blocked := player.global_position.x - start.x
 	player.global_position = start
 	player.velocity = Vector2.ZERO
-	await _frames(2)
+	# Espera passar a janela da corrida: apertar a mesma direção logo depois
+	# de soltar faria o personagem correr, e o teste é do pulo andando.
+	await _frames(40)
 	var health := player.health
 	player.give_item(Item.Id.SPRING)
 	Input.action_press("move_right")
