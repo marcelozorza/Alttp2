@@ -6,6 +6,9 @@ extends Control
 const SKY := Color("1b1926")
 const LOGO := preload("res://art/logo.svg")
 const PAW := preload("res://art/title_paw.svg")
+## Retrato do Jorginho, à direita do menu (pedido de Marcelo em 2026-11-13).
+const PORTRAIT := preload("res://art/title_portrait.svg")
+const PORTRAIT_CORNER := Vector2(486.0, 92.0)
 ## Espaço entre o logotipo e a patinha à direita dele.
 const PAW_GAP := 10.0
 const GRASS: Array[Texture2D] = [
@@ -60,3 +63,4 @@ func _draw() -> void:
 		draw_texture(TREES[column % 2], Vector2(column * TILE, top - 6.0))
 		draw_texture(TREES[(column + 1) % 2], Vector2(column * TILE, top + TILE - 2.0))
 	draw_texture(HERO, Vector2(194.0, SCREEN.y - 58.0))
+	draw_texture(PORTRAIT, PORTRAIT_CORNER)
