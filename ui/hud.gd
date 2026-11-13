@@ -1,6 +1,6 @@
 extends Control
 ## HUD. No alto, numa barra, a vida, um ossinho por ponto, e, no capítulo, o
-## número do capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela,
+## número do capítulo e o cronômetro. No canto inferior direito, sobre a tela,
 ## os quatro botões de face do controle num losango, cada um na posição do
 ## botão, com o ícone em pixel art do que ele faz. Acima do minimapa, no
 ## capítulo, alinhado à direita com ele, o contador de chaves pequenas, sempre
@@ -19,7 +19,7 @@ extends Control
 ## dia por pedido de Marcelo em 2026-11-07 ("corações na barra lá em cima,
 ## mas ossos que dão a energia").
 ##
-## No canto inferior direito, no capítulo, o minimapa das salas já visitadas
+## No canto inferior esquerdo, no capítulo, o minimapa das salas já visitadas
 ## (ui/minimap.gd). No alto, à direita, o cronômetro: no jogo contínuo, o do
 ## jogo inteiro desde o Novo jogo, e no treino o do capítulo (pedidos de
 ## Marcelo em 2026-11-07).
@@ -35,6 +35,8 @@ const HEART_STEP := Vector2(18.0, 16.0)
 const HEALTH_ROW := 12
 ## Distância do centro do ícone da chave ao alto do fundo do minimapa.
 const KEYS_ABOVE_MAP := 16.0
+## Menor posição do texto das chaves, para o ícone caber com um minimapa estreito.
+const KEYS_MIN_LEFT := 52.0
 ## Chave apagada, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
@@ -53,9 +55,10 @@ const CHARGE_SIZE := Vector2(4.0, 4.0)
 const CHARGE_STEP := 6.0
 ## Tamanho da barra do capítulo, a largura toda da tela.
 const BAR_SIZE := Vector2(640.0, 40.0)
-## Centro do losango dos botões, relativo ao HUD: canto inferior esquerdo da
-## tela, com espaço à esquerda para a coluna de cargas do botão da esquerda.
-const BUTTONS_CENTER := Vector2(52.0, 304.0)
+## Centro do losango dos botões, relativo ao HUD: canto inferior direito da
+## tela, com espaço à direita para a coluna de cargas do botão da direita.
+## Marcelo trocou o losango e o minimapa de lado em 2026-11-13.
+const BUTTONS_CENTER := Vector2(572.0, 304.0)
 ## Posição de cada botão de face a partir do centro do losango, pelo índice do
 ## Godot, que segue a posição física do botão: 0 embaixo, 1 à direita, 2 à
 ## esquerda e 3 em cima.
@@ -69,8 +72,9 @@ const TOOL_ACTIONS := {
 	&"jump": Item.Id.SPRING,
 }
 const FONT_SIZE := 16
-## Canto inferior direito do minimapa, relativo ao HUD, a 8 px das bordas.
-const MINIMAP_CORNER := Vector2(624.0, 344.0)
+## Canto inferior esquerdo do minimapa, relativo ao HUD, a 8 px das bordas
+## contando o fundo.
+const MINIMAP_CORNER := Vector2(4.0, 344.0)
 
 ## Ligado, desenha a barra de fundo do capítulo, que esconde a sala vizinha.
 @export var show_bar := false
@@ -157,9 +161,10 @@ func _draw_keys(player: Player, chapter: Node) -> void:
 	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
 	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
-	var map_top := MINIMAP_CORNER.y - Minimap.rooms_size(chapter, Minimap.HUD_CELL).y - 4.0
+	var map_size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
+	var map_top := MINIMAP_CORNER.y - map_size.y - 4.0
 	var middle := map_top - KEYS_ABOVE_MAP
-	var text_left := MINIMAP_CORNER.x + 4.0 - text_width
+	var text_left := maxf(MINIMAP_CORNER.x + map_size.x + 4.0 - text_width, KEYS_MIN_LEFT)
 	draw_string(
 		font, Vector2(text_left, middle + 8.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint
 	)
@@ -216,10 +221,10 @@ func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 		draw_rect(Rect2(Vector2(x, top + i * CHARGE_STEP), CHARGE_SIZE), color)
 
 
-## Minimapa das salas já visitadas, no canto inferior direito, sobre um fundo
+## Minimapa das salas já visitadas, no canto inferior esquerdo, sobre um fundo
 ## escuro.
 func _draw_minimap(chapter: Node) -> void:
 	var size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
-	var origin := MINIMAP_CORNER - size
+	var origin := MINIMAP_CORNER - Vector2(0.0, size.y)
 	draw_rect(Rect2(origin - Vector2(4.0, 4.0), size + Vector2(8.0, 8.0)), Minimap.BACKGROUND)
 	Minimap.draw_rooms(self, chapter, origin, Minimap.HUD_CELL)
