@@ -27,6 +27,8 @@ var _ice: IceField
 var _conveyors: ConveyorField
 var _crumble: CrumbleField
 var _beams: BeamField
+var _water: WaterField
+var _power: PowerField
 
 
 func _init(chapter: Chapter, ground: Node2D, objects: Node2D) -> void:
@@ -67,8 +69,9 @@ func add(character: String, cell: Vector2i) -> bool:
 			torch.order = maxi(entry[1], 0)
 			_stand(torch, center)
 			mechanisms.add_torch(torch, room)
-		&"free_block":
+		&"free_block", &"metal_block":
 			var block := FREE_BLOCK_SCENE.instantiate() as FreeBlock
+			block.conductive = kind == &"metal_block"
 			block.position = center + FloorSwitch.BLOCK_OFFSET
 			_objects.add_child(block)
 			_chapter.rooms.register(block, cell)
@@ -93,10 +96,11 @@ func add(character: String, cell: Vector2i) -> bool:
 			_chapter.rooms.register(chaser, cell)
 		&"spawn":
 			mechanisms.add_spawn_point(center + BASE_OFFSET, room)
-		&"teleporter", &"teleporter_exit":
+		&"teleporter", &"teleporter_exit", &"hole":
 			var portal := Teleporter.new()
 			portal.pair = entry[1]
 			portal.exit_only = kind == &"teleporter_exit"
+			portal.hole = kind == &"hole"
 			portal.position = center
 			_ground.add_child(portal)
 		&"ice":
@@ -132,7 +136,54 @@ func add(character: String, cell: Vector2i) -> bool:
 			_objects.add_child(receptor)
 			_beam_field().receptors[cell] = receptor
 			mechanisms.add_receptor(receptor, room)
+		_:
+			_add_field_cell(kind, cell, room, center)
 	return true
+
+
+## Casas dos campos de água e de eletricidade, e os objetos ligados a eles.
+func _add_field_cell(kind: StringName, cell: Vector2i, room: Rect2i, center: Vector2) -> void:
+	match kind:
+		&"water", &"raft":
+			_water_field().water[cell] = true
+			if kind == &"raft":
+				_water_field().rafts[cell] = true
+		&"ramp":
+			_water_field().ramps[cell] = true
+		&"wire":
+			_power_field().wires[cell] = true
+		&"power_source":
+			_power_field().sources[cell] = true
+		&"power_receptor":
+			var receptor := BeamReceptor.new()
+			receptor.position = center
+			_objects.add_child(receptor)
+			_power_field().receptors[cell] = receptor
+			_chapter.mechanisms.add_power_receptor(receptor, room)
+		&"magnet":
+			var magnet := Magnet.new()
+			_stand(magnet, center)
+		&"echo_pad":
+			var pad := EchoPad.new()
+			pad.position = center
+			_ground.add_child(pad)
+			_chapter.rooms.register(pad, cell)
+
+
+func _water_field() -> WaterField:
+	if not _water:
+		_water = WaterField.new()
+		_water.map = _chapter.map
+		_ground.add_child(_water)
+		_chapter.mechanisms.crystal_toggled.connect(_water.toggle)
+	return _water
+
+
+func _power_field() -> PowerField:
+	if not _power:
+		_power = PowerField.new()
+		_ground.add_child(_power)
+	return _power
 
 
 ## Põe um objeto de pé na casa, com a origem na base.

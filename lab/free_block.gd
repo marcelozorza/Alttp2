@@ -15,13 +15,31 @@ extends HeavyBlock
 ## Casas de borda da sala em que o bloco não entra.
 const ROOM_MARGIN := 2
 
+## Bloco de metal: conduz eletricidade (lab/power_field.gd) e é puxado pelo
+## ímã (lab/magnet.gd). Quem monta a sala define.
+var conductive := false
+
 var _probe := RectangleShape2D.new()
 
 
 func _ready() -> void:
 	super()
 	_probe.size = Vector2(tile - 8.0, tile - 8.0)
-	modulate = Color(0.75, 0.85, 1.0)
+	modulate = Color(1.0, 0.9, 0.55) if conductive else Color(0.75, 0.85, 1.0)
+	if conductive:
+		add_to_group("metal_blocks")
+
+
+## Casa em que o bloco está.
+func cell() -> Vector2i:
+	return _cell()
+
+
+## Puxão do ímã: tomba uma casa na direção dada, se der.
+func pull(direction: Vector2) -> void:
+	if locked or is_tumbling() or not _can_move_to(_cell() + Vector2i(direction)):
+		return
+	_start_tumble(direction)
 
 
 func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
@@ -51,10 +69,10 @@ func _can_move_to(cell: Vector2i) -> bool:
 
 ## Parado numa casa de buraco aberto, o bloco afunda e tampa a casa.
 func _on_landed() -> void:
-	var cell := _cell()
+	var here := _cell()
 	for pit: Pit in get_tree().get_nodes_in_group("pits"):
-		if pit.is_open_at(cell):
-			pit.fill(cell)
+		if pit.is_open_at(here):
+			pit.fill(here)
 			locked = true
 			visible = false
 			$Base.set_deferred("disabled", true)
@@ -62,6 +80,6 @@ func _on_landed() -> void:
 			return
 	# No gelo liso, o bloco segue deslizando até bater em algo.
 	var ice := get_tree().get_first_node_in_group("ice_field") as IceField
-	var next := cell + Vector2i(_tumble_direction)
-	if ice and ice.cells.has(cell) and _can_move_to(next):
+	var next := here + Vector2i(_tumble_direction)
+	if ice and ice.cells.has(here) and _can_move_to(next):
 		_start_tumble(_tumble_direction)

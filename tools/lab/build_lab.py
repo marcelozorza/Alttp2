@@ -44,6 +44,7 @@ BLOCKS = {
     "o": "GAP",
     "p": "WEB",
     "q": "BEAM_DOOR",
+    "a": "POWER_DOOR",
 }
 
 # Item de cada baú.
@@ -66,6 +67,12 @@ ITEMS = {
     "P": "HEART",
     "Q": "KEY",
     "R": "HEART",
+    "S": "HEART",
+    "T": "HEART",
+    "U": "HEART",
+    "V": "HEART",
+    "W": "HEART",
+    "X": "HEART",
 }
 
 # Cada sala: tela do canto (x, y), largura em telas, portas, miolo e, na
@@ -135,7 +142,7 @@ ROOMS = [
     {
         "name": "Cristal",
         "at": (1, 4),
-        "doors": {"E": ".", "W": ".", "N": "."},
+        "doors": {"E": ".", "W": ".", "N": ".", "S": "."},
         "rows": [
             ".....#.....#......",
             ".....#.....#......",
@@ -383,7 +390,7 @@ ROOMS = [
     {
         "name": "Buraco largo",
         "at": (5, 1),
-        "doors": {"S": ".", "E": "."},
+        "doors": {"S": ".", "E": ".", "N": "."},
         "rows": [
             "...nnnnn..........",
             ".N.nnnnn..........",
@@ -494,6 +501,103 @@ ROOMS = [
         ],
         "messages": ["Portais: pisar num leva ao outro da mesma cor."],
     },
+    # --- Segunda leva ---
+    {
+        "name": "Eletricidade",
+        "at": (1, 5),
+        "doors": {"N": ".", "W": "."},
+        "rows": [
+            "..................",
+            "..............#S.#",
+            "..........▣...#..#",
+            "..............#aa#",
+            "..⚡═══.═══.═══⏻...",
+            "..................",
+            "......▣......?....",
+            "..................",
+        ],
+        "messages": ["Eletricidade: empurre os blocos de metal para fechar as falhas do fio."],
+    },
+    {
+        "name": "Ímã",
+        "at": (0, 5),
+        "doors": {"E": "."},
+        "rows": [
+            "........o.........",
+            ".T......o.........",
+            "........o.........",
+            "..▣.....o.....∩...",
+            "........o.........",
+            "........o....?....",
+            "........o.........",
+            "........o.........",
+        ],
+        "messages": ["Ímã: um golpe de espada o liga, e ele puxa o bloco de metal da mesma linha."],
+    },
+    {
+        "name": "Nível de água",
+        "at": (5, 0),
+        "doors": {"S": ".", "E": ".", "W": "."},
+        "rows": [
+            ".......U..........",
+            "..................",
+            "≈≈≈≈≈≈≈≈≈≈≈≈▭≈≈≈≈≈",
+            "◢≈≈≈≈≈≈≈≈≈≈≈▭≈≈≈≈◢",
+            "◢≈≈≈≈≈≈≈≈≈≈≈▭≈≈≈≈◢",
+            "≈≈≈≈≈≈≈≈≈≈≈≈▭≈≈≈≈≈",
+            "....◢......!..?...",
+            "..................",
+        ],
+        "messages": ["O cristal troca o nível da água. Cheia, a balsa é ponte. Vazia, o leito é chão."],
+    },
+    {
+        "name": "Clone",
+        "at": (6, 0),
+        "doors": {"W": "."},
+        "rows": [
+            "..............#V..",
+            "..............#.{.",
+            "..............#kk#",
+            "..................",
+            "....◎....?........",
+            "..................",
+            "..¦...............",
+            "..................",
+        ],
+        "messages": ["A marca grava 5 segundos dos seus passos. O clone repete e pesa na placa."],
+    },
+    {
+        "name": "Inimigo como peso",
+        "at": (4, 0),
+        "doors": {"E": "."},
+        "rows": [
+            "..............#W..",
+            "..............#.{.",
+            "..............#kk#",
+            "........#.........",
+            "..m....l;l...?....",
+            "........#.........",
+            "..m...............",
+            "..................",
+        ],
+        "messages": ["A placa fica numa ilha. Atraia um inimigo por cima dela, sem matá-lo."],
+    },
+    {
+        "name": "Porão",
+        "at": (2, 0),
+        "doors": {},
+        "rows": [
+            "..................",
+            "........X.........",
+            "..................",
+            "..................",
+            "....ⓐ........Ⓑ....",
+            "..........?.......",
+            "..................",
+            "..................",
+        ],
+        "messages": ["Porão: o buraco da antessala cai aqui. O outro buraco leva de volta."],
+    },
     # --- Salas trancadas ---
     {
         "name": "Feixe de luz",
@@ -534,12 +638,12 @@ ROOMS = [
         "doors": {"S": ".", "N": "4", "W": "."},
         "rows": [
             "..................",
-            "..................",
+            "...............Ⓐ..",
             "###########.......",
             ".887..nnnnn.......",
             ".887..nnnnn..?....",
             "###########.......",
-            "..............ω...",
+            "............ⓑ.ω...",
             "..................",
         ],
         "messages": [

@@ -145,6 +145,12 @@ func _run() -> void:
 	await _check_crumble()
 	await _check_portals()
 	await _check_beam()
+	await _check_power()
+	await _check_magnet()
+	await _check_water()
+	await _check_clone()
+	await _check_weight()
+	await _check_cellar()
 	await _check_chase()
 	await _check_boss()
 	_finish()
@@ -284,12 +290,6 @@ func _check_ice() -> void:
 	_expect("gelo: desliza reto até a pedra", first)
 	await _hold("move_right", 6)
 	await _frames(70)
-	print(
-		"DBG gelo ",
-		Pit.cell_of(_player.global_position),
-		Pit.cell_of(_at(screen, 9, 2)),
-		_player.slide_direction
-	)
 	var second := Pit.cell_of(_player.global_position) == Pit.cell_of(_at(screen, 9, 2))
 	_expect("gelo: segunda deslizada para na pedra seguinte", second)
 	await _hold("move_up", 6)
@@ -322,13 +322,6 @@ func _check_block_on_ice() -> void:
 	# Dois empurrões no chão, a deslizada pelo gelo e mais dois até o buraco.
 	_player.global_position = _at(screen, 9, 5)
 	await _hold("move_right", 200)
-	print(
-		"DBG bloco ",
-		Pit.cell_of(block.global_position),
-		Pit.cell_of(_at(screen, 0, 5)),
-		_player.global_position,
-		block.global_position
-	)
 	_expect("bloco no gelo: desliza e tampa o buraco", pit.filled.size() == 1)
 
 
@@ -490,6 +483,114 @@ func _check_beam() -> void:
 	)
 	await _go(screen, 6, 2, 20)
 	_expect("feixe: o personagem corta a luz", not receptor.lit)
+
+
+func _check_power() -> void:
+	var screen := Vector2i(1, 5)
+	await _go(screen, 9, 6, 20)
+	_expect(
+		"eletricidade: porta fechada com o fio falho",
+		_all_open(screen, ChapterMap.Block.POWER_DOOR, false)
+	)
+	# Empurra cada bloco, andando contra ele, até a falha do fio.
+	var wire_row := Pit.cell_of(_at(screen, 0, 4)).y
+	var top: FreeBlock = null
+	for block: FreeBlock in _in_screen(screen, FreeBlock):
+		var above := block.cell().y < wire_row
+		if above:
+			top = block
+		var side := Vector2(0.0, -40.0) if above else Vector2(0.0, 24.0)
+		_player.global_position = block.global_position + side
+		Input.action_press("move_down" if above else "move_up")
+		for _i: int in 200:
+			await _frames(1)
+			if block.cell().y == wire_row and not block.is_tumbling():
+				break
+		Input.action_release("move_down" if above else "move_up")
+	await _frames(40)
+	_expect(
+		"eletricidade: blocos de metal fecham o circuito",
+		_all_open(screen, ChapterMap.Block.POWER_DOOR)
+	)
+	top.take_hit(1, Vector2.UP, Hit.Kind.BLAST)
+	await _frames(40)
+	_expect(
+		"eletricidade: circuito cortado, a porta fecha",
+		_all_open(screen, ChapterMap.Block.POWER_DOOR, false)
+	)
+
+
+func _check_magnet() -> void:
+	var screen := Vector2i(0, 5)
+	await _go(screen, 12, 5, 20)
+	var magnet: Magnet = _in_screen(screen, Magnet)[0]
+	var pit: Pit = _in_screen(screen, Pit)[0]
+	magnet.take_hit(1, Vector2.RIGHT, Hit.Kind.SWORD)
+	await _frames(Magnet.PULL_TICKS)
+	_expect("ímã: puxa o bloco de metal até o buraco", pit.filled.size() == 1)
+
+
+func _check_water() -> void:
+	var screen := Vector2i(5, 0)
+	await _go(screen, 6, 6, 20)
+	await _hold("move_up", 40)
+	_expect("água cheia: não dá para andar nela", _player.global_position.y > _at(screen, 6, 5).y)
+	await _go(screen, 12, 6)
+	await _hold("move_up", 60)
+	_expect("água cheia: a balsa é ponte", _player.global_position.y < _at(screen, 12, 1).y + 16.0)
+	var crystal: Crystal = _in_screen(screen, Crystal)[0]
+	crystal.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
+	await _go(screen, 4, 6, 20)
+	await _hold("move_up", 30)
+	_expect(
+		"água vazia: a rampa desce ao leito", _player.global_position.y < _at(screen, 4, 5).y + 8.0
+	)
+	await _hold("move_up", 60)
+	_expect(
+		"água vazia: a margem sem rampa segura",
+		_player.global_position.y > _at(screen, 4, 1).y + 16.0
+	)
+	var health := _player.health
+	crystal.take_hit(1, Vector2.UP, Hit.Kind.SWORD)
+	await _frames(20)
+	_expect("água: quem está no leito quando ela volta é levado", _player.health == health - 1)
+
+
+func _check_clone() -> void:
+	var screen := Vector2i(6, 0)
+	await _go(screen, 4, 4, 20)
+	_player.global_position = _at(screen, 2, 6)
+	await _frames(EchoPad.RECORD_TICKS)
+	await _go(screen, 12, 4, 60)
+	var far := _player.global_position.distance_to(_at(screen, 2, 6)) > 200.0
+	_expect(
+		"clone: segura a placa com o personagem longe",
+		far and _all_open(screen, ChapterMap.Block.TIMED_GATE)
+	)
+
+
+func _check_weight() -> void:
+	var screen := Vector2i(4, 0)
+	await _go(screen, 12, 4, 20)
+	_player.invulnerable = true
+	var opened := false
+	for _i: int in 400:
+		await _frames(1)
+		opened = opened or _all_open(screen, ChapterMap.Block.TIMED_GATE)
+	_player.invulnerable = false
+	_expect("peso: o inimigo atraído pisa na placa e abre a grade", opened)
+
+
+func _check_cellar() -> void:
+	var up := Vector2i(3, 1)
+	var down := Vector2i(2, 0)
+	await _go(up, 15, 1, 20)
+	_expect("buraco: cai no porão", _player.global_position.distance_to(_at(down, 4, 4)) < 8.0)
+	await _go(down, 13, 4, 20)
+	_expect(
+		"porão: o outro buraco leva de volta",
+		_player.global_position.distance_to(_at(up, 12, 6)) < 8.0
+	)
 
 
 func _check_chase() -> void:

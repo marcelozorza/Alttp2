@@ -16,6 +16,9 @@ var pair := 0
 ## Ligado, é só chegada: pisar nele não leva a lugar nenhum. Serve para a
 ## volta de mão única.
 var exit_only := false
+## Ligado, é um buraco para a sala de baixo: o mesmo portal, com desenho de
+## buraco e som de queda.
+var hole := false
 
 ## Desligado enquanto o personagem que acabou de chegar ainda está em cima.
 var _armed := true
@@ -47,12 +50,16 @@ func _physics_process(_delta: float) -> void:
 			other._armed = false
 			player.global_position = other.global_position
 			player.velocity = Vector2.ZERO
-			Sfx.play(&"relic")
+			Sfx.play(&"ledge_drop" if hole else &"relic")
 			return
 
 
 func _draw() -> void:
 	var color := COLORS[pair % COLORS.size()]
+	if hole:
+		draw_circle(Vector2.ZERO, 15.0, DoorArt.OUTLINE_COLOR)
+		draw_circle(Vector2.ZERO, 12.0, Color(0.05, 0.04, 0.08))
+		return
 	draw_circle(Vector2.ZERO, 14.0, DoorArt.OUTLINE_COLOR)
 	draw_circle(Vector2.ZERO, 12.0, color.darkened(0.5))
 	if exit_only:

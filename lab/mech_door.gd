@@ -12,6 +12,7 @@ extends SwitchDoor
 ## - TIMED_GATE (verde): abre enquanto uma placa de pressão da sala está
 ##   ligada, por alguns segundos ou de vez.
 ## - BEAM_DOOR (branca): abre quando o feixe de luz chega ao receptor.
+## - POWER_DOOR (dourada): aberta enquanto a corrente chega ao receptor.
 
 const TINTS := {
 	ChapterMap.Block.SHUTTER: Color(1.0, 0.45, 0.45),
@@ -21,6 +22,7 @@ const TINTS := {
 	ChapterMap.Block.BLAST_DOOR: Color(0.8, 0.5, 1.0),
 	ChapterMap.Block.TIMED_GATE: Color(0.5, 1.0, 0.6),
 	ChapterMap.Block.BEAM_DOOR: Color(1.6, 1.6, 1.6),
+	ChapterMap.Block.POWER_DOOR: Color(1.3, 1.1, 0.3),
 }
 
 ## Tipo do bloqueio, um ChapterMap.Block.

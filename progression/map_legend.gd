@@ -80,4 +80,23 @@ const LAB := {
 	"╱": [&"mirror", true],
 	"╲": [&"mirror", false],
 	"◉": [&"receptor"],
+	# Placa que só fica ligada com peso em cima.
+	"¦": [&"plate", 0.3],
+	# Buraco para a sala de baixo e o ponto em que se cai.
+	"Ⓐ": [&"hole", 4],
+	"ⓐ": [&"teleporter_exit", 4],
+	"Ⓑ": [&"hole", 5],
+	"ⓑ": [&"teleporter_exit", 5],
+	# Água, balsa e rampa da margem.
+	"≈": [&"water"],
+	"▭": [&"raft"],
+	"◢": [&"ramp"],
+	# Eletricidade: fonte, fio, receptor e bloco de metal. O ímã puxa o bloco.
+	"⚡": [&"power_source"],
+	"═": [&"wire"],
+	"⏻": [&"power_receptor"],
+	"▣": [&"metal_block"],
+	"∩": [&"magnet"],
+	# Marca que grava os passos e solta o clone.
+	"◎": [&"echo_pad"],
 }

@@ -17,8 +17,14 @@ extends RefCounted
 ##   está ligada, por tempo ou de vez.
 ## - Tochas em sequência: acesa fora da vez, todas apagam.
 ## - Receptor de luz: atingido pelo feixe, abre de vez as portas brancas.
+## - Receptor de eletricidade: com corrente, abre as portas elétricas, e sem
+##   corrente elas fecham.
+## - O cristal também troca o nível da água da sala (lab/water_field.gd).
 ##
 ## As três dungeons não usam nada disto: sem objetos registrados, nada age.
+
+## Emitido quando o cristal de uma sala troca de estado.
+signal crystal_toggled(room: Rect2i)
 
 ## Casas da borda da sala em que o personagem ainda não passou das portas.
 const ENTRY_TILES := 2
@@ -77,6 +83,13 @@ func add_torch(torch: LabTorch, room: Rect2i) -> void:
 
 func add_receptor(receptor: BeamReceptor, room: Rect2i) -> void:
 	receptor.changed.connect(_on_receptor_changed.bind(room))
+
+
+## Receptor de eletricidade: a porta elétrica fica aberta só com corrente.
+func add_power_receptor(receptor: BeamReceptor, room: Rect2i) -> void:
+	receptor.changed.connect(
+		func(lit: bool) -> void: _set_open(room, ChapterMap.Block.POWER_DOOR, lit)
+	)
 
 
 func add_plate(plate: TimedPlate, room: Rect2i) -> void:
@@ -150,6 +163,7 @@ func _on_crystal_struck(room: Rect2i) -> void:
 		crystal.lit = on
 	_set_open(room, ChapterMap.Block.BARRIER, on)
 	_set_open(room, ChapterMap.Block.BARRIER_ALT, not on)
+	crystal_toggled.emit(room)
 
 
 func _on_target_struck(target: Crystal, room: Rect2i) -> void:

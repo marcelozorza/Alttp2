@@ -3,8 +3,9 @@ extends Area2D
 ## Placa de pressão do laboratório. Pisada, fica ligada por hold_time
 ## segundos e abre as portas verdes da sala enquanto isso. O anel em volta
 ## mostra o tempo que resta. Com hold_time zero ela é permanente: afunda e
-## trava ligada na primeira pisada. A estátua espelhada também a pressiona
-## (grupo plate_weights). Pular por cima não a liga. Arte provisória.
+## trava ligada na primeira pisada. A estátua espelhada e o clone também a
+## pressionam (grupo plate_weights), e qualquer inimigo vivo em cima dela.
+## Pular por cima não a liga. Arte provisória.
 ##
 ## A origem fica no centro da casa, na camada dos interruptores.
 
@@ -29,12 +30,22 @@ func _ready() -> void:
 	shape.shape = rectangle
 	add_child(shape)
 	monitorable = false
+	# Além do personagem, os inimigos pesam na placa.
+	collision_mask = Layers.SCENERY | Layers.ENEMY
 
 
 func _physics_process(_delta: float) -> void:
 	for body: Node2D in get_overlapping_bodies():
 		var player := body as Player
-		if (player and not player.is_airborne()) or body.is_in_group("plate_weights"):
+		var enemy := body as Enemy
+		var weighs := enemy and not enemy.is_dead()
+		if (player and not player.is_airborne()) or weighs:
+			_press_tick = Clock.tick
+			_pressed_once = true
+	# A estátua e o clone pesam pela posição: o clone não tem corpo.
+	for weight: Node2D in get_tree().get_nodes_in_group("plate_weights"):
+		var offset := (weight.global_position - global_position).abs()
+		if offset.x <= SIZE.x / 2.0 and offset.y <= SIZE.y / 2.0:
 			_press_tick = Clock.tick
 			_pressed_once = true
 	var now_active := Clock.tick - _press_tick < GameMath.ticks(hold_time)
