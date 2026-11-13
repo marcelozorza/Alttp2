@@ -3,7 +3,8 @@ class_name ToolIcons
 ## usados no HUD e nos baús. Cada item tem um desenho de 12 pixels, e as
 ## chaves, de 7 por 12. A chave grande é a chave pequena em vermelho, a cor da
 ## porta do chefe, e a espada travada é a espada com a lâmina magenta, como a
-## troca de paleta do Super Nintendo.
+## troca de paleta do Super Nintendo. Todo ícone tem um filete claro em volta
+## (`tools/art/rim.py`), para ler sobre fundo escuro.
 ##
 ## As melhorias (chama forte e mola forte) usam o ícone da ferramenta comum com
 ## o selo x2 ao lado, pedido de Marcelo em 2026-11-08.

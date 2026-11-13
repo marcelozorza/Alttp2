@@ -5,4 +5,22 @@ r #d83a3f
 p #9c2338
 l #f0705c
 w #f9cfd0
-usa heart
+R #a9aac2
+pixels
+..RRRRRR..RRRRRR..
+.RRooooRRRRooooRR.
+RRolwwroRRorrrroRR
+RolwwrrroorrrrrpoR
+RolwrrrrrrrrrrrpoR
+RorrrrrrrrrrrrrpoR
+RorrrrrrrrrrrrppoR
+RorrrrrrrrrrrrppoR
+RRorrrrrrrrrrppoRR
+.RoprrrrrrrrrppoR.
+.RRoprrrrrrrppoRR.
+..RRoprrrrrppoRR..
+...RRopprrppoRR...
+....RRoppppoRR....
+.....RRoppoRR.....
+......RRooRR......
+.......RRRR.......

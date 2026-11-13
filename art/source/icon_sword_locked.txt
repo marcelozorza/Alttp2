@@ -10,4 +10,5 @@ y #fff1a8
 d #b9824e
 h #8a5a3c
 b #5c4232
+R #a9aac2
 usa icon_sword
