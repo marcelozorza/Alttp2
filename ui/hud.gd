@@ -2,10 +2,11 @@ extends Control
 ## HUD. No alto, numa barra, a vida, um ossinho por ponto, e, no capítulo, o
 ## número do capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela,
 ## os quatro botões de face do controle num losango, cada um na posição do
-## botão, com o ícone em pixel art do que ele faz. À direita do losango, no
-## capítulo, o contador de chaves pequenas, sempre à vista, mesmo em zero, e a
-## chave grande depois de encontrada (Marcelo não achava o contador no alto,
-## 2026-11-06). A espada fica sempre no seu botão, com a
+## botão, com o ícone em pixel art do que ele faz. Acima do minimapa, no
+## capítulo, alinhado à direita com ele, o contador de chaves pequenas, sempre
+## à vista, mesmo em zero, e a chave grande depois de encontrada (Marcelo não
+## achava o contador no alto, 2026-11-06, e o quis sobre o minimapa em
+## 2026-11-13). A espada fica sempre no seu botão, com a
 ## lâmina magenta enquanto está travada. O botão de uma ferramenta que o
 ## personagem ainda não tem aparece apagado. Uma melhoria troca o ícone da
 ## ferramenta: com a chama forte, o botão da chama mostra a chama maior de
@@ -32,8 +33,8 @@ const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
 const HEART_STEP := Vector2(18.0, 16.0)
 ## Corações que cabem numa linha, antes do cronômetro.
 const HEALTH_ROW := 12
-## Centro do ícone da chave, à direita do losango, na altura do centro dele.
-const KEYS_POSITION := Vector2(108.0, 304.0)
+## Distância do centro do ícone da chave ao alto do fundo do minimapa.
+const KEYS_ABOVE_MAP := 16.0
 ## Chave apagada, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
@@ -99,7 +100,7 @@ func _draw() -> void:
 		_draw_health(player)
 		_draw_buttons(player)
 		if chapter:
-			_draw_keys(player)
+			_draw_keys(player, chapter)
 	var text := ""
 	if chapter:
 		var time: String = chapter.call("time_text")
@@ -149,16 +150,23 @@ func _draw_health(player: Player) -> void:
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a
-## chave grande depois, quando o personagem a tem.
-func _draw_keys(player: Player) -> void:
+## chave grande antes, quando o personagem a tem. Fica logo acima do minimapa,
+## alinhado à direita com ele (pedido de Marcelo em 2026-11-13).
+func _draw_keys(player: Player, chapter: Node) -> void:
 	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
-	ToolIcons.draw(self, Item.Id.KEY, KEYS_POSITION, tint)
 	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
-	var text_position := KEYS_POSITION + Vector2(12.0, 8.0)
-	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
+	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
+	var map_top := MINIMAP_CORNER.y - Minimap.rooms_size(chapter, Minimap.HUD_CELL).y - 4.0
+	var middle := map_top - KEYS_ABOVE_MAP
+	var text_left := MINIMAP_CORNER.x + 4.0 - text_width
+	draw_string(
+		font, Vector2(text_left, middle + 8.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint
+	)
+	var key_center := Vector2(text_left - 12.0, middle)
+	ToolIcons.draw(self, Item.Id.KEY, key_center, tint)
 	if player.has_tool(Item.Id.BOSS_KEY):
-		ToolIcons.draw(self, Item.Id.BOSS_KEY, KEYS_POSITION + Vector2(52.0, 0.0))
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, key_center - Vector2(26.0, 0.0))
 
 
 func _draw_buttons(player: Player) -> void:
