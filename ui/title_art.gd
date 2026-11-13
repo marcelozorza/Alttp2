@@ -5,6 +5,9 @@ extends Control
 
 const SKY := Color("1b1926")
 const LOGO := preload("res://art/logo.svg")
+const PAW := preload("res://art/title_paw.svg")
+## Espaço entre o logotipo e a patinha à direita dele.
+const PAW_GAP := 10.0
 const GRASS: Array[Texture2D] = [
 	preload("res://art/grass_1.svg"),
 	preload("res://art/grass_2.svg"),
@@ -38,7 +41,11 @@ func _draw() -> void:
 	for i: int in STARS.size():
 		var color := Color("a9aac2") if i % 3 else Color("f7c53a")
 		draw_rect(Rect2(STARS[i], Vector2(2.0, 2.0) if i % 4 == 0 else Vector2.ONE), color)
-	draw_texture(LOGO, Vector2(floorf((SCREEN.x - LOGO.get_width()) / 2.0), 22.0))
+	var logo_size := LOGO.get_size()
+	var left := floorf((SCREEN.x - logo_size.x - PAW_GAP - PAW.get_width()) / 2.0)
+	draw_texture(LOGO, Vector2(left, 22.0))
+	var paw_top := 22.0 + floorf((logo_size.y - PAW.get_height()) / 2.0)
+	draw_texture(PAW, Vector2(left + logo_size.x + PAW_GAP, paw_top))
 	var top := SCREEN.y - TILE * 2.0
 	for column: int in 20:
 		for row: int in 2:
