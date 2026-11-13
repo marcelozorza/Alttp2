@@ -47,4 +47,12 @@ if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$LAB" || ! grep -q "^LABORATÓRIO: .*
 	echo "FALHOU: o teste do laboratório acusou erro"
 	exit 1
 fi
+# Depois, um piloto joga as salas que dependem de tempo ou de distância só
+# pelos botões, para provar que dão para vencer (tools/lab_play.gd).
+PLAY="$(mktemp)"
+"$GODOT" --headless --fixed-fps 60 --path . res://tools/lab_play.tscn 2>&1 | tee "$PLAY"
+if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$PLAY" || ! grep -q "^PILOTO: .* 0 falhas" "$PLAY"; then
+	echo "FALHOU: o piloto do laboratório não venceu alguma sala"
+	exit 1
+fi
 echo "Teste de fumaça sem erros."

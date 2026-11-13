@@ -15,6 +15,9 @@ var _chapter: Chapter
 var _player: Player
 var _checks := 0
 var _failures := 0
+## Nome que abre a última linha. O teste que joga as salas (lab_play.gd)
+## herda deste e troca o nome e as conferências.
+var _title := "LABORATÓRIO"
 
 
 func _ready() -> void:
@@ -126,7 +129,11 @@ func _run() -> void:
 		return
 	_player = _chapter.player()
 	_expect("chega só com a espada", _player.tool_bits() == 0)
+	await _run_checks()
+	_finish()
 
+
+func _run_checks() -> void:
 	await _check_combat()
 	await _check_crystal()
 	await _check_waves()
@@ -153,11 +160,10 @@ func _run() -> void:
 	await _check_cellar()
 	await _check_chase()
 	await _check_boss()
-	_finish()
 
 
 func _finish() -> void:
-	print("LABORATÓRIO: %d conferências, %d falhas" % [_checks, _failures])
+	print("%s: %d conferências, %d falhas" % [_title, _checks, _failures])
 	get_tree().root.get_node("Music").get("_player").stop()
 	for voice: Node in get_tree().root.get_node("Sfx").get_children():
 		(voice as AudioStreamPlayer).stop()
@@ -410,9 +416,9 @@ func _check_dark_room() -> void:
 
 func _check_plate() -> void:
 	var screen := Vector2i(5, 2)
-	await _go(screen, 2, 6, 20)
+	await _go(screen, 6, 6, 20)
 	_expect("placa: pisada, abre a grade verde", _all_open(screen, ChapterMap.Block.TIMED_GATE))
-	await _go(screen, 6, 6, 250)
+	await _go(screen, 12, 6, 250)
 	_expect(
 		"placa: fecha depois de 4 segundos", _all_open(screen, ChapterMap.Block.TIMED_GATE, false)
 	)

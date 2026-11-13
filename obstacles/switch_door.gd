@@ -12,6 +12,8 @@ extends Obstacle
 
 const TEXTURE := preload("res://art/gate_door.svg")
 const MOVE_TICKS := 12
+## Folga, em pixels, entre a borda da grade e a área que confere a passagem.
+const OCCUPIED_MARGIN := 2.0
 
 var open := false
 
@@ -53,10 +55,14 @@ func _opens_with(_kind: Hit.Kind) -> bool:
 	return false
 
 
-## Diz se algum corpo está na passagem da grade.
+## Diz se algum corpo está na passagem da grade. A área conferida é um pouco
+## menor que a grade: do tamanho exato, ela encosta nas paredes vizinhas, a
+## passagem parecia sempre ocupada e a grade nunca voltava a ser sólida.
 func _occupied() -> bool:
+	var inner := RectangleShape2D.new()
+	inner.size = size - Vector2(OCCUPIED_MARGIN, OCCUPIED_MARGIN) * 2.0
 	var query := PhysicsShapeQueryParameters2D.new()
-	query.shape = _shape.shape
+	query.shape = inner
 	query.transform = Transform2D(0.0, global_position + size / 2.0)
 	var excluded: Array[RID] = [get_rid()]
 	query.exclude = excluded
