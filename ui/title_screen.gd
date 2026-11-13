@@ -1,7 +1,8 @@
 extends Control
 ## Tela de título. Continuar o jogo salvo, se houver, começar um jogo novo,
-## jogar o modo randomizado com uma seed, jogar o tutorial, que fica fora do
-## mundo, ou ir ao treino, com cada capítulo avulso e a sala de teste.
+## jogar o modo randomizado com uma seed ou ir ao treino, com a dungeon de
+## teste, cada capítulo avulso e a sala de teste. A dungeon de teste saiu
+## deste menu em 2026-11-13, a pedido de Marcelo: fica no treino e no mundo.
 ##
 ## O jogo novo só grava por cima do salvo quando o personagem vence um
 ## capítulo ou encosta na pedra de salvamento.
@@ -28,7 +29,6 @@ func _ready() -> void:
 	if not first:
 		first = new_game
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
-	column.add_child(MenuKit.button("Dungeon de teste", _on_tutorial))
 	column.add_child(MenuKit.button("Treino", _on_training))
 	column.add_child(MenuKit.button("Galeria", _on_gallery))
 	first.grab_focus.call_deferred()
@@ -49,11 +49,6 @@ func _on_randomized() -> void:
 
 
 ## O tutorial é jogado avulso, como no treino: nada é gravado.
-func _on_tutorial() -> void:
-	RunSettings.chapter = ChapterData.TUTORIAL
-	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
-
-
 func _on_training() -> void:
 	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
 

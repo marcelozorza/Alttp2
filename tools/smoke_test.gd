@@ -452,9 +452,9 @@ func _check_training() -> void:
 	print("TREINO: sala de teste -> ", _scene_name())
 
 
-## Tutorial: o antigo capítulo 1, avulso, a partir do título, sem gravar.
+## Tutorial: o antigo capítulo 1, avulso, a partir do treino, sem gravar.
 func _check_tutorial() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
 	await _frames(10)
 	await _press("Dungeon de teste")
 	await _frames(10)
