@@ -24,14 +24,13 @@ extends Node
 ## entra em cada sala usando os botões, vence o chefe, toca a relíquia e
 ## volta ao mundo. Depois confere o rejogo de um capítulo vencido, o menu de
 ## pausa, a tela de derrota, o ossinho dos inimigos, o treino, a sala de
-## teste e o continuar do jogo salvo. Qualquer erro de script aparece na
-## saída como SCRIPT ERROR. Não muda nada no projeto, e grava o progresso
-## num arquivo próprio, que apaga no fim.
+## teste e a volta ao mundo com o progresso da sessão. Qualquer erro de script
+## aparece na saída como SCRIPT ERROR. Não muda nada no projeto nem grava
+## arquivo algum.
 
 const ACTIONS := [
 	"attack", "use_fire", "use_bomb", "jump", "move_left", "move_right", "move_up", "move_down"
 ]
-const SAVE_PATH := "user://smoke_test_save.json"
 
 
 func _ready() -> void:
@@ -92,8 +91,6 @@ func _run() -> void:
 	var placeholder := Node.new()
 	get_tree().root.add_child(placeholder)
 	get_tree().current_scene = placeholder
-	Progress.save_path = SAVE_PATH
-	Progress.clear_file()
 	# Menu: sem jogo salvo, o A do controle começa um jogo novo e abre o mundo.
 	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
 	await _frames(10)
@@ -123,7 +120,6 @@ func _run() -> void:
 	await _check_practice()
 	_check_logic()
 	await _check_randomized()
-	Progress.clear_file()
 	print("FIM DO TESTE")
 	# Sons tocando no fechamento deixam o Godot acusar recurso preso.
 	get_tree().root.get_node("Music").get("_player").stop()
@@ -177,7 +173,7 @@ func _check_overworld() -> void:
 	print(
 		(
 			"MUNDO: pedra gravou: %s, vida %d/%d"
-			% [Progress.exists(), player.health, player.max_health]
+			% [not Progress.checkpoint.is_empty(), player.health, player.max_health]
 		)
 	)
 	await _walk_into(_entrance(1), player)
@@ -474,8 +470,8 @@ func _check_tutorial() -> void:
 
 ## Continuar: o jogo salvo volta ao mundo com os capítulos vencidos.
 func _check_continue() -> void:
-	# O título não tem mais "Continuar": o teste lê o arquivo direto.
-	Progress.load_file()
+	# Não há arquivo de salvamento: a volta ao mundo usa o estado da sessão.
+	Progress.return_entrance = Progress.NO_ENTRANCE
 	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
 	await _frames(20)
 	var modes := []
@@ -671,8 +667,8 @@ func _check_randomized() -> void:
 			% [location, item_name, recorded, reopened, Progress.tools]
 		)
 	)
-	# O título não tem mais "Continuar": o teste lê o arquivo direto.
-	Progress.load_file()
+	# Não há arquivo de salvamento: a volta ao mundo usa o estado da sessão.
+	Progress.return_entrance = Progress.NO_ENTRANCE
 	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
 	await _frames(20)
 	print(

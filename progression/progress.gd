@@ -1,11 +1,13 @@
 class_name Progress
 ## Progresso do jogo contínuo: os capítulos vencidos, as ferramentas e as
 ## melhorias, a vida máxima e os baús de coração e de ferramenta já abertos
-## em cada capítulo. Fica num arquivo JSON na pasta do usuário.
+## em cada capítulo. Vale só durante a sessão: o jogo não tem salvamento em
+## arquivo (decisão de Marcelo em 2026-11-13), vai-se até o fim toda vez.
 ##
 ## Um capítulo só conta quando o personagem toca a relíquia. Nessa hora o
-## progresso é gravado, e a pedra de salvamento do mundo grava de novo e
-## enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
+## progresso é registrado. A pedra do mundo enche a vida e marca o ponto de
+## volta da sessão (checkpoint). Sair de um capítulo no meio perde o que foi
+## feito nele.
 ##
 ## Num capítulo já vencido, os baús de coração e de ferramenta começam
 ## abertos, para a vida máxima não crescer duas vezes. Os baús de chave
@@ -13,23 +15,18 @@ class_name Progress
 ## capítulo para outro.
 ##
 ## Com "active" desligado, o capítulo é jogado avulso, a partir do treino, e
-## nada é gravado.
+## nada é registrado.
 ##
 ## No modo randomizado (seed diferente de zero), o item de cada baú vem da
 ## distribuição da seed (progression/randomizer.gd), as três entradas do mundo
-## abrem de início e cada baú de ferramenta, melhoria ou coração é gravado na
+## abrem de início e cada baú de ferramenta, melhoria ou coração é registrado na
 ## hora em que abre, porque o jogador entra e sai das dungeons conforme acha
 ## itens. A dungeon fica como o jogador a deixou ao sair (dungeons): portas,
-## bloqueios, baús, chaves na mão, salas limpas e mapa. O arquivo guarda o número
-## da seed, e a distribuição é gerada de novo ao carregar.
+## bloqueios, baús, chaves na mão, salas limpas e mapa.
 ##
 ## O cronômetro do jogo inteiro (run_ticks) conta desde o Novo jogo, no mundo
-## e nos capítulos, para com a pausa e é gravado junto com o resto.
+## e nos capítulos, e para com a pausa.
 
-## Versão do arquivo. A 1 numerava os capítulos de 1 a 4, antes de o
-## capítulo 1 virar o tutorial (2026-11-06), então um arquivo antigo é
-## descartado.
-const VERSION := 2
 const BASE_HEALTH := 6
 ## Sem entrada de volta: o personagem aparece no início do mundo num jogo
 ## novo, ou na pedra de salvamento num jogo já começado.
@@ -44,9 +41,6 @@ static var return_entrance := NO_ENTRANCE
 ## ela é um treino, com as ferramentas e a vida dela mesma, e nada do que
 ## acontece lá dentro passa para o jogo. Só fica gravado que foi vencida.
 static var practice := false
-## Arquivo de salvamento. O teste de fumaça usa outro, para não mexer no do
-## jogador.
-static var save_path := "user://save.json"
 
 ## Bit n ligado quando o capítulo n foi vencido.
 static var chapters_done := 0
@@ -97,12 +91,10 @@ static func start_seed(seed_value: int) -> void:
 	seed_items = Randomizer.generate(seed_value)
 
 
-## No modo randomizado, a morte perde tudo: a mesma seed recomeça do zero, e o
-## arquivo é gravado assim na hora, para que sair do jogo na tela de derrota
-## não salve a partida (decisão de Marcelo em 2026-11-07, jogando).
+## No modo randomizado, a morte sem ponto de volta perde tudo: a mesma seed
+## recomeça do zero (decisão de Marcelo em 2026-11-07, jogando).
 static func restart_seed() -> void:
 	start_seed(seed)
-	save()
 
 
 ## Guarda o estado atual como ponto de volta. Chamado pela pedra de salvamento.
@@ -129,7 +121,6 @@ static func restore_checkpoint() -> void:
 	opened = checkpoint["opened"].duplicate(true)
 	dungeons = checkpoint["dungeons"].duplicate(true)
 	return_entrance = NO_ENTRANCE
-	save()
 
 
 static func is_done(chapter: int) -> bool:
@@ -164,10 +155,9 @@ static func dungeon_state(chapter: int) -> Dictionary:
 	return state if state is Dictionary else {}
 
 
-## Guarda o estado de uma dungeon na saída e grava.
+## Guarda o estado de uma dungeon na saída.
 static func record_dungeon(chapter: int, state: Dictionary) -> void:
 	dungeons[str(chapter)] = state
-	save()
 
 
 static func was_opened(chapter: int, location: String) -> bool:
@@ -185,11 +175,9 @@ static func has_started() -> bool:
 static func record_practice() -> void:
 	chapters_done |= 1 << ChapterData.TUTORIAL
 	return_entrance = ChapterData.TUTORIAL
-	save()
 
 
-## Registra o capítulo vencido, com o que o personagem tem ao fim dele, e
-## grava.
+## Registra o capítulo vencido, com o que o personagem tem ao fim dele.
 static func record_chapter(chapter: int, player: Player, chests: Array[Chest]) -> void:
 	chapters_done |= 1 << chapter
 	tools = player.tool_bits() & ~Item.bit(Item.Id.BOSS_KEY)
@@ -200,7 +188,6 @@ static func record_chapter(chapter: int, player: Player, chests: Array[Chest]) -
 			letters += chest.location_id
 	opened[str(chapter)] = letters
 	return_entrance = chapter
-	save()
 
 
 ## No modo randomizado, grava um baú na hora em que abre, se o item dele
@@ -215,66 +202,8 @@ static func record_chest(chapter: int, chest: Chest, player: Player) -> void:
 	if not letters.contains(chest.location_id):
 		letters += chest.location_id
 	opened[str(chapter)] = letters
-	save()
 
 
 ## Itens que não voltam ao baú num capítulo já vencido.
 static func _persists(item: int) -> bool:
 	return item == Item.Id.HEART or (item in Item.PERMANENT and item != Item.Id.BOSS_KEY)
-
-
-static func exists() -> bool:
-	return FileAccess.file_exists(save_path)
-
-
-static func save() -> void:
-	var file := FileAccess.open(save_path, FileAccess.WRITE)
-	if not file:
-		push_error("Não deu para gravar o progresso em %s." % save_path)
-		return
-	var data := {
-		"version": VERSION,
-		"chapters_done": chapters_done,
-		"tools": tools,
-		"max_health": max_health,
-		"run_ticks": run_ticks,
-		"seed": seed,
-		"opened": opened,
-		"dungeons": dungeons,
-	}
-	file.store_string(JSON.stringify(data, "\t"))
-	file.close()
-
-
-## Lê o arquivo e liga o jogo contínuo. Diz se conseguiu.
-static func load_file() -> bool:
-	if not exists():
-		return false
-	var file := FileAccess.open(save_path, FileAccess.READ)
-	if not file:
-		return false
-	var data = JSON.parse_string(file.get_as_text())
-	file.close()
-	if not data is Dictionary or int(data.get("version", 0)) != VERSION:
-		clear_file()
-		return false
-	start_new()
-	chapters_done = int(data.get("chapters_done", 0))
-	tools = int(data.get("tools", 0))
-	max_health = int(data.get("max_health", BASE_HEALTH))
-	run_ticks = int(data.get("run_ticks", 0))
-	var saved_opened = data.get("opened", {})
-	if saved_opened is Dictionary:
-		opened = saved_opened
-	var saved_dungeons = data.get("dungeons", {})
-	if saved_dungeons is Dictionary:
-		dungeons = saved_dungeons
-	seed = int(data.get("seed", 0))
-	if seed != 0:
-		seed_items = Randomizer.generate(seed)
-	return true
-
-
-static func clear_file() -> void:
-	if exists():
-		DirAccess.remove_absolute(save_path)
