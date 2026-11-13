@@ -184,6 +184,8 @@ func _draw_buttons(player: Player) -> void:
 			continue
 		var center: Vector2 = _button_centers[action]
 		var id: int = TOOL_ACTIONS[action]
+		if id == player.denied_tool:
+			center += DoorArt.shake_offset(player.denied_tick)
 		if not player.has_tool(id):
 			ToolIcons.draw_centered(self, EMPTY_BUTTON_TEXTURE, center)
 			continue

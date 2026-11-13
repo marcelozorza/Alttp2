@@ -216,6 +216,10 @@ var health := 0
 ## Chaves pequenas guardadas. Cada porta trancada gasta uma.
 var keys := 0
 
+## Última ferramenta pedida sem carga e o tick do pedido. O HUD lê.
+var denied_tool := -1
+var denied_tick := -1000
+
 var _state := State.WALK
 var _state_tick := 0
 var _run_direction := Vector2.ZERO
@@ -589,10 +593,20 @@ func _use_tools() -> void:
 		Sfx.play(&"jump_strong" if strong else &"jump")
 
 
+## Botão de ferramenta apertado sem carga: toca o som de batida na parede e
+## marca a ferramenta, para o botão dela tremer no HUD (pedido de Marcelo em
+## 2026-11-13).
+func _deny_tool(id: int) -> void:
+	denied_tool = id
+	denied_tick = Clock.tick
+	Sfx.play(&"bump")
+
+
 ## Solta uma bomba aos pés, um pouco à frente, se houver carga. O personagem
 ## atravessa as próprias bombas, mas pode empurrá-las com a espada.
 func _place_bomb() -> void:
 	if _bomb_charges.left(bomb_charges) <= 0:
+		_deny_tool(Item.Id.BOMB)
 		return
 	if get_tree().get_nodes_in_group("bombs").size() >= max_bombs:
 		return
@@ -611,6 +625,7 @@ func _place_bomb() -> void:
 ## sai forte.
 func _shoot_fire() -> void:
 	if _fire_charges.left(fire_charges) <= 0:
+		_deny_tool(Item.Id.FIRE)
 		return
 	if not get_tree().get_nodes_in_group("fireballs").is_empty():
 		return
