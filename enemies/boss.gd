@@ -56,7 +56,7 @@ const FLASH_TICKS := 6
 
 @export_group("Vida")
 ## Pontos de vida do núcleo.
-@export_range(1, 60, 1) var max_health := 12
+@export_range(1, 120, 1) var max_health := 12
 ## Segundos até a casca de gelo voltar depois de quebrada.
 @export_range(0.5, 20.0, 0.5) var shell_regrow_time := 6.0
 ## Ligado, a casca é de gelo grosso e só a chama forte a quebra.
