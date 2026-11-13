@@ -9,7 +9,8 @@ extends "res://tools/lab_test.gd"
 ## sala só pelos botões, andando, correndo e pulando, como o jogador faria.
 ## Serve para as salas que dependem de tempo ou de distância: a corrida da
 ## placa, o clone, o buraco largo, a fuga do fogo, o corredor sob ataque, o
-## piso quebradiço e as tochas com tempo. Onde a sala pede uma ferramenta ou
+## piso quebradiço, as tochas com tempo, os buracos com vento e o nível de
+## água. Onde a sala pede uma ferramenta ou
 ## a corrida, ele também confere que sem ela não passa.
 ##
 ## As linhas que começam com dois espaços são medidas (folga de tempo, vida
@@ -47,6 +48,8 @@ func _run_checks() -> void:
 	await _play_corridor()
 	await _play_crumble()
 	await _play_torches()
+	await _play_wind()
+	await _play_water()
 
 
 ## Ponto do mundo de uma casa do miolo da sala, contada a partir do canto da
@@ -278,3 +281,26 @@ func _play_torches() -> void:
 		"tochas com tempo: três chamas a tempo abrem a porta",
 		_all_open(screen, ChapterMap.Block.TORCH_DOOR)
 	)
+
+
+func _play_wind() -> void:
+	var screen := Vector2i(5, 4)
+	await _enter(screen, 0, 4)
+	var crossed := await _follow(screen, [Vector2(5.25, 4), &"jump", Vector2(9, 4), Vector2(9, 7)])
+	_expect("buracos e vento: pula o buraco e chega à porta do sul", crossed)
+
+
+func _play_water() -> void:
+	var screen := Vector2i(5, 0)
+	var bridge := [Vector2(12, 7), Vector2(12, 1)]
+	await _enter(screen, 9, 7)
+	var full := await _follow(screen, bridge)
+	_expect("nível de água: cheia, a balsa é ponte", full)
+	await _follow(screen, [Vector2(12, 7), Vector2(11, 7)])
+	await _face(&"move_up")
+	await _hold("attack", 2)
+	await _frames(30)
+	var drained := await _follow(screen, bridge)
+	_expect("nível de água: vazia, a margem não deixa passar pela balsa", not drained)
+	var bed := await _follow(screen, [Vector2(4, 7), Vector2(4, 5), Vector2(1, 4), Vector2(0, 4)])
+	_expect("nível de água: vazia, a rampa leva pelo leito à porta do oeste", bed)

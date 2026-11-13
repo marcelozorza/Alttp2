@@ -746,7 +746,7 @@ def carve(grid, side, slot, sx0, y0, x0, w):
         inside = border + (1 if side == "N" else -1)
         for x in (sx0 + 9, sx0 + 10):
             grid[border][x] = "."
-            grid[inside][x] = slot
+            put(grid, inside, x, slot)
         if slot != ".":
             grid[inside][sx0 + 8] = "#"
             grid[inside][sx0 + 11] = "#"
@@ -755,10 +755,17 @@ def carve(grid, side, slot, sx0, y0, x0, w):
         inside = border + (1 if side == "W" else -1)
         for y in (y0 + 4, y0 + 5):
             grid[y][border] = "."
-            grid[y][inside] = slot
+            put(grid, y, inside, slot)
         if slot != ".":
             grid[y0 + 3][inside] = "#"
             grid[y0 + 6][inside] = "#"
+
+
+def put(grid, y, x, slot):
+    """Põe o bloqueio da porta na casa de dentro. A porta livre não apaga o
+    que a sala desenhou ali (a rampa da água, por exemplo), só a parede."""
+    if slot != "." or grid[y][x] == "#":
+        grid[y][x] = slot
 
 
 HEADER = '''class_name LabData
