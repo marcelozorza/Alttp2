@@ -638,7 +638,7 @@ ROOMS = [
     {
         "name": "Rebater o disparo",
         "at": (4, 6),
-        "doors": {"W": "."},
+        "doors": {"W": ".", "E": "."},
         "rows": [
             "..............#Z.#",
             "..............#..#",
@@ -650,6 +650,25 @@ ROOMS = [
             "..................",
         ],
         "messages": ["Rebata o disparo com a espada. De volta à torreta, ele a desliga e abre a porta rosa."],
+    },
+    {
+        "name": "Carrinho",
+        "at": (5, 6),
+        "doors": {"W": "."},
+        "rows": [
+            "......nnnnnnn.....",
+            "......nnnnnnn.....",
+            "......##!####.....",
+            "...◙╫╫┼┼┼┼┼┼┼╫╫...",
+            "......nnnnnnn.....",
+            "..?...nnnnnnn#ff##",
+            "......nnnnnnn#.?.#",
+            "......nnnnnnn#...#",
+        ],
+        "messages": [
+            "Carrinho: encoste nele para andar no trilho. A pé, o trilho sobre o vazio não segura. Acerte o cristal ao passar.",
+            "Você acertou o cristal em movimento.",
+        ],
     },
     {
         "name": "Feixe de luz",

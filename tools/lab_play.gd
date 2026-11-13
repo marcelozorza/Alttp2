@@ -10,8 +10,8 @@ extends "res://tools/lab_test.gd"
 ## Serve para as salas que dependem de tempo ou de distância: a corrida da
 ## placa, o clone, o buraco largo, a fuga do fogo, o corredor sob ataque, o
 ## piso quebradiço, as tochas com tempo, os buracos com vento, o nível de
-## água, o inimigo como peso, a fonte de blocos, o lago congelado e o disparo
-## rebatido. Onde a sala pede uma ferramenta ou
+## água, o inimigo como peso, a fonte de blocos, o lago congelado, o disparo
+## rebatido e o carrinho. Onde a sala pede uma ferramenta ou
 ## a corrida, ele também confere que sem ela não passa.
 ##
 ## As linhas que começam com dois espaços são medidas (folga de tempo, vida
@@ -55,6 +55,7 @@ func _run_checks() -> void:
 	await _play_maker()
 	await _play_lake()
 	await _play_volley()
+	await _play_cart()
 
 
 ## Ponto do mundo de uma casa do miolo da sala, contada a partir do canto da
@@ -470,3 +471,51 @@ func _play_volley() -> void:
 	)
 	var inside := await _follow(screen, [Vector2(15, 3), Vector2(15, 1)])
 	_expect("rebater: a porta aberta leva ao baú", inside)
+
+
+func _play_cart() -> void:
+	var screen := Vector2i(5, 6)
+	await _enter(screen, 0, 3)
+	var health := _player.health
+	var cart: Cart = _in_screen(screen, Cart)[0]
+	var crystal: Crystal = _in_screen(screen, Crystal)[0]
+	await _follow(screen, [Vector2(3, 3)])
+	_expect("carrinho: encostar nele embarca", cart.is_riding())
+	# Vira para cima e golpeia ao passar pelo cristal.
+	Input.action_press("move_up")
+	var swung := false
+	for _i: int in 600:
+		if not cart.is_riding():
+			break
+		var gap := crystal.global_position.x - _player.global_position.x
+		if not swung and gap < 12.0:
+			swung = true
+			Input.action_press("attack")
+		await _frames(1)
+	Input.action_release("attack")
+	Input.action_release("move_up")
+	_expect(
+		"carrinho: leva por cima do vazio até a outra ponta",
+		_cell_in(screen).x >= 14 and _player.health == health
+	)
+	_expect(
+		"carrinho: o golpe em movimento acerta o cristal",
+		_all_open(screen, ChapterMap.Block.BARRIER)
+	)
+	var inside := await _follow(screen, [Vector2(16, 4), Vector2(14.5, 4), Vector2(14.5, 6)])
+	_expect("carrinho: a barreira aberta dá passagem", inside)
+	await _follow(screen, [Vector2(14.5, 4), Vector2(16, 4), Vector2(16, 3), Vector2(14, 3)])
+	for _i: int in 600:
+		await _frames(1)
+		if not cart.is_riding():
+			break
+	_expect("carrinho: a volta traz ao começo", _cell_in(screen).x <= 3)
+	await _follow(screen, [Vector2(1, 3)])
+	await _frames(REST)
+	_health_mark = 0
+	await _walk_to(_spot(screen, Vector2(5, 4)))
+	await _walk_to(_spot(screen, Vector2(5, 3)))
+	Input.action_press("move_right")
+	await _frames(40)
+	_release_all()
+	_expect("carrinho: a pé, o trilho sobre o vazio não segura", _player.health == health - 1)

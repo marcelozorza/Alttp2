@@ -30,6 +30,7 @@ var _beams: BeamField
 var _water: WaterField
 var _power: PowerField
 var _frost: FrostField
+var _track: CartTrack
 
 
 func _init(chapter: Chapter, ground: Node2D, objects: Node2D) -> void:
@@ -173,6 +174,17 @@ func _add_field_cell(kind: StringName, cell: Vector2i, room: Rect2i, center: Vec
 		&"block_maker":
 			var maker := BlockMaker.new()
 			_stand(maker, center)
+		&"rail":
+			_track_field().rails[cell] = true
+		&"trestle":
+			_track_field().trestles[cell] = true
+		&"cart":
+			_track_field().rails[cell] = true
+			var cart := Cart.new()
+			cart.track = _track_field()
+			cart.position = center
+			_objects.add_child(cart)
+			_chapter.rooms.register(cart, cell)
 
 
 func _ice_field() -> IceField:
@@ -180,6 +192,13 @@ func _ice_field() -> IceField:
 		_ice = IceField.new()
 		_ground.add_child(_ice)
 	return _ice
+
+
+func _track_field() -> CartTrack:
+	if not _track:
+		_track = CartTrack.new()
+		_ground.add_child(_track)
+	return _track
 
 
 func _frost_field() -> FrostField:

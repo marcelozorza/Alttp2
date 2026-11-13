@@ -102,4 +102,8 @@ const LAB := {
 	# Lago que o cristal congela por alguns segundos, e a fonte de blocos.
 	"≋": [&"lake"],
 	"✦": [&"block_maker"],
+	# Carrinho de mina, trilho no chão e trilho sobre o vazio.
+	"◙": [&"cart"],
+	"╫": [&"rail"],
+	"┼": [&"trestle"],
 }
