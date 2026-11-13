@@ -19,7 +19,8 @@ class_name Progress
 ## distribuição da seed (progression/randomizer.gd), as três entradas do mundo
 ## abrem de início e cada baú de ferramenta, melhoria ou coração é gravado na
 ## hora em que abre, porque o jogador entra e sai das dungeons conforme acha
-## itens. As chaves continuam valendo só na visita. O arquivo guarda o número
+## itens. A dungeon fica como o jogador a deixou ao sair (dungeons): portas,
+## bloqueios, baús, chaves na mão, salas limpas e mapa. O arquivo guarda o número
 ## da seed, e a distribuição é gerada de novo ao carregar.
 ##
 ## O cronômetro do jogo inteiro (run_ticks) conta desde o Novo jogo, no mundo
@@ -62,6 +63,13 @@ static var seed_items := {}
 ## Baús já abertos por capítulo: número do capítulo, em texto, para as letras
 ## dos baús.
 static var opened := {}
+## Como cada dungeon ficou quando o personagem saiu dela, no modo
+## randomizado, por número do capítulo em texto: baús abertos, bloqueios
+## removidos, blocos travados, salas limpas, salas visitadas e chaves na mão
+## (ver Chapter._dungeon_state). Marcelo saiu de uma dungeon para buscar a
+## bomba em outra e, na volta, achou portas, inimigos e mapa zerados: "tudo
+## fica como deixei" (2026-11-13).
+static var dungeons := {}
 
 
 static func start_new() -> void:
@@ -73,6 +81,7 @@ static func start_new() -> void:
 	max_health = BASE_HEALTH
 	run_ticks = 0
 	opened = {}
+	dungeons = {}
 	seed = 0
 	seed_items = {}
 
@@ -117,6 +126,19 @@ static func item_at(chapter: int, location: String, linear_item: int) -> int:
 	return linear_item
 
 
+## Estado guardado de uma dungeon, ou vazio se o personagem ainda não saiu
+## dela nesta partida.
+static func dungeon_state(chapter: int) -> Dictionary:
+	var state = dungeons.get(str(chapter), {})
+	return state if state is Dictionary else {}
+
+
+## Guarda o estado de uma dungeon na saída e grava.
+static func record_dungeon(chapter: int, state: Dictionary) -> void:
+	dungeons[str(chapter)] = state
+	save()
+
+
 static func was_opened(chapter: int, location: String) -> bool:
 	var letters: String = opened.get(str(chapter), "")
 	return letters.contains(location)
@@ -151,8 +173,8 @@ static func record_chapter(chapter: int, player: Player, chests: Array[Chest]) -
 
 
 ## No modo randomizado, grava um baú na hora em que abre, se o item dele
-## fica: ferramenta, melhoria ou coração. A chave grande não fica, como as
-## chaves pequenas, porque as portas fecham de novo ao sair da dungeon.
+## fica: ferramenta, melhoria ou coração. As chaves ficam com o estado da
+## dungeon, gravado na saída (record_dungeon).
 static func record_chest(chapter: int, chest: Chest, player: Player) -> void:
 	if not _persists(chest.item):
 		return
@@ -187,6 +209,7 @@ static func save() -> void:
 		"run_ticks": run_ticks,
 		"seed": seed,
 		"opened": opened,
+		"dungeons": dungeons,
 	}
 	file.store_string(JSON.stringify(data, "\t"))
 	file.close()
@@ -212,6 +235,9 @@ static func load_file() -> bool:
 	var saved_opened = data.get("opened", {})
 	if saved_opened is Dictionary:
 		opened = saved_opened
+	var saved_dungeons = data.get("dungeons", {})
+	if saved_dungeons is Dictionary:
+		dungeons = saved_dungeons
 	seed = int(data.get("seed", 0))
 	if seed != 0:
 		seed_items = Randomizer.generate(seed)

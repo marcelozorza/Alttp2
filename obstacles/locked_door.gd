@@ -48,6 +48,14 @@ func _ready() -> void:
 	add_child(_touch)
 
 
+## Abre a porta sem som nem animação e sem gastar chave, para a dungeon
+## voltar como o jogador a deixou.
+func open_silently() -> void:
+	opened = true
+	_shape.set_deferred("disabled", true)
+	queue_redraw()
+
+
 func _physics_process(_delta: float) -> void:
 	var now := Clock.tick
 	if not opened:

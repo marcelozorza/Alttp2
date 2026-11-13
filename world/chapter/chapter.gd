@@ -147,6 +147,8 @@ func _ready() -> void:
 		for id: int in data.starting_tools:
 			tools |= Item.bit(id)
 		_player.restore(tools, _player.max_health)
+	if _keeps_dungeon():
+		_restore_dungeon(Progress.dungeon_state(data.number))
 	_player.invulnerable = data.no_damage
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
@@ -170,6 +172,94 @@ func _physics_process(_delta: float) -> void:
 ## para o resto do jogo.
 func _keeps_progress() -> bool:
 	return Progress.active and not Progress.practice
+
+
+## No modo randomizado, a dungeon fica como o jogador a deixou ao sair e
+## voltar. No modo original, sair no meio perde o que foi feito nela.
+func _keeps_dungeon() -> bool:
+	return _keeps_progress() and Progress.seed != 0
+
+
+## Ao sair da cena com o personagem vivo, guarda como a dungeon ficou. Morto,
+## o modo randomizado já recomeçou a partida, e nada é guardado.
+func _exit_tree() -> void:
+	if _keeps_dungeon() and _player and _player.health > 0:
+		Progress.record_dungeon(data.number, _dungeon_state())
+
+
+## Como a dungeon está agora, em valores que cabem no arquivo JSON: letras
+## dos baús abertos, vagas dos bloqueios removidos, posição dos blocos
+## travados, salas limpas e visitadas, chaves pequenas e a chave grande.
+func _dungeon_state() -> Dictionary:
+	var chests := ""
+	for chest: Chest in _chests:
+		if chest.is_open:
+			chests += chest.location_id
+	var slots := ""
+	for slot: String in _obstacle_by_slot:
+		var obstacle: Node = _obstacle_by_slot[slot]
+		if not obstacle is SwitchDoor and block_cleared(slot):
+			slots += slot
+	var blocks: Array = []
+	for block: HeavyBlock in _block_cells:
+		if block.locked:
+			var cell: Vector2i = _block_cells[block]
+			blocks.append([cell.x, cell.y, block.global_position.x, block.global_position.y])
+	return {
+		"chests": chests,
+		"slots": slots,
+		"blocks": blocks,
+		"cleared": _rooms_to_lists(_cleared_rooms),
+		"visited": _rooms_to_lists(_visited),
+		"keys": _player.keys,
+		"boss_key": _player.has_tool(Item.Id.BOSS_KEY),
+	}
+
+
+## Põe a dungeon como estava no estado guardado. Vazio, não muda nada.
+func _restore_dungeon(state: Dictionary) -> void:
+	if state.is_empty():
+		return
+	var chests: String = str(state.get("chests", ""))
+	for chest: Chest in _chests:
+		if chests.contains(chest.location_id):
+			chest.open_silently()
+	for slot: String in str(state.get("slots", "")):
+		var obstacle: Node = _obstacle_by_slot.get(slot)
+		if obstacle is LockedDoor:
+			(obstacle as LockedDoor).open_silently()
+		elif obstacle is Obstacle and not obstacle is SwitchDoor:
+			(obstacle as Obstacle).clear_silently()
+	var saved_blocks = state.get("blocks", [])
+	if saved_blocks is Array:
+		for entry in saved_blocks:
+			if not entry is Array or entry.size() < 4:
+				continue
+			var cell := Vector2i(int(entry[0]), int(entry[1]))
+			for block: HeavyBlock in _block_cells:
+				if _block_cells[block] == cell:
+					block.lock_at(Vector2(float(entry[2]), float(entry[3])))
+	_lists_to_rooms(state.get("cleared", []), _cleared_rooms)
+	_lists_to_rooms(state.get("visited", []), _visited)
+	_player.keys = int(state.get("keys", 0))
+	if state.get("boss_key", false):
+		_player.restore(_player.tool_bits() | Item.bit(Item.Id.BOSS_KEY), _player.max_health)
+
+
+static func _rooms_to_lists(rooms: Dictionary) -> Array:
+	var lists: Array = []
+	for room: Rect2i in rooms:
+		lists.append([room.position.x, room.position.y, room.size.x, room.size.y])
+	return lists
+
+
+static func _lists_to_rooms(lists: Variant, rooms: Dictionary) -> void:
+	if not lists is Array:
+		return
+	for entry in lists:
+		if entry is Array and entry.size() >= 4:
+			var corner := Vector2i(int(entry[0]), int(entry[1]))
+			rooms[Rect2i(corner, Vector2i(int(entry[2]), int(entry[3])))] = true
 
 
 ## Nome do capítulo, para o HUD e para a tela de fim.
