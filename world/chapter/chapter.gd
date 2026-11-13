@@ -271,7 +271,7 @@ func mode_text() -> String:
 	if data.number == ChapterData.TUTORIAL:
 		return "Dungeon de teste"
 	if data.number == ChapterData.GALLERY:
-		return "Galeria"
+		return "Playtest"
 	return "Cap. %d" % data.number
 
 

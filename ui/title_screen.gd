@@ -1,5 +1,5 @@
 extends Control
-## Tela de título: jogo novo, modo randomizado com uma semente, ou a Galeria.
+## Tela de título: jogo novo, modo randomizado com uma semente, ou o Playtest (a Galeria de testes).
 ##
 ## Não há "Continuar": o jogo não tem salvamento entre sessões, vai-se até o
 ## fim toda vez (decisão de Marcelo em 2026-11-13). Dentro de uma sessão, a
@@ -23,7 +23,7 @@ func _ready() -> void:
 	var first := MenuKit.button("Novo jogo", _on_new_game)
 	column.add_child(first)
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
-	column.add_child(MenuKit.button("Galeria", _on_gallery))
+	column.add_child(MenuKit.button("Playtest", _on_gallery))
 	first.grab_focus.call_deferred()
 
 
