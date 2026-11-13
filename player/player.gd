@@ -594,7 +594,7 @@ func _use_tools() -> void:
 
 
 ## Botão de ferramenta apertado sem carga: toca o som de batida na parede e
-## marca a ferramenta, para o botão dela tremer no HUD (pedido de Marcelo em
+## o Giorgino treme. O botão dela no HUD treme junto (pedido de Marcelo em
 ## 2026-11-13).
 func _deny_tool(id: int) -> void:
 	denied_tool = id
@@ -914,7 +914,8 @@ func _update_art() -> void:
 	_art.flip_h = flipped
 	# Espelhado, o ponto dos pés também troca de lado dentro do desenho.
 	var feet_x := texture.get_width() - feet.x if flipped else feet.x
-	_art.offset = Vector2(-feet_x, -feet.y)
+	# Ferramenta pedida sem carga: o Giorgino treme de lado por um instante.
+	_art.offset = Vector2(-feet_x, -feet.y) + DoorArt.shake_offset(denied_tick)
 
 
 func _update_sword_lock_bar() -> void:
