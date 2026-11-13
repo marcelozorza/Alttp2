@@ -33,12 +33,10 @@ const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
 const HEART_STEP := Vector2(18.0, 16.0)
 ## Corações que cabem numa linha, antes do cronômetro.
 const HEALTH_ROW := 12
-## Distância do centro do ícone da chave ao alto do fundo do minimapa.
-const KEYS_ABOVE_MAP := 16.0
-## Menor posição do texto das chaves, para o ícone caber com um minimapa estreito.
-const KEYS_MIN_LEFT := 52.0
-## Chave apagada, quando não há nenhuma.
-const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
+## Altura da aba das chaves, acima do minimapa.
+const KEYS_TAB_HEIGHT := 28.0
+## Chave e número apagados, quando não há nenhuma.
+const NO_KEY_TINT := Color(0.62, 0.62, 0.68, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
 ## Disco de um botão com espada ou ferramenta, e disco apagado de um botão
@@ -154,24 +152,25 @@ func _draw_health(player: Player) -> void:
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a
-## chave grande antes, quando o personagem a tem. Fica logo acima do minimapa,
-## alinhado à direita com ele (pedido de Marcelo em 2026-11-13).
+## chave grande depois, quando o personagem a tem. Fica numa aba escura logo
+## acima do minimapa, alinhada com a borda esquerda dele, para ler bem sobre
+## qualquer chão (pedido de Marcelo em 2026-11-13).
 func _draw_keys(player: Player, chapter: Node) -> void:
 	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
 	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
 	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
-	var map_size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
-	var map_top := MINIMAP_CORNER.y - map_size.y - 4.0
-	var middle := map_top - KEYS_ABOVE_MAP
-	var text_left := maxf(MINIMAP_CORNER.x + map_size.x + 4.0 - text_width, KEYS_MIN_LEFT)
-	draw_string(
-		font, Vector2(text_left, middle + 8.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint
-	)
-	var key_center := Vector2(text_left - 12.0, middle)
-	ToolIcons.draw(self, Item.Id.KEY, key_center, tint)
-	if player.has_tool(Item.Id.BOSS_KEY):
-		ToolIcons.draw(self, Item.Id.BOSS_KEY, key_center - Vector2(26.0, 0.0))
+	var map_top := MINIMAP_CORNER.y - Minimap.rooms_size(chapter, Minimap.HUD_CELL).y - 4.0
+	var left := MINIMAP_CORNER.x - 4.0
+	var boss_key := player.has_tool(Item.Id.BOSS_KEY)
+	var width := 30.0 + text_width + (30.0 if boss_key else 6.0)
+	draw_rect(Rect2(left, map_top - KEYS_TAB_HEIGHT, width, KEYS_TAB_HEIGHT), Minimap.BACKGROUND)
+	var middle := map_top - KEYS_TAB_HEIGHT / 2.0
+	ToolIcons.draw(self, Item.Id.KEY, Vector2(left + 14.0, middle), tint)
+	var text_position := Vector2(left + 28.0, middle + 8.0)
+	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
+	if boss_key:
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, Vector2(left + 44.0 + text_width, middle))
 
 
 func _draw_buttons(player: Player) -> void:

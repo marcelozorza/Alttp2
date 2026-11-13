@@ -30,6 +30,8 @@ signal died(enemy: Enemy)
 
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER, STAGGER, DEAD }
 
+## Espaço entre o alto do desenho e a barra de vida.
+const HEALTH_BAR_GAP := 10.0
 ## Cores provisórias dos estados.
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
@@ -203,6 +205,7 @@ func _ready() -> void:
 	)
 	frame.show_behind_parent = true
 	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_health_bar.z_index = 1
 	_health_bar.add_child(frame)
 	health = max_health
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
@@ -458,6 +461,9 @@ func _update_visuals() -> void:
 			if anchor_feet:
 				var size := frame.get_size()
 				_art.offset = Vector2(-floorf(size.x / 2.0), feet_offset - size.y)
+			# A barra de vida fica acima do desenho, nunca atrás dele.
+			var art_top := _art.offset.y + GroundShadow.used_rect(frame).position.y
+			_health_bar.position.y = minf(_health_bar.position.y, art_top - HEALTH_BAR_GAP)
 			# A sombra é medida pelo quadro: muda com ele.
 			if frame != _shadow_frame or _art.flip_h != _shadow_flip:
 				_shadow_frame = frame
