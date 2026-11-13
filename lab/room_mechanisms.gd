@@ -19,7 +19,10 @@ extends RefCounted
 ## - Receptor de luz: atingido pelo feixe, abre de vez as portas brancas.
 ## - Receptor de eletricidade: com corrente, abre as portas elétricas, e sem
 ##   corrente elas fecham.
-## - O cristal também troca o nível da água da sala (lab/water_field.gd).
+## - O cristal também troca o nível da água da sala (lab/water_field.gd) e
+##   congela o lago dela (lab/frost_field.gd).
+## - Torretas: com todas as da sala desligadas pelo próprio disparo, rebatido
+##   com a espada, as portas do rebate abrem de vez.
 ##
 ## As três dungeons não usam nada disto: sem objetos registrados, nada age.
 
@@ -38,6 +41,7 @@ var _crystals := {}
 var _torches := {}
 var _targets := {}
 var _plates := {}
+var _turrets := {}
 ## Estado do cristal de cada sala.
 var _crystal_on := {}
 ## Marcadores de nascimento e levas de cada sala, e a próxima leva.
@@ -95,6 +99,11 @@ func add_power_receptor(receptor: BeamReceptor, room: Rect2i) -> void:
 func add_plate(plate: TimedPlate, room: Rect2i) -> void:
 	_append(_plates, room, plate)
 	plate.changed.connect(_on_plate_changed.bind(room))
+
+
+func add_turret(turret: Turret, room: Rect2i) -> void:
+	_append(_turrets, room, turret)
+	turret.shut_down.connect(_on_turret_shut_down.bind(room))
 
 
 func add_spawn_point(point: Vector2, room: Rect2i) -> void:
@@ -208,6 +217,18 @@ func _on_plate_changed(_active: bool, room: Rect2i) -> void:
 	for plate: TimedPlate in _plates.get(room, []):
 		any_active = any_active or plate.active
 	_set_open(room, ChapterMap.Block.TIMED_GATE, any_active)
+
+
+func _on_turret_shut_down(room: Rect2i) -> void:
+	var turrets: Array = _turrets.get(room, [])
+	for turret: Turret in turrets:
+		if not turret.down:
+			return
+	if not _has_doors(room, ChapterMap.Block.VOLLEY_DOOR):
+		return
+	for turret: Turret in turrets:
+		turret.held = true
+	_set_open(room, ChapterMap.Block.VOLLEY_DOOR, true)
 
 
 func _has_doors(room: Rect2i, kind: ChapterMap.Block) -> bool:

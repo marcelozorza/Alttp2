@@ -99,4 +99,7 @@ const LAB := {
 	"∩": [&"magnet"],
 	# Marca que grava os passos e solta o clone.
 	"◎": [&"echo_pad"],
+	# Lago que o cristal congela por alguns segundos, e a fonte de blocos.
+	"≋": [&"lake"],
+	"✦": [&"block_maker"],
 }

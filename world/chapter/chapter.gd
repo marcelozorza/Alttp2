@@ -65,6 +65,7 @@ const OBSTACLE_SCENES := {
 	ChapterMap.Block.TIMED_GATE: MECH_DOOR_SCENE,
 	ChapterMap.Block.BEAM_DOOR: MECH_DOOR_SCENE,
 	ChapterMap.Block.POWER_DOOR: MECH_DOOR_SCENE,
+	ChapterMap.Block.VOLLEY_DOOR: MECH_DOOR_SCENE,
 	ChapterMap.Block.PIT: PIT_SCENE,
 	ChapterMap.Block.WIDE_PIT: PIT_SCENE,
 	ChapterMap.Block.GAP: PIT_SCENE,

@@ -13,6 +13,8 @@ extends SwitchDoor
 ##   ligada, por alguns segundos ou de vez.
 ## - BEAM_DOOR (branca): abre quando o feixe de luz chega ao receptor.
 ## - POWER_DOOR (dourada): aberta enquanto a corrente chega ao receptor.
+## - VOLLEY_DOOR (rosa): abre de vez quando todas as torretas da sala são
+##   desligadas pelo próprio disparo, rebatido com a espada.
 
 const TINTS := {
 	ChapterMap.Block.SHUTTER: Color(1.0, 0.45, 0.45),
@@ -23,6 +25,7 @@ const TINTS := {
 	ChapterMap.Block.TIMED_GATE: Color(0.5, 1.0, 0.6),
 	ChapterMap.Block.BEAM_DOOR: Color(1.6, 1.6, 1.6),
 	ChapterMap.Block.POWER_DOOR: Color(1.3, 1.1, 0.3),
+	ChapterMap.Block.VOLLEY_DOOR: Color(1.3, 0.6, 0.9),
 }
 
 ## Tipo do bloqueio, um ChapterMap.Block.

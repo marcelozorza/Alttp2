@@ -45,6 +45,7 @@ enum Block {
 	WEB,
 	BEAM_DOOR,
 	POWER_DOOR,
+	VOLLEY_DOOR,
 }
 
 ## Tipos de bloqueio em que o mesmo caractere serve a vários bloqueios
@@ -63,6 +64,7 @@ const SHARED := [
 	Block.WEB,
 	Block.BEAM_DOOR,
 	Block.POWER_DOOR,
+	Block.VOLLEY_DOOR,
 ]
 
 ## Tamanho de uma casa, em pixels.

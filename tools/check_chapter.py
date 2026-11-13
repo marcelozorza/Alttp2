@@ -71,20 +71,22 @@ BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "T
 # bloqueios separados, um por grupo de casas vizinhas, como ChapterMap.SHARED.
 LAB_TYPES = [
     "SHUTTER", "BARRIER", "BARRIER_ALT", "TORCH_DOOR", "BLAST_DOOR", "TIMED_GATE",
-    "PIT", "WIDE_PIT", "GAP", "WEB", "BEAM_DOOR", "POWER_DOOR",
+    "PIT", "WIDE_PIT", "GAP", "WEB", "BEAM_DOOR", "POWER_DOOR", "VOLLEY_DOOR",
 ]
 BLOCK_TYPES += LAB_TYPES
 # Bloqueios do laboratório que a sala resolve sozinha, sem ferramenta: a
 # porta de combate, as barreiras do cristal, o buraco de ponte e a porta do
-# feixe de luz. A porta elétrica também, com os blocos de metal da sala. A
-# água entra como chão comum: o cristal da sala troca o nível quando preciso.
-FREE_TYPES = ["SHUTTER", "BARRIER", "BARRIER_ALT", "GAP", "BEAM_DOOR", "POWER_DOOR"]
+# feixe de luz. A porta elétrica também, com os blocos de metal da sala, e a
+# porta do rebate, com a torreta da sala. A água e o lago que congela entram
+# como chão comum: o cristal da sala troca o estado quando preciso.
+FREE_TYPES = ["SHUTTER", "BARRIER", "BARRIER_ALT", "GAP", "BEAM_DOOR", "POWER_DOOR", "VOLLEY_DOOR"]
 # Largura máxima de cada buraco, na direção mais curta, em casas.
 PIT_REACH = {"PIT": 2, "WIDE_PIT": 5}
 # Objeto que a sala de cada bloqueio do laboratório precisa ter.
 ROOM_NEEDS = {
     "BARRIER": "!", "BARRIER_ALT": "!", "TORCH_DOOR": "|/①②③④", "BLAST_DOOR": "+",
-    "TIMED_GATE": ";{¦", "GAP": "[▣", "BEAM_DOOR": "◉", "POWER_DOOR": "⏻",
+    "TIMED_GATE": ";{¦", "GAP": "[▣✦", "BEAM_DOOR": "◉", "POWER_DOOR": "⏻",
+    "VOLLEY_DOOR": "}",
 }
 PLATES = ";{¦"
 STATUE = "♜"
@@ -94,7 +96,7 @@ TELEPORTERS = "αβγδⒶⒷ"
 PORTAL_EXITS = {"δ": "ω", "Ⓐ": "ⓐ", "Ⓑ": "ⓑ"}
 ICE_FLOOR = "~"
 # Objetos sólidos do laboratório, que param quem desliza no gelo.
-LAB_SOLIDS = "!+|/①②③④[}♜⇒⇐⇑⇓▶◀▲▼╱╲◉▣∩⏻"
+LAB_SOLIDS = "!+|/①②③④[}♜⇒⇐⇑⇓▶◀▲▼╱╲◉▣∩⏻✦"
 LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 

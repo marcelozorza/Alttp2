@@ -83,12 +83,12 @@ func _build() -> void:
 		var pair: Array = _bodies[room]
 		var corner := Vector2(cell) * tile
 		if not rafts.has(cell):
-			_add_box(pair[0], Rect2(corner, Vector2(tile, tile)))
+			add_box(pair[0], Rect2(corner, Vector2(tile, tile)))
 		for step: Vector2i in ChapterMap.STEPS:
 			var next := cell + step
 			if water.has(next) or ramps.has(next) or "# ".contains(map.tile(next)):
 				continue
-			_add_box(pair[1], _edge(corner, step, tile))
+			add_box(pair[1], _edge(corner, step, tile))
 	for room: Rect2i in _bodies:
 		_set_drained(room, false)
 
@@ -104,7 +104,7 @@ static func _edge(corner: Vector2, step: Vector2i, tile: float) -> Rect2:
 	return Rect2(corner + Vector2(tile - EDGE, 0.0), Vector2(EDGE, tile))
 
 
-static func _add_box(body: StaticBody2D, area: Rect2) -> void:
+static func add_box(body: StaticBody2D, area: Rect2) -> void:
 	var shape := CollisionShape2D.new()
 	var rectangle := RectangleShape2D.new()
 	rectangle.size = area.size

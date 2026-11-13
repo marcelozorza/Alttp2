@@ -45,6 +45,7 @@ BLOCKS = {
     "p": "WEB",
     "q": "BEAM_DOOR",
     "a": "POWER_DOOR",
+    "6": "VOLLEY_DOOR",
 }
 
 # Item de cada baú.
@@ -73,6 +74,8 @@ ITEMS = {
     "V": "HEART",
     "W": "HEART",
     "X": "HEART",
+    "Y": "HEART",
+    "Z": "HEART",
 }
 
 # Cada sala: tela do canto (x, y), largura em telas, portas, miolo e, na
@@ -83,7 +86,7 @@ ROOMS = [
     {
         "name": "Entrada",
         "at": (3, 5),
-        "doors": {"N": "."},
+        "doors": {"N": ".", "S": "."},
         "rows": [
             "..................",
             "..................",
@@ -599,6 +602,55 @@ ROOMS = [
         "messages": ["Porão: o buraco da antessala cai aqui. O outro buraco leva de volta."],
     },
     # --- Salas trancadas ---
+    # --- Terceira leva, ao sul da entrada ---
+    {
+        "name": "Fonte de blocos",
+        "at": (3, 6),
+        "doors": {"N": ".", "W": ".", "E": "."},
+        "rows": [
+            "...o..........o...",
+            "...o..........o...",
+            "...o....✦.....o...",
+            "...o..........o...",
+            "...o..........o...",
+            "...o.....?....o...",
+            "...o..........o...",
+            "...o..........o...",
+        ],
+        "messages": ["Fonte de blocos: um golpe de espada cria um bloco ao sul dela. Quando ele afunda num buraco, ela cria outro."],
+    },
+    {
+        "name": "Lago congelado",
+        "at": (2, 6),
+        "doors": {"E": "."},
+        "rows": [
+            "...#≋≋≋≋≋≋≋≋≋.....",
+            "...#≋≋≋≋≋≋≋≋≋.....",
+            "...#≋≋≋≋≋≋≋≋≋.!...",
+            "...#≋≋≋≋≋≋≋≋≋.....",
+            ".Y.#≋≋≋≋≋≋≋≋≋.....",
+            "....≋#≋≋≋≋≋≋≋..?..",
+            "...##≋≋≋≋≋≋≋≋.....",
+            "!..#≋≋≋≋≋≋≋≋≋.....",
+        ],
+        "messages": ["O cristal congela o lago por 8 segundos. No gelo você desliza. Quem está nele quando derrete cai."],
+    },
+    {
+        "name": "Rebater o disparo",
+        "at": (4, 6),
+        "doors": {"W": "."},
+        "rows": [
+            "..............#Z.#",
+            "..............#..#",
+            "..............#66#",
+            "..................",
+            "..................",
+            "..?...............",
+            ".........}........",
+            "..................",
+        ],
+        "messages": ["Rebata o disparo com a espada. De volta à torreta, ele a desliga e abre a porta rosa."],
+    },
     {
         "name": "Feixe de luz",
         "at": (4, 5),
@@ -778,7 +830,7 @@ HEADER = '''class_name LabData
 ## A legenda dos objetos novos está em progression/map_legend.gd, e o código
 ## deles em lab/.
 ##
-## São %d telas de 20 por 10 casas numa grade de 7 por 6. O personagem chega
+## São %d telas de 20 por 10 casas numa grade de 7 por 7. O personagem chega
 ## só com a espada e acha as ferramentas e as melhorias nas alas.
 ##
 ## Salas, pela tela do canto:

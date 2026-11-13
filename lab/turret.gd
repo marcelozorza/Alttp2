@@ -5,18 +5,31 @@ extends StaticBody2D
 ## desafio é de ambiente: atravessar as linhas de tiro no ritmo, pular o
 ## disparo ou empurrar um bloco para tampar a linha. Arte provisória.
 ##
+## Um disparo rebatido pela espada que volta e acerta a torreta a desliga
+## (bolt_returned). Ela religa quando o personagem entra de novo na sala, a
+## não ser que a porta do rebate da sala já tenha aberto (held).
+##
 ## Só age com o personagem na sala (set_active). A origem fica no centro da
 ## base, para a ordenação por profundidade.
+
+## Emitido quando um disparo rebatido a desliga.
+signal shut_down
 
 const SIZE := Vector2(24.0, 16.0)
 const BODY_COLOR := Color(0.4, 0.42, 0.5)
 const EYE_COLOR := Color(1.0, 0.35, 0.3)
+const DOWN_COLOR := Color(0.2, 0.2, 0.25)
 const DIRECTIONS: Array[Vector2] = [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]
 
 ## Segundos entre um disparo e o seguinte.
 var period := 1.8
 ## Segundos de aviso antes do disparo.
 var warning := 0.5
+
+## Desligada por um disparo rebatido.
+var down := false
+## Ligado quando a porta do rebate já abriu: a torreta não religa mais.
+var held := false
 
 var _active := false
 var _cycle_tick := 0
@@ -35,11 +48,23 @@ func _ready() -> void:
 func set_active(active: bool) -> void:
 	_active = active
 	_cycle_tick = Clock.tick
+	if not held:
+		down = false
+	queue_redraw()
+
+
+## Um disparo rebatido voltou e acertou a torreta.
+func bolt_returned() -> void:
+	if down:
+		return
+	down = true
+	Sfx.play(&"shell_break")
+	shut_down.emit()
 	queue_redraw()
 
 
 func _physics_process(_delta: float) -> void:
-	if not _active:
+	if not _active or down:
 		return
 	queue_redraw()
 	if Clock.tick - _cycle_tick < GameMath.ticks(period):
@@ -57,11 +82,11 @@ func _physics_process(_delta: float) -> void:
 
 func _warning_now() -> bool:
 	var left := GameMath.ticks(period) - (Clock.tick - _cycle_tick)
-	return _active and left <= GameMath.ticks(warning) and posmod(left, 8) < 4
+	return _active and not down and left <= GameMath.ticks(warning) and posmod(left, 8) < 4
 
 
 func _draw() -> void:
 	GroundShadow.draw(self, Vector2(0.0, -2.0), 28.0)
 	draw_rect(Rect2(-14.0, -34.0, 28.0, 34.0), DoorArt.OUTLINE_COLOR)
 	draw_rect(Rect2(-12.0, -32.0, 24.0, 30.0), Hit.WINDUP_COLOR if _warning_now() else BODY_COLOR)
-	draw_rect(Rect2(-5.0, -24.0, 10.0, 10.0), EYE_COLOR)
+	draw_rect(Rect2(-5.0, -24.0, 10.0, 10.0), DOWN_COLOR if down else EYE_COLOR)

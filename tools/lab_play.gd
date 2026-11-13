@@ -10,7 +10,8 @@ extends "res://tools/lab_test.gd"
 ## Serve para as salas que dependem de tempo ou de distância: a corrida da
 ## placa, o clone, o buraco largo, a fuga do fogo, o corredor sob ataque, o
 ## piso quebradiço, as tochas com tempo, os buracos com vento, o nível de
-## água e o inimigo como peso. Onde a sala pede uma ferramenta ou
+## água, o inimigo como peso, a fonte de blocos, o lago congelado e o disparo
+## rebatido. Onde a sala pede uma ferramenta ou
 ## a corrida, ele também confere que sem ela não passa.
 ##
 ## As linhas que começam com dois espaços são medidas (folga de tempo, vida
@@ -51,6 +52,9 @@ func _run_checks() -> void:
 	await _play_wind()
 	await _play_water()
 	await _play_weight()
+	await _play_maker()
+	await _play_lake()
+	await _play_volley()
 
 
 ## Ponto do mundo de uma casa do miolo da sala, contada a partir do canto da
@@ -322,3 +326,147 @@ func _play_weight() -> void:
 	_release_all()
 	print("  peso: esperou %d ticks, saiu com %d de vida" % [guard, _player.health])
 	_expect("inimigo como peso: atrai, passa pela grade e sai vivo", passed and _player.health > 0)
+
+
+## Anda contra o bloco até ele afundar num buraco.
+func _push_until_locked(block: FreeBlock, action: StringName) -> bool:
+	Input.action_press(action)
+	for _i: int in 900:
+		if block.locked:
+			break
+		await _frames(1)
+	Input.action_release(action)
+	return block.locked
+
+
+## Bloco inteiro da sala, o que a fonte acabou de criar.
+func _loose_block(screen: Vector2i) -> FreeBlock:
+	for block: FreeBlock in _in_screen(screen, FreeBlock):
+		if not block.locked:
+			return block
+	return null
+
+
+func _play_maker() -> void:
+	var screen := Vector2i(3, 6)
+	await _enter(screen, 9, 0)
+	await _follow(screen, [Vector2(9, 2)])
+	await _face(&"move_left")
+	await _hold("attack", 2)
+	await _frames(REST)
+	var first := _loose_block(screen)
+	_expect("fonte de blocos: o golpe cria um bloco ao sul dela", first != null)
+	if not first:
+		return
+	# Um pouco abaixo do meio da casa, para ficar de frente para a face do bloco.
+	await _follow(screen, [Vector2(9, 3.15)])
+	var west := await _push_until_locked(first, &"move_left")
+	west = west and await _follow(screen, [Vector2(0, 3)])
+	_expect("fonte de blocos: o primeiro bloco tampa o buraco do oeste", west)
+	await _follow(screen, [Vector2(9, 3), Vector2(9, 2)])
+	await _face(&"move_left")
+	await _hold("attack", 2)
+	await _frames(REST)
+	var second := _loose_block(screen)
+	_expect("fonte de blocos: com o primeiro afundado, cria outro", second != null)
+	if not second:
+		return
+	await _follow(screen, [Vector2(9, 4), Vector2(7, 4), Vector2(7, 3.15)])
+	var east := await _push_until_locked(second, &"move_right")
+	east = east and await _follow(screen, [Vector2(17, 3)])
+	_expect("fonte de blocos: o segundo tampa o buraco do leste", east)
+
+
+## Aperta uma direção no gelo e espera a deslizada parar.
+func _slide(action: StringName) -> void:
+	Input.action_press(action)
+	var still := 0
+	var last := _player.global_position
+	for _i: int in 300:
+		await _frames(1)
+		still = still + 1 if _player.global_position.distance_to(last) < 0.5 else 0
+		last = _player.global_position
+		if still >= 6:
+			break
+	Input.action_release(action)
+
+
+func _cell_in(screen: Vector2i) -> Vector2i:
+	return Pit.cell_of(_player.global_position) - screen * ChapterRooms.ROOM_TILES - Vector2i.ONE
+
+
+func _play_lake() -> void:
+	var screen := Vector2i(2, 6)
+	await _enter(screen, 17, 3)
+	var health := _player.health
+	await _follow(screen, [Vector2(13, 6)])
+	await _hold("move_left", 30)
+	_expect("lago líquido: não dá para andar nele", _cell_in(screen).x == 13)
+	await _follow(screen, [Vector2(14, 3)])
+	await _face(&"move_up")
+	await _hold("attack", 2)
+	var start := Clock.tick
+	await _follow(screen, [Vector2(13, 1)])
+	await _slide(&"move_left")
+	var first := _cell_in(screen) == Vector2i(4, 1)
+	await _slide(&"move_down")
+	var second := _cell_in(screen) == Vector2i(4, 5)
+	var crossed := await _follow(screen, [Vector2(1, 5)])
+	var limit := GameMath.ticks(FrostField.FREEZE_TIME)
+	print("  lago: atravessou em %d ticks de %d" % [Clock.tick - start, limit])
+	_expect(
+		"lago congelado: três deslizadas levam à outra margem a tempo",
+		first and second and crossed and _player.health == health
+	)
+	await _frames(limit)
+	# A volta: o cristal da outra margem, três deslizadas.
+	await _follow(screen, [Vector2(0, 6)])
+	await _face(&"move_down")
+	await _hold("attack", 2)
+	await _follow(screen, [Vector2(3, 5)])
+	await _slide(&"move_right")
+	await _slide(&"move_up")
+	await _slide(&"move_right")
+	var back := await _follow(screen, [Vector2(15, 0)])
+	_expect("lago congelado: a volta também passa", back and _player.health == health)
+	await _frames(limit)
+	# Parado no gelo até derreter.
+	await _follow(screen, [Vector2(16, 3), Vector2(14, 3)])
+	await _face(&"move_up")
+	await _hold("attack", 2)
+	await _follow(screen, [Vector2(13, 6)])
+	await _slide(&"move_left")
+	await _frames(limit)
+	_expect("lago congelado: quem fica nele quando derrete cai", _player.health == health - 1)
+
+
+func _play_volley() -> void:
+	var screen := Vector2i(4, 6)
+	await _enter(screen, 0, 3)
+	await _follow(screen, [Vector2(5, 6)])
+	await _face(&"move_right")
+	# Espera o disparo chegar perto e bate.
+	var effects := get_tree().get_first_node_in_group("floor_effects")
+	var swings := 0
+	for _i: int in 1200:
+		if _all_open(screen, ChapterMap.Block.VOLLEY_DOOR):
+			break
+		for node: Node in effects.get_children():
+			var bolt := node as Bolt
+			if not bolt or bolt.returned or bolt.direction != Vector2.LEFT:
+				continue
+			var gap := bolt.global_position.x - _player.global_position.x
+			if gap > 0.0 and gap < 44.0 and not Input.is_action_pressed("attack"):
+				Input.action_press("attack")
+				swings += 1
+		await _frames(1)
+		if Input.is_action_pressed("attack"):
+			await _frames(1)
+			Input.action_release("attack")
+	print("  rebate: %d golpes, %d de vida" % [swings, _player.health])
+	_expect(
+		"rebater: o disparo devolvido desliga a torreta e abre a porta rosa",
+		_all_open(screen, ChapterMap.Block.VOLLEY_DOOR)
+	)
+	var inside := await _follow(screen, [Vector2(15, 3), Vector2(15, 1)])
+	_expect("rebater: a porta aberta leva ao baú", inside)

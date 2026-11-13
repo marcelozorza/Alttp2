@@ -29,6 +29,7 @@ var _crumble: CrumbleField
 var _beams: BeamField
 var _water: WaterField
 var _power: PowerField
+var _frost: FrostField
 
 
 func _init(chapter: Chapter, ground: Node2D, objects: Node2D) -> void:
@@ -79,6 +80,7 @@ func add(character: String, cell: Vector2i) -> bool:
 			var turret := Turret.new()
 			_stand(turret, center)
 			_chapter.rooms.register(turret, cell)
+			mechanisms.add_turret(turret, room)
 		&"fan":
 			var fan := Fan.new()
 			fan.direction = DIRECTIONS[entry[1]]
@@ -104,10 +106,7 @@ func add(character: String, cell: Vector2i) -> bool:
 			portal.position = center
 			_ground.add_child(portal)
 		&"ice":
-			if not _ice:
-				_ice = IceField.new()
-				_ground.add_child(_ice)
-			_ice.cells[cell] = true
+			_ice_field().cells[cell] = true
 		&"conveyor":
 			if not _conveyors:
 				_conveyors = ConveyorField.new()
@@ -141,7 +140,8 @@ func add(character: String, cell: Vector2i) -> bool:
 	return true
 
 
-## Casas dos campos de água e de eletricidade, e os objetos ligados a eles.
+## Casas dos campos de água, de eletricidade e de lago, e os objetos da
+## segunda e da terceira leva.
 func _add_field_cell(kind: StringName, cell: Vector2i, room: Rect2i, center: Vector2) -> void:
 	match kind:
 		&"water", &"raft":
@@ -168,6 +168,27 @@ func _add_field_cell(kind: StringName, cell: Vector2i, room: Rect2i, center: Vec
 			pad.position = center
 			_ground.add_child(pad)
 			_chapter.rooms.register(pad, cell)
+		&"lake":
+			_frost_field().cells[cell] = true
+		&"block_maker":
+			var maker := BlockMaker.new()
+			_stand(maker, center)
+
+
+func _ice_field() -> IceField:
+	if not _ice:
+		_ice = IceField.new()
+		_ground.add_child(_ice)
+	return _ice
+
+
+func _frost_field() -> FrostField:
+	if not _frost:
+		_frost = FrostField.new()
+		_frost.ice = _ice_field()
+		_ground.add_child(_frost)
+		_chapter.mechanisms.crystal_toggled.connect(_frost.freeze)
+	return _frost
 
 
 func _water_field() -> WaterField:

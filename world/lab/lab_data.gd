@@ -8,7 +8,7 @@ class_name LabData
 ## A legenda dos objetos novos está em progression/map_legend.gd, e o código
 ## deles em lab/.
 ##
-## São 41 telas de 20 por 10 casas numa grade de 7 por 6. O personagem chega
+## São 44 telas de 20 por 10 casas numa grade de 7 por 7. O personagem chega
 ## só com a espada e acha as ferramentas e as melhorias nas alas.
 ##
 ## Salas, pela tela do canto:
@@ -49,6 +49,9 @@ class_name LabData
 ## - (3, 5) Entrada
 ## - (4, 5) Feixe de luz
 ## - (5, 5) Corredor sob ataque
+## - (2, 6) Lago congelado
+## - (3, 6) Fonte de blocos
+## - (4, 6) Rebater o disparo
 
 # gdlint: disable=max-line-length
 const MAP := [
@@ -111,7 +114,17 @@ const MAP := [
 	"#........o....?....##..................##....=....0........##........@.........##..................##...?......ll..#...←←←←..#...ll........#",
 	"#........o.........##......▣......?....##..................##..................##.▶..........╲.....##..........ll..#...←←←←..#...ll........#",
 	"#........o.........##..................##..................##..................##..................##..................←←←←..#.............#",
-	"############################################################################################################################################",
+	"#####################################################################..#####################################################################",
+	"                                        #############################..#############################",
+	"                                        #...#≋≋≋≋≋≋≋≋≋.....##...o..........o...##..............#Z.##",
+	"                                        #...#≋≋≋≋≋≋≋≋≋.....##...o..........o...##..............#..##",
+	"                                        #...#≋≋≋≋≋≋≋≋≋.!...##...o....✦.....o...##..............#66##",
+	"                                        #...#≋≋≋≋≋≋≋≋≋..........o..........o.......................#",
+	"                                        #.Y.#≋≋≋≋≋≋≋≋≋..........o..........o.......................#",
+	"                                        #....≋#≋≋≋≋≋≋≋..?..##...o.....?....o...##..?...............#",
+	"                                        #...##≋≋≋≋≋≋≋≋.....##...o..........o...##.........}........#",
+	"                                        #!..#≋≋≋≋≋≋≋≋≋.....##...o..........o...##..................#",
+	"                                        ############################################################",
 ]
 
 ## Telas que formam uma sala maior, em unidades de tela.
@@ -151,6 +164,7 @@ const BLOCKS := {
 	"p": ChapterMap.Block.WEB,
 	"q": ChapterMap.Block.BEAM_DOOR,
 	"a": ChapterMap.Block.POWER_DOOR,
+	"6": ChapterMap.Block.VOLLEY_DOOR,
 }
 
 ## Item de cada baú.
@@ -179,6 +193,8 @@ const ITEMS := {
 	"V": Item.Id.HEART,
 	"W": Item.Id.HEART,
 	"X": Item.Id.HEART,
+	"Y": Item.Id.HEART,
+	"Z": Item.Id.HEART,
 }
 
 ## Texto de cada placa, pela casa dela.
@@ -230,6 +246,12 @@ const MESSAGES := {
 	Vector2i(104, 56):
 	"Corredor sob ataque: atravesse até a outra porta. A esteira puxa para trás.",
 	Vector2i(34, 57): "Eletricidade: empurre os blocos de metal para fechar as falhas do fio.",
+	Vector2i(56, 66):
+	"O cristal congela o lago por 8 segundos. No gelo você desliza. Quem está nele quando derrete cai.",
+	Vector2i(70, 66):
+	"Fonte de blocos: um golpe de espada cria um bloco ao sul dela. Quando ele afunda num buraco, ela cria outro.",
+	Vector2i(83, 66):
+	"Rebata o disparo com a espada. De volta à torreta, ele a desliga e abre a porta rosa.",
 }
 
 ## Levas de inimigos de cada arena, pela tela: um inimigo por letra.
