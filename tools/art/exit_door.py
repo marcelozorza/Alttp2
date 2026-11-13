@@ -10,14 +10,13 @@ Uso, de dentro de tools/art: python3 exit_door.py
 from canvas import Canvas
 
 INK = "#1e181e"
-S3, S4, S5, S6 = "#55526f", "#7c7b99", "#a9aac2", "#d6d8e6"
-E4 = "#ddb277"
-Y1, Y2, WHITE = "#f7c53a", "#fff1a8", "#ffffff"
+S3, S4, S5 = "#55526f", "#7c7b99", "#a9aac2"
+Y2 = "#fff1a8"
 
 
 def exit_door():
     """72 por 32, do tamanho do trecho de parede que cobre: moldura de pedra,
-    soleira clara, a luz de fora mais forte embaixo e dois degraus."""
+    e a luz de fora numa cor só, o amarelo claro que Marcelo escolheu."""
     c = Canvas(72, 32)
     c.rect(0, 0, 72, 32, INK)
     c.rect(2, 0, 68, 32, S4)
@@ -25,13 +24,6 @@ def exit_door():
     c.rect(66, 0, 4, 32, S3)
     c.rect(6, 0, 60, 32, INK)
     c.rect(8, 2, 56, 30, Y2)
-    c.rect(8, 2, 56, 3, S6)
-    c.rect(8, 5, 56, 1, S5)
-    c.rect(8, 14, 56, 18, WHITE)
-    for y in (13, 22):
-        c.rect(8, y, 56, 1, Y1)
-    c.rect(8, 6, 3, 26, E4)
-    c.rect(61, 6, 3, 26, E4)
     return c
 
 
