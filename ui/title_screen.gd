@@ -7,7 +7,7 @@ extends Control
 ## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
 ## continua no projeto, para os testes.
 
-const MENU_AREA := Rect2(464.0, 168.0, 152.0, 112.0)
+const MENU_AREA := Rect2(472.0, 104.0, 140.0, 100.0)
 
 
 func _ready() -> void:
@@ -18,15 +18,22 @@ func _ready() -> void:
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(art)
 	move_child(art, 1)
-	# O retrato ocupa o meio da tela: o menu fica à direita, logo acima da grama.
+	# O retrato ocupa o meio da tela: o menu fica à direita, no céu, com botões
+	# mais justos que os das outras telas (pedido de Marcelo em 2026-11-13).
+	column.add_theme_constant_override("separation", 6)
 	var holder: Control = column.get_parent()
 	holder.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	holder.position = MENU_AREA.position
 	holder.size = MENU_AREA.size
 	var first := MenuKit.button("Novo jogo", _on_new_game)
-	column.add_child(first)
-	column.add_child(MenuKit.button("Randomizado", _on_randomized))
-	column.add_child(MenuKit.button("Playtest", _on_gallery))
+	var entries: Array[Button] = [
+		first,
+		MenuKit.button("Randomizado", _on_randomized),
+		MenuKit.button("Playtest", _on_gallery),
+	]
+	for entry: Button in entries:
+		MenuKit.compact(entry)
+		column.add_child(entry)
 	first.grab_focus.call_deferred()
 
 
