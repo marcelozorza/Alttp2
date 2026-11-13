@@ -46,6 +46,7 @@ mass = 8.0
 restitution = 0.3
 friction = 1800.0
 
+max_health = 36
 shell_frames = SubResource("BossFrames_shell")
 core_frames = SubResource("BossFrames_core")
 

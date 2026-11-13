@@ -38,8 +38,9 @@ TEXTS = {
 # Gelo grosso do guardião antigo: a casca do caranguejo em azul-marinho.
 THICK = {"#c6efff": "#3b7bdc", "#6cc3f2": "#27409a", "#3b7bdc": "#1a2452", WHITE: "#6cc3f2"}
 # Caranguejo sem a casca (pedido de Marcelo em 2026-11-12): o mesmo formato,
-# com os espinhos, só que na cor do corpo e um pouco menor. Antes era outro
-# desenho, um caranguejo liso, e parecia outro bicho.
+# com os espinhos, só que na cor do corpo. Antes era outro desenho, um
+# caranguejo liso, e parecia outro bicho. Do mesmo tamanho da casca desde
+# 2026-11-13: ele não quer que o chefe encolha.
 BARE = {"#c6efff": "#d83a3f", "#6cc3f2": "#9c2338", "#3b7bdc": "#5e1830", "#27409a": "#5e1830"}
 
 # Chefe: pasta, cores da paleta mestra, cores escuras que podem virar
@@ -63,7 +64,7 @@ BOSSES = {
         },
         swaps={
             "thick": ("shell", "com a casca de gelo grosso", THICK),
-            "core": ("shell", "sem a casca", BARE, True),
+            "core": ("shell", "sem a casca", BARE),
         },
     ),
     "cerberus": dict(
