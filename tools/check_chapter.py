@@ -44,7 +44,21 @@ from collections import Counter
 ROOM_W, ROOM_H = 20, 10
 LOCATIONS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 SLOTS = "123456789abdefghjklnopqrtv"
-ACTORS = "muiwsc*&%$@xyz0=?"
+
+
+def legend_actors():
+    """Caracteres de ator do mapa, lidos de progression/map_legend.gd, a
+    única tabela de letra do mapa para cena."""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "..", "progression", "map_legend.gd")
+    with open(path, encoding="utf-8") as legend:
+        text = legend.read()
+    found = re.findall(r'^\t"(.)": preload', text, re.M)
+    found += re.findall(r'^const [A-Z_]+ := "(.)"$', text, re.M)
+    return "".join(found)
+
+
+ACTORS = legend_actors()
 FLOORS = ".:^"
 LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]

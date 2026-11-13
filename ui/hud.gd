@@ -97,7 +97,7 @@ func _draw() -> void:
 	if show_bar:
 		draw_rect(Rect2(-position, BAR_SIZE), BAR_COLOR)
 	var player := get_tree().get_first_node_in_group("player") as Player
-	var chapter := get_tree().get_first_node_in_group("chapter")
+	var chapter := get_tree().get_first_node_in_group("chapter") as Chapter
 	if player:
 		_draw_health(player)
 		_draw_buttons(player)
@@ -105,10 +105,10 @@ func _draw() -> void:
 			_draw_keys(player)
 	var text := ""
 	if chapter:
-		var time: String = chapter.call("time_text")
+		var time: String = chapter.time_text()
 		if Progress.active:
 			time = GameMath.time_text(Progress.run_ticks)
-		text = "%s   %s" % [chapter.call("mode_text"), time]
+		text = "%s   %s" % [chapter.mode_text(), time]
 		_draw_minimap(chapter)
 	elif Progress.active:
 		text = GameMath.time_text(Progress.run_ticks)
@@ -228,7 +228,7 @@ func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 
 ## Minimapa das salas já visitadas, no canto inferior esquerdo, sobre um fundo
 ## escuro.
-func _draw_minimap(chapter: Node) -> void:
+func _draw_minimap(chapter: Chapter) -> void:
 	var size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
 	var origin := MINIMAP_CORNER - Vector2(0.0, size.y)
 	draw_rect(Rect2(origin - Vector2(4.0, 4.0), size + Vector2(8.0, 8.0)), Minimap.BACKGROUND)

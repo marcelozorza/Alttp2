@@ -721,8 +721,8 @@ func _play(chapter_number: int) -> void:
 	print("portas abertas: %d" % doors)
 	# Grades: o personagem em cima do interruptor abre as grades da sala só
 	# enquanto fica ali, e o bloco pesado travado nele abre de vez.
-	var room_switches: Dictionary = chapter.get("_room_switches")
-	var room_gates: Dictionary = chapter.get("_room_gates")
+	var room_switches: Dictionary = (chapter as Chapter).gates.room_switches
+	var room_gates: Dictionary = (chapter as Chapter).gates.room_gates
 	var gates_total := 0
 	var gates_by_player := 0
 	var gates_closed_again := 0
@@ -771,7 +771,7 @@ func _play(chapter_number: int) -> void:
 		)
 	)
 	# Cada sala com atores: o personagem entra e usa tudo.
-	var rooms: Dictionary = chapter.get("_room_actors")
+	var rooms: Dictionary = (chapter as Chapter).rooms.actors
 	for room: Rect2i in rooms:
 		var cell := _floor_cell(map, room)
 		if cell == Vector2i(-1, -1):

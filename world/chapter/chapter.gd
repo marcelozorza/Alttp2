@@ -1,9 +1,18 @@
+class_name Chapter
 extends Node2D
 ## Cena de qualquer capítulo. Lê os dados do capítulo escolhido no menu, monta
 ## o mapa, põe em cada baú o item dele, move a câmera de sala em sala e
 ## encerra o capítulo quando o personagem toca a relíquia que o chefe deixa.
 ## Os dados de cada capítulo ficam em world/<capítulo>/ (ver
 ## progression/chapter_data.gd).
+##
+## Esta cena monta o mapa e liga as partes. O resto fica em arquivos ao lado:
+## - chapter_rooms.gd: as salas, a sala atual, as visitadas, as limpas e os
+##   atores de cada uma.
+## - gate_mechanism.gd: o bloco pesado, o interruptor, a grade e os trilhos.
+## - dungeon_state.gd: o estado da dungeon guardado ao sair, no modo
+##   randomizado.
+## - progression/map_legend.gd: a cena de cada inimigo e chefe, pelo caractere.
 ##
 ## O mapa é dividido em salas de uma tela, de 20 por 10 casas. Um capítulo
 ## pode juntar várias delas numa sala maior (ROOMS nos dados): nela a câmera
@@ -15,12 +24,6 @@ extends Node2D
 ## ainda correm pelo chão somem. Baús abertos e bloqueios removidos continuam
 ## assim até o fim do capítulo.
 ##
-## O bloco pesado ("0") e o interruptor ("=") formam o mecanismo da grade
-## (bloqueio GATE): a grade de uma sala abre enquanto um interruptor da sala
-## está pressionado, e de vez quando um bloco trava num interruptor. O bloco
-## só tomba dentro do trilho que vai dele ao interruptor (_add_rails), e um
-## bloco solto volta ao lugar quando o personagem entra de novo na sala.
-##
 ## No jogo contínuo (Progress.active), o personagem chega com as ferramentas
 ## e a vida máxima salvas, os baús de coração e de ferramenta de um capítulo
 ## já vencido começam abertos, e tocar a relíquia grava o progresso. No
@@ -29,8 +32,6 @@ extends Node2D
 
 ## Distância máxima, em casas, do início até a parede da porta de saída.
 const EXIT_DOOR_REACH := 4
-## Tamanho de uma sala de uma tela, em casas.
-const ROOM_TILES := Vector2i(20, 10)
 ## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
 const HUD_HEIGHT := 40.0
 ## Metade da tela, em pixels.
@@ -52,24 +53,6 @@ const OBSTACLE_SCENES := {
 	ChapterMap.Block.LOCKED: preload("res://obstacles/locked_door.tscn"),
 	ChapterMap.Block.BOSS_DOOR: preload("res://obstacles/boss_door.tscn"),
 	ChapterMap.Block.GATE: preload("res://obstacles/switch_door.tscn"),
-}
-## Cena de cada inimigo comum, pelo caractere do mapa.
-const ENEMY_SCENES := {
-	"m": preload("res://enemies/minion.tscn"),
-	"u": preload("res://enemies/ugly.tscn"),
-	"i": preload("res://enemies/ice_slime.tscn"),
-	"w": preload("res://enemies/walrus.tscn"),
-	"s": preload("res://enemies/slinger.tscn"),
-	"x": preload("res://enemies/armadillo.tscn"),
-	"y": preload("res://enemies/bat.tscn"),
-	"z": preload("res://enemies/thorn_plant.tscn"),
-}
-## Cena de cada chefe, pelo caractere do mapa.
-const BOSS_SCENES := {
-	"*": preload("res://enemies/boss.tscn"),
-	"&": preload("res://enemies/sentinel.tscn"),
-	"%": preload("res://enemies/elder_guardian.tscn"),
-	"$": preload("res://enemies/colossus.tscn"),
 }
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
@@ -94,25 +77,14 @@ var finished := false
 var data: ChapterData
 var map: ChapterMap
 
+## Salas do capítulo e mecanismo das grades.
+var rooms: ChapterRooms
+var gates := GateMechanism.new()
+
 var _player: Player
-## Sala atual, em unidades de sala de uma tela.
-var _room := Rect2i(-1000, -1000, 1, 1)
-## Salas em que o personagem já esteve, para o minimapa.
-var _visited := {}
-## Sala maior de cada tela que faz parte de uma. As outras telas são salas.
-var _room_rects := {}
-var _room_actors := {}
-## Salas em que todos os inimigos foram derrotados. Eles não voltam mais.
-var _cleared_rooms := {}
-## Interruptores e grades de cada sala.
-var _room_switches := {}
-var _room_gates := {}
 var _chests: Array[Chest] = []
 ## Bloqueio de cada vaga do mapa, para a tela de mapa saber o que já saiu.
 var _obstacle_by_slot := {}
-## Casa de cada bloco pesado e as casas dos interruptores, para os trilhos.
-var _block_cells := {}
-var _switch_cells: Array[Vector2i] = []
 
 @onready var _map_view: MapView = $MapView
 @onready var _walls: StaticBody2D = $Walls
@@ -128,10 +100,7 @@ func _ready() -> void:
 	add_to_group("chapter")
 	data = ChapterData.load_number(RunSettings.chapter)
 	map = ChapterMap.new(data.rows, data.blocks)
-	for rect: Rect2i in data.rooms:
-		for y: int in range(rect.position.y, rect.end.y):
-			for x: int in range(rect.position.x, rect.end.x):
-				_room_rects[Vector2i(x, y)] = rect
+	rooms = ChapterRooms.new(data.rooms)
 	_map_view.map = map
 	_map_view.theme = DungeonTheme.for_chapter(data.number)
 	for screen: Vector2i in data.room_themes:
@@ -151,11 +120,11 @@ func _ready() -> void:
 			tools |= Item.bit(id)
 		_player.restore(tools, _player.max_health)
 	if _keeps_dungeon():
-		_restore_dungeon(Progress.dungeon_state(data.number))
+		DungeonState.apply(self, Progress.dungeon_state(data.number))
 	_player.invulnerable = data.no_damage
 	_player.damage_scale = DAMAGE_SCALE.get(RunSettings.chapter, 1.0)
 	_camera.make_current()
-	_enter_room(_room_of(_player.global_position))
+	_enter_room(rooms.of_point(_player.global_position))
 	_camera.reset_smoothing()
 
 
@@ -165,8 +134,8 @@ func _physics_process(_delta: float) -> void:
 	elapsed_ticks += 1
 	if Progress.active:
 		Progress.run_ticks += 1
-	var room := _room_of(_player.global_position)
-	if room != _room:
+	var room := rooms.of_point(_player.global_position)
+	if room != rooms.current:
 		_enter_room(room)
 	else:
 		_camera.position = _camera_target(true)
@@ -188,82 +157,7 @@ func _keeps_dungeon() -> bool:
 ## o modo randomizado já recomeçou a partida, e nada é guardado.
 func _exit_tree() -> void:
 	if _keeps_dungeon() and _player and _player.health > 0:
-		Progress.record_dungeon(data.number, _dungeon_state())
-
-
-## Como a dungeon está agora, em valores que cabem no arquivo JSON: letras
-## dos baús abertos, vagas dos bloqueios removidos, posição dos blocos
-## travados, salas limpas e visitadas, chaves pequenas e a chave grande.
-func _dungeon_state() -> Dictionary:
-	var chests := ""
-	for chest: Chest in _chests:
-		if chest.is_open:
-			chests += chest.location_id
-	var slots := ""
-	for slot: String in _obstacle_by_slot:
-		var obstacle: Node = _obstacle_by_slot[slot]
-		if not obstacle is SwitchDoor and block_cleared(slot):
-			slots += slot
-	var blocks: Array = []
-	for block: HeavyBlock in _block_cells:
-		if block.locked:
-			var cell: Vector2i = _block_cells[block]
-			blocks.append([cell.x, cell.y, block.global_position.x, block.global_position.y])
-	return {
-		"chests": chests,
-		"slots": slots,
-		"blocks": blocks,
-		"cleared": _rooms_to_lists(_cleared_rooms),
-		"visited": _rooms_to_lists(_visited),
-		"keys": _player.keys,
-		"boss_key": _player.has_tool(Item.Id.BOSS_KEY),
-	}
-
-
-## Põe a dungeon como estava no estado guardado. Vazio, não muda nada.
-func _restore_dungeon(state: Dictionary) -> void:
-	if state.is_empty():
-		return
-	var chests: String = str(state.get("chests", ""))
-	for chest: Chest in _chests:
-		if chests.contains(chest.location_id):
-			chest.open_silently()
-	for slot: String in str(state.get("slots", "")):
-		var obstacle: Node = _obstacle_by_slot.get(slot)
-		if obstacle is LockedDoor:
-			(obstacle as LockedDoor).open_silently()
-		elif obstacle is Obstacle and not obstacle is SwitchDoor:
-			(obstacle as Obstacle).clear_silently()
-	var saved_blocks = state.get("blocks", [])
-	if saved_blocks is Array:
-		for entry in saved_blocks:
-			if not entry is Array or entry.size() < 4:
-				continue
-			var cell := Vector2i(int(entry[0]), int(entry[1]))
-			for block: HeavyBlock in _block_cells:
-				if _block_cells[block] == cell:
-					block.lock_at(Vector2(float(entry[2]), float(entry[3])))
-	_lists_to_rooms(state.get("cleared", []), _cleared_rooms)
-	_lists_to_rooms(state.get("visited", []), _visited)
-	_player.keys = int(state.get("keys", 0))
-	if state.get("boss_key", false):
-		_player.restore(_player.tool_bits() | Item.bit(Item.Id.BOSS_KEY), _player.max_health)
-
-
-static func _rooms_to_lists(rooms: Dictionary) -> Array:
-	var lists: Array = []
-	for room: Rect2i in rooms:
-		lists.append([room.position.x, room.position.y, room.size.x, room.size.y])
-	return lists
-
-
-static func _lists_to_rooms(lists: Variant, rooms: Dictionary) -> void:
-	if not lists is Array:
-		return
-	for entry in lists:
-		if entry is Array and entry.size() >= 4:
-			var corner := Vector2i(int(entry[0]), int(entry[1]))
-			rooms[Rect2i(corner, Vector2i(int(entry[2]), int(entry[3])))] = true
+		Progress.record_dungeon(data.number, DungeonState.capture(self))
 
 
 ## Nome do capítulo, para o HUD e para a tela de fim.
@@ -282,21 +176,39 @@ func time_text() -> String:
 
 ## Salas em que o personagem já esteve, em unidades de sala, para o minimapa.
 func visited_rooms() -> Array:
-	return _visited.keys()
+	return rooms.visited.keys()
 
 
 func current_room() -> Rect2i:
-	return _room
+	return rooms.current
 
 
 func room_tiles() -> Vector2i:
-	return ROOM_TILES
+	return ChapterRooms.ROOM_TILES
 
 
 ## Sala de uma tela, em unidades de sala: a sala maior que a contém, ou a
 ## própria tela.
 func room_at(screen: Vector2i) -> Rect2i:
-	return _room_rects.get(screen, Rect2i(screen, Vector2i.ONE))
+	return rooms.room_at(screen)
+
+
+func player() -> Player:
+	return _player
+
+
+func chests() -> Array[Chest]:
+	return _chests
+
+
+## Vagas de bloqueio que existem no mapa.
+func obstacle_slots() -> Array:
+	return _obstacle_by_slot.keys()
+
+
+## Bloqueio de uma vaga, ou null.
+func obstacle_at(slot: String) -> Node:
+	return _obstacle_by_slot.get(slot)
 
 
 ## Se o baú de um local já foi aberto, para a tela de mapa.
@@ -340,53 +252,9 @@ func _build_cells() -> void:
 	for slot: String in slots:
 		_add_obstacle(slot, slots[slot])
 	_add_exit_door()
-	_add_rails()
-
-
-## Trilho de cada bloco pesado: as casas do bloco até o interruptor mais
-## próximo da mesma sala, em linha reta ou com uma curva. O bloco só tomba
-## dentro dele. Um bloco sem caminho de chão até um interruptor fica sem
-## trilho e não anda.
-func _add_rails() -> void:
-	var view := RailView.new()
-	view.tile = ChapterMap.TILE
-	for block: HeavyBlock in _block_cells:
-		var from: Vector2i = _block_cells[block]
-		var path: Array = []
-		var best := -1
-		for to: Vector2i in _switch_cells:
-			if _room_of_cell(to) != _room_of_cell(from):
-				continue
-			var distance := absi(to.x - from.x) + absi(to.y - from.y)
-			if best >= 0 and distance >= best:
-				continue
-			var found := _rail_path(from, to, true)
-			if found.is_empty():
-				found = _rail_path(from, to, false)
-			if not found.is_empty():
-				path = found
-				best = distance
-		block.tile = ChapterMap.TILE
-		for cell: Vector2i in path:
-			block.rail[cell] = true
-			view.cells[cell] = true
-	_switches.add_child(view)
-	_switches.move_child(view, 0)
-
-
-## Casas de from a to, primeiro na horizontal ou primeiro na vertical. Vazio
-## se alguma casa do caminho não for chão no nível do bloco.
-func _rail_path(from: Vector2i, to: Vector2i, horizontal_first: bool) -> Array:
-	var corner := Vector2i(to.x, from.y) if horizontal_first else Vector2i(from.x, to.y)
-	var path: Array = [from]
-	for target: Vector2i in [corner, to]:
-		while path.back() != target:
-			var last: Vector2i = path.back()
-			var cell: Vector2i = last + (target - last).sign()
-			if not ".=0".contains(map.tile(cell)) or map.height_level(cell) != 0:
-				return []
-			path.append(cell)
-	return path
+	var rails := gates.build_rails(map, rooms)
+	_switches.add_child(rails)
+	_switches.move_child(rails, 0)
 
 
 ## Porta de saída na parede de baixo, diante do início do personagem. Só
@@ -419,52 +287,46 @@ func _on_exit_door_used() -> void:
 
 func _add_actor(character: String, cell: Vector2i) -> void:
 	var center := _cell_center(cell)
-	if ENEMY_SCENES.has(character):
-		_add_enemy(ENEMY_SCENES[character], cell)
-	elif BOSS_SCENES.has(character):
-		_add_boss(BOSS_SCENES[character], cell)
-	elif character == "@":
+	if MapLegend.ENEMIES.has(character):
+		_add_enemy(MapLegend.ENEMIES[character], cell)
+	elif MapLegend.BOSSES.has(character):
+		_add_boss(MapLegend.BOSSES[character], cell)
+	elif character == MapLegend.PLAYER:
 		_player = PLAYER_SCENE.instantiate() as Player
 		_player.position = center
 		_objects.add_child(_player)
-	elif character == "c":
+	elif character == MapLegend.LIGHT_CRATE:
 		var crate := LIGHT_CRATE_SCENE.instantiate() as Node2D
 		crate.position = center + Vector2(0.0, 10.0)
 		_objects.add_child(crate)
-	elif character == "0":
+	elif character == MapLegend.HEAVY_BLOCK:
 		var block := HEAVY_BLOCK_SCENE.instantiate() as HeavyBlock
 		block.position = center + FloorSwitch.BLOCK_OFFSET
 		_objects.add_child(block)
-		_register(block, cell)
-		_block_cells[block] = cell
-	elif character == "?":
+		rooms.register(block, cell)
+		gates.add_block(block, cell)
+	elif character == MapLegend.MESSAGE:
 		var plate := MESSAGE_PLATE_SCENE.instantiate() as MessagePlate
 		plate.position = center
 		plate.text = data.messages.get(cell, "")
 		_switches.add_child(plate)
-	elif character == "=":
+	elif character == MapLegend.FLOOR_SWITCH:
 		var switch := FLOOR_SWITCH_SCENE.instantiate() as FloorSwitch
 		switch.position = center
-		var room := _room_of_cell(cell)
-		switch.changed.connect(_on_switch_changed.bind(room))
 		_switches.add_child(switch)
-		var switches: Array = _room_switches.get(room, [])
-		switches.append(switch)
-		_room_switches[room] = switches
-		_switch_cells.append(cell)
+		gates.add_switch(switch, cell, rooms.of_cell(cell))
 
 
-## O chefe nasce desligado, preso à sala dele. Todo chefe tem a propriedade
-## arena, o sinal defeated e a função set_active.
+## O chefe nasce desligado, preso à sala dele.
 func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
-	var boss := scene.instantiate() as Node2D
-	var room := _room_of_cell(cell)
+	var boss := scene.instantiate() as Boss
+	var room := rooms.of_cell(cell)
 	boss.position = _cell_center(cell) + Vector2(0.0, 12.0)
-	boss.set("arena", _room_interior(room))
-	boss.connect("defeated", _on_boss_defeated.bind(room))
+	boss.arena = rooms.interior(room)
+	boss.defeated.connect(_on_boss_defeated.bind(room))
 	_objects.add_child(boss)
-	boss.call("set_active", false)
-	_register(boss, cell)
+	boss.set_active(false)
+	rooms.register(boss, cell)
 
 
 ## Os inimigos nascem desligados. Só a sala do personagem fica ligada.
@@ -475,7 +337,7 @@ func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 	enemy.died.connect(_on_enemy_died)
 	_objects.add_child(enemy)
 	enemy.set_active(false)
-	_register(enemy, cell)
+	rooms.register(enemy, cell)
 
 
 func _add_chest(location: String, cell: Vector2i) -> void:
@@ -501,49 +363,26 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 		return
 	var obstacle := scene.instantiate() as Node2D
 	obstacle.position = Vector2(area.position * ChapterMap.TILE)
+	# Todo bloqueio tem a propriedade size, mas não há uma classe mãe comum.
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
 	if obstacle is CrackedWall:
 		(obstacle as CrackedWall).theme_name = _map_view.theme_name_at(area.position)
 	_obstacles.add_child(obstacle)
 	_obstacle_by_slot[slot] = obstacle
 	if obstacle is SwitchDoor:
-		var room := _room_of_cell(area.position)
-		var gates: Array = _room_gates.get(room, [])
-		gates.append(obstacle)
-		_room_gates[room] = gates
-
-
-## As grades de uma sala abrem enquanto algum interruptor dela está
-## pressionado.
-func _on_switch_changed(_pressed: bool, room: Rect2i) -> void:
-	FloorSwitch.sync_gates(_room_switches.get(room, []), _room_gates.get(room, []))
-
-
-func _register(actor: Node, cell: Vector2i) -> void:
-	var room := _room_of_cell(cell)
-	var actors: Array = _room_actors.get(room, [])
-	actors.append(actor)
-	_room_actors[room] = actors
+		gates.add_gate(obstacle as SwitchDoor, rooms.of_cell(area.position))
 
 
 ## Troca de sala: a câmera desliza até a nova sala, os inimigos da anterior
 ## voltam ao início e se desligam, e os da nova se ligam.
 func _enter_room(room: Rect2i) -> void:
-	var previous := _room
-	_room = room
-	_visited[room] = true
+	var previous := rooms.current
+	rooms.current = room
+	rooms.visited[room] = true
 	_camera.position = _camera_target()
 	_clear_floor_effects()
-	_activate_room.call_deferred(previous, false)
-	_activate_room.call_deferred(room, true)
-
-
-## Numa sala limpa, os inimigos ficam desligados para sempre. Numa sala em
-## que sobrou algum, todos voltam quando o personagem sai e entra de novo.
-func _activate_room(room: Rect2i, active: bool) -> void:
-	var cleared := _cleared_rooms.has(room)
-	for actor: Node in _room_actors.get(room, []):
-		actor.call("set_active", active and not (cleared and actor is Enemy))
+	rooms.activate.call_deferred(previous, false)
+	rooms.activate.call_deferred(room, true)
 
 
 ## Apaga as marcas no chão, como a área da granada.
@@ -559,27 +398,12 @@ func _on_boss_defeated(room: Rect2i) -> void:
 ## Sorteia um ossinho onde o inimigo caiu, sempre quando a vida está baixa. O
 ## ossinho fica com os efeitos do chão e some ao trocar de sala.
 func _on_enemy_died(enemy: Enemy) -> void:
-	_check_room_cleared(enemy)
+	rooms.mark_cleared_by(enemy)
 	if not _drops_bone():
 		return
 	var bone := BONE_DROP_SCENE.instantiate() as BoneDrop
 	bone.position = enemy.global_position
 	_floor_effects.add_child(bone)
-
-
-## A sala fica limpa quando o último inimigo dela é derrotado (pedido de
-## Marcelo em 2026-11-11). Vale até sair da dungeon.
-func _check_room_cleared(defeated: Enemy) -> void:
-	for room: Rect2i in _room_actors:
-		var actors: Array = _room_actors[room]
-		if defeated not in actors:
-			continue
-		for actor: Node in actors:
-			var enemy := actor as Enemy
-			if enemy and not enemy.is_dead():
-				return
-		_cleared_rooms[room] = true
-		return
 
 
 func _drops_bone() -> bool:
@@ -590,7 +414,7 @@ func _drops_bone() -> bool:
 
 func _spawn_relic(room: Rect2i) -> void:
 	var relic := RELIC_SCENE.instantiate() as Relic
-	relic.position = _room_pixels(room).get_center()
+	relic.position = rooms.pixels(room).get_center()
 	relic.collected.connect(_finish, CONNECT_DEFERRED)
 	_objects.add_child(relic)
 
@@ -615,35 +439,12 @@ func _finish() -> void:
 		_end_screen.show_results(time_text(), mode_text(), chests_text)
 
 
-## Sala de uma casa do mapa: a sala maior que contém a tela dela, ou a própria
-## tela.
-func _room_of_cell(cell: Vector2i) -> Rect2i:
-	return room_at(
-		Vector2i(floori(float(cell.x) / ROOM_TILES.x), floori(float(cell.y) / ROOM_TILES.y))
-	)
-
-
-func _room_of(point: Vector2) -> Rect2i:
-	return _room_of_cell(Vector2i((point / float(ChapterMap.TILE)).floor()))
-
-
-## Área da sala em pixels, com as paredes em volta.
-func _room_pixels(room: Rect2i) -> Rect2:
-	var tile := float(ChapterMap.TILE)
-	return Rect2(Vector2(room.position * ROOM_TILES) * tile, Vector2(room.size * ROOM_TILES) * tile)
-
-
-## Área da sala sem as paredes em volta, em pixels.
-func _room_interior(room: Rect2i) -> Rect2:
-	return _room_pixels(room).grow(-float(ChapterMap.TILE))
-
-
 ## Centro da câmera. Numa sala de uma tela, é o centro dela, deslocado para
 ## cima pela barra do HUD. Numa sala maior, a câmera segue o personagem com
 ## zona morta (CameraFollow), presa aos limites da sala, para nunca mostrar a
 ## sala vizinha. Ao entrar na sala, a câmera parte centrada no personagem.
 func _camera_target(pushed := false) -> Vector2:
-	var pixels := _room_pixels(_room)
+	var pixels := rooms.pixels(rooms.current)
 	var low := pixels.position + Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
 	var high := pixels.end - HALF_SCREEN
 	var target := _player.global_position
