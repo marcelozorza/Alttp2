@@ -39,7 +39,8 @@ func _physics_process(_delta: float) -> void:
 		elif body is HeavyBlock:
 			var block := body as HeavyBlock
 			var seat := global_position + BLOCK_OFFSET
-			if not block.locked and block.global_position.distance_to(seat) <= SNAP_DISTANCE:
+			var near := block.global_position.distance_to(seat) <= SNAP_DISTANCE
+			if not block.locked and not block.is_tumbling() and near:
 				block.lock_at(seat)
 			if block.locked:
 				now_pressed = true

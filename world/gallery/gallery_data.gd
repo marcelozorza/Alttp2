@@ -6,27 +6,29 @@ class_name GalleryData
 ## os quatro chefes agem como no jogo, mas o Giorgino não perde vida
 ## (NO_DAMAGE). Ele chega com todas as ferramentas, e cada baú tem um item
 ## diferente, inclusive a chave da porta trancada e a chave grande da porta do
-## chefe. Fora das listas de capítulos e da lógica das seeds.
+## chefe. As plataformas altas têm parede atrás e dos lados: só se sobe pelo
+## degrau (pedido de Marcelo em 2026-11-12). Fora das listas de capítulos e da
+## lógica das seeds.
 
 const MAP := [
 	"########################################",
-	"#..................##..................#",
-	"#.@...::::::.....B.##...i..55...66.w...#",
-	"#.....::::::...m...##..................#",
+	"#....########......##..................#",
+	"#.@..#::::::#....B.##...i..55...66.w...#",
+	"#....#::::::#..m...##..................#",
 	"#.....222222....*..33..................#",
 	"#..?...............33.........&........#",
-	"#.............11...##..................#",
+	"#.........99..11...##..................#",
 	"#.A..u..........c..##.C..............D.#",
 	"#..................##..................#",
 	"#########..##################77#########",
 	"#########..##################77#########",
-	"#.....^^^^.........##..................#",
-	"#..s..^^^^......x..##..y............z..#",
-	"#.....8888.........##..................#",
-	"#.....8888.........44..................#",
+	"#..#^^^^#..........##..................#",
+	"#s.#^^^^#.......x..##..y............z..#",
+	"#...8888...........##..................#",
+	"#...8888...........44..................#",
 	"#.........%........44.........$........#",
 	"#............=0....##..................#",
-	"#.E..............F.##.G..............H.#",
+	"#.E.......I......F.##.G..............H.#",
 	"#..................##..................#",
 	"########################################",
 ]
@@ -40,6 +42,7 @@ const BLOCKS := {
 	"6": ChapterMap.Block.THICK_ICE,
 	"7": ChapterMap.Block.GATE,
 	"8": ChapterMap.Block.TALL_LEDGE,
+	"9": ChapterMap.Block.BOARDED,
 }
 
 const ITEMS := {
@@ -51,10 +54,16 @@ const ITEMS := {
 	"F": Item.Id.HEART,
 	"G": Item.Id.STRONG_FIRE,
 	"H": Item.Id.STRONG_SPRING,
+	"I": Item.Id.STRONG_BOMB,
 }
 
 const STARTING_TOOLS := [
-	Item.Id.BOMB, Item.Id.FIRE, Item.Id.SPRING, Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING
+	Item.Id.BOMB,
+	Item.Id.FIRE,
+	Item.Id.SPRING,
+	Item.Id.STRONG_FIRE,
+	Item.Id.STRONG_SPRING,
+	Item.Id.STRONG_BOMB,
 ]
 
 ## Tema de cada sala de uma tela, pela posição da sala.

@@ -5,9 +5,10 @@ extends CanvasLayer
 ## a dungeon do início, com o que o personagem tinha ao entrar (decisão de
 ## Marcelo em 2026-11-06), ou sair.
 ##
-## No modo randomizado a morte perde tudo (decisão dele em 2026-11-07): a seed
-## é zerada e gravada assim que a tela aparece, e os botões são recomeçar a
-## seed, no mundo e sem nada, ou voltar ao menu.
+## No modo randomizado a morte volta ao estado da última pedra de salvamento
+## tocada na sessão, ou ao começo da semente se nenhuma foi tocada (decisão
+## dele em 2026-11-13. Antes, desde 2026-11-07, a morte perdia tudo). O estado
+## volta assim que a tela aparece, e os botões são voltar ao mundo ou ao menu.
 ##
 ## Os botões só respondem depois de um instante, para que o botão de ataque,
 ## que também confirma, não escolha nada por acidente.
@@ -33,8 +34,11 @@ func _ready() -> void:
 	var column := MenuKit.centered_column(self, Color(0.12, 0.02, 0.04, 0.85))
 	column.add_child(MenuKit.label("Derrota", 32))
 	if _seed_mode():
-		column.add_child(MenuKit.label("Na semente, a morte perde tudo.", 16))
-		_buttons.append(MenuKit.button("Recomeçar a semente", _on_retry))
+		var from_stone := not Progress.checkpoint.is_empty()
+		var note := "Você volta da última pedra tocada." if from_stone else "Você volta ao começo."
+		column.add_child(MenuKit.label(note, 16))
+		var retry := "Voltar da pedra" if from_stone else "Recomeçar a semente"
+		_buttons.append(MenuKit.button(retry, _on_retry))
 		_buttons.append(MenuKit.button("Menu", _on_exit))
 	else:
 		_buttons.append(MenuKit.button("Tentar de novo", _on_retry))
@@ -59,7 +63,7 @@ func _on_player_died() -> void:
 	get_tree().paused = true
 	visible = true
 	if _seed_mode():
-		Progress.restart_seed()
+		Progress.restore_checkpoint()
 	for button: Button in _buttons:
 		button.disabled = true
 	await get_tree().create_timer(INPUT_DELAY).timeout

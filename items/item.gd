@@ -21,16 +21,49 @@ class_name Item
 ## a mola forte antes da mola, e o jogador não pulava nem com a lógica achando
 ## que sim (seed travada que Marcelo pegou em 2026-11-07). O jogo e a lógica
 ## passam todo item por progressive antes de ganhá-lo.
+##
+## A bomba forte (2026-11-11) é a melhoria da bomba: a explosão abre a parede
+## rachada com tábua, que a bomba comum só faz tremer. Ela fica no fim da
+## lista porque o número de cada item é o bit dele nos salvamentos.
+##
+## A espada forte (2026-11-13) é a melhoria da espada: metade a mais de dano
+## (ver Sword.strong). Não abre nada, então fica fora da lógica das sementes.
 
-enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, STRONG_SPRING, HEART, KEY, BOSS_KEY }
+enum Id {
+	NONE,
+	BOMB,
+	FIRE,
+	SPRING,
+	STRONG_FIRE,
+	STRONG_SPRING,
+	HEART,
+	KEY,
+	BOSS_KEY,
+	STRONG_BOMB,
+	STRONG_SWORD,
+}
 
 ## Ferramentas, cada uma no seu botão.
 const TOOLS := [Id.BOMB, Id.FIRE, Id.SPRING]
 ## Itens que ficam para sempre e entram na lógica como bits: as ferramentas,
 ## as melhorias e a chave grande.
-const PERMANENT := [Id.BOMB, Id.FIRE, Id.SPRING, Id.STRONG_FIRE, Id.STRONG_SPRING, Id.BOSS_KEY]
+const PERMANENT := [
+	Id.BOMB,
+	Id.FIRE,
+	Id.SPRING,
+	Id.STRONG_FIRE,
+	Id.STRONG_SPRING,
+	Id.BOSS_KEY,
+	Id.STRONG_BOMB,
+	Id.STRONG_SWORD,
+]
 ## Cada melhoria e a ferramenta que ela melhora.
-const UPGRADES := {Id.STRONG_FIRE: Id.FIRE, Id.STRONG_SPRING: Id.SPRING}
+const UPGRADES := {Id.STRONG_FIRE: Id.FIRE, Id.STRONG_SPRING: Id.SPRING, Id.STRONG_BOMB: Id.BOMB}
+
+## Melhorias que só o baú delas dá: a ferramenta repetida não vira a melhoria.
+## A bomba forte fica aqui enquanto não entra nas dungeons, porque as três têm
+## um baú de bomba e a segunda bomba já daria a forte sem Marcelo decidir onde.
+const CHEST_ONLY := [Id.STRONG_BOMB]
 
 
 ## Bit do item num conjunto de ferramentas guardado como inteiro.
@@ -50,7 +83,7 @@ static func progressive(tools: int, id: int) -> int:
 		var base: int = UPGRADES[upgrade]
 		if id == upgrade and not has(tools, base):
 			return base
-		if id == base and has(tools, base):
+		if id == base and has(tools, base) and upgrade not in CHEST_ONLY:
 			return upgrade
 	return id
 

@@ -214,6 +214,8 @@ func _can_enter_slot(slot: String, tools: int, opened: Dictionary, reached: Dict
 			passes = reached.has(_gate_source.get(slot, NO_NODE))
 		ChapterMap.Block.CRACKED:
 			passes = Item.has(tools, Item.Id.BOMB)
+		ChapterMap.Block.BOARDED:
+			passes = Item.has(tools, Item.Id.STRONG_BOMB)
 		ChapterMap.Block.ICE:
 			passes = Item.has(tools, Item.Id.FIRE) or Item.has(tools, Item.Id.STRONG_FIRE)
 		ChapterMap.Block.THICK_ICE:

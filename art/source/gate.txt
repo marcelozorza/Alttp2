@@ -1,4 +1,5 @@
 # Grade de ferro que fecha a entrada de uma dungeon trancada.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 a #a9aac2
 b #7c7b99
@@ -7,35 +8,35 @@ d #1e181e
 e #3a3750
 f #f7c53a
 pixels
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-aaaaaaaaaaaaaaaaaaaaaaaa
-cccccccccccccccccccccccc
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab.dddddd.ab...ab.
-.ab...ab.deeeed.ab...ab.
-.ab...ab.deffed.ab...ab.
-.ab...ab.deffed.ab...ab.
-aaaaaaaaadeffedaaaaaaaaa
-cccccccccdeeeedccccccccc
-.ab...ab.dddddd.ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-aaaaaaaaaaaaaaaaaaaaaaaa
-cccccccccccccccccccccccc
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
-.ab...ab...ab...ab...ab.
+dddd.dddd.dddd.dddd.dddd
+dddd.dddd.dddd.dddd.dddd
+dabd.dabd.dabd.dabd.dabd
+dabd.dabd.dabd.dabd.dabd
+dabdddabdddabdddabdddabd
+ddaaaaaaaaaaaaaaaaaaaadd
+ddccccccccccccccccccccdd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab.dddddd.ab...abd
+dab...ab.deeeed.ab...abd
+dab...ab.deffed.ab...abd
+dab...ab.deffed.ab...abd
+ddaaaaaaadeffedaaaaaaadd
+ddcccccccdeeeedcccccccdd
+dab...ab.dddddd.ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+dab...ab...ab...ab...abd
+ddaaaaaaaaaaaaaaaaaaaadd
+ddccccccccccccccccccccdd
+dabdddabdddabdddabdddabd
+dddd.dddd.dddd.dddd.dddd
+dddd.dddd.dddd.dddd.dddd

@@ -1,0 +1,23 @@
+# Coco que o macaco joga.
+paleta
+a #1e181e
+b #5c4232
+c #3b2530
+d #8a5a3c
+pixels
+....aaaaaaa.....
+...aaaaaaaaaa...
+..aaabbbbbaaaa..
+.aaabbbbbbbcaaa.
+aaabddddbbbbcaa.
+aabddddddbbbbaaa
+aabbddddbcbbbcaa
+aabbbbbbbbbbbcaa
+aabbbbbbbbbcbcaa
+aabbbbbbcbbbbcaa
+aaabbcbbbbbbcaaa
+.aacbbbbbbcccaa.
+.aaacbbcbbccaaa.
+..aaaaccccaaaa..
+...aaaaaaaaaa...
+.....aaaaaa.....

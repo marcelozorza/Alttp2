@@ -1,8 +1,7 @@
 # Gelo grosso: só o topo.
 paleta
-a #6cc3f2
+a #3b7bdc
 b #c6efff
-c #f4f1ea
 pixels
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -22,15 +21,15 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-aaaaaaaaaaaaaaaaaaaaaacaaaaaaaaa
-aaaaaaaaaaaaaaaaaaaaabcaaaaaaaaa
-aaaaaaaaaaaaaaaaaaaacccccaaaaaaa
-aaaaaaaaaaaaaaaaaaaaaacbaaaaaaaa
-aaaaaaaacaaaaaaaaaaaaacaaaaaaaaa
-aaaaaaabcaaaaaaaaaaaaaaaaaaaaaaa
-aaaaaacccccaaaaaaaaaaaaaaaaaaaaa
-aaaaaaaacbaaaaaaaaaaaaaaaaaaaaaa
-aaaaaaaacaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

@@ -30,16 +30,19 @@ signal died(enemy: Enemy)
 
 enum State { IDLE, APPROACH, WINDUP, LUNGE, RECOVER, THROW_WINDUP, THROW_RECOVER, STAGGER, DEAD }
 
+## Espaço entre o alto do desenho e a barra de vida.
+const HEALTH_BAR_GAP := 10.0
 ## Cores provisórias dos estados.
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const LUNGE_COLOR := Color(1.0, 0.2, 0.2, 1.0)
-const HIT_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+const HIT_COLOR := Color(1.0, 0.25, 0.25, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 ## Tons sobre o desenho do inimigo, quando a cena tem um. Acima de 1, o tom
 ## clareia.
 const RECOVER_TINT := Color(0.6, 0.6, 0.65, 1.0)
-const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
-const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
+## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
+## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
+const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
 ## Velocidade angular do vaivém, em radianos por tick.
 const WEAVE_RATE := 0.2
 ## Quanto da distância até o ponto inicial o inimigo com raiz recupera por
@@ -171,6 +174,10 @@ var _immune_tick := -1000
 var _next_throw_tick := 0
 var _hurt_shape := RectangleShape2D.new()
 
+## Quadro e espelhamento com que a sombra foi desenhada pela última vez.
+var _shadow_frame: Texture2D
+var _shadow_flip := false
+
 @onready var _home := global_position
 @onready var _base: CollisionShape2D = $Base
 @onready var _body: ColorRect = $Body
@@ -188,6 +195,18 @@ func _ready() -> void:
 	# Camada dos inimigos comuns, por cima da qual o personagem pula.
 	collision_layer = Layers.ENEMY
 	collision_mask = Layers.SCENERY | Layers.ENEMY
+	# Traço preto em volta da barra de vida, do tamanho da barra cheia
+	# (pedido de Marcelo em 2026-11-13).
+	var frame := ColorRect.new()
+	frame.color = DoorArt.OUTLINE_COLOR
+	frame.position = -Vector2.ONE * DoorArt.OUTLINE
+	frame.size = (
+		Vector2(_health_bar_width, _health_bar.size.y) + Vector2.ONE * DoorArt.OUTLINE * 2.0
+	)
+	frame.show_behind_parent = true
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_health_bar.z_index = 1
+	_health_bar.add_child(frame)
 	health = max_health
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 
@@ -214,6 +233,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 
 ## Volta ao ponto inicial, com a vida cheia e parado.
 func reset() -> void:
+	queue_redraw()
 	health = max_health
 	global_position = _home
 	velocity = Vector2.ZERO
@@ -221,6 +241,11 @@ func reset() -> void:
 	_base.set_deferred("disabled", false)
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 	_enter(State.IDLE)
+
+
+## Derrotado, à espera de reaparecer ou de a sala ser reposta.
+func is_dead() -> bool:
+	return _state == State.DEAD
 
 
 ## Liga ou desliga o inimigo quando o personagem entra ou sai da sala dele.
@@ -380,7 +405,13 @@ func _enter(state: State) -> void:
 
 func _die() -> void:
 	_enter(State.DEAD)
+	queue_redraw()
 	velocity = Vector2.ZERO
+	# O inimigo some na hora, e a nuvem fica no lugar dele.
+	if _art:
+		DeathPuff.spawn(self, _art.texture, _art.position + _art.offset, _art.flip_h)
+	else:
+		DeathPuff.spawn(self, null, Vector2.ZERO, false)
 	visible = false
 	_base.set_deferred("disabled", true)
 	died.emit(self)
@@ -430,6 +461,14 @@ func _update_visuals() -> void:
 			if anchor_feet:
 				var size := frame.get_size()
 				_art.offset = Vector2(-floorf(size.x / 2.0), feet_offset - size.y)
+			# A barra de vida fica acima do desenho, nunca atrás dele.
+			var art_top := _art.offset.y + GroundShadow.used_rect(frame).position.y
+			_health_bar.position.y = minf(_health_bar.position.y, art_top - HEALTH_BAR_GAP)
+			# A sombra é medida pelo quadro: muda com ele.
+			if frame != _shadow_frame or _art.flip_h != _shadow_flip:
+				_shadow_frame = frame
+				_shadow_flip = _art.flip_h
+				queue_redraw()
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
@@ -525,8 +564,17 @@ func _uses_side_frame() -> bool:
 ## A sombra de quem voa fica no chão, e a granada erguida aparece durante o
 ## aviso e treme junto com o corpo.
 func _draw() -> void:
-	if hover and _state != State.DEAD:
-		draw_rect(Rect2(Vector2(-8.0, -4.0), Vector2(16.0, 4.0)), SHADOW_COLOR)
+	if _state != State.DEAD:
+		var width := _body.size.x
+		var center := Vector2.ZERO
+		if _art and _art.texture:
+			var used := GroundShadow.used_rect(_art.texture)
+			var middle := used.position.x + used.size.x / 2.0
+			if _art.flip_h:
+				middle = _art.texture.get_width() - middle
+			width = used.size.x
+			center = Vector2(_art.offset.x + middle, _art.offset.y + used.end.y - 3.0)
+		GroundShadow.draw(self, center, width)
 	if (
 		_state != State.THROW_WINDUP
 		or (_art and (throw_windup_frame or not throw_windup_frames.is_empty()))

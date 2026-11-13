@@ -1,6 +1,38 @@
-# Chave grande, da porta do chefe: a mesma chave em vermelho.
+# Chave grande, da porta do chefe: dourada, com os furos da cabeça formando
+# uma caveira (pedido de Marcelo em 2026-11-13).
 paleta
-o #3b2530
-k #d83a3f
-d #9c2338
-usa icon_key
+o #1e181e
+y #f7c53a
+k #f08c2e
+d #c85a1e
+R #a9aac2
+pixels
+......RRRRRRRR......
+....RRRooooooRRR....
+...RRooyyyyyyooRR...
+..RRoyykkkkkkkdoRR..
+.RRoykkkkkkkkkkdoRR.
+.RoykooookkooookdoR.
+.RoykooookkooookdoR.
+.RoykooookkooookdoR.
+.RoykkookkkkookkdoR.
+.RoykkkkkookkkkkdoR.
+.RoykkkkooookkkkdoR.
+.RRoykkkkkkkkkkdoRR.
+..RoykokokkokokdoR..
+..RoykokokkokokdoR..
+..RRoddddddddddoRR..
+...RRooooooooooRR...
+....RRooddddooRR....
+.....RRoykkdoRR.....
+......RoykkdoR......
+......RoykkdoRRRRR..
+......RoykkdoooooR..
+......RoykkdkkkdoR..
+......RoykkdkooooR..
+......RoykkdkkkdoR..
+......RoykkdkooooR..
+......RoykkdkkkdoR..
+......RoykkddddoRR..
+......RRooooooooR...
+.......RRRRRRRRRR...

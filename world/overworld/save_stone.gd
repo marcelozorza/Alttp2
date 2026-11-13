@@ -45,6 +45,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if not player:
 		return
 	player.health = player.max_health
+	Progress.mark_checkpoint()
 	Progress.save()
 	Sfx.play(&"save")
 	_lit_tick = Clock.tick

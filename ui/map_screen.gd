@@ -51,6 +51,7 @@ const CHEST_EDGE := Color(0.16, 0.07, 0.03, 1.0)
 const LOCKED_COLOR := Color(0.8, 0.16, 0.14, 1.0)
 const BOSS_DOOR_COLOR := Color(0.55, 0.25, 0.75, 1.0)
 const CRACKED_COLOR := Color(0.78, 0.5, 0.3, 1.0)
+const BOARDED_COLOR := Color(0.54, 0.35, 0.24, 1.0)
 const ICE_COLOR := Color(0.5, 0.69, 0.86, 1.0)
 const THICK_ICE_COLOR := Color(0.25, 0.48, 0.72, 1.0)
 const LEDGE_COLOR := Color(0.34, 0.31, 0.24, 1.0)
@@ -320,6 +321,8 @@ static func _cell_color(chapter: Node, map: ChapterMap, cell: Vector2i) -> Color
 		match map.block_type(character):
 			ChapterMap.Block.CRACKED:
 				return CRACKED_COLOR
+			ChapterMap.Block.BOARDED:
+				return BOARDED_COLOR
 			ChapterMap.Block.ICE:
 				return ICE_COLOR
 			ChapterMap.Block.THICK_ICE:

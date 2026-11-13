@@ -115,6 +115,7 @@ const BLOCKS := {
 ## Item de cada baú. A ordem linear: as chaves A e B para as portas 1 e 3 do
 ## pátio, a chave F do depósito, a mola forte G na forja atrás da porta 2, e
 ## dali a chave E do pátio, a chave J da galeria e a chave grande I no cofre.
+## O baú M, no nicho norte, ao lado da arena, guarda a espada forte.
 const ITEMS := {
 	"A": Item.Id.KEY,
 	"B": Item.Id.KEY,
@@ -128,7 +129,7 @@ const ITEMS := {
 	"J": Item.Id.KEY,
 	"K": Item.Id.HEART,
 	"L": Item.Id.HEART,
-	"M": Item.Id.HEART,
+	"M": Item.Id.STRONG_SWORD,
 }
 
 ## Alvo da lógica, para tools/check_chapter.py: o colosso e o que ele exige.

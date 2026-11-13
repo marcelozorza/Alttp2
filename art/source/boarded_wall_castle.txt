@@ -1,0 +1,44 @@
+# Parede rachada com tábua: só a bomba forte abre.
+paleta
+a #f7c53a
+b #2e1a4f
+c #8a59d0
+d #1e181e
+e #a9aac2
+f #55308f
+g #ddb277
+h #b9824e
+i #8a5a3c
+pixels
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+bccccccccccccccddecccccccccccccc
+bffffffffffffffddeffffffffffffff
+bfffffffffffffddefffffffffffffff
+bffffffffffcffddefffffffffffffff
+bfffffffffffffddefffffffffffffff
+bffffffffffffddebfffffffffffffff
+bbbbbbbbbbbbbddebbbbbbbbbbbbbbbb
+ccccccccbccddeddecccccccbccccccc
+ffffffffbddefffddeffcfffbfffffff
+fffffffddefffffddeffffffbfffffff
+ffffddddddddddddddddddddddddffff
+ffffdggggggggggggggggggggggdffff
+ffffdhhehhhhhhhhhhhhhhhhehhdffff
+bbbbdhhhhhhihhhhhhhihhhhhhhdbbbb
+bcccdhhhhhhhihhhhhhhihhhhhhdcccc
+bfffdhhehhhhhhhhhhhhhhhhehhdffff
+bfffdiiiiiiiiiiiiiiiiiiiiiidffff
+bfffddddddddddddddddddddddddffff
+bfffffffffffddeddeffffffffffffff
+bffffffffffdefffddeffcffffffffff
+bbbbbbbbbddebbbbddebbbbbbbbbbbbb
+ccccccccdecccccccddeccccbccccccc
+ffffffffbfffffffffddefffbfffffff
+ffffffffbfffffffffddddefbfffffff
+ffffffffbffffffffddeffddefffffff
+ffffffffbffffffffddeffffddefffff
+ffffffffbffffffffddeffffbfffffff
+bbbbbbbbbbbbbbbbddebbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbddebbbbbbbbbbbbb
+dddddddddddddddddddddddddddddddd

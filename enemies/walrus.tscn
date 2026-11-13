@@ -36,8 +36,8 @@ lunge_time = 0.3
 recover_time = 1.0
 damage = 2
 sword_factor = 0
-fire_factor = 0
-strong_fire_factor = 2
+fire_factor = 2
+strong_fire_factor = 4
 blast_factor = 0
 
 walk_frames = Array[Texture2D]([ExtResource("10_stalactite_down"), ExtResource("11_stalactite_down_step")])

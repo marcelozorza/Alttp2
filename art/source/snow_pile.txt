@@ -1,0 +1,26 @@
+# Monte de neve acumulada no chão da geleira.
+paleta
+a #1e181e
+b #f4f1ea
+c #b4cdec
+d #ffffff
+e #86a9d6
+pixels
+..........................
+.........aaa..............
+.....aaaaaaaaaaaa.........
+...aaaaaaabaaaaaaa........
+..aaaabbbbbbbbbcaaa.......
+..aabddddddddbbbbaaa......
+.aaabddddddddbbbbcaaaa....
+.aabbddddddddbbbbbcaaaa...
+.aabbddddddddbbbbbbccaaa..
+.aabbbbbbbbbbbbbbbbbbcaaa.
+.aacbbbbbbbbbbbddddbbbcaa.
+.aacbbbbbbbbbbbbbbbbbbcaa.
+.aacccbbbbbbbbbbbbbbbccaa.
+.aacccccccbcccccbbbccccaa.
+.aaccccccccccccccccccccaa.
+.aaceeeeeeeeeeeeeeeeeecaa.
+.aaaaaaaaaaaaaaaaaaaaaaaa.
+..aaaaaaaaaaaaaaaaaaaaaa..

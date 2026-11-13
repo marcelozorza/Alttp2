@@ -43,13 +43,15 @@ B5, WHITE = "#c6efff", "#ffffff"
 
 def carpet():
     """Miolo do tapete do castelo: losangos pequenos em duas fileiras
-    desencontradas, com um ponto claro no meio. Repete sem emenda."""
-    c = Canvas(32, 32, R1)
+    desencontradas, com um ponto claro no meio. Repete sem emenda. Em
+    2026-11-11 Marcelo pediu o vermelho mais escuro, porque o tapete saltava
+    do piso: o fundo desceu um tom na rampa, e os losangos e o ponto também."""
+    c = Canvas(32, 32, R0)
     for cx, cy in [(8, 8), (24, 8), (0, 24), (16, 24), (32, 24)]:
         for d in range(4):
-            c.rect(cx - 3 + d, cy - d, 7 - 2 * d, 1, R0)
-            c.rect(cx - 3 + d, cy + d, 7 - 2 * d, 1, R0)
-        c.px(cx, cy, R2)
+            c.rect(cx - 3 + d, cy - d, 7 - 2 * d, 1, "#3b2530")
+            c.rect(cx - 3 + d, cy + d, 7 - 2 * d, 1, "#3b2530")
+        c.px(cx, cy, R1)
     return c
 
 
@@ -103,11 +105,41 @@ def vine():
     return c
 
 
+def puddle(stage):
+    """Poça que o gelo deixa ao derreter, uma por casa: 1 cheia, 2 secando e
+    3 só as últimas gotas. Marcelo pediu em 2026-11-11 um desenho no lugar
+    do quadrado que perdia a opacidade: a poça seca encolhendo."""
+    edge, water, light = "#3b7bdc", "#6cc3f2", "#c6efff"
+    c = Canvas(32, 32)
+    if stage == 1:
+        c.ellipse(16, 20, 12.5, 6.5, water)
+        c.ellipse(7.5, 17, 4.5, 3.5, water)
+        c.ellipse(24.5, 23.5, 5, 3.5, water)
+        shine = [(8, 16, 5), (10, 18, 3), (21, 24, 4)]
+    elif stage == 2:
+        c.ellipse(15, 20.5, 8.5, 4.5, water)
+        c.ellipse(22, 23, 3.5, 2.5, water)
+        shine = [(10, 19, 4), (20, 23, 2)]
+    else:
+        c.ellipse(12, 20, 3.5, 2.5, water)
+        c.ellipse(20.5, 23, 2.5, 1.5, water)
+        c.ellipse(21, 17.5, 1.5, 1, water)
+        shine = [(10, 19, 2)]
+    c.outline(edge)
+    for x, y, length in shine:
+        c.rect(x, y, length, 1, light)
+    if stage < 3:
+        c.px(shine[0][0] + 1, shine[0][1] - 1, WHITE)
+    return c
+
+
 def main():
-    carpet().save("carpet", "Tapete vermelho do castelo, o miolo, com losangos escuros.")
+    carpet().save("carpet", "Tapete vinho do castelo, o miolo, com losangos escuros.")
     frost().save("frost", "Geada sobre o chão, com transparência.")
     moss_patch().save("moss_patch", "Manchas de musgo sobre o chão, com transparência.")
     vine().save("vine", "Trepadeira pendurada na face da parede.")
+    for stage, text in ((1, "cheia"), (2, "secando"), (3, "as últimas gotas")):
+        puddle(stage).save("puddle_%d" % stage, "Poça do gelo derretido, %s." % text)
     message_plate(False).save("message_plate", "Placa de mensagem no chão: pisar nela mostra um texto.")
     message_plate(True).save("message_plate_lit", "Placa de mensagem com o personagem em cima.")
 

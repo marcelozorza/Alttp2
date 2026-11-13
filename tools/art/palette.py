@@ -9,8 +9,9 @@ chapados, contorno firme e formas grandes.
 RAMPS = {
     # Tinta do contorno e os pretos do Giorgino.
     "ink": ["#0e0b0d", "#1e181e", "#2a2329"],
-    # Pedra fria, do quase preto ao quase branco.
-    "stone": ["#1b1926", "#262335", "#3a3750", "#55526f", "#7c7b99", "#a9aac2", "#d6d8e6"],
+    # Pedra fria, do quase preto ao quase branco. O #8b8aa8 é o piso claro do
+    # castelo, perto do escuro (pedido de Marcelo em 2026-11-11).
+    "stone": ["#1b1926", "#262335", "#3a3750", "#55526f", "#7c7b99", "#8b8aa8", "#a9aac2", "#d6d8e6"],
     # Brancos e cinzas do pelo do Giorgino.
     "fur": ["#8d8798", "#c7c1cf", "#f4f1ea", "#ffffff"],
     "earth": ["#3b2530", "#5c4232", "#8a5a3c", "#b9824e", "#ddb277", "#f3dfa6"],

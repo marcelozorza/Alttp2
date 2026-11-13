@@ -44,6 +44,17 @@ static func button(text: String, action: Callable, small := false) -> Button:
 	return result
 
 
+## Deixa o botão mais justo, com menos folga em volta do texto. A fonte é de
+## tamanho fixo, então o botão encolhe pela caixa (menu do título, 2026-11-13).
+static func compact(target: Button) -> void:
+	for state: StringName in [&"normal", &"hover", &"disabled", &"pressed", &"focus"]:
+		var box: StyleBoxFlat = target.get_theme_stylebox(state)
+		box.content_margin_left = 5.0
+		box.content_margin_right = 5.0
+		box.content_margin_top = 1.0
+		box.content_margin_bottom = 1.0
+
+
 ## Caixa reta de botão: fundo, moldura e folga para o texto.
 static func _box(background: Color, border: Color, width: int) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()

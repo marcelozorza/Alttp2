@@ -50,9 +50,9 @@ LEVELS = {".": 0, ":": 1, "^": 2}
 STEPS = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 UP, DOWN = (0, -1), (0, 1)
 # A ordem de Item.Id em items/item.gd.
-ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY"]
-PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY"]
-BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE"]
+ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY", "STRONG_BOMB", "STRONG_SWORD"]
+PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY", "STRONG_BOMB", "STRONG_SWORD"]
+BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE", "BOARDED"]
 LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 
@@ -60,7 +60,9 @@ def bit(name):
     return 1 << ITEM_IDS.index(name)
 
 
-UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING"}
+UPGRADES = {"STRONG_FIRE": "FIRE", "STRONG_SPRING": "SPRING", "STRONG_BOMB": "BOMB"}
+# Melhorias que a ferramenta repetida não dá, como em items/item.gd.
+CHEST_ONLY = ["STRONG_BOMB"]
 
 
 def collect(tools, item):
@@ -71,7 +73,7 @@ def collect(tools, item):
         if item == upgrade and not tools & bit(base):
             item = base
             break
-        if item == base and tools & bit(base):
+        if item == base and tools & bit(base) and upgrade not in CHEST_ONLY:
             item = upgrade
             break
     return tools | bit(item)
@@ -163,6 +165,8 @@ class Map:
             return reached_nodes is not None and source is not None and source in reached_nodes
         if kind == "CRACKED":
             return bool(tools & bit("BOMB"))
+        if kind == "BOARDED":
+            return bool(tools & bit("STRONG_BOMB"))
         if kind == "ICE":
             return bool(tools & (bit("FIRE") | bit("STRONG_FIRE")))
         if kind == "THICK_ICE":
@@ -488,6 +492,18 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
                 if all(m.tile((sx * ROOM_W + i, line)) == "#" for i in range(ROOM_W)):
                     errors.append("sala maior %s tem parede inteira entre as telas em y=%d" % (room, line))
     # Vagas: cada caractere forma um retângulo cheio, e o tipo existe.
+    # Chão alto só se alcança pelo degrau: ele nunca encosta no chão de outro
+    # nível (pedido de Marcelo em 2026-11-12, depois de subir por trás numa
+    # plataforma da Galeria).
+    levels = {".": 0, ":": 1, "^": 2}
+    for y, row in enumerate(m.rows):
+        for x, c in enumerate(row):
+            for nx, ny in ((x + 1, y), (x, y + 1)):
+                if ny < len(m.rows) and nx < len(m.rows[ny]):
+                    d = m.rows[ny][nx]
+                    if c in levels and d in levels and levels[c] != levels[d]:
+                        errors.append("chão de níveis diferentes encostado em (%d, %d)" % (x, y))
+
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
         xs = [c[0] for c in cells]

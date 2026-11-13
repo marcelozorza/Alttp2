@@ -8,7 +8,7 @@ Cada tema tem a lajota e o tijolo com forma própria, e não só outra paleta.
 Uso: python3 tools/art/dungeon.py && python3 tools/pixel_svg.py
 """
 
-from canvas import Canvas
+from canvas import Canvas, load
 
 INK = "#1e181e"
 S0, S1, S2, S3, S4, S5, S6 = (
@@ -177,6 +177,24 @@ def cracked_wall(theme, top, tones):
     return c
 
 
+def boarded_wall(theme):
+    """Parede rachada com uma tábua pregada por cima da rachadura: a pista de
+    que a bomba comum não basta, só a bomba forte abre. Parte do desenho da
+    parede rachada em art/source, que foi retocado à mão."""
+    c = load("cracked_wall" + theme)
+    c.rect(4, 12, 24, 8, INK)
+    c.rect(5, 13, 22, 6, E3)
+    c.rect(5, 13, 22, 1, E4)
+    c.rect(5, 18, 22, 1, E2)
+    for x in (11, 19):
+        c.px(x, 15, E2)
+        c.px(x + 1, 16, E2)
+    for x in (7, 24):
+        for y in (14, 17):
+            c.px(x, y, S5)
+    return c
+
+
 def ledge(tall):
     """Face do degrau: a mesma pedra quente do chão alto, na sombra."""
     h = 64 if tall else 32
@@ -254,17 +272,16 @@ def gate_door():
 
 def ice(thick, top_only):
     """Bloco de gelo: o topo claro e, na frente, a face com brilhos. O gelo
-    grosso é mais escuro e tem cristais brancos, para mostrar que a chama
-    comum não basta."""
-    top, face, deep, shine = (B5, B4, B3, WHITE) if not thick else (B4, B2, B1, B5)
+    grosso é o mesmo desenho, dois tons mais escuro, para mostrar que a chama
+    comum não basta. Ele tinha cristais brancos e o topo da cor da face do
+    gelo comum, e Marcelo não entendeu do que se tratava (2026-11-11): "tem
+    que ser como o primeiro, mas mais escuro"."""
+    top, face, deep, shine = (B5, B4, B3, WHITE) if not thick else (B3, B2, B1, B5)
     c = Canvas(T, T, top)
     for x, y, n in [(4, 6, 4), (20, 4, 3)]:
         for i in range(n):
             c.px(x + i, y - (i // 2), shine)
     if top_only:
-        if thick:
-            star(c, 22, 20)
-            star(c, 8, 24)
         return c
     c.rect(0, 11, T, 21, face)
     c.rect(0, 10, T, 1, shine)
@@ -275,18 +292,7 @@ def ice(thick, top_only):
         c.rect(x, 13, 1, 17, deep)
     c.rect(0, 30, T, 1, deep)
     c.rect(0, 31, T, 1, INK)
-    if thick:
-        star(c, 9, 17)
-        star(c, 24, 25)
     return c
-
-
-def star(c, x, y):
-    for d in range(-2, 3):
-        c.px(x + d, y, FUR)
-        c.px(x, y + d, FUR)
-    c.px(x - 1, y - 1, B5)
-    c.px(x + 1, y + 1, B5)
 
 
 def main():
@@ -302,6 +308,7 @@ def main():
         wall_face(theme, parts["top"], parts["face"]).save("wall_face" + theme, "Face de frente da parede %s. Os 24 pixels de baixo são a face." % text)
         wall_side(theme, parts["top"], parts["face"]).save("wall_side" + theme, "Face lateral da parede %s. Os 24 pixels da direita são a face." % text)
         cracked_wall(theme, parts["top"], parts["face"]).save("cracked_wall" + theme, "Parede rachada %s: só a bomba abre." % text)
+        boarded_wall(theme).save("boarded_wall" + theme, "Parede rachada com tábua %s: só a bomba forte abre." % text)
     ledge(False).save("ledge", "Face do degrau, 32 de altura.")
     ledge(True).save("tall_ledge", "Face do degrau duplo, 64 de altura, mais escura.")
     locked_door().save("locked_door", "Porta trancada, uma casa.")

@@ -23,6 +23,16 @@ const BODY_CENTER := Vector2(0.0, -8.0)
 const BODY_HALF_EXTENTS := Vector2(12.0, 16.0)
 ## Meia extensão dos pés, a colisão do personagem.
 const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
+## Ticks em que o desenho volta à espada recolhida quando um golpe sai com a
+## espada ainda estendida. Sem isso, apertar o botão bem rápido deixava o
+## quadro de golpe parado na tela (pedido de Marcelo em 2026-11-11: um
+## piscar a cada aperto). Só o desenho recolhe: o dano sai no mesmo tick.
+const RESTART_TICKS := 2
+## Tick de um golpe que nunca aconteceu.
+const NEVER := -1000
+## As quatro direções de uma volta do giro, na ordem em que a lâmina passa.
+const SPIN_ORDER: Array[Vector2] = [Vector2.DOWN, Vector2.LEFT, Vector2.UP, Vector2.RIGHT]
+
 ## Comprimento da lâmina para fora do corpo, em pixels.
 @export_range(8.0, 80.0, 1.0) var reach := 24.0
 ## Largura da área de dano, em pixels. É maior que a lâmina desenhada, para
@@ -40,8 +50,15 @@ const FEET_HALF_EXTENTS := Vector2(12.0, 8.0)
 
 ## Direção do último golpe, uma das 4 direções retas.
 var direction := Vector2.DOWN
+## Espada forte: metade a mais de dano (pedido de Marcelo em 2026-11-13). A
+## vida dos inimigos é inteira, então um golpe sim, um não, vale 1 a mais: a
+## cada dois golpes saem 3 de dano no lugar de 2.
+var strong := false
 
-var _attack_tick := -1000
+var _attack_tick := NEVER
+var _strikes := 0
+var _strike_damage := 1
+var _restart_tick := NEVER
 var _already_hit: Array[Object] = []
 var _hit_shape := RectangleShape2D.new()
 
@@ -50,21 +67,48 @@ var _hit_shape := RectangleShape2D.new()
 
 ## Golpeia na direção dada, uma das 4 direções retas.
 func attack(toward: Vector2) -> void:
+	# Um golpe que sai com a espada ainda estendida recolhe o desenho por um
+	# instante, para cada aperto aparecer (ver RESTART_TICKS).
+	_restart_tick = Clock.tick if is_out() else NEVER
 	direction = toward
 	_attack_tick = Clock.tick
 	_already_hit.clear()
+	_next_strike()
 	_apply_hits()
+
+
+## Um passo do giro: a lâmina aparece na direção dada, sem recolher entre os
+## passos. Com hit_around, o golpe acerta de uma vez as quatro direções em
+## volta, cada alvo uma vez, empurrando para fora.
+func spin(toward: Vector2, hit_around: bool) -> void:
+	_restart_tick = NEVER
+	_attack_tick = Clock.tick
+	if hit_around:
+		_already_hit.clear()
+		_next_strike()
+		for way: Vector2 in SPIN_ORDER:
+			direction = way
+			_apply_hits()
+	direction = toward
 
 
 ## Verdadeiro enquanto a espada está estendida ou recolhendo. É quando o
 ## personagem mostra o quadro de golpe.
 func is_out() -> bool:
+	if Clock.tick - _restart_tick < RESTART_TICKS:
+		return false
 	return _elapsed() < GameMath.ticks(active_time) + GameMath.ticks(retract_time)
 
 
 func _physics_process(_delta: float) -> void:
 	if _elapsed() < GameMath.ticks(active_time):
 		_apply_hits()
+
+
+## Conta o golpe e decide o dano dele (ver strong).
+func _next_strike() -> void:
+	_strikes += 1
+	_strike_damage = damage + (1 if strong and _strikes % 2 == 0 else 0)
 
 
 func _elapsed() -> int:
@@ -86,7 +130,7 @@ func _apply_hits() -> void:
 			continue
 		_already_hit.append(target)
 		if target.has_method("take_hit"):
-			target.call("take_hit", damage, direction, Hit.Kind.SWORD)
+			target.call("take_hit", _strike_damage, direction, Hit.Kind.SWORD)
 		var body := target as MomentumBody
 		if body:
 			body.add_impact_velocity(direction * impulse / body.mass)

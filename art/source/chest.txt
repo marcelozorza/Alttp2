@@ -3,6 +3,7 @@
 # fechadura douradas. Redesenhado em 32 por 32 quando a resolução dobrou,
 # no mesmo dia. A base fica na penúltima linha, com a sombra na última.
 # Abre com a espada.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #1e181e
 q #9c2338
@@ -18,31 +19,31 @@ pixels
 ................................
 ................................
 ................................
-................................
 .......oooooooooooooooooo.......
-.....oogggggggggggggggggoo......
-....oghhrrrrrrrrrrrrrrrhhgo.....
-...ogyhrrrrrrrrrrrrrrrrrhqgo....
-...ogyrrrrrrrrrrrrrrrrrrrqgo....
-..ogyrrrrrrrrrrrrrrrrrrrrqqgo...
-..ogggggggggggggggggggggggggo...
-..oddddddddddyyyyydddddddddddo..
-..oyggdhhhhhhyggggdhhhhhhyggdo..
-..oyggdrrrrrrygkkgdrrrrrryggdo..
-..oyggdrrrrrrygkkgdrrrrrryggdo..
-..oyggdrrrrrrygkkgdrrrrrryggdo..
-..oyggdqqqqqqygkggdqqqqqqyggdo..
-..oyggdhhhhhhddddddhhhhhhyggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdqqqqqqqqqqqqqqqqqqyggdo..
-..oyggdhhhhhhhhhhhhhhhhhhyggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oyggdrrrrrrrrrrrrrrrrrryggdo..
-..oddddddddddddddddddddddddddo..
-..obbbbbbbbbbbbbbbbbbbbbbbbbbo..
-..oooooooooooooooooooooooooooo..
+.....ooooooooooooooooooooo......
+....ooogggggggggggggggggooo.....
+...ooghhrrrrrrrrrrrrrrrhhgoo....
+..oogyhrrrrrrrrrrrrrrrrrhqgoo...
+..oogyrrrrrrrrrrrrrrrrrrrqgoo...
+.oogyrrrrrrrrrrrrrrrrrrrrqqgoo..
+.oogggggggggggggggggggggggggoo..
+.ooddddddddddyyyyydddddddddddoo.
+.ooyggdhhhhhhyggggdhhhhhhyggdoo.
+.ooyggdrrrrrrygkkgdrrrrrryggdoo.
+.ooyggdrrrrrrygkkgdrrrrrryggdoo.
+.ooyggdrrrrrrygkkgdrrrrrryggdoo.
+.ooyggdqqqqqqygkggdqqqqqqyggdoo.
+.ooyggdhhhhhhddddddhhhhhhyggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdqqqqqqqqqqqqqqqqqqyggdoo.
+.ooyggdhhhhhhhhhhhhhhhhhhyggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooyggdrrrrrrrrrrrrrrrrrryggdoo.
+.ooddddddddddddddddddddddddddoo.
+.oobbbbbbbbbbbbbbbbbbbbbbbbbboo.
 .oooooooooooooooooooooooooooooo.
-...oooooooooooooooooooooooooo...
+oooooooooooooooooooooooooooooooo
+.oooooooooooooooooooooooooooooo.

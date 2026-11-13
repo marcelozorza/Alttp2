@@ -4,8 +4,10 @@ class_name Hit
 ##
 ## A chama forte é um fogo mais quente: tudo o que o fogo comum afeta, ela
 ## afeta também, e ainda derrete o gelo grosso, que o fogo comum só faz tremer.
+## A explosão forte, da bomba forte, segue a mesma regra: faz tudo o que a
+## explosão comum faz e ainda abre a parede rachada com tábua.
 
-enum Kind { SWORD, FIRE, STRONG_FIRE, BLAST, SHOCKWAVE }
+enum Kind { SWORD, FIRE, STRONG_FIRE, BLAST, SHOCKWAVE, STRONG_BLAST }
 
 
 ## Diz se o golpe é fogo, comum ou forte.
@@ -13,8 +15,14 @@ static func is_fire(kind: Kind) -> bool:
 	return kind == Kind.FIRE or kind == Kind.STRONG_FIRE
 
 
+## Diz se o golpe é explosão, comum ou forte.
+static func is_blast(kind: Kind) -> bool:
+	return kind == Kind.BLAST or kind == Kind.STRONG_BLAST
+
+
 ## Multiplicador de dano de um alvo para o tipo de golpe, a partir dos
-## multiplicadores dele. A onda de choque nunca fere inimigos.
+## multiplicadores dele. A onda de choque nunca fere inimigos, e a explosão
+## forte causa o dobro da comum.
 static func factor(kind: Kind, sword: int, fire: int, strong_fire: int, blast: int) -> int:
 	match kind:
 		Kind.FIRE:
@@ -23,6 +31,8 @@ static func factor(kind: Kind, sword: int, fire: int, strong_fire: int, blast: i
 			return strong_fire
 		Kind.BLAST:
 			return blast
+		Kind.STRONG_BLAST:
+			return blast * 2
 		Kind.SHOCKWAVE:
 			return 0
 	return sword

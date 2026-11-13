@@ -22,7 +22,7 @@ const TEXTURES: Array[Texture2D] = [
 	preload("res://art/entrance_moss.svg"),
 ]
 const GATE_TEXTURE := preload("res://art/gate.svg")
-const RELIC_TEXTURE := preload("res://art/relic.svg")
+const RELIC_TEXTURE := preload("res://art/relic_small.svg")
 const SIZE := Vector2(64.0, 32.0)
 ## Quanto o desenho sobe acima da origem.
 const ART_ABOVE := 32.0

@@ -1,8 +1,8 @@
-# Chão do castelo, variação 1.
+# Chão do castelo, variação 1. Escurecido em 2026-11-11 para ficar perto da variação 2 (pedido de Marcelo).
 paleta
-a #d6d8e6
-b #7c7b99
-c #a9aac2
+a #a9aac2
+b #55526f
+c #8b8aa8
 pixels
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab
 accccccccccccccccccccccccccccccb

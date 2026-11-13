@@ -381,7 +381,9 @@ func _check_jump_over() -> void:
 	var blocked := player.global_position.x - start.x
 	player.global_position = start
 	player.velocity = Vector2.ZERO
-	await _frames(2)
+	# Espera passar a janela da corrida: apertar a mesma direção logo depois
+	# de soltar faria o personagem correr, e o teste é do pulo andando.
+	await _frames(40)
 	var health := player.health
 	player.give_item(Item.Id.SPRING)
 	Input.action_press("move_right")
@@ -425,9 +427,8 @@ func _bones(chapter: Node) -> Array:
 
 
 func _check_training() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Treino")
+	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
+	await _frames(20)
 	print("TREINO: -> ", _scene_name())
 	await _press("Capítulo 2")
 	await _frames(10)
@@ -450,9 +451,9 @@ func _check_training() -> void:
 	print("TREINO: sala de teste -> ", _scene_name())
 
 
-## Tutorial: o antigo capítulo 1, avulso, a partir do título, sem gravar.
+## Tutorial: o antigo capítulo 1, avulso, a partir do treino, sem gravar.
 func _check_tutorial() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
+	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
 	await _frames(10)
 	await _press("Dungeon de teste")
 	await _frames(10)
@@ -473,9 +474,10 @@ func _check_tutorial() -> void:
 
 ## Continuar: o jogo salvo volta ao mundo com os capítulos vencidos.
 func _check_continue() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Continuar")
+	# O título não tem mais "Continuar": o teste lê o arquivo direto.
+	Progress.load_file()
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(20)
 	var modes := []
 	for chapter: int in range(1, ChapterData.count() + 1):
 		var entrance := _entrance(chapter)
@@ -489,7 +491,7 @@ func _check_continue() -> void:
 
 
 ## A dungeon de teste a partir do mundo: o jogo novo começa na clareira do
-## sul, com os textos gravados no chão, a entrada 0 leva à dungeon de teste
+## sul, com as placas de mensagem no chão, a entrada 0 leva à dungeon de teste
 ## como treino (sem as ferramentas nem a vida do jogo), a placa de mensagem
 ## mostra o texto só com o personagem em cima e sem parar o jogo, e vencer
 ## grava a dungeon como vencida sem mudar ferramentas nem vida.
@@ -503,11 +505,15 @@ func _check_practice() -> void:
 	var player: Player = world.get("_player")
 	var world_map: ChapterMap = world.get("map")
 	var start := (Vector2(world_map.find("@")) + Vector2(0.5, 0.5)) * ChapterMap.TILE
-	var texts: Array = world.get("_floor_text").entries
+	var world_plates: Array = world.get("_plates")
 	print(
 		(
-			"TESTE: jogo novo no início %s, textos no chão %d, entrada 0 modo %d"
-			% [player.global_position.distance_to(start) < 4.0, texts.size(), _entrance(0).mode]
+			"TESTE: jogo novo no início %s, placas no mundo %d, entrada 0 modo %d"
+			% [
+				player.global_position.distance_to(start) < 4.0,
+				world_plates.size(),
+				_entrance(0).mode
+			]
 		)
 	)
 	await _walk_into(_entrance(0), player)
@@ -665,9 +671,10 @@ func _check_randomized() -> void:
 			% [location, item_name, recorded, reopened, Progress.tools]
 		)
 	)
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Continuar")
+	# O título não tem mais "Continuar": o teste lê o arquivo direto.
+	Progress.load_file()
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(20)
 	print(
 		(
 			"SEED: continuar -> %s, seed %d, mesma distribuição %s"

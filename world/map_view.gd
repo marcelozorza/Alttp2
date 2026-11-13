@@ -141,6 +141,7 @@ func _draw() -> void:
 				draw_texture(theme.overlay, origin)
 			_draw_wall_shadows(cell, origin)
 	if not outdoor:
+		_draw_wall_outlines()
 		_draw_decor()
 	theme = _default_theme
 
@@ -239,6 +240,43 @@ func _near_clearing(cell: Vector2i) -> bool:
 		if character != "#" and character != " ":
 			return true
 	return false
+
+
+## Traço grosso na beira das paredes, onde elas encontram o chão: o mesmo
+## contorno de fora dos personagens e dos objetos (pedido de Marcelo em
+## 2026-11-12). Fica por dentro da casa da parede. Num canto para dentro, um
+## quadradinho fecha o encontro dos dois traços.
+func _draw_wall_outlines() -> void:
+	var tile := float(ChapterMap.TILE)
+	var ink := DoorArt.OUTLINE_COLOR
+	var width := DoorArt.OUTLINE
+	for y: int in map.height:
+		for x: int in map.width:
+			var cell := Vector2i(x, y)
+			if map.tile(cell) != "#":
+				continue
+			var rect := Rect2(Vector2(cell) * tile, Vector2(tile, tile))
+			var sides := [
+				_is_floor(cell + Vector2i.UP),
+				_is_floor(cell + Vector2i.RIGHT),
+				_is_floor(cell + Vector2i.DOWN),
+				_is_floor(cell + Vector2i.LEFT),
+			]
+			DoorArt.draw_outline(self, rect, sides)
+			for corner: Vector2i in [
+				Vector2i(-1, -1), Vector2i(1, -1), Vector2i(1, 1), Vector2i(-1, 1)
+			]:
+				var open_x := _is_floor(cell + Vector2i(corner.x, 0))
+				var open_y := _is_floor(cell + Vector2i(0, corner.y))
+				if open_x or open_y or not _is_floor(cell + corner):
+					continue
+				var at := (
+					rect.position
+					+ Vector2(
+						tile - width if corner.x > 0 else 0.0, tile - width if corner.y > 0 else 0.0
+					)
+				)
+				draw_rect(Rect2(at, Vector2(width, width)), ink)
 
 
 ## Sombra no chão junto de uma parede ao norte ou a oeste.

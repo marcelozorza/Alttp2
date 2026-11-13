@@ -46,6 +46,15 @@ func take_hit(_amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void
 	queue_redraw()
 
 
+## Remove o bloqueio sem som nem animação, para a dungeon voltar como o
+## jogador a deixou.
+func clear_silently() -> void:
+	cleared = true
+	_opened = true
+	_shape.set_deferred("disabled", true)
+	queue_redraw()
+
+
 func _physics_process(_delta: float) -> void:
 	if cleared and not _opened and _ticks_since_clear() >= _open_delay():
 		_opened = true
@@ -57,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 
 ## Diz se o golpe remove o bloqueio.
 func _opens_with(kind: Hit.Kind) -> bool:
-	return kind == Hit.Kind.BLAST
+	return Hit.is_blast(kind)
 
 
 ## Som do golpe certo.

@@ -60,6 +60,8 @@ func _draw() -> void:
 	var texture := TALL_TEXTURE if is_tall() else TEXTURE
 	for x: int in int(size.x / 32.0):
 		draw_texture_rect(texture, Rect2(Vector2(x * 32.0, 0.0), Vector2(32.0, size.y)), false)
+	# O topo do degrau é chão, então só os lados e a base levam o traço.
+	DoorArt.draw_outline(self, Rect2(Vector2.ZERO, size), [false, true, true, true])
 	# Uma face mais alta projeta uma sombra mais longa.
 	var shadow := SHADOW_HEIGHT + (size.y - 32.0) / 8.0
 	draw_rect(Rect2(Vector2(0.0, size.y), Vector2(size.x, shadow)), SHADOW_COLOR)

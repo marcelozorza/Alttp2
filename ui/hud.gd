@@ -1,11 +1,12 @@
 extends Control
 ## HUD. No alto, numa barra, a vida, um ossinho por ponto, e, no capítulo, o
-## número do capítulo e o cronômetro. No canto inferior esquerdo, sobre a tela,
+## número do capítulo e o cronômetro. No canto inferior direito, sobre a tela,
 ## os quatro botões de face do controle num losango, cada um na posição do
-## botão, com o ícone em pixel art do que ele faz. À direita do losango, no
-## capítulo, o contador de chaves pequenas, sempre à vista, mesmo em zero, e a
-## chave grande depois de encontrada (Marcelo não achava o contador no alto,
-## 2026-11-06). A espada fica sempre no seu botão, com a
+## botão, com o ícone em pixel art do que ele faz. Acima do minimapa, no
+## capítulo, alinhado à direita com ele, o contador de chaves pequenas, sempre
+## à vista, mesmo em zero, e a chave grande depois de encontrada (Marcelo não
+## achava o contador no alto, 2026-11-06, e o quis sobre o minimapa em
+## 2026-11-13). A espada fica sempre no seu botão, com a
 ## lâmina magenta enquanto está travada. O botão de uma ferramenta que o
 ## personagem ainda não tem aparece apagado. Uma melhoria troca o ícone da
 ## ferramenta: com a chama forte, o botão da chama mostra a chama maior de
@@ -18,7 +19,7 @@ extends Control
 ## dia por pedido de Marcelo em 2026-11-07 ("corações na barra lá em cima,
 ## mas ossos que dão a energia").
 ##
-## No canto inferior direito, no capítulo, o minimapa das salas já visitadas
+## No canto inferior esquerdo, no capítulo, o minimapa das salas já visitadas
 ## (ui/minimap.gd). No alto, à direita, o cronômetro: no jogo contínuo, o do
 ## jogo inteiro desde o Novo jogo, e no treino o do capítulo (pedidos de
 ## Marcelo em 2026-11-07).
@@ -32,10 +33,10 @@ const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
 const HEART_STEP := Vector2(18.0, 16.0)
 ## Corações que cabem numa linha, antes do cronômetro.
 const HEALTH_ROW := 12
-## Centro do ícone da chave, à direita do losango, na altura do centro dele.
-const KEYS_POSITION := Vector2(108.0, 304.0)
-## Chave apagada, quando não há nenhuma.
-const NO_KEY_TINT := Color(0.45, 0.45, 0.5, 1.0)
+## Altura da aba das chaves, pendurada sob a barra, embaixo dos corações.
+const KEYS_TAB_HEIGHT := 28.0
+## Chave e número apagados, quando não há nenhuma.
+const NO_KEY_TINT := Color(0.62, 0.62, 0.68, 1.0)
 const BAR_COLOR := Color(0.07, 0.07, 0.09, 1.0)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
 ## Disco de um botão com espada ou ferramenta, e disco apagado de um botão
@@ -52,9 +53,10 @@ const CHARGE_SIZE := Vector2(4.0, 4.0)
 const CHARGE_STEP := 6.0
 ## Tamanho da barra do capítulo, a largura toda da tela.
 const BAR_SIZE := Vector2(640.0, 40.0)
-## Centro do losango dos botões, relativo ao HUD: canto inferior esquerdo da
-## tela, com espaço à esquerda para a coluna de cargas do botão da esquerda.
-const BUTTONS_CENTER := Vector2(52.0, 304.0)
+## Centro do losango dos botões, relativo ao HUD: canto inferior direito da
+## tela, com espaço à direita para a coluna de cargas do botão da direita.
+## Marcelo trocou o losango e o minimapa de lado em 2026-11-13.
+const BUTTONS_CENTER := Vector2(572.0, 304.0)
 ## Posição de cada botão de face a partir do centro do losango, pelo índice do
 ## Godot, que segue a posição física do botão: 0 embaixo, 1 à direita, 2 à
 ## esquerda e 3 em cima.
@@ -68,8 +70,9 @@ const TOOL_ACTIONS := {
 	&"jump": Item.Id.SPRING,
 }
 const FONT_SIZE := 16
-## Canto inferior direito do minimapa, relativo ao HUD, a 8 px das bordas.
-const MINIMAP_CORNER := Vector2(624.0, 344.0)
+## Canto inferior esquerdo do minimapa, relativo ao HUD, a 8 px das bordas
+## contando o fundo.
+const MINIMAP_CORNER := Vector2(4.0, 344.0)
 
 ## Ligado, desenha a barra de fundo do capítulo, que esconde a sala vizinha.
 @export var show_bar := false
@@ -149,16 +152,26 @@ func _draw_health(player: Player) -> void:
 
 
 ## O ícone da chave com o número de chaves ao lado, apagado quando é zero, e a
-## chave grande depois, quando o personagem a tem.
+## chave grande depois, quando o personagem a tem. Fica numa aba escura
+## pendurada sob a barra do alto, embaixo dos corações, para ler bem sobre
+## qualquer chão (pedido de Marcelo em 2026-11-13, depois de uma passagem
+## pela aba acima do minimapa no mesmo dia).
 func _draw_keys(player: Player) -> void:
 	var tint := Color.WHITE if player.keys > 0 else NO_KEY_TINT
-	ToolIcons.draw(self, Item.Id.KEY, KEYS_POSITION, tint)
 	var font := Fonts.SMALL
 	var text := "x%d" % player.keys
-	var text_position := KEYS_POSITION + Vector2(12.0, 8.0)
+	var text_width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE).x
+	var left := 0.0
+	var top := BAR_SIZE.y
+	var boss_key := player.has_tool(Item.Id.BOSS_KEY)
+	var width := 30.0 + text_width + (30.0 if boss_key else 6.0)
+	draw_rect(Rect2(left, top, width, KEYS_TAB_HEIGHT), BAR_COLOR)
+	var middle := top + KEYS_TAB_HEIGHT / 2.0 - 2.0
+	ToolIcons.draw(self, Item.Id.KEY, Vector2(left + 14.0, middle), tint)
+	var text_position := Vector2(left + 28.0, middle + 8.0)
 	draw_string(font, text_position, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, tint)
-	if player.has_tool(Item.Id.BOSS_KEY):
-		ToolIcons.draw(self, Item.Id.BOSS_KEY, KEYS_POSITION + Vector2(52.0, 0.0))
+	if boss_key:
+		ToolIcons.draw(self, Item.Id.BOSS_KEY, Vector2(left + 44.0 + text_width, middle))
 
 
 func _draw_buttons(player: Player) -> void:
@@ -166,11 +179,16 @@ func _draw_buttons(player: Player) -> void:
 		var sword_center: Vector2 = _button_centers[&"attack"]
 		ToolIcons.draw_centered(self, BUTTON_TEXTURE, sword_center)
 		ToolIcons.draw_sword(self, sword_center, player.is_sword_locked())
+		# A espada forte mostra o selo x2, como as outras melhorias.
+		if player.has_tool(Item.Id.STRONG_SWORD) and not player.is_sword_locked():
+			ToolIcons.draw(self, Item.Id.STRONG_SWORD, sword_center)
 	for action: StringName in TOOL_ACTIONS:
 		if not _button_centers.has(action):
 			continue
 		var center: Vector2 = _button_centers[action]
 		var id: int = TOOL_ACTIONS[action]
+		if id == player.denied_tool:
+			center += DoorArt.shake_offset(player.denied_tick)
 		if not player.has_tool(id):
 			ToolIcons.draw_centered(self, EMPTY_BUTTON_TEXTURE, center)
 			continue
@@ -184,6 +202,8 @@ func _draw_buttons(player: Player) -> void:
 
 ## Item desenhado no botão da ferramenta: a melhoria, se o personagem a tem.
 func _shown_item(player: Player, id: int) -> int:
+	if id == Item.Id.BOMB and player.has_tool(Item.Id.STRONG_BOMB):
+		return Item.Id.STRONG_BOMB
 	if id == Item.Id.FIRE and player.has_tool(Item.Id.STRONG_FIRE):
 		return Item.Id.STRONG_FIRE
 	if id == Item.Id.SPRING and player.has_tool(Item.Id.STRONG_SPRING):
@@ -206,10 +226,10 @@ func _draw_charges(center: Vector2, left: int, maximum: int) -> void:
 		draw_rect(Rect2(Vector2(x, top + i * CHARGE_STEP), CHARGE_SIZE), color)
 
 
-## Minimapa das salas já visitadas, no canto inferior direito, sobre um fundo
+## Minimapa das salas já visitadas, no canto inferior esquerdo, sobre um fundo
 ## escuro.
 func _draw_minimap(chapter: Node) -> void:
 	var size := Minimap.rooms_size(chapter, Minimap.HUD_CELL)
-	var origin := MINIMAP_CORNER - size
+	var origin := MINIMAP_CORNER - Vector2(0.0, size.y)
 	draw_rect(Rect2(origin - Vector2(4.0, 4.0), size + Vector2(8.0, 8.0)), Minimap.BACKGROUND)
 	Minimap.draw_rooms(self, chapter, origin, Minimap.HUD_CELL)

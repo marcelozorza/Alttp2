@@ -1,12 +1,13 @@
 class_name Sentinel
 extends Boss
-## Chefe do capítulo 1, a dungeon grande: a sentinela, um buldogue de pedra
-## com coleira de pontas (desenho a partir da referência que Marcelo mandou
-## fazer em 2026-11-07). É o exame das três ferramentas juntas, numa ordem que
+## Chefe do capítulo 1, a dungeon grande: a sentinela, um Rottweiler
+## de coleira de pontas. É o exame das três ferramentas juntas, numa ordem que
 ## o jogador lê pelo próprio desenho.
 ##
-## A pele de pedra cinza só cede à bomba. Por baixo, o corpo está congelado,
-## com o azul do gelo grosso, e só a chama o derrete. Só então o núcleo quente
+## São três estágios que se leem pela cor (pedido de Marcelo em 2026-11-11).
+## Ele começa como uma estátua de cimento rachada, que só cede à bomba. Por
+## baixo, o corpo está preso no gelo, com o azul do gelo grosso, e só a chama
+## o derrete. Só então aparece o Rottweiler de verdade, preto e fogo, que
 ## apanha da espada e da bomba. A pedra e o gelo voltam juntos depois de
 ## shell_regrow_time, contados da explosão, então bomba, chama e espada
 ## precisam vir em sequência.
@@ -14,12 +15,14 @@ extends Boss
 ## Os ataques são os do guardião de gelo: a pancada que solta a onda, evitada
 ## com a mola, e a investida em linha reta. O ritmo fica nos parâmetros da
 ## cena. O desenho é de perfil, virado para a direita, e vira para o lado em
-## que o personagem está. Este arquivo foi regravado em 2026-11-08 para
-## substituir uma cópia local com um caractere solto que travava o jogo.
+## que o personagem está. Desde 2026-11-11 é um Rottweiler, com quadros por
+## estado nas três camadas (tools/art/sentinel.py). Este arquivo foi
+## regravado em 2026-11-08 para substituir uma cópia local com um caractere
+## solto que travava o jogo.
 
-const ARMOR_TEXTURE := preload("res://art/sentinel_shell.svg")
-const FROST_TEXTURE := preload("res://art/sentinel_frost.svg")
-const HOT_CORE_TEXTURE := preload("res://art/sentinel_core.svg")
+## Quadros do corpo preso no gelo, entre a estátua (shell_frames) e a forma
+## original (core_frames).
+@export var frost_frames: BossFrames
 
 ## Ligado enquanto o núcleo está congelado, depois que a armadura caiu.
 var _frost := true
@@ -37,7 +40,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 		return
 	var now := Clock.tick
 	if _shell:
-		if kind == Hit.Kind.BLAST:
+		if Hit.is_blast(kind):
 			_shell = false
 			_frost = true
 			_shell_break_tick = now
@@ -66,14 +69,10 @@ func _update_state() -> void:
 
 
 ## O desenho mostra a camada de fora: a pedra enquanto fechada, e por baixo o
-## gelo ou o núcleo quente. O resto do desenho (avisos, dano, a pedra piscando
+## gelo ou a forma original. O resto do desenho (avisos, dano, a pedra piscando
 ## antes de voltar) é o do chefe comum.
-func _shell_texture() -> Texture2D:
-	return ARMOR_TEXTURE
-
-
 func _core_texture() -> Texture2D:
-	return FROST_TEXTURE if _frost else HOT_CORE_TEXTURE
+	return _frame_from(frost_frames if _frost else core_frames)
 
 
 func _faces_left() -> bool:

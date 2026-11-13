@@ -3,27 +3,33 @@ class_name ToolIcons
 ## usados no HUD e nos baús. Cada item tem um desenho de 12 pixels, e as
 ## chaves, de 7 por 12. A chave grande é a chave pequena em vermelho, a cor da
 ## porta do chefe, e a espada travada é a espada com a lâmina magenta, como a
-## troca de paleta do Super Nintendo.
+## troca de paleta do Super Nintendo. Todo ícone tem um filete claro em volta
+## (`tools/art/rim.py`), para ler sobre fundo escuro.
 ##
 ## As melhorias (chama forte e mola forte) usam o ícone da ferramenta comum com
 ## o selo x2 ao lado, pedido de Marcelo em 2026-11-08.
 
 const SWORD := preload("res://art/icon_sword.svg")
 const SWORD_LOCKED := preload("res://art/icon_sword_locked.svg")
+const BOMB := preload("res://art/icon_bomb.svg")
 const FIRE := preload("res://art/icon_fire.svg")
 const SPRING := preload("res://art/icon_spring.svg")
 const TEXTURES := {
-	Item.Id.BOMB: preload("res://art/icon_bomb.svg"),
+	Item.Id.BOMB: BOMB,
+	Item.Id.STRONG_BOMB: BOMB,
 	Item.Id.FIRE: FIRE,
 	Item.Id.STRONG_FIRE: FIRE,
 	Item.Id.SPRING: SPRING,
 	Item.Id.STRONG_SPRING: SPRING,
+	Item.Id.STRONG_SWORD: SWORD,
 	Item.Id.HEART: preload("res://art/icon_heart.svg"),
 	Item.Id.KEY: preload("res://art/icon_key.svg"),
 	Item.Id.BOSS_KEY: preload("res://art/icon_boss_key.svg"),
 }
 const LEVEL_TWO := preload("res://art/icon_x2.svg")
-const UPGRADES := [Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING]
+const UPGRADES := [
+	Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING, Item.Id.STRONG_BOMB, Item.Id.STRONG_SWORD
+]
 
 
 ## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do

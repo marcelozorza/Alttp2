@@ -37,7 +37,15 @@ const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
 const ART_BELOW_FEET := 0.0
 ## Tons sobre o desenho. Acima de 1, o tom clareia.
 const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
-const HIT_TINT := Color(2.0, 2.0, 2.0, 1.0)
+## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
+## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
+const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
+## Nuvens a mais quando o chefe é vencido: o desvio de cada uma, em pixels, a
+## partir do centro do desenho, e os ticks entre uma e outra.
+const DEATH_PUFF_SHIFTS: Array[Vector2] = [
+	Vector2(-18.0, -8.0), Vector2(16.0, 6.0), Vector2(-6.0, 14.0), Vector2(12.0, -14.0)
+]
+const DEATH_PUFF_TICKS := 6
 const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 const HEALTH_COLOR := Color(0.9, 0.3, 0.35, 1.0)
@@ -48,7 +56,7 @@ const FLASH_TICKS := 6
 
 @export_group("Vida")
 ## Pontos de vida do núcleo.
-@export_range(1, 60, 1) var max_health := 12
+@export_range(1, 120, 1) var max_health := 12
 ## Segundos até a casca de gelo voltar depois de quebrada.
 @export_range(0.5, 20.0, 0.5) var shell_regrow_time := 6.0
 ## Ligado, a casca é de gelo grosso e só a chama forte a quebra.
@@ -173,7 +181,7 @@ func take_hit(amount: int, _direction: Vector2, kind := Hit.Kind.SWORD) -> void:
 ## casca de pedra, só à explosão.
 func _breaks_shell(kind: Hit.Kind) -> bool:
 	if stone_shell:
-		return kind == Hit.Kind.BLAST
+		return Hit.is_blast(kind)
 	if thick_shell:
 		return kind == Hit.Kind.STRONG_FIRE
 	return Hit.is_fire(kind)
@@ -363,6 +371,14 @@ func _die() -> void:
 	_defeated = true
 	_enter(State.DEAD)
 	velocity = Vector2.ZERO
+	# O chefe some na hora, e uma sequência de nuvens estoura no lugar dele.
+	var texture := _core_texture()
+	DeathPuff.spawn(self, texture, _texture_offset(texture), _faces_left())
+	for index: int in DEATH_PUFF_SHIFTS.size():
+		var wait := (index + 1) * DEATH_PUFF_TICKS
+		DeathPuff.spawn(
+			self, texture, _texture_offset(texture), false, wait, DEATH_PUFF_SHIFTS[index]
+		)
 	visible = false
 	_base.set_deferred("disabled", true)
 	defeated.emit()
@@ -394,12 +410,16 @@ func _draw() -> void:
 		if regrow_in <= GameMath.ticks(REGROW_WARNING_TIME) and posmod(regrow_in, 8) < 4:
 			texture = _shell_texture()
 	var origin := _texture_offset(texture) + shake
+	GroundShadow.draw(self, Vector2.ZERO, texture.get_width())
 	if _faces_left():
-		var size := texture.get_size()
+		# Largura negativa espelha o desenho no próprio lugar: o canto do
+		# retângulo continua sendo o da esquerda.
 		draw_texture_rect(
-			texture, Rect2(origin + Vector2(size.x, 0.0), size * Vector2(-1.0, 1.0)), false, tint
+			texture, Rect2(origin, texture.get_size() * Vector2(-1.0, 1.0)), false, tint
 		)
 	else:
 		draw_texture(texture, origin, tint)
 	var bar_width := texture.get_width() * float(maxi(health, 0)) / max_health
+	var frame := Rect2(origin + Vector2(0.0, -8.0), Vector2(texture.get_width(), 4.0))
+	draw_rect(frame.grow(DoorArt.OUTLINE), DoorArt.OUTLINE_COLOR)
 	draw_rect(Rect2(origin + Vector2(0.0, -8.0), Vector2(bar_width, 4.0)), HEALTH_COLOR)

@@ -1,4 +1,5 @@
 # Caixa leve de madeira: tampa clara em cima e frente mais escura.
+# Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 o #1e181e
 t #ddb277
@@ -7,8 +8,8 @@ f #8a5a3c
 d #8a5a3c
 n #5c4232
 pixels
-..oooooooooooooooooooooooooooo..
 .oooooooooooooooooooooooooooooo.
+oooooooooooooooooooooooooooooooo
 oootttttttttttttttttttttttttuooo
 ootttttttttttttttttttttttttuuuoo
 ootttuuuuuuuuuuuuuuuuuuuuuuuuuoo
@@ -33,5 +34,5 @@ ooffddfffnnnffffffnnnfffffddnnoo
 ooffdddfffnnffffffnnfffffdddnnoo
 ooffddddddddddddddddddddddddnnoo
 ooofddddddddddddddddddddddddnooo
+oooooooooooooooooooooooooooooooo
 .oooooooooooooooooooooooooooooo.
-..oooooooooooooooooooooooooooo..
