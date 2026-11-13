@@ -20,8 +20,8 @@ def exit_door():
     c = Canvas(72, 32)
     c.rect(0, 0, 72, 32, INK)
     c.rect(2, 0, 68, 32, S4)
-    c.rect(2, 0, 2, 32, S5)
-    c.rect(66, 0, 4, 32, S3)
+    c.rect(2, 0, 1, 32, S5)
+    c.rect(67, 0, 3, 32, S3)
     c.rect(6, 0, 60, 32, INK)
     c.rect(8, 2, 56, 30, Y2)
     return c
