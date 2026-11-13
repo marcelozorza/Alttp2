@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor de dungeons do Giorgino</title>
+<style>
+:root {
+  --bg: #f4f1ea;
+  --panel: #ffffff;
+  --line: #d9d3c7;
+  --text: #2b2730;
+  --muted: #6d6676;
+  --accent: #3d6fd8;
+  --accent-soft: #e3ebfb;
+  --warn: #b5482f;
+  --void: #c9c4ba;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.4 "Segoe UI", system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 250px 1fr 300px;
+  grid-template-areas: "top top top" "left main right" "status status status";
+  overflow: hidden;
+}
+header {
+  grid-area: top;
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 8px 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+header h1 { font-size: 16px; margin: 0 12px 0 4px; white-space: nowrap; }
+header .sep { width: 1px; height: 28px; background: var(--line); margin: 0 4px; }
+button, select, input[type=text], input[type=number], textarea {
+  font: inherit; color: inherit;
+}
+button {
+  background: #fff; border: 1px solid var(--line); border-radius: 6px;
+  padding: 5px 10px; cursor: pointer; white-space: nowrap;
+}
+button:hover { border-color: var(--accent); }
+button.on { background: var(--accent-soft); border-color: var(--accent); }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+select { padding: 5px 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+aside { overflow-y: auto; background: var(--panel); padding: 8px 10px 20px; }
+#left { grid-area: left; border-right: 1px solid var(--line); }
+#right { grid-area: right; border-left: 1px solid var(--line); }
+aside h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 14px 0 6px; }
+.palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.palette button {
+  padding: 2px; height: 50px; display: flex; align-items: center; justify-content: center;
+  background: #faf8f4;
+}
+.palette button canvas { image-rendering: pixelated; }
+.palette button.on { background: var(--accent-soft); outline: 2px solid var(--accent); }
+#current { margin-top: 10px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: #faf8f4; min-height: 60px; }
+#current b { display: block; }
+#current span { color: var(--muted); font-size: 13px; }
+main { grid-area: main; position: relative; overflow: hidden; background: #e7e2d8; }
+main canvas#map { position: absolute; left: 0; top: 0; image-rendering: pixelated; }
+#status {
+  grid-area: status; padding: 4px 10px; background: var(--panel); border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px; display: flex; gap: 18px;
+}
+#status .warn { color: var(--warn); }
+.box { border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: #faf8f4; }
+.box textarea { width: 100%; min-height: 90px; border: 1px solid var(--line); border-radius: 4px; padding: 6px; resize: vertical; }
+.row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; align-items: center; }
+#notes-list { list-style: none; padding: 0; margin: 0; }
+#notes-list li { padding: 6px; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 4px; cursor: pointer; background: #fff; }
+#notes-list li:hover { border-color: var(--accent); }
+#notes-list .num { display: inline-block; min-width: 22px; height: 22px; border-radius: 11px; background: #e0457b; color: #fff; text-align: center; font-weight: 700; margin-right: 6px; }
+.help { font-size: 13px; color: var(--muted); }
+.help li { margin-bottom: 4px; }
+dialog { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; max-width: 460px; }
+dialog h3 { margin-top: 0; }
+dialog label { display: block; margin: 8px 0 2px; }
+dialog input, dialog select { width: 100%; padding: 6px; border: 1px solid var(--line); border-radius: 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Editor de dungeons</h1>
+  <select id="dungeon-select" title="Dungeon aberta"></select>
+  <button id="btn-new" title="Criar uma dungeon nova, em branco">Nova</button>
+  <button id="btn-dup" title="Fazer uma cópia desta dungeon">Duplicar</button>
+  <button id="btn-rename">Renomear</button>
+  <button id="btn-delete" title="Apagar esta dungeon (só as criadas por você)">Apagar</button>
+  <button id="btn-reset" title="Voltar esta dungeon para o desenho que está no jogo">Restaurar original</button>
+  <span class="sep"></span>
+  <button data-tool="brush" title="Pincel (B): pinta casa a casa">Pincel</button>
+  <button data-tool="rect" title="Retângulo (R): arraste para preencher uma área">Retângulo</button>
+  <button data-tool="room" title="Sala (S): arraste para criar paredes em volta e chão dentro. Um clique faz a tela inteira">Sala</button>
+  <button data-tool="fill" title="Balde (F): preenche a área ligada de mesmo tipo">Balde</button>
+  <button data-tool="erase" title="Borracha (E): tira objetos, inimigos e notas. Botão direito do mouse também apaga">Borracha</button>
+  <button data-tool="select" title="Selecionar (V): clique numa casa para ver e editar o baú, a placa ou a nota">Selecionar</button>
+  <button data-tool="note" title="Nota (N): clique para escrever uma explicação no mapa">Nota</button>
+  <button data-tool="pan" title="Mover o mapa (espaço ou botão do meio)">Mover</button>
+  <span class="sep"></span>
+  <button id="btn-undo" title="Desfazer (Ctrl+Z)">Desfazer</button>
+  <button id="btn-redo" title="Refazer (Ctrl+Y)">Refazer</button>
+  <span class="sep"></span>
+  <button id="btn-zoom-out" title="Afastar (-)">−</button>
+  <button id="btn-fit" title="Ver o mapa inteiro (0)">Ver tudo</button>
+  <button id="btn-zoom-in" title="Aproximar (+)">+</button>
+  <button id="btn-grid" title="Mostrar as linhas das casas (G)">Grade</button>
+  <span class="sep"></span>
+  <button id="btn-png" class="primary" title="Baixar uma imagem do mapa inteiro, com as notas, para mandar à Claude">Exportar imagem</button>
+  <button id="btn-json" title="Baixar o arquivo de dados do mapa, que a Claude lê direto">Exportar dados</button>
+  <button id="btn-import" title="Abrir um arquivo de dados exportado antes">Abrir dados</button>
+  <input type="file" id="file-input" accept=".json,application/json" hidden>
+</header>
+
+<aside id="left">
+  <div id="palettes"></div>
+  <div id="current"></div>
+</aside>
+
+<main id="main"><canvas id="map"></canvas></main>
+
+<aside id="right">
+  <h2>Dungeon</h2>
+  <div class="box">
+    <div class="row">Tema
+      <select id="theme-select">
+        <option value="stone">Pedra</option>
+        <option value="castle">Castelo</option>
+        <option value="ice">Gelo</option>
+        <option value="moss">Ruínas</option>
+      </select>
+    </div>
+    <div class="row" id="size-info"></div>
+    <div class="row">Telas:
+      <button data-grow="left" title="Põe uma coluna de telas à esquerda">+ esq.</button>
+      <button data-grow="right" title="Põe uma coluna de telas à direita">+ dir.</button>
+      <button data-grow="top" title="Põe uma fileira de telas em cima">+ cima</button>
+      <button data-grow="bottom" title="Põe uma fileira de telas embaixo">+ baixo</button>
+    </div>
+    <div class="row">
+      <button data-shrink="left">− esq.</button>
+      <button data-shrink="right">− dir.</button>
+      <button data-shrink="top">− cima</button>
+      <button data-shrink="bottom">− baixo</button>
+    </div>
+  </div>
+
+  <h2>Casa selecionada</h2>
+  <div class="box" id="inspector"><span class="help">Use a ferramenta Selecionar e clique numa casa.</span></div>
+
+  <h2>Notas no mapa</h2>
+  <ul id="notes-list"></ul>
+  <p class="help" id="notes-empty">Nenhuma nota. Use a ferramenta Nota para explicar uma ideia ou uma mecânica nova.</p>
+
+  <h2>Como usar</h2>
+  <ol class="help">
+    <li>Escolha um elemento à esquerda e pinte com o mouse. O botão direito apaga.</li>
+    <li>A roda do mouse aproxima e afasta. Segure espaço e arraste para mover o mapa.</li>
+    <li>A ferramenta Sala faz paredes e chão de uma vez. Um clique cobre a tela inteira.</li>
+    <li>Para uma mecânica nova, ponha uma Nota em cima e escreva como ela funciona.</li>
+    <li>Tudo fica guardado neste computador sozinho. Quando terminar, clique em Exportar imagem e Exportar dados e mande os dois arquivos no chat.</li>
+  </ol>
+</aside>
+
+<div id="status"><span id="st-cell">Casa</span><span id="st-what"></span><span id="st-save"></span></div>
+
+<dialog id="dlg-new">
+  <form method="dialog">
+    <h3>Nova dungeon</h3>
+    <label>Nome<input id="new-name" type="text" value="Dungeon nova"></label>
+    <label>Tema<select id="new-theme">
+      <option value="stone">Pedra</option><option value="castle">Castelo</option>
+      <option value="ice">Gelo</option><option value="moss">Ruínas</option>
+    </select></label>
+    <label>Telas na largura<input id="new-w" type="number" min="1" max="10" value="4"></label>
+    <label>Telas na altura<input id="new-h" type="number" min="1" max="10" value="4"></label>
+    <p class="help">Cada tela tem 20 por 10 casas, o tamanho de uma sala do jogo.</p>
+    <div class="row"><button value="cancel">Cancelar</button><button value="ok" class="primary">Criar</button></div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+const DATA = /*DATA*/null;
+
+const SCREEN_W = 20, SCREEN_H = 10, T = 32;
+const SLOTS = "123456789abdefghjklnopqrtv";
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const STORE_KEY = "giorgino-editor-v1";
+
+// ---------------------------------------------------------------- catálogo
+const ITEM_INFO = {
+  BOMB: ["Bomba", "icon_bomb"],
+  FIRE: ["Chama", "icon_fire"],
+  SPRING: ["Mola", "icon_spring"],
+  STRONG_FIRE: ["Chama forte", "icon_fire", true],
+  STRONG_SPRING: ["Mola forte", "icon_spring", true],
+  HEART: ["Coração", "icon_heart"],
+  KEY: ["Chave", "icon_key"],
+  BOSS_KEY: ["Chave grande", "icon_boss_key"],
+  NONE: ["A definir", null],
+};
+const BLOCK_INFO = {
+  CRACKED: ["Parede rachada", "cracked_wall", "Abre com a bomba."],
+  ICE: ["Gelo", "ice", "Derrete com a chama."],
+  THICK_ICE: ["Gelo grosso", "thick_ice", "Derrete com a chama forte."],
+  LEDGE: ["Degrau", "ledge", "Sobe com a mola. Desce pulando."],
+  TALL_LEDGE: ["Degrau duplo", "tall_ledge", "Sobe com a mola forte."],
+  LOCKED: ["Porta trancada", "locked_door", "Abre com uma chave pequena."],
+  BOSS_DOOR: ["Porta do chefe", "boss_door", "Abre com a chave grande."],
+  GATE: ["Grade", "gate", "Abre com o bloco pesado ou o personagem em cima do interruptor da mesma sala."],
+};
+
+const ELEMENTS = [];
+const EL = {};
+function def(id, group, name, sprite, char, hint, extra) {
+  const e = Object.assign({ id, group, name, sprite, char, hint }, extra || {});
+  ELEMENTS.push(e); EL[id] = e;
+}
+def("void", "Terreno", "Fora do mapa", null, " ", "Área vazia, fora da dungeon.", { ground: true });
+def("wall", "Terreno", "Parede", "wall", "#", "Parede.", { ground: true });
+def("floor", "Terreno", "Chão", "floor", ".", "Chão comum.", { ground: true });
+def("high", "Terreno", "Chão alto", "high_floor", ":", "Chão um nível acima, o topo de um degrau.", { ground: true });
+def("higher", "Terreno", "Chão mais alto", "higher_floor", "^", "Chão dois níveis acima, o topo de um degrau duplo.", { ground: true });
+for (const [k, v] of Object.entries(BLOCK_INFO)) {
+  def("block:" + k, "Bloqueios", v[0], v[1], null, v[2] + " Casas vizinhas do mesmo tipo formam um bloqueio só.", { block: k });
+}
+for (const k of ["KEY", "BOSS_KEY", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "NONE"]) {
+  def("chest:" + k, "Baús", "Baú: " + ITEM_INFO[k][0], "chest", null, "Baú com " + ITEM_INFO[k][0].toLowerCase() + ".", { item: k });
+}
+def("start", "Objetos", "Início do Giorgino", "giorgino_stand_down", "@", "Onde o personagem começa. Só um por dungeon.");
+def("heavy", "Objetos", "Bloco pesado", "heavy_block", "0", "Empurrado até o interruptor, deixa a grade aberta.");
+def("switch", "Objetos", "Interruptor", "floor_switch", "=", "Abre a grade da sala enquanto tem algo em cima.");
+def("crate", "Objetos", "Caixa leve", "crate", "c", "Caixa que o personagem empurra.");
+def("sign", "Objetos", "Placa de mensagem", "message_plate", "?", "Mostra um texto quando o personagem pisa. Escreva o texto com a ferramenta Selecionar.");
+const ENEMIES = [
+  ["m", "Minion", "minion_walk_1"], ["u", "Ugly (lobo)", "wolf_down"],
+  ["i", "Inimigo de gelo (cubo)", "ice_cube_down"], ["w", "Morsa (estalactite)", "stalactite_down"],
+  ["s", "Atirador de pedras (macaco)", "monkey_down"], ["x", "Tatu de pedra", "armadillo_down"],
+  ["y", "Morcego", "bat_down"], ["z", "Planta de espinhos (cobra)", "snake_down"],
+];
+for (const [c, n, s] of ENEMIES) def("enemy:" + c, "Inimigos", n, s, c, n + ".", { actor: true });
+const BOSSES = [
+  ["*", "Guardião de gelo", "crab_shell_walk"], ["&", "Sentinela", "sentinel_shell"],
+  ["%", "Guardião antigo", "crab_thick_walk"], ["$", "Colosso", "cerberus_shell_walk"],
+];
+for (const [c, n, s] of BOSSES) def("boss:" + c, "Chefes", n, s, c, "Chefe: " + n + ". O desenho ocupa mais de uma casa.", { actor: true, boss: true });
+// Desenhos lidos das cenas do jogo ao gerar o editor, por cima da lista acima.
+for (const [c, s] of Object.entries(DATA.actorSprites || {})) {
+  const e = EL["enemy:" + c] || EL["boss:" + c];
+  if (e) e.sprite = s;
+}
+const CHAR_TO_EL = {};
+for (const e of ELEMENTS) if (e.char) CHAR_TO_EL[e.char] = e.id;
+
+// ---------------------------------------------------------------- imagens
+const IMG = {};
+function loadImages() {
+  const names = Object.keys(DATA.sprites);
+  return Promise.all(names.map(n => new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = im.naturalWidth; c.height = im.naturalHeight;
+      c.getContext("2d").drawImage(im, 0, 0);
+      IMG[n] = c; res();
+    };
+    im.onerror = () => res();
+    im.src = DATA.sprites[n];
+  })));
+}
+const THEME_SUFFIX = { stone: "", castle: "_castle", ice: "_ice", moss: "_moss" };
+function themed(name, theme) {
+  const n = name + THEME_SUFFIX[theme];
+  return IMG[n] || IMG[name];
+}
+
+// ---------------------------------------------------------------- modelo
+// Uma dungeon: { id, name, theme, w, h, cells: [ids], labels: {"x,y": letra}, messages: {"x,y": texto},
+//   notes: [{x,y,text}], rooms, startingTools, original }
+function emptyDungeon(name, theme, sw, sh) {
+  const w = sw * SCREEN_W, h = sh * SCREEN_H;
+  return { id: "u" + Date.now().toString(36), name, theme, w, h, cells: new Array(w * h).fill("void"),
+    labels: {}, messages: {}, notes: [], rooms: [], startingTools: [], original: null };
+}
+
+// Converte dados no formato do jogo (rows, blocks, items) para o modelo do editor.
+function fromGame(src) {
+  const rows = src.rows;
+  let w = Math.max(...rows.map(r => r.length));
+  w = Math.ceil(w / SCREEN_W) * SCREEN_W;
+  const h = Math.ceil(rows.length / SCREEN_H) * SCREEN_H;
+  const d = { id: src.id, name: src.name, theme: src.theme || "stone", w, h, cells: new Array(w * h).fill("void"),
+    labels: {}, messages: {}, notes: [], rooms: src.rooms || [], startingTools: src.startingTools || [],
+    original: src.original || null };
+  const unknown = new Set();
+  for (let y = 0; y < rows.length; y++) {
+    for (let x = 0; x < rows[y].length; x++) {
+      const ch = rows[y][x];
+      let id = null;
+      if (LETTERS.includes(ch)) { id = "chest:" + (src.items[ch] || "NONE"); d.labels[x + "," + y] = ch; }
+      else if (src.blocks[ch] !== undefined) { id = "block:" + src.blocks[ch]; d.labels[x + "," + y] = ch; }
+      else if (CHAR_TO_EL[ch]) id = CHAR_TO_EL[ch];
+      else { id = "floor"; unknown.add(ch); }
+      d.cells[y * w + x] = id;
+    }
+  }
+  for (const m of src.messages || []) d.messages[m[0] + "," + m[1]] = m[2];
+  for (const n of src.notes || []) d.notes.push({ x: n[0], y: n[1], text: n[2] });
+  if (unknown.size) console.warn("Caracteres desconhecidos:", [...unknown]);
+  return d;
+}
+
+// Converte o modelo do editor para o formato do jogo.
+function toGame(d) {
+  const rows = [], blocks = {}, items = {}, warnings = [];
+  const grid = [];
+  for (let y = 0; y < d.h; y++) grid.push(new Array(d.w).fill(" "));
+  // Baús: mantém a letra original quando ela não se repete.
+  const usedLetters = new Set();
+  const chests = [];
+  for (let y = 0; y < d.h; y++) for (let x = 0; x < d.w; x++) {
+    const id = d.cells[y * d.w + x];
+    if (id.startsWith("chest:")) chests.push([x, y, id.slice(6)]);
+  }
+  const pending = [];
+  for (const c of chests) {
+    const l = d.labels[c[0] + "," + c[1]];
+    if (l && LETTERS.includes(l) && !usedLetters.has(l)) { usedLetters.add(l); grid[c[1]][c[0]] = l; items[l] = c[2]; }
+    else pending.push(c);
+  }
+  for (const c of pending) {
+    const l = [...LETTERS].find(k => !usedLetters.has(k));
+    if (!l) { warnings.push("Mais de 26 baús: o jogo só aceita 26."); grid[c[1]][c[0]] = "."; continue; }
+    usedLetters.add(l); grid[c[1]][c[0]] = l; items[l] = c[2];
+  }
+  // Bloqueios: casas vizinhas do mesmo tipo formam um bloqueio.
+  const seen = new Uint8Array(d.w * d.h);
+  const usedSlots = new Set();
+  const groups = [];
+  for (let y = 0; y < d.h; y++) for (let x = 0; x < d.w; x++) {
+    const i = y * d.w + x, id = d.cells[i];
+    if (!id.startsWith("block:") || seen[i]) continue;
+    const cellsOf = [], stack = [[x, y]]; seen[i] = 1;
+    while (stack.length) {
+      const [cx, cy] = stack.pop(); cellsOf.push([cx, cy]);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < 0 || ny < 0 || nx >= d.w || ny >= d.h) continue;
+        const j = ny * d.w + nx;
+        if (!seen[j] && d.cells[j] === id) { seen[j] = 1; stack.push([nx, ny]); }
+      }
+    }
+    groups.push({ type: id.slice(6), cells: cellsOf });
+  }
+  const later = [];
+  for (const g of groups) {
+    const counts = {};
+    for (const [x, y] of g.cells) { const l = d.labels[x + "," + y]; if (l) counts[l] = (counts[l] || 0) + 1; }
+    const best = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).find(l => SLOTS.includes(l) && !usedSlots.has(l));
+    if (best) { usedSlots.add(best); g.slot = best; } else later.push(g);
+  }
+  for (const g of later) {
+    const s = [...SLOTS].find(k => !usedSlots.has(k));
+    if (!s) { warnings.push("Mais de 26 bloqueios: o jogo só aceita 26 por dungeon."); g.slot = "."; continue; }
+    usedSlots.add(s); g.slot = s;
+  }
+  for (const g of groups) {
+    if (g.slot !== ".") blocks[g.slot] = g.type;
+    for (const [x, y] of g.cells) grid[y][x] = g.slot;
+  }
+  let starts = 0;
+  for (let y = 0; y < d.h; y++) for (let x = 0; x < d.w; x++) {
+    const e = EL[d.cells[y * d.w + x]];
+    if (e.char) grid[y][x] = e.char;
+    if (e.id === "start") starts++;
+  }
+  if (starts === 0) warnings.push("Falta o início do Giorgino.");
+  if (starts > 1) warnings.push("Há mais de um início do Giorgino.");
+  for (const r of grid) rows.push(r.join("").replace(/\s+$/, ""));
+  while (rows.length && rows[rows.length - 1] === "") rows.pop();
+  const messages = Object.entries(d.messages)
+    .filter(([k]) => { const [x, y] = k.split(",").map(Number); return d.cells[y * d.w + x] === "sign"; })
+    .map(([k, t]) => { const [x, y] = k.split(",").map(Number); return [x, y, t]; });
+  const notes = d.notes.map((n, i) => [n.x, n.y, n.text, i + 1]);
+  return { rows, blocks, items, messages, notes, warnings };
+}
+
+// ---------------------------------------------------------------- estado
+let store = { dungeons: {}, order: [], current: null };
+let D = null;          // dungeon aberta
+let undoStack = [], redoStack = [];
+let tool = "brush", elementId = "wall";
+let zoom = 1, panX = 20, panY = 20, showGrid = false;
+let selected = null;   // {x,y}
+let storageOk = true;
+
+function originals() {
+  const list = {};
+  for (const src of DATA.dungeons) list[src.id] = src;
+  return list;
+}
+function loadStore() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); } catch (e) { storageOk = false; }
+  const orig = originals();
+  if (saved && saved.dungeons) store = saved;
+  for (const src of DATA.dungeons) {
+    if (!store.dungeons[src.id]) {
+      store.dungeons[src.id] = fromGame(Object.assign({}, src, { original: src.id }));
+      store.order.splice(DATA.dungeons.indexOf(src), 0, src.id);
+    }
+  }
+  store.order = store.order.filter(id => store.dungeons[id]);
+  if (!store.current || !store.dungeons[store.current]) store.current = store.order[0];
+  void orig;
+}
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); storageOk = true; setSaveStatus("Guardado neste computador."); }
+    catch (e) { storageOk = false; setSaveStatus("Não foi possível guardar sozinho. Use Exportar dados para não perder o desenho.", true); }
+  }, 400);
+}
+function setSaveStatus(t, warn) {
+  const el = document.getElementById("st-save");
+  el.textContent = t; el.className = warn ? "warn" : "";
+}
+
+function snapshot() {
+  return JSON.stringify({ w: D.w, h: D.h, cells: D.cells, labels: D.labels, messages: D.messages, notes: D.notes, rooms: D.rooms });
+}
+function restore(s) { Object.assign(D, JSON.parse(s)); }
+function pushUndo() {
+  undoStack.push(snapshot());
+  if (undoStack.length > 150) undoStack.shift();
+  redoStack = [];
+}
+function undo() { if (!undoStack.length) return; redoStack.push(snapshot()); restore(undoStack.pop()); changed(); }
+function redo() { if (!redoStack.length) return; undoStack.push(snapshot()); restore(redoStack.pop()); changed(); }
+
+function changed() { render(); renderNotes(); renderInspector(); renderSize(); save(); }
+
+function openDungeon(id) {
+  store.current = id; D = store.dungeons[id];
+  undoStack = []; redoStack = []; selected = null;
+  document.getElementById("theme-select").value = D.theme;
+  fillDungeonSelect(); fit(); changed();
+}
+
+// ---------------------------------------------------------------- acesso às casas
+function inside(x, y) { return x >= 0 && y >= 0 && x < D.w && y < D.h; }
+function get(x, y) { return inside(x, y) ? D.cells[y * D.w + x] : "void"; }
+function key(x, y) { return x + "," + y; }
+function set(x, y, id) {
+  if (!inside(x, y)) return false;
+  const i = y * D.w + x;
+  if (D.cells[i] === id) return false;
+  if (id === "start") { // um início só
+    for (let j = 0; j < D.cells.length; j++) if (D.cells[j] === "start") D.cells[j] = "floor";
+  }
+  D.cells[i] = id;
+  delete D.labels[key(x, y)];
+  return true;
+}
+function eraseAt(x, y) {
+  let did = false;
+  const before = D.notes.length;
+  D.notes = D.notes.filter(n => !(n.x === x && n.y === y));
+  if (D.notes.length !== before) did = true;
+  const e = EL[get(x, y)];
+  if (inside(x, y) && !e.ground) { D.cells[y * D.w + x] = groundFor(x, y); delete D.labels[key(x, y)]; did = true; }
+  return did;
+}
+// Nível do chão de uma casa com objeto, pela regra do jogo: o chão mais alto ao lado.
+function groundFor(x, y) {
+  let level = "floor";
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const n = get(x + dx, y + dy);
+    if (n === "higher") return "higher";
+    if (n === "high") level = "high";
+  }
+  return level;
+}
+
+// ---------------------------------------------------------------- desenho
+const canvas = document.getElementById("map");
+const ctx = canvas.getContext("2d");
+const mainEl = document.getElementById("main");
+let hover = null, dragRect = null;
+
+function resizeCanvas() {
+  const r = mainEl.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+  canvas.style.width = r.width + "px"; canvas.style.height = r.height + "px";
+  render();
+}
+
+function drawFit(c, img, cx, cy, maxW, maxH, allowUp) {
+  if (!img) return;
+  let s = Math.min(maxW / img.width, maxH / img.height);
+  if (!allowUp) s = Math.min(s, 1);
+  const w = img.width * s, h = img.height * s;
+  c.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+}
+
+function drawGround(c, d, x, y, id) {
+  const px = x * T, py = y * T;
+  const alt = (x + y) % 2 === 0;
+  if (id === "void") { c.fillStyle = "#cfc9be"; c.fillRect(px, py, T, T); return; }
+  if (id === "wall") {
+    const below = get(x, y + 1);
+    const face = below !== "wall" && below !== "void";
+    c.drawImage(themed(face ? "wall_face" : "wall", d.theme), px, py, T, T);
+    return;
+  }
+  const base = { floor: "floor", high: "high_floor", higher: "higher_floor" }[id];
+  c.drawImage(themed(alt ? base + "_alt" : base, d.theme) || themed(base, d.theme), px, py, T, T);
+}
+
+function drawItemBadge(c, item, cx, cy, size) {
+  const info = ITEM_INFO[item];
+  c.fillStyle = "rgba(255,255,255,.92)";
+  c.beginPath(); c.arc(cx, cy, size / 2, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = "#2b2730"; c.lineWidth = 1; c.stroke();
+  if (info[1]) drawFit(c, IMG[info[1]], cx, cy, size * .72, size * .72, true);
+  else { c.fillStyle = "#2b2730"; c.font = `bold ${size * .6}px sans-serif`; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("?", cx, cy + 1); }
+  if (info[2]) {
+    c.fillStyle = "#c0392b"; c.font = `bold ${size * .38}px sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText("x2", cx + size * .42, cy - size * .38);
+  }
+}
+
+function drawObject(c, d, x, y, id, opts) {
+  const e = EL[id];
+  const px = x * T, py = y * T, cx = px + T / 2, cy = py + T / 2;
+  if (e.block) {
+    const img = e.block === "CRACKED" ? themed("cracked_wall", d.theme) : IMG[e.sprite];
+    if (e.block === "TALL_LEDGE") drawFit(c, img, cx, cy, T, T, false);
+    else drawFit(c, img, cx, cy, T, T, true);
+    if (opts.codes) {
+      const l = d.labels[key(x, y)];
+      if (l) label(c, l, px + 2, py + 2);
+    }
+    return;
+  }
+  if (e.item) {
+    c.drawImage(IMG.chest, px, py, T, T);
+    drawItemBadge(c, e.item, px + T - 9, py + T - 9, 17);
+    const l = d.labels[key(x, y)];
+    if (l && opts.codes !== false) label(c, l, px + 1, py + 1);
+    return;
+  }
+  if (e.boss) return; // desenhado depois, por cima
+  if (id === "start") { drawFit(c, IMG[e.sprite], cx, cy, T * 1.1, T * 1.1, false); return; }
+  if (id === "heavy" || id === "crate" || id === "switch") { drawFit(c, IMG[e.sprite], cx, cy, T, T, true); return; }
+  if (id === "sign") {
+    drawFit(c, IMG[d.messages[key(x, y)] ? "message_plate_lit" : "message_plate"] || IMG[e.sprite], cx, cy, T, T, true);
+    return;
+  }
+  if (e.actor) drawFit(c, IMG[e.sprite], cx, cy, T, T, true);
+}
+function label(c, text, x, y) {
+  c.font = "bold 10px sans-serif"; c.textAlign = "left"; c.textBaseline = "top";
+  const w = c.measureText(text).width + 4;
+  c.fillStyle = "rgba(255,255,255,.85)"; c.fillRect(x, y, w, 12);
+  c.fillStyle = "#2b2730"; c.fillText(text, x + 2, y + 1);
+}
+
+// Desenha a dungeon inteira em coordenadas de casa (1 casa = 32 unidades).
+function drawDungeon(c, d, view, opts) {
+  const x0 = Math.max(0, view.x0), y0 = Math.max(0, view.y0);
+  const x1 = Math.min(d.w, view.x1), y1 = Math.min(d.h, view.y1);
+  c.imageSmoothingEnabled = false;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const id = d.cells[y * d.w + x];
+    const e = EL[id] || EL.floor;
+    drawGround(c, d, x, y, e.ground ? id : groundFor(x, y));
+  }
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const id = d.cells[y * d.w + x];
+    if (!EL[id].ground) drawObject(c, d, x, y, id, opts);
+  }
+  for (let y = Math.max(0, y0 - 2); y < Math.min(d.h, y1 + 2); y++) for (let x = Math.max(0, x0 - 2); x < Math.min(d.w, x1 + 2); x++) {
+    const e = EL[d.cells[y * d.w + x]];
+    if (e.boss) drawFit(c, IMG[e.sprite], x * T + T / 2, y * T + T / 2, T * 2.4, T * 2.4, true);
+  }
+  // Grade das casas
+  if (opts.grid) {
+    c.strokeStyle = "rgba(0,0,0,.18)"; c.lineWidth = 1 / opts.scale;
+    c.beginPath();
+    for (let x = x0; x <= x1; x++) { c.moveTo(x * T, y0 * T); c.lineTo(x * T, y1 * T); }
+    for (let y = y0; y <= y1; y++) { c.moveTo(x0 * T, y * T); c.lineTo(x1 * T, y * T); }
+    c.stroke();
+  }
+  // Telas
+  c.strokeStyle = "rgba(61,111,216,.75)"; c.lineWidth = 2 / opts.scale;
+  c.setLineDash([]);
+  c.beginPath();
+  for (let x = 0; x <= d.w; x += SCREEN_W) {
+    for (let y = 0; y < d.h; y += SCREEN_H) {
+      if (x > 0 && x < d.w && sameRoom(d, x / SCREEN_W - 1, y / SCREEN_H, x / SCREEN_W, y / SCREEN_H)) continue;
+      c.moveTo(x * T, y * T); c.lineTo(x * T, (y + SCREEN_H) * T);
+    }
+  }
+  for (let y = 0; y <= d.h; y += SCREEN_H) {
+    for (let x = 0; x < d.w; x += SCREEN_W) {
+      if (y > 0 && y < d.h && sameRoom(d, x / SCREEN_W, y / SCREEN_H - 1, x / SCREEN_W, y / SCREEN_H)) continue;
+      c.moveTo(x * T, y * T); c.lineTo((x + SCREEN_W) * T, y * T);
+    }
+  }
+  c.stroke();
+  // Nome das telas
+  c.font = "bold 11px sans-serif"; c.textAlign = "left"; c.textBaseline = "top";
+  for (let sy = 0; sy < d.h / SCREEN_H; sy++) for (let sx = 0; sx < d.w / SCREEN_W; sx++) {
+    const t = `tela ${sx},${sy}`;
+    const w = c.measureText(t).width + 6;
+    c.fillStyle = "rgba(61,111,216,.85)"; c.fillRect(sx * SCREEN_W * T, sy * SCREEN_H * T, w, 14);
+    c.fillStyle = "#fff"; c.fillText(t, sx * SCREEN_W * T + 3, sy * SCREEN_H * T + 1);
+  }
+  // Notas
+  d.notes.forEach((n, i) => drawPin(c, n.x * T + T / 2, n.y * T + T / 2, i + 1, selected && selected.x === n.x && selected.y === n.y));
+}
+function sameRoom(d, ax, ay, bx, by) {
+  return (d.rooms || []).some(r => ax >= r[0] && ax < r[0] + r[2] && ay >= r[1] && ay < r[1] + r[3]
+    && bx >= r[0] && bx < r[0] + r[2] && by >= r[1] && by < r[1] + r[3]);
+}
+function drawPin(c, cx, cy, num, sel) {
+  c.fillStyle = "#e0457b"; c.strokeStyle = sel ? "#ffd400" : "#fff"; c.lineWidth = sel ? 4 : 2;
+  c.beginPath(); c.arc(cx, cy, 13, 0, Math.PI * 2); c.fill(); c.stroke();
+  c.fillStyle = "#fff"; c.font = "bold 14px sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
+  c.fillText(String(num), cx, cy + 1);
+}
+
+function render() {
+  if (!D) return;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = "#e7e2d8"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const s = zoom * dpr;
+  ctx.setTransform(s, 0, 0, s, panX * dpr, panY * dpr);
+  const view = {
+    x0: Math.floor(-panX / zoom / T) - 1, y0: Math.floor(-panY / zoom / T) - 1,
+    x1: Math.ceil((canvas.width / dpr - panX) / zoom / T) + 1, y1: Math.ceil((canvas.height / dpr - panY) / zoom / T) + 1,
+  };
+  ctx.fillStyle = "#000"; ctx.globalAlpha = .15; ctx.fillRect(4, 4, D.w * T, D.h * T); ctx.globalAlpha = 1;
+  drawDungeon(ctx, D, view, { grid: showGrid, scale: zoom, codes: zoom >= .75 });
+  // Destaques
+  if (dragRect) {
+    const r = normRect(dragRect);
+    ctx.fillStyle = "rgba(61,111,216,.25)"; ctx.strokeStyle = "#3d6fd8"; ctx.lineWidth = 2 / zoom;
+    ctx.fillRect(r.x0 * T, r.y0 * T, (r.x1 - r.x0 + 1) * T, (r.y1 - r.y0 + 1) * T);
+    ctx.strokeRect(r.x0 * T, r.y0 * T, (r.x1 - r.x0 + 1) * T, (r.y1 - r.y0 + 1) * T);
+  }
+  if (selected) { ctx.strokeStyle = "#ffd400"; ctx.lineWidth = 3 / zoom; ctx.strokeRect(selected.x * T, selected.y * T, T, T); }
+  if (hover && inside(hover.x, hover.y)) { ctx.strokeStyle = "rgba(0,0,0,.6)"; ctx.lineWidth = 2 / zoom; ctx.strokeRect(hover.x * T, hover.y * T, T, T); }
+}
+function normRect(r) {
+  return { x0: Math.min(r.ax, r.bx), y0: Math.min(r.ay, r.by), x1: Math.max(r.ax, r.bx), y1: Math.max(r.ay, r.by) };
+}
+
+// ---------------------------------------------------------------- câmera
+function fit() {
+  const r = mainEl.getBoundingClientRect();
+  zoom = Math.min((r.width - 40) / (D.w * T), (r.height - 40) / (D.h * T));
+  zoom = Math.max(.1, Math.min(zoom, 3));
+  panX = (r.width - D.w * T * zoom) / 2; panY = (r.height - D.h * T * zoom) / 2;
+  render();
+}
+function zoomAt(f, sx, sy) {
+  const nz = Math.max(.1, Math.min(4, zoom * f));
+  panX = sx - (sx - panX) * nz / zoom; panY = sy - (sy - panY) * nz / zoom; zoom = nz; render();
+}
+function cellAt(ev) {
+  const r = canvas.getBoundingClientRect();
+  return { x: Math.floor((ev.clientX - r.left - panX) / zoom / T), y: Math.floor((ev.clientY - r.top - panY) / zoom / T) };
+}
+
+// ---------------------------------------------------------------- ferramentas
+let painting = false, panning = null, spaceDown = false, strokeChanged = false, erasing = false;
+
+function applyAt(x, y) {
+  if (!inside(x, y)) return false;
+  if (erasing || tool === "erase") return eraseAt(x, y);
+  return set(x, y, elementId);
+}
+function floodFill(x, y, id) {
+  const target = get(x, y);
+  if (target === id || !inside(x, y)) return false;
+  const stack = [[x, y]];
+  while (stack.length) {
+    const [cx, cy] = stack.pop();
+    if (!inside(cx, cy) || get(cx, cy) !== target) continue;
+    set(cx, cy, id);
+    stack.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
+  }
+  return true;
+}
+function fillRect(r, id, roomMode) {
+  for (let y = r.y0; y <= r.y1; y++) for (let x = r.x0; x <= r.x1; x++) {
+    if (!inside(x, y)) continue;
+    if (roomMode) set(x, y, (x === r.x0 || x === r.x1 || y === r.y0 || y === r.y1) ? "wall" : "floor");
+    else if (erasing || tool === "erase") eraseAt(x, y);
+    else set(x, y, id);
+  }
+}
+
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+canvas.addEventListener("pointerdown", ev => {
+  canvas.setPointerCapture(ev.pointerId);
+  const c = cellAt(ev);
+  if (ev.button === 1 || tool === "pan" || spaceDown) { panning = { x: ev.clientX, y: ev.clientY, px: panX, py: panY }; return; }
+  erasing = ev.button === 2;
+  if (!erasing && tool === "select") { select(c.x, c.y); return; }
+  if (!erasing && tool === "note") { addNote(c.x, c.y); return; }
+  if (!erasing && tool === "fill") { if (!EL[elementId].ground && !EL[elementId].block) { pushUndo(); set(c.x, c.y, elementId); changed(); return; } pushUndo(); if (floodFill(c.x, c.y, elementId)) changed(); else undoStack.pop(); return; }
+  if (tool === "rect" || tool === "room") { dragRect = { ax: c.x, ay: c.y, bx: c.x, by: c.y }; render(); return; }
+  pushUndo(); painting = true; strokeChanged = applyAt(c.x, c.y);
+  afterPlace(c.x, c.y);
+  render();
+});
+canvas.addEventListener("pointermove", ev => {
+  if (panning) { panX = panning.px + ev.clientX - panning.x; panY = panning.py + ev.clientY - panning.y; render(); return; }
+  const c = cellAt(ev);
+  if (!hover || hover.x !== c.x || hover.y !== c.y) {
+    hover = c; updateStatus();
+    if (painting) { if (applyAt(c.x, c.y)) strokeChanged = true; }
+    if (dragRect) { dragRect.bx = c.x; dragRect.by = c.y; }
+    render();
+  }
+});
+canvas.addEventListener("pointerup", ev => {
+  if (panning) { panning = null; return; }
+  if (dragRect) {
+    const r = normRect(dragRect); dragRect = null;
+    pushUndo();
+    if (tool === "room" && r.x0 === r.x1 && r.y0 === r.y1 && !erasing) {
+      const sx = Math.floor(r.x0 / SCREEN_W) * SCREEN_W, sy = Math.floor(r.y0 / SCREEN_H) * SCREEN_H;
+      fillRect({ x0: sx, y0: sy, x1: sx + SCREEN_W - 1, y1: sy + SCREEN_H - 1 }, null, true);
+    } else fillRect(r, elementId, tool === "room" && !erasing);
+    changed(); erasing = false; return;
+  }
+  if (painting) { painting = false; if (!strokeChanged) undoStack.pop(); changed(); }
+  erasing = false;
+});
+canvas.addEventListener("pointerleave", () => { hover = null; render(); updateStatus(); });
+canvas.addEventListener("wheel", ev => {
+  ev.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  zoomAt(ev.deltaY < 0 ? 1.15 : 1 / 1.15, ev.clientX - r.left, ev.clientY - r.top);
+}, { passive: false });
+
+function afterPlace(x, y) {
+  if (!erasing && tool === "brush" && elementId === "sign" && inside(x, y)) { selected = { x, y }; setTimeout(() => { renderInspector(); const t = document.querySelector("#inspector textarea"); if (t) t.focus(); }, 0); }
+}
+
+function select(x, y) { selected = inside(x, y) ? { x, y } : null; render(); renderInspector(); }
+function addNote(x, y) {
+  if (!inside(x, y)) return;
+  const existing = D.notes.find(n => n.x === x && n.y === y);
+  if (!existing) { pushUndo(); D.notes.push({ x, y, text: "" }); }
+  selected = { x, y }; changed();
+  const t = document.querySelector("#inspector textarea[data-kind=note]"); if (t) t.focus();
+}
+
+// ---------------------------------------------------------------- painéis
+const GROUPS = ["Terreno", "Bloqueios", "Baús", "Objetos", "Inimigos", "Chefes"];
+function iconFor(e, size) {
+  const c = document.createElement("canvas");
+  c.width = size; c.height = size;
+  const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+  const theme = D ? D.theme : "stone";
+  const s = size / T;
+  g.scale(s, s);
+  if (e.ground) {
+    if (e.id === "void") { g.fillStyle = "#cfc9be"; g.fillRect(0, 0, T, T); g.strokeStyle = "#9b9488"; g.strokeRect(.5, .5, T - 1, T - 1); }
+    else g.drawImage(themed(e.sprite, theme), 0, 0, T, T);
+  } else {
+    if (e.block || e.item || e.id === "switch") g.drawImage(themed("floor", theme), 0, 0, T, T);
+    const fake = { theme, labels: {}, messages: {} };
+    if (e.boss) drawFit(g, IMG[e.sprite], T / 2, T / 2, T, T, true);
+    else drawObject(g, fake, 0, 0, e.id, { codes: false });
+  }
+  return c;
+}
+function buildPalettes() {
+  const root = document.getElementById("palettes"); root.innerHTML = "";
+  for (const gname of GROUPS) {
+    const h = document.createElement("h2"); h.textContent = gname; root.appendChild(h);
+    const p = document.createElement("div"); p.className = "palette";
+    for (const e of ELEMENTS.filter(e => e.group === gname)) {
+      const b = document.createElement("button");
+      b.title = e.name + ". " + e.hint; b.dataset.el = e.id;
+      b.appendChild(iconFor(e, 40));
+      b.addEventListener("click", () => chooseElement(e.id));
+      p.appendChild(b);
+    }
+    root.appendChild(p);
+  }
+  markPalette();
+}
+function chooseElement(id) {
+  elementId = id;
+  if (tool === "erase" || tool === "select" || tool === "note" || tool === "pan" || tool === "room") setTool("brush");
+  markPalette();
+}
+function markPalette() {
+  document.querySelectorAll(".palette button").forEach(b => b.classList.toggle("on", b.dataset.el === elementId));
+  const e = EL[elementId];
+  document.getElementById("current").innerHTML = `<b>${e.name}</b><span>${e.hint}</span>`;
+}
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll("[data-tool]").forEach(b => b.classList.toggle("on", b.dataset.tool === t));
+  canvas.style.cursor = t === "pan" ? "grab" : "crosshair";
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function renderInspector() {
+  const box = document.getElementById("inspector");
+  if (!selected || !D) { box.innerHTML = '<span class="help">Use a ferramenta Selecionar e clique numa casa.</span>'; return; }
+  const { x, y } = selected, id = get(x, y), e = EL[id];
+  let html = `<div><b>${esc(e.name)}</b> <span class="help">casa ${x},${y}, tela ${Math.floor(x / SCREEN_W)},${Math.floor(y / SCREEN_H)}</span></div>`;
+  html += `<div class="help">${esc(e.hint)}</div>`;
+  if (e.item) {
+    html += `<div class="row">Item do baú <select id="insp-item">${Object.keys(ITEM_INFO).map(k => `<option value="${k}"${k === e.item ? " selected" : ""}>${ITEM_INFO[k][0]}</option>`).join("")}</select></div>`;
+    const l = D.labels[key(x, y)]; if (l) html += `<div class="help">Letra no jogo: ${l}</div>`;
+  }
+  if (e.block) {
+    const l = D.labels[key(x, y)]; if (l) html += `<div class="help">Código no jogo: ${l}</div>`;
+  }
+  if (id === "sign") {
+    html += `<div>Texto da placa</div><textarea id="insp-sign" data-kind="sign">${esc(D.messages[key(x, y)] || "")}</textarea>`;
+  }
+  const note = D.notes.find(n => n.x === x && n.y === y);
+  if (note) {
+    html += `<div style="margin-top:8px">Nota ${D.notes.indexOf(note) + 1}</div><textarea id="insp-note" data-kind="note" placeholder="Explique a ideia, a mecânica ou o que deve acontecer aqui.">${esc(note.text)}</textarea>`;
+    html += `<div class="row"><button id="insp-del-note">Apagar nota</button></div>`;
+  } else {
+    html += `<div class="row"><button id="insp-add-note">Pôr uma nota aqui</button></div>`;
+  }
+  box.innerHTML = html;
+  const item = document.getElementById("insp-item");
+  if (item) item.onchange = () => { pushUndo(); D.cells[y * D.w + x] = "chest:" + item.value; changed(); };
+  const sign = document.getElementById("insp-sign");
+  if (sign) { sign.onfocus = () => pushUndo(); sign.oninput = () => { D.messages[key(x, y)] = sign.value; save(); render(); }; }
+  const nt = document.getElementById("insp-note");
+  if (nt) { nt.onfocus = () => pushUndo(); nt.oninput = () => { note.text = nt.value; save(); renderNotes(); }; }
+  const del = document.getElementById("insp-del-note");
+  if (del) del.onclick = () => { pushUndo(); D.notes.splice(D.notes.indexOf(note), 1); changed(); };
+  const add = document.getElementById("insp-add-note");
+  if (add) add.onclick = () => addNote(x, y);
+}
+function renderNotes() {
+  const ul = document.getElementById("notes-list"); ul.innerHTML = "";
+  document.getElementById("notes-empty").style.display = D.notes.length ? "none" : "";
+  D.notes.forEach((n, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="num">${i + 1}</span>${esc(n.text || "(sem texto)")}`;
+    li.onclick = () => {
+      selected = { x: n.x, y: n.y };
+      const r = mainEl.getBoundingClientRect();
+      if (zoom < .6) zoom = .8;
+      panX = r.width / 2 - (n.x + .5) * T * zoom; panY = r.height / 2 - (n.y + .5) * T * zoom;
+      render(); renderInspector();
+    };
+    ul.appendChild(li);
+  });
+}
+function renderSize() {
+  document.getElementById("size-info").textContent = `${D.w / SCREEN_W} por ${D.h / SCREEN_H} telas (${D.w} por ${D.h} casas)`;
+}
+function updateStatus() {
+  const a = document.getElementById("st-cell"), b = document.getElementById("st-what");
+  if (!hover || !inside(hover.x, hover.y)) { a.textContent = ""; b.textContent = ""; return; }
+  a.textContent = `Casa ${hover.x},${hover.y}  ·  tela ${Math.floor(hover.x / SCREEN_W)},${Math.floor(hover.y / SCREEN_H)}`;
+  const e = EL[get(hover.x, hover.y)];
+  const msg = D.messages[key(hover.x, hover.y)];
+  b.textContent = e.name + (msg && e.id === "sign" ? `: "${msg}"` : "");
+}
+function fillDungeonSelect() {
+  const s = document.getElementById("dungeon-select"); s.innerHTML = "";
+  for (const id of store.order) {
+    const o = document.createElement("option"); o.value = id; o.textContent = store.dungeons[id].name;
+    if (id === store.current) o.selected = true; s.appendChild(o);
+  }
+  document.getElementById("btn-reset").disabled = !D || !D.original;
+  document.getElementById("btn-delete").disabled = !D || !!(D.original && D.id === D.original);
+}
+
+// ---------------------------------------------------------------- telas
+function resize(side, grow) {
+  const dw = (side === "left" || side === "right") ? SCREEN_W : 0;
+  const dh = (side === "top" || side === "bottom") ? SCREEN_H : 0;
+  const sign = grow ? 1 : -1;
+  const nw = D.w + sign * dw, nh = D.h + sign * dh;
+  if (nw < SCREEN_W || nh < SCREEN_H) return;
+  const ox = side === "left" ? sign * dw : 0, oy = side === "top" ? sign * dh : 0;
+  if (!grow) {
+    let used = false;
+    for (let y = 0; y < D.h; y++) for (let x = 0; x < D.w; x++) {
+      const nx = x + ox, ny = y + oy;
+      if ((nx < 0 || ny < 0 || nx >= nw || ny >= nh) && D.cells[y * D.w + x] !== "void") used = true;
+    }
+    if (used && !confirm("Essa faixa de telas tem desenho. Apagar mesmo?")) return;
+  }
+  pushUndo();
+  const cells = new Array(nw * nh).fill("void");
+  const move = obj => { const out = {}; for (const [k, v] of Object.entries(obj)) { const [x, y] = k.split(",").map(Number); const nx = x + ox, ny = y + oy; if (nx >= 0 && ny >= 0 && nx < nw && ny < nh) out[nx + "," + ny] = v; } return out; };
+  for (let y = 0; y < D.h; y++) for (let x = 0; x < D.w; x++) {
+    const nx = x + ox, ny = y + oy;
+    if (nx >= 0 && ny >= 0 && nx < nw && ny < nh) cells[ny * nw + nx] = D.cells[y * D.w + x];
+  }
+  D.labels = move(D.labels); D.messages = move(D.messages);
+  D.notes = D.notes.map(n => ({ x: n.x + ox, y: n.y + oy, text: n.text })).filter(n => n.x >= 0 && n.y >= 0 && n.x < nw && n.y < nh);
+  D.rooms = (D.rooms || []).map(r => [r[0] + ox / SCREEN_W, r[1] + oy / SCREEN_H, r[2], r[3]]).filter(r => r[0] >= 0 && r[1] >= 0);
+  D.cells = cells; D.w = nw; D.h = nh;
+  if (side === "left" || side === "top") { panX -= ox * T * zoom; panY -= oy * T * zoom; }
+  changed();
+}
+
+// ---------------------------------------------------------------- exportar
+function fileName(ext) {
+  const n = D.name.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "").toLowerCase();
+  const t = new Date(), p = v => String(v).padStart(2, "0");
+  return `${n}_${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}_${p(t.getHours())}h${p(t.getMinutes())}.${ext}`;
+}
+function download(blob, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function wrap(c, text, maxW) {
+  const out = [];
+  for (const para of String(text).split("\n")) {
+    let line = "";
+    for (const w of para.split(" ")) {
+      const t = line ? line + " " + w : w;
+      if (c.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t;
+    }
+    out.push(line);
+  }
+  return out;
+}
+function exportPNG() {
+  const mapW = D.w * T, mapH = D.h * T;
+  const W = Math.max(mapW, 1100);
+  const m = document.createElement("canvas").getContext("2d");
+  // Texto do rodapé: notas e placas
+  m.font = "20px sans-serif";
+  const blocks = [];
+  D.notes.forEach((n, i) => blocks.push({ pin: i + 1, title: `Nota ${i + 1} (casa ${n.x},${n.y}, tela ${Math.floor(n.x / SCREEN_W)},${Math.floor(n.y / SCREEN_H)})`, text: n.text || "(sem texto)" }));
+  for (const [k, t] of Object.entries(D.messages)) {
+    const [x, y] = k.split(",").map(Number);
+    if (get(x, y) === "sign" && t) blocks.push({ title: `Placa na casa ${x},${y}`, text: t });
+  }
+  const g = toGame(D);
+  const colW = Math.min(W - 40, 900);
+  let footer = 0;
+  for (const b of blocks) { b.lines = wrap(m, b.text, colW - 50); footer += 30 + b.lines.length * 26 + 12; }
+  if (g.warnings.length) footer += 30 + g.warnings.length * 26;
+  const header = 70;
+  const c = document.createElement("canvas");
+  c.width = W; c.height = header + mapH + (footer ? footer + 40 : 20);
+  const x = c.getContext("2d");
+  x.fillStyle = "#f4f1ea"; x.fillRect(0, 0, c.width, c.height);
+  x.fillStyle = "#2b2730"; x.font = "bold 30px sans-serif"; x.textBaseline = "top"; x.textAlign = "left";
+  x.fillText(D.name, 20, 16);
+  x.font = "18px sans-serif"; x.fillStyle = "#6d6676";
+  const themeName = { stone: "pedra", castle: "castelo", ice: "gelo", moss: "ruínas" }[D.theme];
+  x.fillText(`Tema ${themeName}. ${D.w / SCREEN_W} por ${D.h / SCREEN_H} telas de 20 por 10 casas. Exportado em ${new Date().toLocaleString("pt-BR")}.`, 20, 48);
+  x.save(); x.translate(0, header);
+  drawDungeon(x, D, { x0: 0, y0: 0, x1: D.w, y1: D.h }, { grid: true, scale: 1, codes: true });
+  x.restore();
+  let yy = header + mapH + 30;
+  for (const b of blocks) {
+    if (b.pin) drawPin(x, 34, yy + 12, b.pin, false);
+    x.fillStyle = "#2b2730"; x.font = "bold 20px sans-serif"; x.textAlign = "left"; x.textBaseline = "top";
+    x.fillText(b.title, 56, yy); yy += 30;
+    x.font = "20px sans-serif";
+    for (const l of b.lines) { x.fillText(l, 56, yy); yy += 26; }
+    yy += 12;
+  }
+  if (g.warnings.length) {
+    x.fillStyle = "#b5482f"; x.font = "bold 20px sans-serif"; x.fillText("Avisos", 20, yy); yy += 30;
+    x.font = "20px sans-serif"; for (const w of g.warnings) { x.fillText(w, 20, yy); yy += 26; }
+  }
+  c.toBlob(b => download(b, fileName("png")), "image/png");
+}
+function exportJSON() {
+  const g = toGame(D);
+  const out = {
+    formato: "editor-de-dungeons-giorgino", versao: 1,
+    nome: D.name, tema: D.theme, origem: D.original ? (DATA.dungeons.find(s => s.id === D.original) || {}).source || null : null,
+    telas: [D.w / SCREEN_W, D.h / SCREEN_H],
+    legenda: "Mesma legenda de progression/chapter_map.gd. Letras maiúsculas são baús (itens em items), códigos de bloqueio em blocks.",
+    rows: g.rows, blocks: g.blocks, items: g.items, rooms: D.rooms, startingTools: D.startingTools,
+    messages: g.messages, notes: g.notes, avisos: g.warnings,
+  };
+  download(new Blob([JSON.stringify(out, null, 2)], { type: "application/json" }), fileName("json"));
+}
+function importJSON(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const j = JSON.parse(r.result);
+      const d = fromGame({ id: "u" + Date.now().toString(36), name: (j.nome || "Importada") + " (aberta)", theme: j.tema || "stone",
+        rows: j.rows, blocks: j.blocks || {}, items: j.items || {}, rooms: j.rooms || [], startingTools: j.startingTools || [],
+        messages: j.messages || [], notes: (j.notes || []).map(n => [n[0], n[1], n[2]]) });
+      d.original = null;
+      store.dungeons[d.id] = d; store.order.push(d.id); openDungeon(d.id);
+    } catch (e) { alert("Não consegui ler esse arquivo. Ele precisa ser um arquivo exportado por este editor."); }
+  };
+  r.readAsText(file);
+}
+
+// ---------------------------------------------------------------- botões e teclado
+document.querySelectorAll("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
+document.querySelectorAll("[data-grow]").forEach(b => b.addEventListener("click", () => resize(b.dataset.grow, true)));
+document.querySelectorAll("[data-shrink]").forEach(b => b.addEventListener("click", () => resize(b.dataset.shrink, false)));
+document.getElementById("btn-undo").onclick = undo;
+document.getElementById("btn-redo").onclick = redo;
+document.getElementById("btn-fit").onclick = fit;
+document.getElementById("btn-zoom-in").onclick = () => { const r = mainEl.getBoundingClientRect(); zoomAt(1.25, r.width / 2, r.height / 2); };
+document.getElementById("btn-zoom-out").onclick = () => { const r = mainEl.getBoundingClientRect(); zoomAt(1 / 1.25, r.width / 2, r.height / 2); };
+document.getElementById("btn-grid").onclick = () => { showGrid = !showGrid; document.getElementById("btn-grid").classList.toggle("on", showGrid); render(); };
+document.getElementById("btn-png").onclick = exportPNG;
+document.getElementById("btn-json").onclick = exportJSON;
+document.getElementById("btn-import").onclick = () => document.getElementById("file-input").click();
+document.getElementById("file-input").onchange = ev => { if (ev.target.files[0]) importJSON(ev.target.files[0]); ev.target.value = ""; };
+document.getElementById("dungeon-select").onchange = ev => openDungeon(ev.target.value);
+document.getElementById("theme-select").onchange = ev => { D.theme = ev.target.value; buildPalettes(); changed(); };
+document.getElementById("btn-new").onclick = () => document.getElementById("dlg-new").showModal();
+document.getElementById("dlg-new").addEventListener("close", () => {
+  const dlg = document.getElementById("dlg-new");
+  if (dlg.returnValue !== "ok") return;
+  const sw = Math.max(1, Math.min(10, +document.getElementById("new-w").value || 1));
+  const sh = Math.max(1, Math.min(10, +document.getElementById("new-h").value || 1));
+  const d = emptyDungeon(document.getElementById("new-name").value || "Dungeon nova", document.getElementById("new-theme").value, sw, sh);
+  store.dungeons[d.id] = d; store.order.push(d.id); openDungeon(d.id); buildPalettes();
+});
+document.getElementById("btn-dup").onclick = () => {
+  const d = JSON.parse(JSON.stringify(D));
+  d.id = "u" + Date.now().toString(36); d.name = D.name + " (cópia)"; d.original = D.original;
+  store.dungeons[d.id] = d; store.order.push(d.id); openDungeon(d.id);
+};
+document.getElementById("btn-rename").onclick = () => {
+  const n = prompt("Nome da dungeon", D.name); if (n) { D.name = n; fillDungeonSelect(); save(); }
+};
+document.getElementById("btn-delete").onclick = () => {
+  if (D.original && D.id === D.original) return;
+  if (!confirm(`Apagar "${D.name}"? Isso não tem volta.`)) return;
+  delete store.dungeons[D.id]; store.order = store.order.filter(i => i !== D.id);
+  openDungeon(store.order[0]);
+};
+document.getElementById("btn-reset").onclick = () => {
+  if (!D.original) return;
+  if (!confirm("Voltar esta dungeon para o desenho que está no jogo? O que você desenhou nela se perde (dá para desfazer enquanto a página estiver aberta).")) return;
+  const src = DATA.dungeons.find(s => s.id === D.original);
+  pushUndo();
+  const fresh = fromGame(Object.assign({}, src, { original: src.id }));
+  const keepUndo = undoStack;
+  Object.assign(D, { w: fresh.w, h: fresh.h, cells: fresh.cells, labels: fresh.labels, messages: fresh.messages, notes: [], rooms: fresh.rooms, theme: fresh.theme });
+  undoStack = keepUndo; fit(); changed();
+};
+
+window.addEventListener("keydown", ev => {
+  if (ev.target.matches("textarea, input")) return;
+  const k = ev.key.toLowerCase();
+  if ((ev.ctrlKey || ev.metaKey) && k === "z") { ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
+  if ((ev.ctrlKey || ev.metaKey) && k === "y") { ev.preventDefault(); redo(); return; }
+  if (ev.ctrlKey || ev.metaKey) return;
+  if (k === " ") { spaceDown = true; canvas.style.cursor = "grab"; ev.preventDefault(); return; }
+  const tools = { b: "brush", r: "rect", s: "room", f: "fill", e: "erase", v: "select", n: "note" };
+  if (tools[k]) setTool(tools[k]);
+  if (k === "g") document.getElementById("btn-grid").click();
+  if (k === "+" || k === "=") document.getElementById("btn-zoom-in").click();
+  if (k === "-") document.getElementById("btn-zoom-out").click();
+  if (k === "0") fit();
+  if ((k === "delete" || k === "backspace") && selected) { pushUndo(); if (eraseAt(selected.x, selected.y)) changed(); else undoStack.pop(); }
+});
+window.addEventListener("keyup", ev => { if (ev.key === " ") { spaceDown = false; setTool(tool); } });
+window.addEventListener("resize", resizeCanvas);
+
+// ---------------------------------------------------------------- início
+loadImages().then(() => {
+  loadStore();
+  D = store.dungeons[store.current];
+  buildPalettes();
+  setTool("brush");
+  resizeCanvas();
+  openDungeon(store.current);
+  setSaveStatus(storageOk ? "Os desenhos ficam guardados neste computador." : "Este navegador não deixa guardar. Use Exportar dados.", !storageOk);
+});
+</script>
+</body>
+</html>

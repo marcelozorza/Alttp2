@@ -12,3 +12,6 @@ Thumbs.db
 
 # Python
 __pycache__/
+
+# Editor de dungeons gerado
+/tools/editor/editor_de_dungeons.html
