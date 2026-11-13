@@ -5,9 +5,9 @@ paleta
 a #1e181e
 b #5c4232
 c #3b2530
-d #a9aac2
-e #7c7b99
-f #55526f
+d #8a5a3c
+e #5c4232
+f #3b2530
 g #8a5a3c
 h #b9824e
 pixels

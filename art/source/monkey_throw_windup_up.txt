@@ -3,9 +3,9 @@
 # Contorno de fora engrossado por tools/art/thicken.py.
 paleta
 a #1e181e
-b #a9aac2
-c #7c7b99
-d #55526f
+b #8a5a3c
+c #5c4232
+d #3b2530
 e #3b2530
 f #5c4232
 g #b9824e

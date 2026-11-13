@@ -20,6 +20,8 @@ const BALL_SIZE := Vector2(12.0, 12.0)
 const SHADOW_COLOR := Color(0.0, 0.0, 0.0, 0.35)
 ## Ticks em que o estouro fica visível.
 const BURST_TICKS := 12
+## Ticks de cada quarto de volta do projétil desenhado.
+const ART_TURN_TICKS := 5
 const GOO_BLOB: Array[Texture2D] = [
 	preload("res://art/goo_blob_1.svg"),
 	preload("res://art/goo_blob_2.svg"),
@@ -52,12 +54,15 @@ const GOO_FADE_TICKS := 30
 @export_range(0, 10, 1) var damage := 0
 ## Cor da bola e da área no chão.
 @export var color := Color(0.95, 0.35, 0.85, 1.0)
+## Desenho do projétil no ar, no lugar do quadrado de cor: o coco do macaco.
+@export var ball_texture: Texture2D
 
 var _from := Vector2.ZERO
 var _from_height := 0.0
 var _launch_tick := 0
 var _burst_tick := -1
 var _area_shape := RectangleShape2D.new()
+var _art: Sprite2D
 
 @onready var _ball: ColorRect = $Ball
 @onready var _blob := get_node_or_null("Blob") as Sprite2D
@@ -67,6 +72,12 @@ func _ready() -> void:
 	_ball.color = color
 	if _blob:
 		_ball.visible = false
+	if ball_texture:
+		_ball.visible = false
+		_art = Sprite2D.new()
+		_art.texture = ball_texture
+		_art.z_index = 1
+		add_child(_art)
 
 
 ## Lança a granada. Ela sai de from, os pés de quem joga, à altura from_height,
@@ -107,6 +118,10 @@ func _update_ball() -> void:
 	var t := _progress()
 	var height := _from_height * (1.0 - t) + arc_height * 4.0 * t * (1.0 - t)
 	_ball.position = _ground_offset() - Vector2(0.0, height) - BALL_SIZE / 2.0
+	if _art:
+		# Gira aos quartos de volta, para os pixels não borrarem.
+		_art.position = (_ball.position + BALL_SIZE / 2.0).round()
+		_art.rotation = floorf(float(Clock.tick - _launch_tick) / ART_TURN_TICKS) * PI / 2.0
 	if _blob:
 		_blob.position = _ball.position + BALL_SIZE / 2.0
 		var shape := floori(float(Clock.tick - _launch_tick) / GOO_BLOB_TICKS) % GOO_BLOB.size()
@@ -132,6 +147,8 @@ func _burst() -> void:
 	_ball.visible = false
 	if _blob:
 		_blob.visible = false
+	if _art:
+		_art.visible = false
 	_area_shape.size = _area().size
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = _area_shape
