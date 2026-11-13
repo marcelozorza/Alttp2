@@ -10,8 +10,9 @@ class_name CameraFollow
 
 const HALF_SCREEN := Vector2(320.0, 180.0)
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda.
-## Eram 3 até 2026-11-13.
-const EDGE_TILES := 4
+## Nas salas, 6 dos lados e 4 em cima e embaixo, o mesmo do mundo: Marcelo
+## mostrou numa captura, em 2026-11-13, a sexta casa a partir da borda.
+const EDGE_TILES := Vector2i(6, 4)
 
 
 ## Câmera centrada no alvo, presa aos limites. Serve para o primeiro quadro
@@ -28,7 +29,7 @@ static func pushed(
 	low: Vector2,
 	high: Vector2,
 	top_inset: float,
-	edge_tiles := Vector2i(EDGE_TILES, EDGE_TILES)
+	edge_tiles := EDGE_TILES
 ) -> Vector2:
 	var edge := Vector2(edge_tiles * ChapterMap.TILE)
 	var zone_min := Vector2(-HALF_SCREEN.x + edge.x, -HALF_SCREEN.y + top_inset + edge.y)
