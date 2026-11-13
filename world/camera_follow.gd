@@ -10,7 +10,8 @@ class_name CameraFollow
 
 const HALF_SCREEN := Vector2(320.0, 180.0)
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda.
-const EDGE_TILES := 3
+## Eram 3 até 2026-11-13.
+const EDGE_TILES := 4
 
 
 ## Câmera centrada no alvo, presa aos limites. Serve para o primeiro quadro
