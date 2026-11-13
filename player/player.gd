@@ -133,6 +133,9 @@ const NO_HOLD := -1
 ## Ligado, nenhum golpe tira vida: a galeria de testes usa. A física da
 ## batida continua.
 @export var invulnerable := false
+## Multiplica o dano de cada golpe recebido, arredondado para cima. A
+## dungeon define (Chapter.DAMAGE_SCALE).
+@export_range(1.0, 4.0, 0.5) var damage_scale := 1.0
 
 @export_group("Batidas")
 ## Velocidade, em pixels por segundo, abaixo da qual o personagem recupera o
@@ -423,6 +426,7 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 		return
 	if invulnerable:
 		return
+	amount = ceili(amount * damage_scale)
 	health -= amount
 	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
 	if health <= 0:

@@ -75,6 +75,9 @@ const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
 const FLOOR_SWITCH_SCENE := preload("res://objects/floor_switch.tscn")
 const MESSAGE_PLATE_SCENE := preload("res://objects/message_plate.tscn")
+## Dano dos inimigos por dungeon: uma vez e meia na 2 e o dobro na 3, sempre
+## arredondado para cima (pedido de Marcelo em 2026-11-13).
+const DAMAGE_SCALE := {2: 1.5, 3: 2.0}
 
 ## Chance, em cem, de um inimigo morto deixar um ossinho que recupera vida
 ## (pedido de Marcelo em 2026-11-07, para a morte não ficar dura demais). É
@@ -150,6 +153,7 @@ func _ready() -> void:
 	if _keeps_dungeon():
 		_restore_dungeon(Progress.dungeon_state(data.number))
 	_player.invulnerable = data.no_damage
+	_player.damage_scale = DAMAGE_SCALE.get(RunSettings.chapter, 1.0)
 	_camera.make_current()
 	_enter_room(_room_of(_player.global_position))
 	_camera.reset_smoothing()
