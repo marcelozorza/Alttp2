@@ -23,7 +23,7 @@ SPRITES = [
     "giorgino_stand_down", "heavy_block", "floor_switch", "crate", "message_plate", "message_plate_lit",
     "minion_walk_1", "wolf_down", "ice_cube_down", "stalactite_down", "monkey_down",
     "armadillo_down", "bat_down", "snake_down",
-    "crab_shell_walk", "sentinel_shell", "crab_thick_walk", "cerberus_shell_walk",
+    "crab_shell_walk", "sentinel_shell_walk", "crab_thick_walk", "cerberus_shell_walk",
 ]
 
 

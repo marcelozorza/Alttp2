@@ -246,7 +246,7 @@ const ENEMIES = [
 ];
 for (const [c, n, s] of ENEMIES) def("enemy:" + c, "Inimigos", n, s, c, n + ".", { actor: true });
 const BOSSES = [
-  ["*", "Guardião de gelo", "crab_shell_walk"], ["&", "Sentinela", "sentinel_shell"],
+  ["*", "Guardião de gelo", "crab_shell_walk"], ["&", "Sentinela", "sentinel_shell_walk"],
   ["%", "Guardião antigo", "crab_thick_walk"], ["$", "Colosso", "cerberus_shell_walk"],
 ];
 for (const [c, n, s] of BOSSES) def("boss:" + c, "Chefes", n, s, c, "Chefe: " + n + ". O desenho ocupa mais de uma casa.", { actor: true, boss: true });
