@@ -172,6 +172,10 @@ var _immune_tick := -1000
 var _next_throw_tick := 0
 var _hurt_shape := RectangleShape2D.new()
 
+## Quadro e espelhamento com que a sombra foi desenhada pela última vez.
+var _shadow_frame: Texture2D
+var _shadow_flip := false
+
 @onready var _home := global_position
 @onready var _base: CollisionShape2D = $Base
 @onready var _body: ColorRect = $Body
@@ -443,6 +447,11 @@ func _update_visuals() -> void:
 			if anchor_feet:
 				var size := frame.get_size()
 				_art.offset = Vector2(-floorf(size.x / 2.0), feet_offset - size.y)
+			# A sombra é medida pelo quadro: muda com ele.
+			if frame != _shadow_frame or _art.flip_h != _shadow_flip:
+				_shadow_frame = frame
+				_shadow_flip = _art.flip_h
+				queue_redraw()
 	_body.color = color
 	_body.position = _body_rest_position + shake
 	var half := (_body.size - _eye.size) / 2.0
