@@ -48,9 +48,15 @@ def paw(size, fur, ink):
 
 
 if __name__ == "__main__":
-    paw(24, 1.6, 1.6).save(
+    # O item tem 48 pixels desde 2026-11-13: Marcelo pediu o dobro.
+    paw(48, 3.0, 2.0).save(
         "relic",
         "Relíquia do fim do capítulo: a sola de patinha.\n"
+        "Contorno de fora engrossado por tools/art/thicken.py.",
+    )
+    paw(24, 1.6, 1.6).save(
+        "relic_small",
+        "Patinha pequena, sobre o portal de uma dungeon vencida.\n"
         "Contorno de fora engrossado por tools/art/thicken.py.",
     )
     paw(36, 2.4, 2.0).save("title_paw", "Sola de patinha ao lado do logotipo do título.")
