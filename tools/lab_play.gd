@@ -9,8 +9,8 @@ extends "res://tools/lab_test.gd"
 ## sala só pelos botões, andando, correndo e pulando, como o jogador faria.
 ## Serve para as salas que dependem de tempo ou de distância: a corrida da
 ## placa, o clone, o buraco largo, a fuga do fogo, o corredor sob ataque, o
-## piso quebradiço, as tochas com tempo, os buracos com vento e o nível de
-## água. Onde a sala pede uma ferramenta ou
+## piso quebradiço, as tochas com tempo, os buracos com vento, o nível de
+## água e o inimigo como peso. Onde a sala pede uma ferramenta ou
 ## a corrida, ele também confere que sem ela não passa.
 ##
 ## As linhas que começam com dois espaços são medidas (folga de tempo, vida
@@ -50,6 +50,7 @@ func _run_checks() -> void:
 	await _play_torches()
 	await _play_wind()
 	await _play_water()
+	await _play_weight()
 
 
 ## Ponto do mundo de uma casa do miolo da sala, contada a partir do canto da
@@ -304,3 +305,20 @@ func _play_water() -> void:
 	_expect("nível de água: vazia, a margem não deixa passar pela balsa", not drained)
 	var bed := await _follow(screen, [Vector2(4, 7), Vector2(4, 5), Vector2(1, 4), Vector2(0, 4)])
 	_expect("nível de água: vazia, a rampa leva pelo leito à porta do oeste", bed)
+
+
+func _play_weight() -> void:
+	var screen := Vector2i(4, 0)
+	await _enter(screen, 17, 4)
+	await _follow(screen, [Vector2(12, 4)])
+	# Espera, parado, o inimigo vir por cima da placa.
+	var guard := 0
+	while not _all_open(screen, ChapterMap.Block.TIMED_GATE) and guard < 400:
+		await _frames(1)
+		guard += 1
+	_health_mark = 0
+	var passed := await _walk_to(_spot(screen, Vector2(15, 3)))
+	passed = passed and await _walk_to(_spot(screen, Vector2(15, 1)))
+	_release_all()
+	print("  peso: esperou %d ticks, saiu com %d de vida" % [guard, _player.health])
+	_expect("inimigo como peso: atrai, passa pela grade e sai vivo", passed and _player.health > 0)
