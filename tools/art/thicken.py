@@ -34,7 +34,7 @@ FAMILIES = [
 OBJECTS = [
     "chest", "chest_open", "bomb", "bone", "bones_pile", "relic", "floor_switch",
     "floor_switch_pressed", "message_plate", "message_plate_lit", "save_stone",
-    "save_stone_lit", "torch", "candelabra", "banner", "ice_crystal", "gate", "crate",
+    "save_stone_lit", "torch", "candelabra", "banner", "gate", "crate",
     "heavy_block", "icicles", "entrance_stone", "entrance_castle", "entrance_ice",
     "entrance_moss",
 ]

@@ -35,7 +35,7 @@ const CANDELABRA := preload("res://art/candelabra.svg")
 const BANNER := preload("res://art/banner.svg")
 const VINE := preload("res://art/vine.svg")
 const BONES_PILE := preload("res://art/bones_pile.svg")
-const ICE_CRYSTAL := preload("res://art/ice_crystal.svg")
+const SNOW_PILE := preload("res://art/snow_pile.svg")
 const FROST := preload("res://art/frost.svg")
 const ICICLES := preload("res://art/icicles.svg")
 const MOSS_PATCH := preload("res://art/moss_patch.svg")
@@ -142,7 +142,7 @@ static func ice() -> DungeonTheme:
 	theme.sconce = TORCH
 	theme.flames.assign([FLAME_BLUE_1, FLAME_BLUE_2])
 	theme.flame_offset = TORCH_FLAME_OFFSET
-	theme.floor_props.assign([ICE_CRYSTAL])
+	theme.floor_props.assign([SNOW_PILE])
 	theme.overlay = FROST
 	theme.icicles = ICICLES
 	return theme
