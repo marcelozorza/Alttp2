@@ -8,7 +8,7 @@ const LOGO := preload("res://art/logo.svg")
 const PAW := preload("res://art/title_paw.svg")
 ## Retrato do Jorginho, à direita do menu (pedido de Marcelo em 2026-11-13).
 const PORTRAIT := preload("res://art/title_portrait.svg")
-const PORTRAIT_CORNER := Vector2(486.0, 92.0)
+const PORTRAIT_CORNER := Vector2(464.0, 104.0)
 ## Espaço entre o logotipo e a patinha à direita dele.
 const PAW_GAP := 10.0
 const GRASS: Array[Texture2D] = [
