@@ -50,8 +50,14 @@ const SPIN_ORDER: Array[Vector2] = [Vector2.DOWN, Vector2.LEFT, Vector2.UP, Vect
 
 ## Direção do último golpe, uma das 4 direções retas.
 var direction := Vector2.DOWN
+## Espada forte: metade a mais de dano (pedido de Marcelo em 2026-11-13). A
+## vida dos inimigos é inteira, então um golpe sim, um não, vale 1 a mais: a
+## cada dois golpes saem 3 de dano no lugar de 2.
+var strong := false
 
 var _attack_tick := NEVER
+var _strikes := 0
+var _strike_damage := 1
 var _restart_tick := NEVER
 var _already_hit: Array[Object] = []
 var _hit_shape := RectangleShape2D.new()
@@ -67,6 +73,7 @@ func attack(toward: Vector2) -> void:
 	direction = toward
 	_attack_tick = Clock.tick
 	_already_hit.clear()
+	_next_strike()
 	_apply_hits()
 
 
@@ -78,6 +85,7 @@ func spin(toward: Vector2, hit_around: bool) -> void:
 	_attack_tick = Clock.tick
 	if hit_around:
 		_already_hit.clear()
+		_next_strike()
 		for way: Vector2 in SPIN_ORDER:
 			direction = way
 			_apply_hits()
@@ -95,6 +103,12 @@ func is_out() -> bool:
 func _physics_process(_delta: float) -> void:
 	if _elapsed() < GameMath.ticks(active_time):
 		_apply_hits()
+
+
+## Conta o golpe e decide o dano dele (ver strong).
+func _next_strike() -> void:
+	_strikes += 1
+	_strike_damage = damage + (1 if strong and _strikes % 2 == 0 else 0)
 
 
 func _elapsed() -> int:
@@ -116,7 +130,7 @@ func _apply_hits() -> void:
 			continue
 		_already_hit.append(target)
 		if target.has_method("take_hit"):
-			target.call("take_hit", damage, direction, Hit.Kind.SWORD)
+			target.call("take_hit", _strike_damage, direction, Hit.Kind.SWORD)
 		var body := target as MomentumBody
 		if body:
 			body.add_impact_velocity(direction * impulse / body.mass)

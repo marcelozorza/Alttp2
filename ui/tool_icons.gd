@@ -21,12 +21,15 @@ const TEXTURES := {
 	Item.Id.STRONG_FIRE: FIRE,
 	Item.Id.SPRING: SPRING,
 	Item.Id.STRONG_SPRING: SPRING,
+	Item.Id.STRONG_SWORD: SWORD,
 	Item.Id.HEART: preload("res://art/icon_heart.svg"),
 	Item.Id.KEY: preload("res://art/icon_key.svg"),
 	Item.Id.BOSS_KEY: preload("res://art/icon_boss_key.svg"),
 }
 const LEVEL_TWO := preload("res://art/icon_x2.svg")
-const UPGRADES := [Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING, Item.Id.STRONG_BOMB]
+const UPGRADES := [
+	Item.Id.STRONG_FIRE, Item.Id.STRONG_SPRING, Item.Id.STRONG_BOMB, Item.Id.STRONG_SWORD
+]
 
 
 ## Desenha o ícone do item centrado em center. Só pode ser chamado dentro do

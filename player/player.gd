@@ -509,6 +509,7 @@ func _attack() -> void:
 		return
 	if _state == State.RUN:
 		_enter(State.WALK)
+	_sword.strong = has_tool(Item.Id.STRONG_SWORD)
 	_sword.attack(facing)
 	Sfx.play(&"sword_swing")
 	_freeze_until_tick = Clock.tick + GameMath.ticks(attack_freeze_time)
@@ -546,6 +547,7 @@ func _update_spin(in_control: bool) -> void:
 	if elapsed % SPIN_STEP_TICKS == 0:
 		@warning_ignore("integer_division")
 		var quarter := (elapsed / SPIN_STEP_TICKS) % Sword.SPIN_ORDER.size()
+		_sword.strong = has_tool(Item.Id.STRONG_SWORD)
 		_sword.spin(Sword.SPIN_ORDER[quarter], quarter == 0)
 		if quarter == 0:
 			Sfx.play(&"sword_swing")

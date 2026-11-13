@@ -25,15 +25,37 @@ class_name Item
 ## A bomba forte (2026-11-11) é a melhoria da bomba: a explosão abre a parede
 ## rachada com tábua, que a bomba comum só faz tremer. Ela fica no fim da
 ## lista porque o número de cada item é o bit dele nos salvamentos.
+##
+## A espada forte (2026-11-13) é a melhoria da espada: metade a mais de dano
+## (ver Sword.strong). Não abre nada, então fica fora da lógica das sementes.
 
-enum Id { NONE, BOMB, FIRE, SPRING, STRONG_FIRE, STRONG_SPRING, HEART, KEY, BOSS_KEY, STRONG_BOMB }
+enum Id {
+	NONE,
+	BOMB,
+	FIRE,
+	SPRING,
+	STRONG_FIRE,
+	STRONG_SPRING,
+	HEART,
+	KEY,
+	BOSS_KEY,
+	STRONG_BOMB,
+	STRONG_SWORD,
+}
 
 ## Ferramentas, cada uma no seu botão.
 const TOOLS := [Id.BOMB, Id.FIRE, Id.SPRING]
 ## Itens que ficam para sempre e entram na lógica como bits: as ferramentas,
 ## as melhorias e a chave grande.
 const PERMANENT := [
-	Id.BOMB, Id.FIRE, Id.SPRING, Id.STRONG_FIRE, Id.STRONG_SPRING, Id.BOSS_KEY, Id.STRONG_BOMB
+	Id.BOMB,
+	Id.FIRE,
+	Id.SPRING,
+	Id.STRONG_FIRE,
+	Id.STRONG_SPRING,
+	Id.BOSS_KEY,
+	Id.STRONG_BOMB,
+	Id.STRONG_SWORD,
 ]
 ## Cada melhoria e a ferramenta que ela melhora.
 const UPGRADES := {Id.STRONG_FIRE: Id.FIRE, Id.STRONG_SPRING: Id.SPRING, Id.STRONG_BOMB: Id.BOMB}

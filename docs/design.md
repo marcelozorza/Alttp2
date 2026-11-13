@@ -170,6 +170,7 @@ Cada bloqueio tem uma aparência fixa, que se repete em todos os capítulos e se
 - **Porta do chefe.** Pedra vermelha com selo dourado. Abre ao encostar com a chave grande, que nunca se gasta.
 
 - **Parede rachada.** Escura, com rachaduras claras. Só a explosão da bomba abre.
+- **Espada forte** (2026-11-13, pedido de Marcelo). Melhoria da espada, sem botão próprio: 1,5x de dano. Como a vida dos inimigos é inteira, um golpe sim, um não, vale 1 a mais (3 de dano a cada dois golpes). O botão da espada mostra o selo x2. No jogo linear fica no baú M da dungeon 3, no nicho norte, no lugar de um coração. Nas sementes entra no sorteio dos baús comuns, em qualquer dungeon, e fica fora da lógica porque não abre nada. Item `STRONG_SWORD`, no fim da lista.
 - **Parede rachada com tábua** (2026-11-11, pedido de Marcelo). A parede rachada com uma pequena tábua pregada por cima da rachadura. A bomba comum só a faz tremer. Só a bomba forte abre. Bloqueio `BOARDED`, cena `obstacles/boarded_wall.tscn`. Por enquanto só na Galeria: falta Marcelo decidir em que dungeon ela entra.
 - **Gelo.** Bloco azul claro com brilhos no topo e rachaduras na face. Só o fogo derrete, em 0,25 s, comum ou forte. O mesmo azul marca o inimigo de gelo e a casca do chefe, que também só cedem ao fogo.
 - **Gelo grosso.** Bloco azul profundo com a borda branca de geada, sempre com duas casas de fundo, maior que o gelo comum à primeira vista. A chama comum só o faz tremer. Só a chama forte derrete, em 0,5 s. O mesmo azul marca a morsa de gelo e a casca do guardião antigo.

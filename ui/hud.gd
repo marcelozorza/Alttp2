@@ -179,6 +179,9 @@ func _draw_buttons(player: Player) -> void:
 		var sword_center: Vector2 = _button_centers[&"attack"]
 		ToolIcons.draw_centered(self, BUTTON_TEXTURE, sword_center)
 		ToolIcons.draw_sword(self, sword_center, player.is_sword_locked())
+		# A espada forte mostra o selo x2, como as outras melhorias.
+		if player.has_tool(Item.Id.STRONG_SWORD) and not player.is_sword_locked():
+			ToolIcons.draw(self, Item.Id.STRONG_SWORD, sword_center)
 	for action: StringName in TOOL_ACTIONS:
 		if not _button_centers.has(action):
 			continue
