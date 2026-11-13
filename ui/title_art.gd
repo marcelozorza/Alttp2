@@ -6,9 +6,10 @@ extends Control
 const SKY := Color("1b1926")
 const LOGO := preload("res://art/logo.svg")
 const PAW := preload("res://art/title_paw.svg")
-## Retrato do Jorginho, à direita do menu (pedido de Marcelo em 2026-11-13).
+## Retrato do Jorginho, grande, no meio do céu, saindo de trás da grama
+## (montagem que Marcelo mandou em 2026-11-13). A grama cobre a base dele.
 const PORTRAIT := preload("res://art/title_portrait.svg")
-const PORTRAIT_CORNER := Vector2(464.0, 104.0)
+const PORTRAIT_SINK := 8.0
 ## Espaço entre o logotipo e a patinha à direita dele.
 const PAW_GAP := 10.0
 const GRASS: Array[Texture2D] = [
@@ -50,6 +51,9 @@ func _draw() -> void:
 	var paw_top := 22.0 + floorf((logo_size.y - PAW.get_height()) / 2.0)
 	draw_texture(PAW, Vector2(left + logo_size.x + PAW_GAP, paw_top))
 	var top := SCREEN.y - TILE * 2.0
+	var portrait_size := PORTRAIT.get_size()
+	var portrait_left := floorf((SCREEN.x - portrait_size.x) / 2.0)
+	draw_texture(PORTRAIT, Vector2(portrait_left, top + PORTRAIT_SINK - portrait_size.y))
 	for column: int in 20:
 		for row: int in 2:
 			var origin := Vector2(column * TILE, top + row * TILE)
@@ -63,4 +67,3 @@ func _draw() -> void:
 		draw_texture(TREES[column % 2], Vector2(column * TILE, top - 6.0))
 		draw_texture(TREES[(column + 1) % 2], Vector2(column * TILE, top + TILE - 2.0))
 	draw_texture(HERO, Vector2(194.0, SCREEN.y - 58.0))
-	draw_texture(PORTRAIT, PORTRAIT_CORNER)

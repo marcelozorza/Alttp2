@@ -7,6 +7,8 @@ extends Control
 ## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
 ## continua no projeto, para os testes.
 
+const MENU_AREA := Rect2(470.0, 196.0, 130.0, 92.0)
+
 
 func _ready() -> void:
 	Progress.active = false
@@ -16,10 +18,11 @@ func _ready() -> void:
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(art)
 	move_child(art, 1)
-	# O logotipo fica no alto, desenhado pela arte: a coluna começa abaixo dele.
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0.0, 44.0)
-	column.add_child(spacer)
+	# O retrato ocupa o meio da tela: o menu fica à direita, logo acima da grama.
+	var holder: Control = column.get_parent()
+	holder.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	holder.position = MENU_AREA.position
+	holder.size = MENU_AREA.size
 	var first := MenuKit.button("Novo jogo", _on_new_game)
 	column.add_child(first)
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
