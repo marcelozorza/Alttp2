@@ -107,7 +107,7 @@ const NO_HOLD := -1
 @export_range(20.0, 800.0, 1.0) var run_speed := 300.0
 ## Tempo máximo, em segundos, entre os dois toques na mesma direção para
 ## começar a correr. A corrida dura enquanto a direção estiver pressionada.
-@export_range(0.1, 0.5, 0.01) var double_tap_window := 0.5
+@export_range(0.1, 0.5, 0.01) var double_tap_window := 0.3
 ## Ligado, dá para mudar de direção correndo, para os lados ou em diagonal.
 ## Desligado, a corrida é em linha reta e termina ao mudar de direção. Em
 ## qualquer caso, apertar uma direção com componente para trás cancela a
