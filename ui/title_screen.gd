@@ -7,7 +7,7 @@ extends Control
 ## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
 ## continua no projeto, para os testes.
 
-const MENU_AREA := Rect2(470.0, 196.0, 130.0, 92.0)
+const MENU_AREA := Rect2(464.0, 168.0, 152.0, 112.0)
 
 
 func _ready() -> void:
