@@ -707,11 +707,14 @@ func _read_direction() -> Vector2:
 	return GameMath.snap_8(raw)
 
 
-## Andar vira corrida com o duplo toque, e a corrida dura enquanto a direção
-## estiver pressionada e houver fôlego. O arremesso por batida interrompe
-## qualquer estado e termina em andar.
+## Andar vira corrida ao soltar e apertar de novo a mesma direção, e a
+## corrida dura enquanto a direção estiver pressionada e houver fôlego. O
+## arremesso por batida interrompe qualquer estado e termina em andar.
 func _update_state(direction: Vector2) -> void:
 	var pressed := _previous_direction == Vector2.ZERO and direction != Vector2.ZERO
+	if direction == Vector2.ZERO and _previous_direction != Vector2.ZERO:
+		_last_press_direction = _previous_direction
+		_last_press_tick = Clock.tick
 	_previous_direction = direction
 	match _state:
 		State.WALK:
@@ -751,16 +754,16 @@ func _breathe() -> void:
 			_winded = false
 
 
-## Duas pressões na mesma direção, partindo do neutro, dentro de
-## double_tap_window. Depois de reconhecido, o duplo toque é consumido.
+## Apertar de novo a direção que acabou de ser solta, dentro de
+## double_tap_window. Quem já vinha andando para um lado só precisa soltar e
+## apertar de novo: a andada conta como o primeiro toque (pedido de Marcelo em
+## 2026-11-13). Antes o prazo contava da primeira pressão, e quem vinha
+## andando tinha de dar dois toques. Depois de reconhecido, é consumido.
 func _is_double_tap(direction: Vector2) -> bool:
-	var now := Clock.tick
 	var window := GameMath.ticks(double_tap_window)
-	if direction == _last_press_direction and now - _last_press_tick <= window:
+	if direction == _last_press_direction and Clock.tick - _last_press_tick <= window:
 		_last_press_direction = Vector2.ZERO
 		return true
-	_last_press_direction = direction
-	_last_press_tick = now
 	return false
 
 

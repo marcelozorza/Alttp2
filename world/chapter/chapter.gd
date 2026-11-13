@@ -402,7 +402,7 @@ func _add_exit_door() -> void:
 			break
 		if map.tile(cell) != ".":
 			return
-	for side: int in range(-2, 3):
+	for side: int in range(-1, 2):
 		if map.tile(cell + Vector2i(side, 0)) != "#":
 			return
 	var door := ExitDoor.new()

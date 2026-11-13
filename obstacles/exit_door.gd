@@ -1,31 +1,25 @@
 class_name ExitDoor
 extends Node2D
-## Porta de saída da dungeon: um arco de madeira de pé na parede de baixo da
-## primeira sala, com as duas folhas abertas para dentro em perspectiva
-## forçada e a luz de fora no vão, como a referência que Marcelo mandou em
-## 2026-11-13. O personagem sai ao andar para baixo contra ela,
-## e a saída vale o mesmo que "Sair" na pausa. Sem porta, o jogador não
-## pensava em sair para procurar um item em outra dungeon (Marcelo,
-## 2026-11-12). A parede continua sólida: a porta só percebe o toque.
+## Porta de saída da dungeon: um vão aberto na parede de baixo da primeira
+## sala, com a luz de fora entrando, sem folhas nem colunas (quarta versão,
+## pedida por Marcelo em 2026-11-13). O personagem sai ao andar para baixo
+## contra ela, e a saída vale o mesmo que "Sair" na pausa. Sem porta, o
+## jogador não pensava em sair para procurar um item em outra dungeon
+## (Marcelo, 2026-11-12). A parede continua sólida: a porta só percebe o toque.
 
 signal used
 
 const TEXTURE := preload("res://art/exit_door.svg")
-## Largura do portão e altura do vão na parede. A origem fica no canto de cima
-## do trecho de parede que ele ocupa.
-const SIZE := Vector2(128.0, 32.0)
-## Quanto o desenho sobe sobre o chão da sala: as folhas abertas.
-const ART_ABOVE := 64.0
-## Vão livre do portão, entre as bordas soltas das duas folhas.
-const OPENING := Rect2(46.0, 0.0, 36.0, 32.0)
-## Cada lado do portão, sólido: a perna do arco e a folha aberta.
-const LEAF_SIZE := Vector2(46.0, 44.0)
-const LEAF_LEFTS := [0.0, 82.0]
+## Tamanho do desenho, que cobre o trecho de parede. A origem fica no canto
+## de cima desse trecho.
+const SIZE := Vector2(72.0, 32.0)
+## Vão livre, por dentro da moldura.
+const OPENING := Rect2(8.0, 0.0, 56.0, 32.0)
 const TOUCH_MARGIN := 4.0
 ## Luz de fora no chão da sala, diante do portão: dois fachos, um dentro do
 ## outro, para o meio ficar mais claro.
 const LIGHT_COLOR := Color(1.0, 0.95, 0.66, 0.13)
-const LIGHTS := [Vector2(118.0, 34.0), Vector2(90.0, 16.0)]
+const LIGHTS := [Vector2(70.0, 20.0), Vector2(46.0, 10.0)]
 
 var _touch := Area2D.new()
 var _used := false
@@ -43,17 +37,6 @@ func _ready() -> void:
 	_touch.add_child(shape)
 	_touch.monitorable = false
 	add_child(_touch)
-	var leaves := StaticBody2D.new()
-	leaves.collision_layer = Layers.SCENERY
-	leaves.collision_mask = 0
-	for left: float in LEAF_LEFTS:
-		var leaf_shape := CollisionShape2D.new()
-		var leaf_rectangle := RectangleShape2D.new()
-		leaf_rectangle.size = LEAF_SIZE
-		leaf_shape.shape = leaf_rectangle
-		leaf_shape.position = Vector2(left + LEAF_SIZE.x / 2.0, -LEAF_SIZE.y / 2.0)
-		leaves.add_child(leaf_shape)
-	add_child(leaves)
 
 
 func _physics_process(_delta: float) -> void:
@@ -84,4 +67,4 @@ func _draw() -> void:
 			]
 		)
 		draw_colored_polygon(beam, LIGHT_COLOR)
-	draw_texture(TEXTURE, Vector2(0.0, -ART_ABOVE))
+	draw_texture(TEXTURE, Vector2.ZERO)
