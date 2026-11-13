@@ -427,9 +427,8 @@ func _bones(chapter: Node) -> Array:
 
 
 func _check_training() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Treino")
+	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
+	await _frames(20)
 	print("TREINO: -> ", _scene_name())
 	await _press("Capítulo 2")
 	await _frames(10)
@@ -475,9 +474,10 @@ func _check_tutorial() -> void:
 
 ## Continuar: o jogo salvo volta ao mundo com os capítulos vencidos.
 func _check_continue() -> void:
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Continuar")
+	# O título não tem mais "Continuar": o teste lê o arquivo direto.
+	Progress.load_file()
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(20)
 	var modes := []
 	for chapter: int in range(1, ChapterData.count() + 1):
 		var entrance := _entrance(chapter)
@@ -671,9 +671,10 @@ func _check_randomized() -> void:
 			% [location, item_name, recorded, reopened, Progress.tools]
 		)
 	)
-	get_tree().change_scene_to_file(Flow.TITLE_SCENE)
-	await _frames(10)
-	await _press("Continuar")
+	# O título não tem mais "Continuar": o teste lê o arquivo direto.
+	Progress.load_file()
+	get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
+	await _frames(20)
 	print(
 		(
 			"SEED: continuar -> %s, seed %d, mesma distribuição %s"

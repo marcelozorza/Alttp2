@@ -1,11 +1,11 @@
 extends Control
-## Tela de título. Continuar o jogo salvo, se houver, começar um jogo novo,
-## jogar o modo randomizado com uma seed ou ir ao treino, com a dungeon de
-## teste, cada capítulo avulso e a sala de teste. A dungeon de teste saiu
-## deste menu em 2026-11-13, a pedido de Marcelo: fica no treino e no mundo.
+## Tela de título: jogo novo, modo randomizado com uma semente, ou a Galeria.
 ##
-## O jogo novo só grava por cima do salvo quando o personagem vence um
-## capítulo ou encosta na pedra de salvamento.
+## Não há "Continuar": o jogo não tem salvamento entre sessões, vai-se até o
+## fim toda vez (decisão de Marcelo em 2026-11-13). Dentro de uma sessão, a
+## pedra de salvamento do mundo marca de onde se volta depois de uma derrota.
+## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
+## continua no projeto, para os testes.
 
 
 func _ready() -> void:
@@ -20,23 +20,11 @@ func _ready() -> void:
 	var spacer := Control.new()
 	spacer.custom_minimum_size = Vector2(0.0, 44.0)
 	column.add_child(spacer)
-	var first: Button = null
-	if Progress.exists():
-		first = MenuKit.button("Continuar", _on_continue)
-		column.add_child(first)
-	var new_game := MenuKit.button("Novo jogo", _on_new_game)
-	column.add_child(new_game)
-	if not first:
-		first = new_game
+	var first := MenuKit.button("Novo jogo", _on_new_game)
+	column.add_child(first)
 	column.add_child(MenuKit.button("Randomizado", _on_randomized))
-	column.add_child(MenuKit.button("Treino", _on_training))
 	column.add_child(MenuKit.button("Galeria", _on_gallery))
 	first.grab_focus.call_deferred()
-
-
-func _on_continue() -> void:
-	if Progress.load_file():
-		get_tree().change_scene_to_file(Flow.OVERWORLD_SCENE)
 
 
 func _on_new_game() -> void:
@@ -49,10 +37,6 @@ func _on_randomized() -> void:
 
 
 ## O tutorial é jogado avulso, como no treino: nada é gravado.
-func _on_training() -> void:
-	get_tree().change_scene_to_file(Flow.TRAINING_SCENE)
-
-
 ## A galeria: as quatro salas de teste com todos os elementos do jogo, uma
 ## por tema, sem perder vida (pedido de Marcelo em 2026-11-08).
 func _on_gallery() -> void:

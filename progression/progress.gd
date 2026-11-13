@@ -70,6 +70,9 @@ static var opened := {}
 ## bomba em outra e, na volta, achou portas, inimigos e mapa zerados: "tudo
 ## fica como deixei" (2026-11-13).
 static var dungeons := {}
+## Estado guardado na última pedra de salvamento tocada nesta sessão. Só na
+## memória: a derrota no modo randomizado volta a ele (restore_checkpoint).
+static var checkpoint := {}
 
 
 static func start_new() -> void:
@@ -84,6 +87,7 @@ static func start_new() -> void:
 	dungeons = {}
 	seed = 0
 	seed_items = {}
+	checkpoint = {}
 
 
 ## Jogo novo no modo randomizado, com a distribuição da seed.
@@ -98,6 +102,33 @@ static func start_seed(seed_value: int) -> void:
 ## não salve a partida (decisão de Marcelo em 2026-11-07, jogando).
 static func restart_seed() -> void:
 	start_seed(seed)
+	save()
+
+
+## Guarda o estado atual como ponto de volta. Chamado pela pedra de salvamento.
+static func mark_checkpoint() -> void:
+	checkpoint = {
+		"chapters_done": chapters_done,
+		"tools": tools,
+		"max_health": max_health,
+		"opened": opened.duplicate(true),
+		"dungeons": dungeons.duplicate(true),
+	}
+
+
+## Derrota no modo randomizado: volta ao estado da última pedra tocada nesta
+## sessão, ou ao começo da semente se nenhuma foi tocada. O relógio da partida
+## não volta. Decisão de Marcelo em 2026-11-13, no lugar de perder tudo.
+static func restore_checkpoint() -> void:
+	if checkpoint.is_empty():
+		restart_seed()
+		return
+	chapters_done = checkpoint["chapters_done"]
+	tools = checkpoint["tools"]
+	max_health = checkpoint["max_health"]
+	opened = checkpoint["opened"].duplicate(true)
+	dungeons = checkpoint["dungeons"].duplicate(true)
+	return_entrance = NO_ENTRANCE
 	save()
 
 
