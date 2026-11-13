@@ -53,7 +53,7 @@ def legend_actors():
     path = os.path.join(os.path.dirname(__file__), "..", "progression", "map_legend.gd")
     with open(path, encoding="utf-8") as legend:
         text = legend.read()
-    found = re.findall(r'^\t"(.)": preload', text, re.M)
+    found = re.findall(r'^\t"(.)": (?:preload|\[)', text, re.M)
     found += re.findall(r'^const [A-Z_]+ := "(.)"$', text, re.M)
     return "".join(found)
 
@@ -67,6 +67,33 @@ UP, DOWN = (0, -1), (0, 1)
 ITEM_IDS = ["NONE", "BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "HEART", "KEY", "BOSS_KEY", "STRONG_BOMB", "STRONG_SWORD"]
 PERMANENT = ["BOMB", "FIRE", "SPRING", "STRONG_FIRE", "STRONG_SPRING", "BOSS_KEY", "STRONG_BOMB", "STRONG_SWORD"]
 BLOCK_TYPES = ["CRACKED", "ICE", "LEDGE", "LOCKED", "BOSS_DOOR", "THICK_ICE", "TALL_LEDGE", "GATE", "BOARDED"]
+# Bloqueios do laboratório (lab/). Neles o mesmo caractere serve a vários
+# bloqueios separados, um por grupo de casas vizinhas, como ChapterMap.SHARED.
+LAB_TYPES = [
+    "SHUTTER", "BARRIER", "BARRIER_ALT", "TORCH_DOOR", "BLAST_DOOR", "TIMED_GATE",
+    "PIT", "WIDE_PIT", "GAP", "WEB", "BEAM_DOOR",
+]
+BLOCK_TYPES += LAB_TYPES
+# Bloqueios do laboratório que a sala resolve sozinha, sem ferramenta: a
+# porta de combate, as barreiras do cristal, o buraco de ponte e a porta do
+# feixe de luz.
+FREE_TYPES = ["SHUTTER", "BARRIER", "BARRIER_ALT", "GAP", "BEAM_DOOR"]
+# Largura máxima de cada buraco, na direção mais curta, em casas.
+PIT_REACH = {"PIT": 2, "WIDE_PIT": 5}
+# Objeto que a sala de cada bloqueio do laboratório precisa ter.
+ROOM_NEEDS = {
+    "BARRIER": "!", "BARRIER_ALT": "!", "TORCH_DOOR": "|/①②③④", "BLAST_DOOR": "+",
+    "TIMED_GATE": ";{", "GAP": "[", "BEAM_DOOR": "◉",
+}
+PLATES = ";{"
+STATUE = "♜"
+TELEPORTERS = "αβγδ"
+# Chegada de mão única do portal de mesmo número: pisar nela não leva a
+# lugar nenhum.
+PORTAL_EXITS = {"δ": "ω"}
+ICE_FLOOR = "~"
+# Objetos sólidos do laboratório, que param quem desliza no gelo.
+LAB_SOLIDS = "!+|/①②③④[}♜⇒⇐⇑⇓▶◀▲▼╱╲◉"
 LEDGES = {"LEDGE": 1, "TALL_LEDGE": 2}
 
 
@@ -165,7 +192,7 @@ class Map:
         character = self.tile(cell)
         return character if character in SLOTS else ""
 
-    def can_enter_slot(self, slot, tools, opened, reached_nodes=None, open_gates=()):
+    def can_enter_slot(self, slot, tools, opened, reached_nodes=None, open_gates=(), node=None):
         if slot == "":
             return True
         kind = self.blocks.get(slot)
@@ -189,6 +216,24 @@ class Map:
             return slot in opened
         if kind == "BOSS_DOOR":
             return bool(tools & bit("BOSS_KEY"))
+        if kind in FREE_TYPES:
+            return True
+        if kind in ("TORCH_DOOR", "WEB"):
+            return bool(tools & (bit("FIRE") | bit("STRONG_FIRE")))
+        if kind == "BLAST_DOOR":
+            return bool(tools & (bit("BOMB") | bit("STRONG_BOMB")))
+        if kind == "PIT":
+            return bool(tools & (bit("SPRING") | bit("STRONG_SPRING")))
+        if kind == "WIDE_PIT":
+            return bool(tools & bit("STRONG_SPRING"))
+        if kind == "TIMED_GATE":
+            # A grade verde abre com uma placa da sala pisada: passa quando a
+            # região de alguma placa da sala é alcançada, ou quando a sala
+            # tem uma estátua espelhada, que pisa na placa pelo jogador.
+            plates, statue = self.plate_sources.get(node, ((), False))
+            if statue:
+                return True
+            return reached_nodes is not None and any(p in reached_nodes for p in plates)
         return False
 
     def block_reaches(self, block, switch):
@@ -253,7 +298,20 @@ class Map:
                         self.node_of[n] = node
                         frontier.append(n)
         self.find_gate_sources()
+        self.find_plate_sources()
+        self.portals = {}
+        for character in TELEPORTERS:
+            cells = self.cells_of(character)
+            exits = self.cells_of(PORTAL_EXITS.get(character, "\0"))
+            if len(cells) == 2:
+                self.portals[cells[0]] = cells[1]
+                self.portals[cells[1]] = cells[0]
+            elif len(cells) == 1 and len(exits) == 1:
+                self.portals[cells[0]] = exits[0]
         edges = set()
+        for cell, other in self.portals.items():
+            if self.node_of[cell] != self.node_of[other]:
+                edges.add((self.node_of[cell], self.node_of[other], 0))
         for cell, node in self.node_of.items():
             for step in STEPS:
                 target = self.step_target(cell, step)
@@ -272,6 +330,23 @@ class Map:
                         for dx, dy in STEPS
                         if (x + dx, y + dy) in self.node_of
                     ]
+
+    def find_plate_sources(self):
+        """Para cada grade verde, as regiões das placas da sala dela e se a
+        sala tem uma estátua espelhada."""
+        self.plate_sources = {}
+        for node, slot in enumerate(self.node_slot):
+            if self.blocks.get(slot) != "TIMED_GATE":
+                continue
+            cell = next(c for c, n in self.node_of.items() if n == node)
+            room = self.room_of_cell(cell)
+            plates = set()
+            for character in PLATES:
+                for plate in self.cells_of(character):
+                    if self.room_of_cell(plate) == room:
+                        plates.add(self.node_of[plate])
+            statue = any(self.room_of_cell(c) == room for c in self.cells_of(STATUE))
+            self.plate_sources[node] = (plates, statue)
 
     def find_gate_sources(self):
         """Região do interruptor de cada grade: um interruptor na mesma sala,
@@ -303,18 +378,45 @@ class Map:
     def can_pass(self, edge, tools, opened, reached, open_gates=()):
         if edge[2] and not tools & edge[2]:
             return False
-        return self.can_enter_slot(self.node_slot[edge[1]], tools, opened, reached, open_gates)
+        return self.can_enter_slot(
+            self.node_slot[edge[1]], tools, opened, reached, open_gates, edge[1]
+        )
 
-    def reachable_nodes(self, start, tools, opened, open_gates=()):
-        reached = {start}
-        changed = True
-        while changed:
-            changed = False
+    def reachable_nodes(self, start, tools, opened, open_gates=(), stop=()):
+        """Regiões alcançadas a partir de start. Uma passagem recusada fica
+        guardada e é tentada de novo quando o alcance cresce, porque uma
+        grade depende do que já foi alcançado. Com stop, a busca para assim
+        que chega a uma região de stop."""
+        if not hasattr(self, "edges_from"):
+            self.edges_from = {}
             for edge in self.edges:
-                if edge[0] in reached and edge[1] not in reached:
+                self.edges_from.setdefault(edge[0], []).append(edge)
+        reached = {start}
+        frontier = [start]
+        waiting = []
+        while frontier:
+            while frontier:
+                node = frontier.pop()
+                if node in stop:
+                    return reached
+                for edge in self.edges_from.get(node, ()):
+                    if edge[1] in reached:
+                        continue
                     if self.can_pass(edge, tools, opened, reached, open_gates):
                         reached.add(edge[1])
-                        changed = True
+                        frontier.append(edge[1])
+                    else:
+                        waiting.append(edge)
+            still = []
+            for edge in waiting:
+                if edge[1] in reached:
+                    continue
+                if self.can_pass(edge, tools, opened, reached, open_gates):
+                    reached.add(edge[1])
+                    frontier.append(edge[1])
+                else:
+                    still.append(edge)
+            waiting = still
         return reached
 
     def open_gates_from(self, reached):
@@ -337,11 +439,30 @@ class Map:
                         continue
                     if target[1] and not tools & target[1]:
                         continue
-                    if not self.can_enter_slot(self.slot_of(target[0]), tools, opened, nodes):
+                    if not self.can_enter_slot(
+                        self.slot_of(target[0]), tools, opened, nodes, (), self.node_of[target[0]]
+                    ):
                         continue
                     reached.add(target[0])
                     nodes.add(self.node_of[target[0]])
                     frontier.append(target[0])
+                other = self.portals.get(cell)
+                if other is not None and other not in reached:
+                    reached.add(other)
+                    nodes.add(self.node_of[other])
+                    frontier.append(other)
+            # Uma grade verde cuja placa acaba de ser alcançada reabre a
+            # busca nas casas vizinhas dela.
+            for node, (plates, _) in self.plate_sources.items():
+                if not any(p in nodes for p in plates):
+                    continue
+                for cell in self.node_cells(node):
+                    if cell in reached:
+                        continue
+                    for dx, dy in STEPS:
+                        n = (cell[0] + dx, cell[1] + dy)
+                        if n in reached and n not in frontier:
+                            frontier.append(n)
             for slot in self.gates:
                 if self.gate_source.get(slot) not in nodes:
                     continue
@@ -354,6 +475,13 @@ class Map:
                             frontier.append(n)
             if not frontier:
                 return reached
+
+    def node_cells(self, node):
+        if not hasattr(self, "cells_by_node"):
+            self.cells_by_node = {}
+            for cell, index in self.node_of.items():
+                self.cells_by_node.setdefault(index, []).append(cell)
+        return self.cells_by_node[node]
 
     def settle(self, items, opened):
         """Abre tudo o que alcança com as portas dadas, ganha os itens e
@@ -520,6 +648,9 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
 
     for slot in sorted(set(c for c in "".join(m.rows) if c in SLOTS)):
         cells = [(x, y) for y, row in enumerate(m.rows) for x, c in enumerate(row) if c == slot]
+        if blocks.get(slot) in LAB_TYPES:
+            check_lab_slot(m, slot, blocks[slot], errors)
+            continue
         xs = [c[0] for c in cells]
         ys = [c[1] for c in cells]
         w = max(xs) - min(xs) + 1
@@ -554,6 +685,7 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
         if slot not in "".join(m.rows):
             errors.append("BLOCKS cita a vaga %s, que não está no mapa" % slot)
     check_switches(m, errors)
+    check_lab(m, errors)
     # Baús: chão logo ao sul, para que a espada nunca alcance um baú através de
     # uma parede ou de um bloqueio.
     map_locations = set(c for c in "".join(m.rows) if c in LOCATIONS)
@@ -571,6 +703,147 @@ def check_geometry(m, blocks, items, goal, rooms, errors):
         if item not in ITEM_IDS:
             errors.append("baú %s com item desconhecido %s" % (location, item))
     return present
+
+
+def check_lab_slot(m, slot, kind, errors):
+    """Bloqueio do laboratório: cada grupo de casas vizinhas é um retângulo
+    cheio, o buraco tem largura que o pulo vence, e a sala tem o objeto que
+    abre o bloqueio."""
+    nodes = sorted(set(n for n, s in enumerate(m.node_slot) if s == slot))
+    for node in nodes:
+        cells = m.node_cells(node)
+        xs = [c[0] for c in cells]
+        ys = [c[1] for c in cells]
+        w = max(xs) - min(xs) + 1
+        h = max(ys) - min(ys) + 1
+        where = (min(xs), min(ys))
+        if w * h != len(cells):
+            errors.append("vaga %s em %s não é um retângulo" % (slot, where))
+        if kind in PIT_REACH and min(w, h) > PIT_REACH[kind]:
+            errors.append("buraco %s em %s é largo demais para o pulo" % (slot, where))
+        needs = ROOM_NEEDS.get(kind)
+        if needs:
+            room = m.room_of_cell(cells[0])
+            found = any(
+                m.room_of_cell(c) == room for character in needs for c in m.cells_of(character)
+            )
+            if not found:
+                errors.append("vaga %s em %s: a sala não tem o que abre (%s)" % (slot, where, needs))
+
+
+def check_lab(m, errors):
+    """Regras do laboratório: cada portal tem um par, e o gelo liso não
+    prende ninguém."""
+    text = "".join(m.rows)
+    for character in TELEPORTERS:
+        count = text.count(character) + text.count(PORTAL_EXITS.get(character, "\0"))
+        if count not in (0, 2):
+            errors.append("portal %s precisa de um par ou de uma chegada" % character)
+    check_ice(m, errors)
+
+
+def check_ice(m, errors):
+    """No gelo liso o personagem desliza reto até bater em algo ou sair do
+    gelo. A lógica trata o gelo como chão comum, então confere aqui que isso
+    vale: de cada casa de chão encostada no gelo dá para chegar, deslizando,
+    a todos os outros trechos de chão em volta daquele gelo, e nenhuma parada
+    no meio do gelo fica sem saída."""
+    ice = set(m.cells_of(ICE_FLOOR))
+    if not ice:
+        return
+
+    def solid(cell):
+        character = m.tile(cell)
+        return character in "# " or character in LOCATIONS or character in LAB_SOLIDS or character in SLOTS
+
+    def slide(cell, step):
+        """Onde para quem está em cell e escolhe a direção step."""
+        while True:
+            nxt = (cell[0] + step[0], cell[1] + step[1])
+            if solid(nxt):
+                return cell
+            cell = nxt
+            if cell not in ice:
+                return cell
+
+    seen = set()
+    for first in sorted(ice):
+        if first in seen:
+            continue
+        patch = {first}
+        frontier = [first]
+        while frontier:
+            c = frontier.pop()
+            for dx, dy in STEPS:
+                n = (c[0] + dx, c[1] + dy)
+                if n in ice and n not in patch:
+                    patch.add(n)
+                    frontier.append(n)
+        seen |= patch
+        # Trechos de chão em volta do gelo: casas livres vizinhas dele,
+        # juntas quando se ligam por fora do gelo, dentro da mesma sala.
+        room = m.room_of_cell(first)
+        border = set()
+        for c in patch:
+            for dx, dy in STEPS:
+                n = (c[0] + dx, c[1] + dy)
+                if n not in ice and not solid(n):
+                    border.add(n)
+        group_of = {}
+        groups = 0
+        for cell in sorted(border):
+            if cell in group_of:
+                continue
+            frontier = [cell]
+            group_of[cell] = groups
+            while frontier:
+                c = frontier.pop()
+                for dx, dy in STEPS:
+                    n = (c[0] + dx, c[1] + dy)
+                    if n in group_of or n in ice or solid(n) or m.room_of_cell(n) != room:
+                        continue
+                    group_of[n] = groups
+                    frontier.append(n)
+            groups += 1
+        def stops_from(cells):
+            """Paradas a que se chega deslizando a partir das casas dadas."""
+            reached = set()
+            frontier = list(cells)
+            while frontier:
+                c = frontier.pop()
+                for step in STEPS:
+                    first = (c[0] + step[0], c[1] + step[1])
+                    if c not in ice and first not in ice:
+                        continue
+                    stop = slide(c, step)
+                    if stop == c or stop in reached:
+                        continue
+                    reached.add(stop)
+                    if stop in ice:
+                        frontier.append(stop)
+            return reached
+
+        # Trechos a que cada trecho chega, direto ou passando por outros.
+        direct = {}
+        every_stop = set()
+        for group in range(groups):
+            stops = stops_from([c for c in border if group_of[c] == group])
+            every_stop |= stops
+            direct[group] = {group_of[c] for c in stops if c in group_of}
+        for group in range(groups):
+            found = {group}
+            frontier = [group]
+            while frontier:
+                for other in direct[frontier.pop()]:
+                    if other not in found:
+                        found.add(other)
+                        frontier.append(other)
+            if len(found) != groups:
+                cell = min(c for c in border if group_of[c] == group)
+                errors.append("gelo liso: de %s não se chega a todo o chão em volta" % (cell,))
+        for stop in sorted(every_stop):
+            if stop in ice and all(c in ice for c in stops_from([stop])):
+                errors.append("gelo liso: parada sem saída em %s" % (stop,))
 
 
 def check_switches(m, errors):
@@ -686,8 +959,14 @@ def check_logic(m, items, goal, goal_mask, errors):
                     if trap_found:
                         continue
                     open_gates = m.open_gates_from(nodes)
-                    for node in nodes:
-                        if start_node not in m.reachable_nodes(node, tools, opened, open_gates):
+                    # Quem chega a uma região que volta ao início também
+                    # volta, então a busca para na primeira dessas.
+                    returns = {start_node}
+                    for node in sorted(nodes):
+                        back = m.reachable_nodes(node, tools, opened, open_gates, returns)
+                        if back & returns:
+                            returns.add(node)
+                        else:
                             cell = next(c for c, n in m.node_of.items() if n == node)
                             errors.append(
                                 "armadilha perto de %s com ferramentas %d e portas %s"

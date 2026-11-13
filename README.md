@@ -83,6 +83,7 @@ python3 tools/check_chapter.py world/tutorial/tutorial_data.gd
 python3 tools/check_chapter.py world/chapter_one/chapter_one_data.gd
 python3 tools/check_chapter.py world/chapter_two/chapter_two_data.gd
 python3 tools/check_chapter.py world/chapter_three/chapter_three_data.gd
+python3 tools/check_chapter.py world/lab/lab_data.gd
 ```
 
 Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face, altura do chão que fecha em todo o mapa, e grade com um interruptor na mesma sala e um bloco pesado alinhado com ele) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.

@@ -322,7 +322,7 @@ static func _cell_color(chapter: Chapter, map: ChapterMap, cell: Vector2i) -> Co
 		return NOTHING
 	if character == "#":
 		return WALL_COLOR
-	if ChapterMap.is_slot(character) and not chapter.block_cleared(character):
+	if ChapterMap.is_slot(character) and not chapter.block_cleared(character, cell):
 		match map.block_type(character):
 			ChapterMap.Block.CRACKED:
 				return CRACKED_COLOR

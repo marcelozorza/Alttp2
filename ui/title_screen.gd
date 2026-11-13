@@ -1,5 +1,7 @@
 extends Control
-## Tela de título: jogo novo, modo randomizado com uma semente, ou o Playtest (a Galeria de testes).
+## Tela de título: jogo novo, modo randomizado com uma semente, o Playtest (a
+## Galeria de testes) ou o Laboratório, a dungeon em que as mecânicas novas
+## são testadas.
 ##
 ## Não há "Continuar": o jogo não tem salvamento entre sessões, vai-se até o
 ## fim toda vez (decisão de Marcelo em 2026-11-13). Dentro de uma sessão, a
@@ -30,6 +32,7 @@ func _ready() -> void:
 		first,
 		MenuKit.button("Randomizado", _on_randomized),
 		MenuKit.button("Playtest", _on_gallery),
+		MenuKit.button("Laboratório", _on_lab),
 	]
 	for entry: Button in entries:
 		MenuKit.compact(entry)
@@ -51,4 +54,11 @@ func _on_randomized() -> void:
 ## por tema, sem perder vida (pedido de Marcelo em 2026-11-08).
 func _on_gallery() -> void:
 	RunSettings.chapter = ChapterData.GALLERY
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
+
+
+## O laboratório: uma dungeon fechada, fora do mundo, só para testar
+## mecânicas novas (pedido de Marcelo em 2026-11-13).
+func _on_lab() -> void:
+	RunSettings.chapter = ChapterData.LAB
 	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)

@@ -216,6 +216,12 @@ var health := 0
 ## Chaves pequenas guardadas. Cada porta trancada gasta uma.
 var keys := 0
 
+## Direção em que o personagem desliza no gelo liso, ou zero fora dele. Quem
+## decide é o gelo (lab/ice_field.gd).
+var slide_direction := Vector2.ZERO
+## Velocidade do deslize, em pixels por segundo.
+var slide_speed := 240.0
+
 ## Última ferramenta pedida sem carga e o tick do pedido. O HUD lê.
 var denied_tool := -1
 var denied_tick := -1000
@@ -443,6 +449,27 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 		Sfx.play(&"hurt")
 		if low_health > 0 and health <= low_health and health + amount > low_health:
 			_low_health_tick = Clock.tick + GameMath.ticks(LOW_HEALTH_DELAY)
+
+
+## Queda num buraco (lab/pit.gd): perde vida e volta ao ponto dado, parado.
+func fall_into_pit(back: Vector2, amount: int) -> void:
+	if _state == State.DEAD:
+		return
+	Sfx.play(&"ledge_drop")
+	global_position = back
+	velocity = Vector2.ZERO
+	slide_direction = Vector2.ZERO
+	_enter(State.WALK)
+	# A queda fere mesmo correndo ou logo depois de outro golpe.
+	_invincible_until_tick = 0
+	take_hit(amount, Vector2.ZERO)
+
+
+## Empurrão de vento (lab/blower.gd): desloca o personagem sem tirar o
+## controle dele, parando em paredes.
+func shove(motion: Vector2) -> void:
+	if _state != State.DEAD:
+		move_and_collide(motion)
 
 
 ## Toca o aviso de vida baixa na hora marcada por take_hit.
@@ -705,6 +732,10 @@ func _is_free_at(target: Vector2) -> bool:
 
 
 func _steer(direction: Vector2, delta: float) -> void:
+	if slide_direction != Vector2.ZERO:
+		# No gelo liso, desliza reto, sem controle (lab/ice_field.gd).
+		velocity = slide_direction * slide_speed
+		return
 	var move_direction := direction
 	var speed := run_speed if _state == State.RUN else walk_speed
 	if is_tired():

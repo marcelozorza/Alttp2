@@ -24,6 +24,10 @@ const ENEMIES := {
 	"x": preload("res://enemies/armadillo.tscn"),
 	"y": preload("res://enemies/bat.tscn"),
 	"z": preload("res://enemies/thorn_plant.tscn"),
+	# Inimigos genéricos do laboratório, de arte provisória.
+	"(": preload("res://lab/blower.tscn"),
+	")": preload("res://lab/trail.tscn"),
+	"]": preload("res://lab/shield_enemy.tscn"),
 }
 
 ## Cena de cada chefe.
@@ -32,4 +36,48 @@ const BOSSES := {
 	"&": preload("res://enemies/sentinel.tscn"),
 	"%": preload("res://enemies/elder_guardian.tscn"),
 	"$": preload("res://enemies/colossus.tscn"),
+}
+
+## Objetos do laboratório (lab/lab_builder.gd): o tipo de cada caractere e,
+## quando há, o parâmetro dele. Na placa, os segundos ligada (zero, de vez).
+## Na tocha, a vez na sequência, zero sem sequência e -1 com tempo.
+const LAB := {
+	"!": [&"crystal"],
+	"+": [&"target"],
+	";": [&"plate", 4.0],
+	"{": [&"plate", 0.0],
+	"|": [&"torch", 0],
+	"/": [&"torch", -1],
+	"①": [&"torch", 1],
+	"②": [&"torch", 2],
+	"③": [&"torch", 3],
+	"④": [&"torch", 4],
+	"[": [&"free_block"],
+	"}": [&"turret"],
+	"-": [&"chaser"],
+	"_": [&"spawn"],
+	"♜": [&"statue"],
+	"~": [&"ice"],
+	"▒": [&"crumble"],
+	"→": [&"conveyor", "right"],
+	"←": [&"conveyor", "left"],
+	"↑": [&"conveyor", "up"],
+	"↓": [&"conveyor", "down"],
+	"⇒": [&"fan", "right"],
+	"⇐": [&"fan", "left"],
+	"⇑": [&"fan", "up"],
+	"⇓": [&"fan", "down"],
+	"α": [&"teleporter", 0],
+	"β": [&"teleporter", 1],
+	"γ": [&"teleporter", 2],
+	"δ": [&"teleporter", 3],
+	# Chegada de mão única do portal 3: pisar nela não leva a lugar nenhum.
+	"ω": [&"teleporter_exit", 3],
+	"▶": [&"emitter", "right"],
+	"◀": [&"emitter", "left"],
+	"▲": [&"emitter", "up"],
+	"▼": [&"emitter", "down"],
+	"╱": [&"mirror", true],
+	"╲": [&"mirror", false],
+	"◉": [&"receptor"],
 }

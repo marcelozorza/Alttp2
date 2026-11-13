@@ -39,4 +39,12 @@ elif ! diff tools/smoke_expected.txt "$FOUND"; then
 	echo "FALHOU: algum valor do teste de fumaça mudou (esperado < e encontrado >)"
 	exit 1
 fi
+# O laboratório tem um teste próprio, que confere cada mecânica nova na sala
+# dela (tools/lab_test.gd).
+LAB="$(mktemp)"
+"$GODOT" --headless --fixed-fps 60 --path . res://tools/lab_test.tscn 2>&1 | tee "$LAB"
+if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$LAB" || ! grep -q "^LABORATÓRIO: .* 0 falhas" "$LAB"; then
+	echo "FALHOU: o teste do laboratório acusou erro"
+	exit 1
+fi
 echo "Teste de fumaça sem erros."

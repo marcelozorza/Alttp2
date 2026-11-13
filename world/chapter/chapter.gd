@@ -13,6 +13,8 @@ extends Node2D
 ## - dungeon_state.gd: o estado da dungeon guardado ao sair, no modo
 ##   randomizado.
 ## - progression/map_legend.gd: a cena de cada inimigo e chefe, pelo caractere.
+## - lab/: as mecânicas do laboratório. lab_builder.gd monta os objetos e
+##   room_mechanisms.gd decide quando cada porta de mecanismo abre.
 ##
 ## O mapa é dividido em salas de uma tela, de 20 por 10 casas. Um capítulo
 ## pode juntar várias delas numa sala maior (ROOMS nos dados): nela a câmera
@@ -41,6 +43,8 @@ const BONE_DROP_SCENE := preload("res://items/bone_drop.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
 const RELIC_SCENE := preload("res://items/relic.tscn")
 const LEDGE_SCENE := preload("res://obstacles/ledge.tscn")
+const MECH_DOOR_SCENE := preload("res://lab/mech_door.tscn")
+const PIT_SCENE := preload("res://lab/pit.tscn")
 ## Cena de cada tipo de bloqueio. O degrau duplo é a mesma face do degrau,
 ## com duas casas de altura.
 const OBSTACLE_SCENES := {
@@ -53,6 +57,17 @@ const OBSTACLE_SCENES := {
 	ChapterMap.Block.LOCKED: preload("res://obstacles/locked_door.tscn"),
 	ChapterMap.Block.BOSS_DOOR: preload("res://obstacles/boss_door.tscn"),
 	ChapterMap.Block.GATE: preload("res://obstacles/switch_door.tscn"),
+	ChapterMap.Block.SHUTTER: MECH_DOOR_SCENE,
+	ChapterMap.Block.BARRIER: MECH_DOOR_SCENE,
+	ChapterMap.Block.BARRIER_ALT: MECH_DOOR_SCENE,
+	ChapterMap.Block.TORCH_DOOR: MECH_DOOR_SCENE,
+	ChapterMap.Block.BLAST_DOOR: MECH_DOOR_SCENE,
+	ChapterMap.Block.TIMED_GATE: MECH_DOOR_SCENE,
+	ChapterMap.Block.BEAM_DOOR: MECH_DOOR_SCENE,
+	ChapterMap.Block.PIT: PIT_SCENE,
+	ChapterMap.Block.WIDE_PIT: PIT_SCENE,
+	ChapterMap.Block.GAP: PIT_SCENE,
+	ChapterMap.Block.WEB: preload("res://lab/web.tscn"),
 }
 const LIGHT_CRATE_SCENE := preload("res://objects/light_crate.tscn")
 const HEAVY_BLOCK_SCENE := preload("res://objects/heavy_block.tscn")
@@ -80,11 +95,20 @@ var map: ChapterMap
 ## Salas do capítulo e mecanismo das grades.
 var rooms: ChapterRooms
 var gates := GateMechanism.new()
+## Mecanismos de sala do laboratório (lab/room_mechanisms.gd).
+var mechanisms: RoomMechanisms
+## Ponto em que o personagem entrou na sala atual: é para onde ele volta ao
+## cair num buraco.
+var room_entry_point := Vector2.ZERO
 
 var _player: Player
 var _chests: Array[Chest] = []
 ## Bloqueio de cada vaga do mapa, para a tela de mapa saber o que já saiu.
 var _obstacle_by_slot := {}
+## Nos tipos em que a mesma vaga serve a vários bloqueios (ChapterMap.SHARED),
+## o bloqueio de cada casa.
+var _obstacle_by_cell := {}
+var _lab: LabBuilder
 
 @onready var _map_view: MapView = $MapView
 @onready var _walls: StaticBody2D = $Walls
@@ -101,6 +125,8 @@ func _ready() -> void:
 	data = ChapterData.load_number(RunSettings.chapter)
 	map = ChapterMap.new(data.rows, data.blocks)
 	rooms = ChapterRooms.new(data.rooms)
+	mechanisms = RoomMechanisms.new(rooms, data.waves, _spawn_wave_enemy)
+	_lab = LabBuilder.new(self, _switches, _objects)
 	_map_view.map = map
 	_map_view.theme = DungeonTheme.for_chapter(data.number)
 	for screen: Vector2i in data.room_themes:
@@ -109,6 +135,7 @@ func _ready() -> void:
 	MapWalls.build(map, _walls)
 	Progress.practice = Progress.active and data.number == ChapterData.TUTORIAL
 	_build_cells()
+	_add_darkness()
 	if _keeps_progress():
 		_player.restore(Progress.tools, Progress.max_health)
 		for chest: Chest in _chests:
@@ -139,6 +166,7 @@ func _physics_process(_delta: float) -> void:
 		_enter_room(room)
 	else:
 		_camera.position = _camera_target(true)
+	mechanisms.tick(_player.global_position)
 
 
 ## Jogo contínuo fora da dungeon de teste: o que acontece no capítulo vale
@@ -166,6 +194,8 @@ func mode_text() -> String:
 		return "Dungeon de teste"
 	if data.number == ChapterData.GALLERY:
 		return "Playtest"
+	if data.number == ChapterData.LAB:
+		return "Laboratório"
 	return "Cap. %d" % data.number
 
 
@@ -220,9 +250,10 @@ func chest_is_open(location: String) -> bool:
 
 
 ## Se o bloqueio de uma vaga já saiu do caminho: parede quebrada, gelo
-## derretido, porta destrancada ou grade aberta. Um degrau nunca sai.
-func block_cleared(slot: String) -> bool:
-	var obstacle: Node = _obstacle_by_slot.get(slot)
+## derretido, porta destrancada ou grade aberta. Um degrau nunca sai. Com a
+## casa, vale o bloqueio daquela casa, nos tipos em que a vaga é de vários.
+func block_cleared(slot: String, cell := ChapterMap.NO_CELL) -> bool:
+	var obstacle: Node = _obstacle_by_cell.get(cell, _obstacle_by_slot.get(slot))
 	if obstacle is SwitchDoor:
 		return (obstacle as SwitchDoor).open
 	if obstacle is Obstacle:
@@ -250,7 +281,11 @@ func _build_cells() -> void:
 			else:
 				_add_actor(character, cell)
 	for slot: String in slots:
-		_add_obstacle(slot, slots[slot])
+		if map.block_type(slot) in ChapterMap.SHARED:
+			for area: Rect2i in map.slot_groups(slot):
+				_add_obstacle(slot, area)
+		else:
+			_add_obstacle(slot, slots[slot])
 	_add_exit_door()
 	var rails := gates.build_rails(map, rooms)
 	_switches.add_child(rails)
@@ -315,6 +350,8 @@ func _add_actor(character: String, cell: Vector2i) -> void:
 		switch.position = center
 		_switches.add_child(switch)
 		gates.add_switch(switch, cell, rooms.of_cell(cell))
+	elif not _lab.add(character, cell) and not ".:^# ".contains(character):
+		push_error("Caractere %s sem legenda, na casa %s." % [character, cell])
 
 
 ## O chefe nasce desligado, preso à sala dele.
@@ -330,7 +367,7 @@ func _add_boss(scene: PackedScene, cell: Vector2i) -> void:
 
 
 ## Os inimigos nascem desligados. Só a sala do personagem fica ligada.
-func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
+func _add_enemy(scene: PackedScene, cell: Vector2i) -> Enemy:
 	var enemy := scene.instantiate() as Enemy
 	enemy.position = _cell_center(cell) + Vector2(0.0, 8.0)
 	enemy.respawn_time = 0.0
@@ -338,6 +375,27 @@ func _add_enemy(scene: PackedScene, cell: Vector2i) -> void:
 	_objects.add_child(enemy)
 	enemy.set_active(false)
 	rooms.register(enemy, cell)
+	return enemy
+
+
+## Inimigo de uma leva do laboratório: nasce ligado, no marcador da sala.
+func _spawn_wave_enemy(character: String, point: Vector2, _room: Rect2i) -> void:
+	if not MapLegend.ENEMIES.has(character):
+		push_error("Leva com inimigo sem legenda: %s." % character)
+		return
+	var cell := Pit.cell_of(point)
+	_add_enemy(MapLegend.ENEMIES[character], cell).set_active(true)
+
+
+## Escuridão das salas escuras, por baixo do HUD.
+func _add_darkness() -> void:
+	if data.dark_rooms.is_empty():
+		return
+	var darkness := Darkness.new()
+	for screen: Vector2i in data.dark_rooms:
+		darkness.rooms[rooms.room_at(screen)] = true
+	add_child(darkness)
+	move_child(darkness, $HudLayer.get_index())
 
 
 func _add_chest(location: String, cell: Vector2i) -> void:
@@ -367,9 +425,18 @@ func _add_obstacle(slot: String, area: Rect2i) -> void:
 	obstacle.set("size", Vector2(area.size * ChapterMap.TILE))
 	if obstacle is CrackedWall:
 		(obstacle as CrackedWall).theme_name = _map_view.theme_name_at(area.position)
+	# No laboratório, a cena é a mesma para vários tipos, e o tipo decide.
+	if obstacle is MechDoor or obstacle is Pit:
+		obstacle.set("kind", map.block_type(slot))
 	_obstacles.add_child(obstacle)
 	_obstacle_by_slot[slot] = obstacle
-	if obstacle is SwitchDoor:
+	if map.block_type(slot) in ChapterMap.SHARED:
+		for y: int in area.size.y:
+			for x: int in area.size.x:
+				_obstacle_by_cell[area.position + Vector2i(x, y)] = obstacle
+	if obstacle is MechDoor:
+		mechanisms.add_door(obstacle as MechDoor, rooms.of_cell(area.position))
+	elif obstacle is SwitchDoor:
 		gates.add_gate(obstacle as SwitchDoor, rooms.of_cell(area.position))
 
 
@@ -379,6 +446,8 @@ func _enter_room(room: Rect2i) -> void:
 	var previous := rooms.current
 	rooms.current = room
 	rooms.visited[room] = true
+	room_entry_point = _player.global_position
+	mechanisms.room_entered(room)
 	_camera.position = _camera_target()
 	_clear_floor_effects()
 	rooms.activate.call_deferred(previous, false)
@@ -398,7 +467,10 @@ func _on_boss_defeated(room: Rect2i) -> void:
 ## Sorteia um ossinho onde o inimigo caiu, sempre quando a vida está baixa. O
 ## ossinho fica com os efeitos do chão e some ao trocar de sala.
 func _on_enemy_died(enemy: Enemy) -> void:
-	rooms.mark_cleared_by(enemy)
+	var room := rooms.of_point(enemy.global_position)
+	mechanisms.enemy_died(room)
+	if rooms.mark_cleared_by(enemy):
+		mechanisms.room_cleared(room)
 	if not _drops_bone():
 		return
 	var bone := BONE_DROP_SCENE.instantiate() as BoneDrop

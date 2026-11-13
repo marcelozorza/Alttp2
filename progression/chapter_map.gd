@@ -9,18 +9,59 @@ extends RefCounted
 ## - "A" a "Z" baús. O conteúdo vem dos itens do capítulo, nunca do mapa.
 ## - SLOTS: bloqueios, os algarismos de 1 a 9 e as letras minúsculas que não
 ##   são inimigos. O tipo de cada um vem dos dados do capítulo. Casas com o
-##   mesmo caractere formam um só bloqueio.
+##   mesmo caractere formam um só bloqueio, menos nos tipos de SHARED.
 ## - "m" minion, "u" ugly, "i" inimigo de gelo, "w" morsa de gelo, "s" atirador
 ##   de pedras, "x" tatu de pedra, "y" morcego, "z" planta de espinhos, "c"
 ##   caixa leve, "0" bloco pesado, "=" interruptor no chão e "?" placa de
 ##   mensagem, que mostra um texto enquanto o personagem está em cima.
+## - Os outros inimigos e os objetos do laboratório estão em
+##   progression/map_legend.gd.
 ## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
 ##   chefes.
 ##
 ## A conferência de que o capítulo tem caminho até o fim fica fora do jogo, em
 ## tools/check_chapter.py, que lê os mesmos dados.
 
-enum Block { CRACKED, ICE, LEDGE, LOCKED, BOSS_DOOR, THICK_ICE, TALL_LEDGE, GATE, BOARDED }
+enum Block {
+	CRACKED,
+	ICE,
+	LEDGE,
+	LOCKED,
+	BOSS_DOOR,
+	THICK_ICE,
+	TALL_LEDGE,
+	GATE,
+	BOARDED,
+	# Bloqueios do laboratório (lab/), ainda fora das três dungeons.
+	SHUTTER,
+	BARRIER,
+	BARRIER_ALT,
+	TORCH_DOOR,
+	BLAST_DOOR,
+	TIMED_GATE,
+	PIT,
+	WIDE_PIT,
+	GAP,
+	WEB,
+	BEAM_DOOR,
+}
+
+## Tipos de bloqueio em que o mesmo caractere serve a vários bloqueios
+## separados: cada grupo de casas vizinhas forma um bloqueio. Nos outros
+## tipos, todas as casas do caractere formam um bloqueio só.
+const SHARED := [
+	Block.SHUTTER,
+	Block.BARRIER,
+	Block.BARRIER_ALT,
+	Block.TORCH_DOOR,
+	Block.BLAST_DOOR,
+	Block.TIMED_GATE,
+	Block.PIT,
+	Block.WIDE_PIT,
+	Block.GAP,
+	Block.WEB,
+	Block.BEAM_DOOR,
+]
 
 ## Tamanho de uma casa, em pixels.
 const TILE := 32
@@ -66,6 +107,31 @@ func find(character: String) -> Vector2i:
 		if x >= 0:
 			return Vector2i(x, y)
 	return NO_CELL
+
+
+## Retângulos de uma vaga, um por grupo de casas vizinhas, para os tipos de
+## SHARED.
+func slot_groups(slot: String) -> Array[Rect2i]:
+	var groups: Array[Rect2i] = []
+	var seen := {}
+	for y: int in height:
+		for x: int in width:
+			var first := Vector2i(x, y)
+			if seen.has(first) or tile(first) != slot:
+				continue
+			var area := Rect2i(first, Vector2i.ONE)
+			var pending: Array[Vector2i] = [first]
+			seen[first] = true
+			while not pending.is_empty():
+				var cell: Vector2i = pending.pop_back()
+				area = area.merge(Rect2i(cell, Vector2i.ONE))
+				for step: Vector2i in STEPS:
+					var next := cell + step
+					if not seen.has(next) and tile(next) == slot:
+						seen[next] = true
+						pending.append(next)
+			groups.append(area)
+	return groups
 
 
 ## Tipo do bloqueio da casa, um Block, ou -1 se não for bloqueio.
