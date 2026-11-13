@@ -193,6 +193,17 @@ func _ready() -> void:
 	# Camada dos inimigos comuns, por cima da qual o personagem pula.
 	collision_layer = Layers.ENEMY
 	collision_mask = Layers.SCENERY | Layers.ENEMY
+	# Traço preto em volta da barra de vida, do tamanho da barra cheia
+	# (pedido de Marcelo em 2026-11-13).
+	var frame := ColorRect.new()
+	frame.color = DoorArt.OUTLINE_COLOR
+	frame.position = -Vector2.ONE * DoorArt.OUTLINE
+	frame.size = (
+		Vector2(_health_bar_width, _health_bar.size.y) + Vector2.ONE * DoorArt.OUTLINE * 2.0
+	)
+	frame.show_behind_parent = true
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_health_bar.add_child(frame)
 	health = max_health
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
 

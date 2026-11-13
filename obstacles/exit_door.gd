@@ -1,8 +1,9 @@
 class_name ExitDoor
 extends Node2D
-## Porta de saída da dungeon: um portão de madeira de duas folhas, abertas
-## para dentro, num vão largo da parede de baixo da primeira sala, com a luz
-## de fora entrando pelo chão. O personagem sai ao andar para baixo contra ela,
+## Porta de saída da dungeon: um arco de madeira de pé na parede de baixo da
+## primeira sala, com as duas folhas abertas para dentro em perspectiva
+## forçada e a luz de fora no vão, como a referência que Marcelo mandou em
+## 2026-11-13. O personagem sai ao andar para baixo contra ela,
 ## e a saída vale o mesmo que "Sair" na pausa. Sem porta, o jogador não
 ## pensava em sair para procurar um item em outra dungeon (Marcelo,
 ## 2026-11-12). A parede continua sólida: a porta só percebe o toque.
@@ -14,17 +15,17 @@ const TEXTURE := preload("res://art/exit_door.svg")
 ## do trecho de parede que ele ocupa.
 const SIZE := Vector2(128.0, 32.0)
 ## Quanto o desenho sobe sobre o chão da sala: as folhas abertas.
-const ART_ABOVE := 48.0
-## Vão do portão, entre os batentes.
-const OPENING := Rect2(24.0, 0.0, 80.0, 32.0)
-## Cada folha aberta, sólida, sobre o batente dela.
-const LEAF_SIZE := Vector2(20.0, 36.0)
-const LEAF_LEFTS := [2.0, 106.0]
+const ART_ABOVE := 64.0
+## Vão livre do portão, entre as bordas soltas das duas folhas.
+const OPENING := Rect2(46.0, 0.0, 36.0, 32.0)
+## Cada lado do portão, sólido: a perna do arco e a folha aberta.
+const LEAF_SIZE := Vector2(46.0, 44.0)
+const LEAF_LEFTS := [0.0, 82.0]
 const TOUCH_MARGIN := 4.0
 ## Luz de fora no chão da sala, diante do portão: dois fachos, um dentro do
 ## outro, para o meio ficar mais claro.
 const LIGHT_COLOR := Color(1.0, 0.95, 0.66, 0.13)
-const LIGHTS := [Vector2(76.0, 24.0), Vector2(46.0, 10.0)]
+const LIGHTS := [Vector2(118.0, 34.0), Vector2(90.0, 16.0)]
 
 var _touch := Area2D.new()
 var _used := false

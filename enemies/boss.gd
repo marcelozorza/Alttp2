@@ -420,4 +420,6 @@ func _draw() -> void:
 	else:
 		draw_texture(texture, origin, tint)
 	var bar_width := texture.get_width() * float(maxi(health, 0)) / max_health
+	var frame := Rect2(origin + Vector2(0.0, -8.0), Vector2(texture.get_width(), 4.0))
+	draw_rect(frame.grow(DoorArt.OUTLINE), DoorArt.OUTLINE_COLOR)
 	draw_rect(Rect2(origin + Vector2(0.0, -8.0), Vector2(bar_width, 4.0)), HEALTH_COLOR)
