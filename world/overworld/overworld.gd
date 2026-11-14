@@ -10,8 +10,6 @@ extends Node2D
 ## personagem aparece na entrada dele. Ao continuar um jogo salvo, aparece
 ## na pedra de salvamento.
 
-const HUD_HEIGHT := 40.0
-const HALF_SCREEN := Vector2(320.0, 180.0)
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda
 ## no mundo: 6 na horizontal, onde Marcelo marcou o ponto jogando (2026-11-07),
 ## e 4 na vertical, o mais perto de 6 que a tela de 10 casas de altura permite
@@ -124,16 +122,15 @@ func _on_entrance_entered(chapter: int) -> void:
 
 
 ## A câmera segue o personagem com zona morta (CameraFollow), presa às bordas
-## do mapa, com a barra do HUD descontada no alto. No primeiro quadro, parte
+## do mapa. No primeiro quadro, parte
 ## centrada no personagem.
 func _camera_target(pushed := false) -> Vector2:
 	var tile := float(ChapterMap.TILE)
-	var low := Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
-	var high := Vector2(map.width, map.height) * tile - HALF_SCREEN
+	var bounds := CameraFollow.limits(Rect2(Vector2.ZERO, Vector2(map.width, map.height) * tile))
 	var target := _player.global_position
 	if pushed:
-		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT, EDGE_TILES)
-	return CameraFollow.centered(target, low, high)
+		return CameraFollow.pushed(_camera.position, target, bounds[0], bounds[1], 0.0, EDGE_TILES)
+	return CameraFollow.centered(target, bounds[0], bounds[1])
 
 
 func _cell_center(cell: Vector2i) -> Vector2:
