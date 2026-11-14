@@ -15,21 +15,25 @@ config/description="Aventura top-down do cachorro Giorgino, com progressão por 
 run/main_scene="res://ui/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+config/quit_on_go_back=false
 
 [autoload]
 
 Music="*res://audio/music.gd"
 Sfx="*res://audio/sfx.gd"
 Clock="*res://util/clock.gd"
+TouchControls="*res://touch/touch_controls.gd"
 
 [display]
 
-window/size/viewport_width=640
+window/size/viewport_width=480
 window/size/viewport_height=360
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="viewport"
+window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"
+window/handheld/orientation=4
 
 [gui]
 

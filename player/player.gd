@@ -6,7 +6,7 @@ extends MomentumBody
 ## (60 vezes por segundo, padrão de Physics > Common > Physics Ticks Per Second).
 ## Assim o movimento é idêntico em qualquer máquina e taxa de quadros, condição
 ## para que técnicas avançadas de precisão sejam reproduzíveis. Pelo mesmo
-## motivo, todos os tempos (duplo toque, pulo, trava da espada) são contados em
+## motivo, todos os tempos (pulo, trava da espada, cargas) são contados em
 ## ticks.
 ##
 ## O movimento é sempre em 8 direções, inclusive no analógico.
@@ -15,8 +15,8 @@ extends MomentumBody
 ## O corpo desenhado se estende para cima, o que permite passar por trás de
 ## objetos na perspectiva 3/4.
 ##
-## Batidas seguem a física de MomentumBody. Uma batida forte, como correr
-## contra uma parede, arremessa o personagem para trás, e ele só recupera o
+## Batidas seguem a física de MomentumBody. Uma batida forte, como a de um
+## inimigo pesado, arremessa o personagem para trás, e ele só recupera o
 ## controle quando o atrito reduz a velocidade abaixo de recover_speed.
 ##
 ## O jogo é feito para o controle, com a espada e cada ferramenta no seu
@@ -51,23 +51,14 @@ extends MomentumBody
 ## Perdeu toda a vida. A cena mostra a tela de derrota.
 signal died
 
-enum State { WALK, RUN, KNOCKBACK, DEAD }
+enum State { WALK, KNOCKBACK, DEAD }
 
 ## Tons sobre o desenho do Giorgino sem vida e arremessado. Acima de 1, o tom
-## clareia. A corrida não tem tom: o desenho inclinado e os passos rápidos
-## bastam (pedido de Marcelo em 2026-11-08).
+## clareia.
 const DEAD_TINT := Color(0.55, 0.5, 0.6, 1.0)
 const KNOCKBACK_TINT := Color(1.8, 1.8, 1.8, 1.0)
-## Ticks de cada passo, andando e correndo.
+## Ticks de cada passo.
 const WALK_STEP_TICKS := 10
-const RUN_STEP_TICKS := 6
-## Cansado, os passos ficam arrastados.
-const TIRED_STEP_TICKS := 16
-## Gotas de suor do cansaço, alternadas a cada SWEAT_TICKS.
-const SWEAT_FRAMES: Array[Texture2D] = [
-	preload("res://art/tired_sweat_1.svg"), preload("res://art/tired_sweat_2.svg")
-]
-const SWEAT_TICKS := 8
 ## Cor da espada travada. A granada do ugly usa a mesma cor.
 const SWORD_LOCK_COLOR := Color(0.95, 0.35, 0.85, 1.0)
 ## Cor da barra da trava ao apertar o ataque com a espada travada.
@@ -106,34 +97,9 @@ const NO_HOLD := -1
 @export_range(0.0, 3.0, 0.01) var ice_acceleration_time := 0.6
 @export_range(0.0, 3.0, 0.01) var ice_stop_time := 1.2
 
-@export_group("Correr")
-## Velocidade da corrida, em pixels por segundo.
-@export_range(20.0, 800.0, 1.0) var run_speed := 300.0
-## Tempo máximo, em segundos, entre os dois toques na mesma direção para
-## começar a correr. A corrida dura enquanto a direção estiver pressionada.
-@export_range(0.1, 0.5, 0.01) var double_tap_window := 0.3
-## Ligado, dá para mudar de direção correndo, para os lados ou em diagonal.
-## Desligado, a corrida é em linha reta e termina ao mudar de direção. Em
-## qualquer caso, apertar uma direção com componente para trás cancela a
-## corrida, como uma freada.
-@export var run_can_steer := true
-## Segundos de corrida contínua até o personagem cansar. Zero desliga o
-## fôlego, e ele corre sem limite.
-@export_range(0.0, 20.0, 0.5) var run_time := 3.0
-## Segundos andando ou parado para recuperar o fôlego todo depois de cansar.
-## Cansado, o duplo toque não faz nada, e nada aparece na tela de propósito
-## (pedido de Marcelo em 2026-11-06): é só a sensação de ter de esperar.
-@export_range(0.0, 20.0, 0.5) var run_rest_time := 4.0
-## Segundos de cansaço depois que o fôlego acaba (pedido de Marcelo em
-## 2026-11-11): ele anda a tired_speed, mais lento que o andar normal, e
-## gotas de suor saltam da cabeça. Zero desliga o cansaço.
-@export_range(0.0, 10.0, 0.5) var tired_time := 3.0
-## Velocidade andando cansado, em pixels por segundo.
-@export_range(20.0, 600.0, 1.0) var tired_speed := 100.0
-## Correndo, nenhum ataque tira vida (decisão de Marcelo em 2026-11-06): a
-## corrida é a esquiva, e o fôlego é o que a limita. A física da batida
-## continua, então correr contra um inimigo ainda ricocheteia.
-@export var run_invincible := true
+## Não há corrida desde 2026-11-14: na versão de celular, Marcelo achou que
+## o toque duplo não funciona no direcional de toque, e a corrida saiu do jogo.
+## O pulo, que passa por cima dos inimigos comuns, ficou como esquiva.
 ## Ligado, nenhum golpe tira vida: a galeria de testes usa. A física da
 ## batida continua.
 @export var invulnerable := false
@@ -230,15 +196,6 @@ var denied_tick := -1000
 
 var _state := State.WALK
 var _state_tick := 0
-var _run_direction := Vector2.ZERO
-## Fôlego, de 0 (cansado) a 1 (cheio).
-var _breath := 1.0
-## Cansado: sem correr até o fôlego encher de novo.
-var _winded := false
-var _tired_until_tick := -1000
-var _previous_direction := Vector2.ZERO
-var _last_press_direction := Vector2.ZERO
-var _last_press_tick := 0
 var _freeze_until_tick := 0
 var _invincible_until_tick := 0
 ## Tick em que o aviso de vida baixa toca. Zero quando não há aviso à espera.
@@ -264,14 +221,11 @@ var _spin_tick := NO_HOLD
 var _fire_charges := ToolCharges.new()
 var _bomb_charges := ToolCharges.new()
 var _jump_charges := ToolCharges.new()
-## Passo mostrado no último tick, para o som de cada passo tocar uma vez.
-var _last_step := 0
 
 @onready var _visual: Node2D = $Visual
 @onready var _art: Sprite2D = $Visual/Art
 @onready var _sword: Sword = $Visual/Sword
 @onready var _sword_lock_bar: ColorRect = $Visual/SwordLock
-@onready var _sweat: Sprite2D = $Visual/Sweat
 @onready var _sword_lock_width: float = _sword_lock_bar.size.x
 @onready var _shadow: ColorRect = $Shadow
 @onready var _feet: CollisionShape2D = $Feet
@@ -292,8 +246,7 @@ func _physics_process(delta: float) -> void:
 	_warn_low_health()
 	var direction := _read_direction()
 	_update_state(direction)
-	_breathe()
-	var in_control := _state == State.WALK or _state == State.RUN
+	var in_control := _state == State.WALK
 	if in_control:
 		# A frente se atualiza antes do golpe, para que direção e ataque
 		# apertados no mesmo tick golpeiem na nova direção.
@@ -405,11 +358,6 @@ func is_airborne() -> bool:
 
 
 ## Sem vida, caído, à espera da tela de derrota.
-## Verdadeiro nos segundos de cansaço depois que o fôlego da corrida acaba.
-func is_tired() -> bool:
-	return Clock.tick < _tired_until_tick
-
-
 func is_dead() -> bool:
 	return _state == State.DEAD
 
@@ -428,13 +376,11 @@ func _on_impacts(new_velocity: Vector2, rebound: float) -> void:
 		_enter(State.KNOCKBACK)
 
 
-## Recebe um ataque. Durante a invencibilidade e correndo, ataques são
+## Recebe um ataque. Durante a invencibilidade, ataques são
 ## ignorados. O empurrão vem separado, pela física da batida. Sem vida, o
 ## personagem cai e avisa a cena, que mostra a tela de derrota.
 func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void:
 	if _state == State.DEAD or Clock.tick < _invincible_until_tick:
-		return
-	if run_invincible and _state == State.RUN:
 		return
 	if invulnerable:
 		return
@@ -515,15 +461,13 @@ func is_sword_locked() -> bool:
 	return Clock.tick < _sword_lock_until_tick
 
 
-## Golpe de espada na direção da frente. Correr e atacar encerra a corrida.
+## Golpe de espada na direção da frente.
 ## Com a espada travada, o aperto só faz a barra da trava piscar.
 func _attack() -> void:
 	if is_sword_locked():
 		_sword_denied_tick = Clock.tick
 		Sfx.play(&"sword_denied")
 		return
-	if _state == State.RUN:
-		_enter(State.WALK)
 	_sword.strong = has_tool(Item.Id.STRONG_SWORD)
 	_sword.attack(facing)
 	Sfx.play(&"sword_swing")
@@ -721,9 +665,7 @@ func _is_free_at(target: Vector2) -> bool:
 
 func _steer(direction: Vector2, delta: float) -> void:
 	var move_direction := direction
-	var speed := run_speed if _state == State.RUN else walk_speed
-	if is_tired():
-		speed = tired_speed
+	var speed := walk_speed
 	if Clock.tick < _freeze_until_tick:
 		# Parado durante o golpe, mas ainda pode virar para o próximo.
 		move_direction = Vector2.ZERO
@@ -739,70 +681,14 @@ func _read_direction() -> Vector2:
 	return GameMath.snap_8(raw)
 
 
-## Andar vira corrida ao soltar e apertar de novo a mesma direção, e a
-## corrida dura enquanto a direção estiver pressionada e houver fôlego. O
-## arremesso por batida interrompe qualquer estado e termina em andar.
-func _update_state(direction: Vector2) -> void:
-	var pressed := _previous_direction == Vector2.ZERO and direction != Vector2.ZERO
-	if direction == Vector2.ZERO and _previous_direction != Vector2.ZERO:
-		_last_press_direction = _previous_direction
-		_last_press_tick = Clock.tick
-	_previous_direction = direction
-	match _state:
-		State.WALK:
-			if pressed and _is_double_tap(direction) and not _winded:
-				_run_direction = direction
-				_enter(State.RUN)
-		State.RUN:
-			if (
-				direction == Vector2.ZERO
-				or direction.dot(_run_direction) < 0.0
-				or (direction != _run_direction and not run_can_steer)
-			):
-				_enter(State.WALK)
-			else:
-				_run_direction = direction
-		State.KNOCKBACK:
-			if velocity.length() <= recover_speed:
-				_enter(State.WALK)
-		State.DEAD:
-			pass
+## O arremesso por batida interrompe o andar e termina em andar de novo.
+func _update_state(_direction: Vector2) -> void:
+	if _state == State.KNOCKBACK and velocity.length() <= recover_speed:
+		_enter(State.WALK)
 
 
-## Gasta o fôlego correndo e o recupera no resto do tempo. Sem fôlego, o
-## personagem cansa: para de correr e só volta a correr com o fôlego cheio.
-func _breathe() -> void:
-	if run_time <= 0.0:
-		return
-	if _state == State.RUN:
-		_breath = maxf(0.0, _breath - 1.0 / GameMath.ticks(run_time))
-		if _breath == 0.0:
-			_winded = true
-			_tired_until_tick = Clock.tick + GameMath.ticks(tired_time)
-			_enter(State.WALK)
-	else:
-		_breath = minf(1.0, _breath + 1.0 / maxf(1.0, GameMath.ticks(run_rest_time)))
-		if _breath == 1.0:
-			_winded = false
-
-
-## Apertar de novo a direção que acabou de ser solta, dentro de
-## double_tap_window. Quem já vinha andando para um lado só precisa soltar e
-## apertar de novo: a andada conta como o primeiro toque (pedido de Marcelo em
-## 2026-11-13). Antes o prazo contava da primeira pressão, e quem vinha
-## andando tinha de dar dois toques. Depois de reconhecido, é consumido.
-func _is_double_tap(direction: Vector2) -> bool:
-	var window := GameMath.ticks(double_tap_window)
-	if direction == _last_press_direction and Clock.tick - _last_press_tick <= window:
-		_last_press_direction = Vector2.ZERO
-		return true
-	return false
-
-
-## Troca de estado. Começar a correr tem som próprio.
+## Troca de estado.
 func _enter(state: State) -> void:
-	if state != _state and state == State.RUN:
-		Sfx.play(&"dash")
 	_state = state
 	_state_tick = Clock.tick
 
@@ -884,28 +770,16 @@ func _update_visuals() -> void:
 	_shadow.visible = false
 	queue_redraw()
 	_update_sword_lock_bar()
-	_sweat.visible = is_tired() and not _is_down()
-	_sweat.texture = SWEAT_FRAMES[posmod(floori(float(Clock.tick) / SWEAT_TICKS), 2)]
 
 
 ## Escolhe o desenho pela postura e pela frente: sem vida, deitado, no golpe,
-## o braço estendido com a espada, correndo, o galope, e no resto, de pé.
-## Andando ou correndo, alterna os dois passos, mais rápido na corrida. Os
-## desenhos e o ponto dos pés de cada um ficam em GiorginoArt.
+## o braço estendido com a espada, e no resto, de pé. Andando, alterna os
+## dois passos. Os desenhos e o ponto dos pés de cada um ficam em GiorginoArt.
 func _update_art() -> void:
-	var running := _state == State.RUN
-	var moving := (_state == State.WALK or _state == State.RUN) and velocity.length() > 2.0
-	var step_ticks := RUN_STEP_TICKS if running else WALK_STEP_TICKS
-	if is_tired():
-		step_ticks = TIRED_STEP_TICKS
+	var moving := _state == State.WALK and velocity.length() > 2.0
 	var step := 0
-	if moving and posmod(floori(float(Clock.tick) / step_ticks), 2) == 1:
+	if moving and posmod(floori(float(Clock.tick) / WALK_STEP_TICKS), 2) == 1:
 		step = 1
-	# Só a corrida soa, um passo a cada troca de pata, quando o segundo passo
-	# aparece. Andar é silencioso (pedido de Marcelo em 2026-11-06).
-	if step == 1 and _last_step == 0 and running and not is_airborne():
-		Sfx.play(&"step")
-	_last_step = step
 	# Com a espada travada, a versão suja de gosma de cada desenho.
 	var goo := is_sword_locked()
 	var toward := facing
@@ -923,12 +797,8 @@ func _update_art() -> void:
 		feet = GiorginoArt.THRUST_FEET[thrust]
 	else:
 		var index := GiorginoArt.direction_index(toward) * 2 + step
-		if running:
-			texture = GiorginoArt.GOO_RUNNING[index] if goo else GiorginoArt.RUNNING[index]
-			feet = GiorginoArt.RUNNING_FEET[index]
-		else:
-			texture = GiorginoArt.GOO_WALKING[index] if goo else GiorginoArt.WALKING[index]
-			feet = GiorginoArt.WALKING_FEET[index]
+		texture = GiorginoArt.GOO_WALKING[index] if goo else GiorginoArt.WALKING[index]
+		feet = GiorginoArt.WALKING_FEET[index]
 	var flipped := toward.x < 0.0
 	_art.texture = texture
 	_art.flip_h = flipped

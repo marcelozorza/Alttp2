@@ -23,7 +23,7 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 6)
 	var holder: Control = column.get_parent()
 	holder.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	holder.position = MENU_AREA.position
+	holder.position = MENU_AREA.position + Vector2(TitleArt.shift(get_viewport_rect().size.x), 0.0)
 	holder.size = MENU_AREA.size
 	var first := MenuKit.button("Novo jogo", _on_new_game)
 	var entries: Array[Button] = [

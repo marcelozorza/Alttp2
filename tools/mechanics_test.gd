@@ -6,8 +6,8 @@ extends Node
 ##
 ## Abre a bancada (tools/bench/bench_data.gd), que não faz parte do jogo, e
 ## confere cada mecânica na sala dela. Onde a sala depende de tempo, um piloto
-## a atravessa só pelos botões, andando e correndo, como o jogador faria: a
-## corrida da placa e as tochas que apagam. Cada conferência imprime uma
+## a atravessa só pelos botões, como o jogador faria: a placa que abre a
+## grade por pouco tempo e as tochas que apagam. Cada conferência imprime uma
 ## linha, as linhas com dois espaços são medidas de folga, e a última linha
 ## diz quantas falharam. Não muda nada no projeto.
 
@@ -161,28 +161,11 @@ func _walk_to(target: Vector2) -> bool:
 	return false
 
 
-## Começa a correr na direção do alvo: solta e aperta de novo. Antes anda
-## alguns quadros, para a direção já ser a do alvo nos dois toques.
-func _start_run(target: Vector2) -> void:
-	for _i: int in 6:
-		_steer(target)
-		await _frames(1)
-	_release_all()
-	await _frames(3)
-	_steer(target)
-	await _frames(1)
-
-
-## Segue um caminho numa tela. Cada passo é uma casa (Vector2) ou &"run"
-## (passa a correr rumo à casa seguinte).
+## Segue um caminho numa tela, uma casa (Vector2) por passo.
 func _follow(screen: Vector2i, path: Array) -> bool:
 	var arrived := true
-	for index: int in path.size():
-		var step: Variant = path[index]
-		if step is Vector2:
-			arrived = await _walk_to(_spot(screen, step))
-		else:
-			await _start_run(_spot(screen, path[index + 1]))
+	for step: Vector2 in path:
+		arrived = await _walk_to(_spot(screen, step))
 		if not arrived:
 			break
 	_release_all()
@@ -214,7 +197,9 @@ func _check_crystal() -> void:
 
 
 ## A placa fica no sul, e a grade no fim de um corredor que dá a volta pelo
-## oeste: andando o tempo acaba, correndo dá.
+## oeste: andando o tempo acaba. A corrida, que passava a tempo, saiu do jogo
+## em 2026-11-14, e o tempo da placa ainda vai ser recalibrado com Marcelo
+## jogando no celular.
 func _check_plate() -> void:
 	var screen := Vector2i(1, 0)
 	var limit := GameMath.ticks(4.0)
@@ -227,12 +212,6 @@ func _check_plate() -> void:
 	print("  placa, andando: %d ticks de %d" % [Clock.tick - start, limit])
 	_expect("placa: andando não dá tempo", not walked)
 	_expect("placa: a grade fecha", _all_open(screen, ChapterMap.Block.TIMED_GATE, false))
-	await _go(screen, 12, 7)
-	await _follow(screen, [Vector2(9, 7)])
-	start = Clock.tick
-	var ran := await _follow(screen, [&"run", route[0], route[1], route[2]])
-	print("  placa, correndo: %d ticks de %d" % [Clock.tick - start, limit])
-	_expect("placa: correndo passa pela grade", ran)
 
 
 func _check_torches() -> void:
