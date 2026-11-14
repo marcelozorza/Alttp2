@@ -1,9 +1,10 @@
 class_name HudLayout
 ## Onde cada peça do HUD e dos controles de toque fica, nas faixas dos lados
-## do quadro de jogo (GameView), pela largura da tela. Num celular deitado de
-## 1080 linhas a tela tem 800x360 e cada faixa tem 112 pixels. Numa tela
-## mais estreita (16:9 do computador, tablet 4:3) a faixa fica com MIN_SIDE e
-## cobre a borda do jogo, meio transparente.
+## do quadro de jogo (GameView), pela largura da tela. O jogo ocupa a tela
+## inteira e as faixas ficam por cima dele, meio transparentes. Num celular
+## deitado de 1080 linhas a tela tem 800x360 e cada faixa tem 112 pixels. Numa
+## tela mais estreita (16:9 do computador, tablet 4:3) a faixa fica com
+## MIN_SIDE e entra no quadro de jogo.
 ##
 ## Faixa esquerda: corações, chaves e minimapa no alto, direcional embaixo.
 ## Faixa direita: mapa e pausa no alto, o tempo, e a coluna dos quatro botões.
@@ -36,11 +37,6 @@ const SMALL_BUTTON := Vector2(34.0, 26.0)
 ## Largura de cada faixa lateral.
 static func side_width(screen: Vector2) -> float:
 	return maxf(MIN_SIDE, floorf((screen.x - GameView.SIZE.x) / 2.0))
-
-
-## A faixa cobre parte do quadro de jogo (tela estreita).
-static func overlaps(screen: Vector2) -> bool:
-	return (screen.x - GameView.SIZE.x) / 2.0 < MIN_SIDE
 
 
 static func left_side(screen: Vector2) -> Rect2:

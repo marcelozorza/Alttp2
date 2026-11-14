@@ -1,6 +1,7 @@
 extends Control
-## HUD da versão de celular (decisões de Marcelo em 2026-11-14). Nada fica por
-## cima do quadro de jogo: tudo vai para as faixas dos lados (ui/hud_layout.gd).
+## HUD da versão de celular (decisões de Marcelo em 2026-11-14). O jogo ocupa
+## a tela inteira e o HUD fica em faixas pretas meio transparentes nos lados,
+## por cima do jogo (ui/hud_layout.gd).
 ##
 ## Faixa esquerda: a vida em corações de dois pontos, o contador de chaves
 ## pequenas, sempre à vista, mesmo em zero, com a chave grande depois de
@@ -26,9 +27,9 @@ const EMPTY_HEART_TEXTURE := preload("res://art/heart_empty.svg")
 const HEART_STEP := Vector2(18.0, 16.0)
 ## Chave e número apagados, quando não há nenhuma.
 const NO_KEY_TINT := Color(0.62, 0.62, 0.68, 1.0)
-const SIDE_COLOR := Color(0.07, 0.07, 0.09, 1.0)
-## Faixa que cobre a borda do jogo, numa tela estreita.
-const OVERLAP_COLOR := Color(0.07, 0.07, 0.09, 0.55)
+## Faixas por cima do jogo, pretas e meio transparentes, em qualquer tela
+## (tela cheia, pedido de Marcelo em 2026-11-14).
+const SIDE_COLOR := Color(0.07, 0.07, 0.09, 0.55)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
 ## Aro e fundo de cada botão de ação.
 const RING_COLOR := Color(1.0, 1.0, 1.0, 0.35)
@@ -71,9 +72,8 @@ func _process(_delta: float) -> void:
 func _draw() -> void:
 	var screen := get_viewport_rect().size
 	if show_bar:
-		var color := OVERLAP_COLOR if HudLayout.overlaps(screen) else SIDE_COLOR
-		draw_rect(HudLayout.left_side(screen), color)
-		draw_rect(HudLayout.right_side(screen), color)
+		draw_rect(HudLayout.left_side(screen), SIDE_COLOR)
+		draw_rect(HudLayout.right_side(screen), SIDE_COLOR)
 	var player := get_tree().get_first_node_in_group("player") as Player
 	var chapter := get_tree().get_first_node_in_group("chapter") as Chapter
 	var left := HudLayout.left_side(screen)
