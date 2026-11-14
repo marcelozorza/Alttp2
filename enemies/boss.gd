@@ -37,17 +37,12 @@ const SHOCKWAVE_SCENE := preload("res://enemies/shockwave.tscn")
 const ART_BELOW_FEET := 0.0
 ## Tons sobre o desenho. Acima de 1, o tom clareia.
 const RECOVER_TINT := Color(0.65, 0.65, 0.7, 1.0)
-## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
-## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
-const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
 ## Nuvens a mais quando o chefe é vencido: o desvio de cada uma, em pixels, a
 ## partir do centro do desenho, e os ticks entre uma e outra.
 const DEATH_PUFF_SHIFTS: Array[Vector2] = [
 	Vector2(-18.0, -8.0), Vector2(16.0, 6.0), Vector2(-6.0, 14.0), Vector2(12.0, -14.0)
 ]
 const DEATH_PUFF_TICKS := 6
-const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
-const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
 const HEALTH_COLOR := Color(0.9, 0.3, 0.35, 1.0)
 ## Segundos antes de a casca voltar em que ela pisca, como aviso.
 const REGROW_WARNING_TIME := 1.0
@@ -397,13 +392,13 @@ func _draw() -> void:
 			var blink := posmod(elapsed, 8) < 4
 			shake = Vector2(2.0 if blink else -2.0, 0.0)
 			if blink:
-				tint = WINDUP_COLOR
+				tint = Hit.WINDUP_COLOR
 		State.SLAM_RECOVER, State.CHARGE_RECOVER:
 			tint = RECOVER_TINT
 	if now - _hit_tick < FLASH_TICKS:
-		tint = HIT_TINT
+		tint = Hit.HIT_TINT
 	elif now - _immune_tick < FLASH_TICKS:
-		tint = IMMUNE_COLOR
+		tint = Hit.IMMUNE_COLOR
 	var texture := _shell_texture() if _shell else _core_texture()
 	if not _shell:
 		var regrow_in := GameMath.ticks(shell_regrow_time) - (now - _shell_break_tick)

@@ -26,7 +26,7 @@ extends RefCounted
 ## obrigar a sair e voltar.
 
 const NO_NODE := -1
-const ROOM_TILES := Vector2i(20, 10)
+const ROOM_TILES := ChapterRooms.ROOM_TILES
 
 var map: ChapterMap
 ## Ferramentas que o chefe exige, como bits de Item.

@@ -34,9 +34,9 @@ static func blink_on() -> bool:
 
 
 ## Tamanho em pixels da grade de salas do capítulo, com cell pixels por sala.
-static func rooms_size(chapter: Node, cell: Vector2) -> Vector2:
-	var map: ChapterMap = chapter.get("map")
-	var room_tiles: Vector2i = chapter.call("room_tiles")
+static func rooms_size(chapter: Chapter, cell: Vector2) -> Vector2:
+	var map := chapter.map
+	var room_tiles := chapter.room_tiles()
 	var columns := ceili(float(map.width) / room_tiles.x)
 	var rows := ceili(float(map.height) / room_tiles.y)
 	return Vector2(columns, rows) * cell
@@ -44,24 +44,26 @@ static func rooms_size(chapter: Node, cell: Vector2) -> Vector2:
 
 ## As salas já visitadas, um bloco por sala de uma tela a partir de origin, com
 ## a sala atual piscando.
-static func draw_rooms(canvas: CanvasItem, chapter: Node, origin: Vector2, cell: Vector2) -> void:
-	var current: Rect2i = chapter.call("current_room")
-	for room: Rect2i in chapter.call("visited_rooms"):
+static func draw_rooms(
+	canvas: CanvasItem, chapter: Chapter, origin: Vector2, cell: Vector2
+) -> void:
+	var current := chapter.current_room()
+	for room: Rect2i in chapter.visited_rooms():
 		var color := VISITED_COLOR
 		if room == current and blink_on():
 			color = CURRENT_COLOR
 		var corner := origin + Vector2(room.position) * cell
 		canvas.draw_rect(Rect2(corner, Vector2(room.size) * cell - Vector2.ONE), color)
-	for room: Rect2i in chapter.call("visited_rooms"):
+	for room: Rect2i in chapter.visited_rooms():
 		_draw_links(canvas, chapter, room, origin, cell)
 
 
 ## Ligações da sala para as vizinhas: uma por trecho aberto de cada divisa.
 static func _draw_links(
-	canvas: CanvasItem, chapter: Node, room: Rect2i, origin: Vector2, cell: Vector2
+	canvas: CanvasItem, chapter: Chapter, room: Rect2i, origin: Vector2, cell: Vector2
 ) -> void:
-	var map: ChapterMap = chapter.get("map")
-	var room_tiles: Vector2i = chapter.call("room_tiles")
+	var map := chapter.map
+	var room_tiles := chapter.room_tiles()
 	for y in range(room.position.y, room.end.y):
 		for x in range(room.position.x, room.end.x):
 			var screen := Vector2i(x, y)

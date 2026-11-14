@@ -9,6 +9,14 @@ class_name Hit
 
 enum Kind { SWORD, FIRE, STRONG_FIRE, BLAST, SHOCKWAVE, STRONG_BLAST }
 
+## Cores de aviso iguais para inimigos e chefes: amarelo na preparação de um
+## ataque e cinza quando o golpe recebido não afeta o alvo.
+const WINDUP_COLOR := Color(1.0, 0.85, 0.2, 1.0)
+const IMMUNE_COLOR := Color(0.55, 0.55, 0.6, 1.0)
+## Golpe recebido: o desenho pisca em vermelho (pedido de Marcelo em
+## 2026-11-11). O vermelho passa de 1 para aparecer também no pelo escuro.
+const HIT_TINT := Color(3.0, 0.45, 0.45, 1.0)
+
 
 ## Diz se o golpe é fogo, comum ou forte.
 static func is_fire(kind: Kind) -> bool:

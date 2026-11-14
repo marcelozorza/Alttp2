@@ -82,7 +82,7 @@ var _canvas: Control
 ## Aberto pelo botão de pausa: o painel mostra os botões do menu.
 var _as_pause := false
 ## Menu de pausa da cena, dono da ação de sair.
-var _pause_menu: CanvasLayer
+var _pause_menu: PauseMenu
 var _buttons: VBoxContainer
 var _seed_label: Label
 ## Onde a legenda começa, abaixo do texto e dos botões do painel.
@@ -131,7 +131,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Abre o mapa e para o jogo. Com pause_menu, é a tela de pausa: o painel
 ## ganha os botões Continuar e o de sair do menu de pausa.
-func open(pause_menu: CanvasLayer = null) -> void:
+func open(pause_menu: PauseMenu = null) -> void:
 	_as_pause = pause_menu != null
 	_pause_menu = pause_menu
 	if not get_tree().paused:
@@ -165,7 +165,7 @@ func _build_buttons() -> void:
 		return
 	var resume := MenuKit.button("Continuar", close, true)
 	_buttons.add_child(resume)
-	_buttons.add_child(MenuKit.button(_pause_menu.get("exit_text"), _on_exit, true))
+	_buttons.add_child(MenuKit.button(_pause_menu.exit_text, _on_exit, true))
 	_legend_top = top + 2.0 * 34.0 + 12.0
 	resume.grab_focus()
 
@@ -175,7 +175,7 @@ func _on_exit() -> void:
 	visible = false
 	_as_pause = false
 	_pause_menu = null
-	menu.call("leave")
+	menu.leave()
 
 
 func _player_is_dead() -> bool:
@@ -183,8 +183,8 @@ func _player_is_dead() -> bool:
 	return player != null and player.is_dead()
 
 
-func _chapter() -> Node:
-	return get_tree().get_first_node_in_group("chapter")
+func _chapter() -> Chapter:
+	return get_tree().get_first_node_in_group("chapter") as Chapter
 
 
 ## Área do mapa: a tela à esquerda do painel, com margem.
@@ -221,27 +221,27 @@ func _draw_map() -> void:
 	_canvas.draw_string(
 		font,
 		Vector2(panel.position.x, 46.0),
-		chapter.call("mode_text"),
+		chapter.mode_text(),
 		HORIZONTAL_ALIGNMENT_CENTER,
 		PANEL_WIDTH,
 		LABEL_FONT_SIZE,
 		TEXT_COLOR
 	)
-	var map: ChapterMap = chapter.get("map")
-	var room_tiles: Vector2i = chapter.call("room_tiles")
+	var map := chapter.map
+	var room_tiles := chapter.room_tiles()
 	var scale := scale_for(map)
 	var size := Vector2(map.width, map.height) * scale
 	var area := map_area()
 	var origin := (area.position + (area.size - size) / 2.0).floor()
 	var visited := {}
-	for room: Rect2i in chapter.call("visited_rooms"):
+	for room: Rect2i in chapter.visited_rooms():
 		visited[room] = true
 	var drawn := {}
 	var columns := ceili(float(map.width) / room_tiles.x)
 	var rows := ceili(float(map.height) / room_tiles.y)
 	for sy: int in rows:
 		for sx: int in columns:
-			var room: Rect2i = chapter.call("room_at", Vector2i(sx, sy))
+			var room := chapter.room_at(Vector2i(sx, sy))
 			if drawn.has(room) or not _room_exists(map, room, room_tiles):
 				continue
 			drawn[room] = true
@@ -284,7 +284,12 @@ static func _room_exists(map: ChapterMap, room: Rect2i, room_tiles: Vector2i) ->
 ## Uma sala já vista, casa por casa. Casas vizinhas da mesma cor viram um
 ## retângulo só, e os baús ganham a marca por cima.
 func _draw_room(
-	chapter: Node, map: ChapterMap, room: Rect2i, room_tiles: Vector2i, origin: Vector2, scale: int
+	chapter: Chapter,
+	map: ChapterMap,
+	room: Rect2i,
+	room_tiles: Vector2i,
+	origin: Vector2,
+	scale: int
 ) -> void:
 	var cells := Rect2i(room.position * room_tiles, room.size * room_tiles)
 	var chests: Array[Vector2i] = []
@@ -305,19 +310,19 @@ func _draw_room(
 					chests.append(Vector2i(x + i, y))
 			x += run
 	for cell: Vector2i in chests:
-		var is_open: bool = chapter.call("chest_is_open", map.tile(cell))
+		var is_open := chapter.chest_is_open(map.tile(cell))
 		_draw_chest(Rect2(origin + Vector2(cell) * scale, Vector2.ONE * scale), is_open)
 
 
 ## Cor de uma casa de sala já vista: parede, bloqueio ainda no lugar pelo tipo,
 ## ou chão pelo nível. Um baú ou um inimigo é desenhado como o chão dele.
-static func _cell_color(chapter: Node, map: ChapterMap, cell: Vector2i) -> Color:
+static func _cell_color(chapter: Chapter, map: ChapterMap, cell: Vector2i) -> Color:
 	var character := map.tile(cell)
 	if character == " ":
 		return NOTHING
 	if character == "#":
 		return WALL_COLOR
-	if ChapterMap.is_slot(character) and not chapter.call("block_cleared", character):
+	if ChapterMap.is_slot(character) and not chapter.block_cleared(character, cell):
 		match map.block_type(character):
 			ChapterMap.Block.CRACKED:
 				return CRACKED_COLOR

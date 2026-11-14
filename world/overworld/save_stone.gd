@@ -1,6 +1,7 @@
 class_name SaveStone
 extends StaticBody2D
-## Pedra de salvamento. Encostar nela grava o progresso e enche a vida. O
+## Pedra de salvamento. Encostar nela enche a vida e marca o ponto de volta
+## da sessão (Progress.mark_checkpoint): não há gravação em arquivo. O
 ## losango gravado acende por um instante, e um anel se abre no chão.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
@@ -46,7 +47,6 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	player.health = player.max_health
 	Progress.mark_checkpoint()
-	Progress.save()
 	Sfx.play(&"save")
 	_lit_tick = Clock.tick
 

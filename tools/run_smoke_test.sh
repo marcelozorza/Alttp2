@@ -39,4 +39,12 @@ elif ! diff tools/smoke_expected.txt "$FOUND"; then
 	echo "FALHOU: algum valor do teste de fumaça mudou (esperado < e encontrado >)"
 	exit 1
 fi
+# Os mecanismos de sala têm um teste próprio, que confere cada um na bancada
+# e atravessa as salas de tempo pelos botões (tools/mechanics_test.gd).
+MECH="$(mktemp)"
+"$GODOT" --headless --fixed-fps 60 --path . res://tools/mechanics_test.tscn 2>&1 | tee "$MECH"
+if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$MECH" || ! grep -q "^MECANISMOS: .* 0 falhas" "$MECH"; then
+	echo "FALHOU: o teste dos mecanismos acusou erro"
+	exit 1
+fi
 echo "Teste de fumaça sem erros."

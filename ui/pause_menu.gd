@@ -46,7 +46,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if map_screen:
 			get_tree().paused = true
 			Music.set_paused(true)
-			map_screen.call("open", self)
+			map_screen.open(self)
 		else:
 			open()
 		get_viewport().set_input_as_handled()
@@ -65,8 +65,8 @@ func _player_is_dead() -> bool:
 	return player != null and player.is_dead()
 
 
-func _map_screen() -> CanvasLayer:
-	return get_tree().get_first_node_in_group("map_screen") as CanvasLayer
+func _map_screen() -> MapScreen:
+	return get_tree().get_first_node_in_group("map_screen") as MapScreen
 
 
 func resume() -> void:

@@ -73,7 +73,7 @@ const PLAIN_FLOOR := ".:^"
 ## personagem e os inimigos, que andam por cima dele.
 const CARPET_FLOOR := ".@muiwsxyz*&%$"
 ## Tamanho de uma tela de sala, em casas, para o tapete.
-const ROOM_TILES := Vector2i(20, 10)
+const ROOM_TILES := ChapterRooms.ROOM_TILES
 ## Tamanho do tapete, em casas, no centro da sala.
 const CARPET_TILES := Vector2i(6, 4)
 ## Distância mínima, em casas, entre dois adornos na mesma fileira de parede.

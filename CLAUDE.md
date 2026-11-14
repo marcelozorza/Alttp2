@@ -15,5 +15,6 @@ Jogo de aventura top-down em Godot 4.7 com GDScript. O herói e o jogo se chamam
 
 - Rode `gdformat --check .` e `gdlint .` (pacote `gdtoolkit` no PyPI) em todo script alterado.
 - Rode `python3 tools/check_chapter.py <arquivo de dados>` em todo capítulo alterado. Nenhuma linha `ERRO` pode aparecer.
+- Os mecanismos de sala ficam em `mechanics/`. `tools/mechanics_test.gd` confere cada um na bancada `tools/bench/bench_data.gd`, que não faz parte do jogo, e roda dentro de `tools/run_smoke_test.sh`.
 - Rode `python3 tools/check_art.py` em todo desenho alterado. Nenhuma linha `ERRO` pode aparecer.
 - Com o Godot disponível, rode também o teste de fumaça descrito no topo de `tools/smoke_test.gd`. Nenhuma linha com `SCRIPT ERROR` ou `ERROR` pode aparecer, e os valores têm de bater com `tools/smoke_expected.txt`.

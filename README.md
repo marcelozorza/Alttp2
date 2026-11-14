@@ -1,6 +1,6 @@
 # Giorgino
 
-Giorgino é um cachorro, e este é o jogo dele: uma aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim. Um mundo pequeno liga as dungeons, e o progresso fica salvo. Esse modo original ensina as quatro dungeons do jogo, a inicial e as três do mundo. O jogo de verdade será o modo randomizado, ainda por fazer, em que uma seed embaralha os itens entre elas.
+Giorgino é um cachorro, e este é o jogo dele: uma aventura top-down original, inspirada na jogabilidade de A Link to the Past e nas dungeons dos Zelda 2D. Cada ferramenta é arma e chave. O jogo é linear, capítulo a capítulo, e cada capítulo tem um mapa e uma distribuição fixa de ferramentas, chaves e bloqueios, sempre conferida para ter caminho até o fim. Um mundo pequeno liga as dungeons. Não há salvamento: cada partida vai até o fim. Esse modo original ensina as quatro dungeons do jogo, a inicial e as três do mundo. O jogo de verdade será o modo randomizado, ainda por fazer, em que uma seed embaralha os itens entre elas.
 
 Visão, princípios e decisões estão em [docs/design.md](docs/design.md). O estudo das dungeons de referência e as regras tiradas dele estão em [docs/referencias.md](docs/referencias.md).
 
@@ -16,8 +16,7 @@ A cada push, o GitHub monta o jogo para Windows. Na aba **Actions** do repositó
 
 ## Menu
 
-- **Continuar.** Volta ao mundo com o jogo salvo, na pedra de salvamento. Só aparece quando há jogo salvo.
-- **Novo jogo.** Começa no mundo, numa clareira ao sul com as regras gravadas no chão e a porta da dungeon de teste logo à frente. Mais ao norte fica a clareira grande, com a pedra de salvamento e a entrada de cada dungeon, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, para na pausa e fica gravado. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e convida ao modo randomizado. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Vencer um capítulo grava o progresso, e encostar na pedra de salvamento grava de novo e enche a vida. Sair de um capítulo no meio perde o que foi feito nele.
+- **Novo jogo.** Começa no mundo, numa clareira ao sul com as regras gravadas no chão e a porta da dungeon de teste logo à frente. Mais ao norte fica a clareira grande, com a pedra de salvamento e a entrada de cada dungeon, na ordem dos capítulos. Um cronômetro no canto superior direito conta o tempo de jogo desde o começo, e para na pausa. Vencida a terceira dungeon, a tela de vitória mostra o tempo total e convida ao modo randomizado. Cada entrada abre quando o capítulo anterior foi vencido, e a de um capítulo vencido mostra a relíquia dele. Ferramentas, melhorias e vida máxima passam de um capítulo ao outro. Encostar na pedra do mundo enche a vida e marca o ponto de volta da sessão. Sair de um capítulo no meio perde o que foi feito nele.
 - **Randomizado.** O jogo de verdade: as mesmas três dungeons do mundo, com as ferramentas e as melhorias embaralhadas entre os baús delas por uma seed, um número de 1 a 999999. Na tela da seed, esquerda e direita escolhem o dígito, cima e baixo mudam, os números do teclado digitam, Sortear sorteia outro e Jogar começa. O mesmo número dá o mesmo jogo em qualquer cópia, então dá para compartilhar. As três entradas abrem de início, as chaves ficam nas dungeons delas e cada baú de ferramenta, melhoria ou coração fica gravado na hora em que abre. A primeira mola encontrada é a mola e a segunda é a mola forte, seja qual for a ordem dos baús, e o mesmo vale para a chama. Morrer na seed perde tudo: ela recomeça do zero, no mundo. O número da seed aparece na pausa e na tela de vitória.
 - **Dungeon de teste.** A dungeon de aprendizado, o antigo tutorial, com placas no chão que mostram um texto enquanto o Giorgino está em cima. Também abre pela primeira porta do mundo. É sempre um treino: nada do que acontece nela passa para o jogo.
 - **Treino.** A dungeon de teste, cada capítulo avulso com as ferramentas dos dados dele, sem gravar nada, e a sala de teste.
@@ -68,10 +67,10 @@ O botão de uma ferramenta só funciona depois de o personagem encontrá-la. No 
 - `obstacles/` bloqueios: parede rachada, gelo, gelo grosso, portas, a grade de ferro e a face do degrau alto, comum ou duplo.
 - `objects/` objetos do mundo: a caixa leve, o bloco pesado e o interruptor no chão.
 - `enemies/` inimigos: o minion, o ugly com a granada, o de gelo, a morsa de gelo, o atirador de pedras, o morcego, o tatu de pedra, a planta de espinhos e os chefes com a onda de choque.
-- `progression/` leitura dos dados de cada capítulo, o mapa em texto, as escolhas da partida, o progresso salvo (`progress.gd`) e o caminho entre as telas (`flow.gd`).
+- `progression/` leitura dos dados de cada capítulo, o mapa em texto, as escolhas da partida, o progresso da sessão (`progress.gd`), a legenda dos atores do mapa (`map_legend.gd`) e o caminho entre as telas (`flow.gd`).
 - `ui/` menu de título, treino, HUD, menu de pausa, tela de derrota, tela de fim e os ícones das ferramentas.
 - `util/` funções compartilhadas, como a conversão de segundos em ticks.
-- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo. `tutorial/`, `chapter_one/`, `chapter_two/` e `chapter_three/` têm os dados do tutorial e de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
+- `world/` salas e mapas. `chapter/` tem a cena que monta qualquer capítulo e as partes dela (salas, mecanismo da grade, estado da dungeon). `tutorial/`, `chapter_one/`, `chapter_two/` e `chapter_three/` têm os dados do tutorial e de cada capítulo, com o mapa em texto e as tabelas de bloqueios e de itens separadas do mapa. Uma lista `ROOMS` nos dados junta telas vizinhas numa sala maior que a tela. `overworld/` tem o mundo que liga os capítulos, com o mapa em texto, a entrada de dungeon e a pedra de salvamento. `map_view.gd` desenha os dois, e `map_walls.gd` monta a colisão. `test_room.tscn` é a sala de teste.
 - `audio/` música e efeitos sonoros. `music.gd` e `sfx.gd` são os autoloads Music e Sfx. `sfx/` tem os efeitos gerados e `music/tracks/` tem as trilhas, que tocam em fila.
 - `art/` a pixel art em SVG. `art/source/` tem os desenhos em texto, uma letra por pixel, de onde os SVG são gerados.
 - `tools/` ferramentas de desenvolvimento que rodam fora do Godot.
@@ -89,6 +88,10 @@ python3 tools/check_chapter.py world/chapter_three/chapter_three_data.gd
 Confere a geometria das salas e das portas, as regras de leitura visual (bloqueio de porta num nicho uma casa para dentro da sala, gelo grosso com duas casas de fundo, degrau com chão alto logo ao norte, degrau duplo com duas casas de face, altura do chão que fecha em todo o mapa, e grade com um interruptor na mesma sala e um bloco pesado alinhado com ele) e garante que o capítulo é vencível em qualquer ordem de abrir as portas trancadas e que nenhuma combinação de ferramentas prende o jogador. Qualquer linha `ERRO` precisa ser corrigida antes de publicar.
 
 ## Verificação automática
+
+### Editor de dungeons
+
+`python3 tools/editor/build_editor.py` gera `tools/editor/editor_de_dungeons.html`, um arquivo único que abre no Chrome sem instalar nada. Ele já traz as quatro dungeons do jogo, lidas dos arquivos de dados, e usa os desenhos de `art/` como ícones. Serve para desenhar salas e ideias com o mouse e deixar notas sobre mecânicas novas. Exportar imagem baixa um PNG do mapa inteiro com as notas. Exportar dados baixa um JSON com o mapa na mesma legenda de `progression/chapter_map.gd` (`rows`, `blocks`, `items`, `messages`) e as notas, pronto para virar um arquivo de dados de capítulo. O editor não muda o jogo sozinho. O desenho de cada inimigo e chefe vem da cena dele, e o GitHub gera o editor de novo a cada push (artefato `editor-de-dungeons` na aba Actions), então mapas e desenhos novos entram sem mexer no editor.
 
 A cada push e a cada pull request, o GitHub roda as conferências do projeto (`.github/workflows/verificar.yml`): formatação e lint dos scripts com o gdtoolkit, o conferidor dos quatro capítulos, o conferidor da pixel art (`python3 tools/check_art.py`: paleta mestra, nenhum pixel dobrado, SVG em dia) e o teste de fumaça no Godot 4.7.2 sem tela. O resultado aparece na aba **Actions** do repositório e na marca ao lado de cada commit: verde passou, vermelho falhou, e a página da falha mostra qual conferência quebrou e a linha do erro.
 
@@ -179,7 +182,7 @@ Cada dungeon tem um tema: o tutorial é a pedra azulada com tochas, o capítulo 
 - **Porta vermelha com selo dourado:** porta do chefe. Abre com a chave grande.
 - **Losango dourado:** relíquia que o chefe deixa. Tocar nela encerra o capítulo.
 - **Portal de pedra na mata, no mundo:** entrada de uma dungeon. Com grade, ainda fechada: abre ao vencer o capítulo anterior. Com a relíquia em cima, capítulo vencido.
-- **Estela azulada com um losango, no mundo:** pedra de salvamento. Encostar grava o progresso e enche a vida.
+- **Estela azulada com um losango, no mundo:** pedra de salvamento. Encostar enche a vida e marca o ponto de volta da sessão.
 
 ## Ajustar a sensação do andar
 
