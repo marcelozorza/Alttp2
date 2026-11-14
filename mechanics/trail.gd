@@ -1,6 +1,6 @@
 class_name Trail
 extends Enemy
-## Rastro do laboratório: inimigo que anda devagar atrás do personagem e
+## Rastro: inimigo que anda devagar atrás do personagem e
 ## deixa uma trilha de fogo no chão, que fica alguns segundos e fere quem
 ## pisa. A trilha divide a sala e fecha caminhos por um tempo. Ele morre com
 ## a espada. Arte provisória.

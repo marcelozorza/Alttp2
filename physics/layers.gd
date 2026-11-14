@@ -11,6 +11,3 @@ class_name Layers
 const SCENERY := 1
 const ENEMY := 2
 const AIR := 4
-## Disparos das torretas do laboratório (lab/bolt.gd). Ninguém colide com
-## esta camada: ela existe para o golpe de espada achar o disparo e rebatê-lo.
-const SHOT := 8

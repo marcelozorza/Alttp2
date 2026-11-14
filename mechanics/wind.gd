@@ -1,7 +1,8 @@
 class_name Wind
-## Faixa de vento do laboratório, usada pelo soprador (lab/blower.gd) e pelo
-## ventilador (lab/fan.gd). O vento empurra o personagem sem ferir e carrega
-## as bombas soltas no chão, o que leva uma bomba até onde não se chega a pé.
+## Faixa de vento do ventilador (mechanics/fan.gd). O vento empurra o
+## personagem sem ferir e carrega as bombas soltas no chão, o que leva uma
+## bomba até onde não se chega a pé. Para o vento carregar outra coisa, é
+## aqui que ela entra (push).
 
 ## Alcance e meia largura da faixa, em pixels.
 const REACH := 240.0

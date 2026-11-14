@@ -10,15 +10,6 @@ static func snap_8(vector: Vector2) -> Vector2:
 	return Vector2(roundf(cos(angle)), roundf(sin(angle))).normalized()
 
 
-## Reduz um vetor a uma das 4 direções retas. Empate vai para a horizontal.
-static func snap_4(vector: Vector2) -> Vector2:
-	if vector == Vector2.ZERO:
-		return vector
-	if absf(vector.x) >= absf(vector.y):
-		return Vector2(signf(vector.x), 0.0)
-	return Vector2(0.0, signf(vector.y))
-
-
 ## Converte segundos em ticks de física. Todos os tempos de jogo são contados
 ## em ticks, para que o resultado não dependa da taxa de quadros.
 static func ticks(seconds: float) -> int:

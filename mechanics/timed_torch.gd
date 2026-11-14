@@ -1,16 +1,12 @@
-class_name LabTorch
+class_name TimedTorch
 extends StaticBody2D
-## Tocha de chão do laboratório, um braseiro que a chama acende. Arte
-## provisória. Com todas as tochas da sala acesas, as portas amarelas abrem
-## de vez (lab/room_mechanisms.gd).
+## Tocha de chão com tempo, um braseiro que a chama acende. Arte provisória.
 ##
-## Com burn_time maior que zero, a tocha apaga sozinha depois desse tempo, e
-## é preciso acender todas antes de a primeira apagar. Depois que a porta
-## abre, as tochas ficam acesas (held).
-##
-## Com order maior que zero, a tocha faz parte de uma sequência: as pedras ao
-## pé dela dizem a vez (uma pedra, a primeira). Acesa fora da vez, todas as
-## tochas da sala apagam.
+## Acesa, a tocha apaga sozinha depois de burn_time segundos. Com todas as
+## tochas da sala acesas ao mesmo tempo, as portas amarelas abrem de vez
+## (mechanics/room_mechanisms.gd) e as tochas ficam acesas (held). O tempo é
+## curto de propósito: é preciso correr de uma tocha à outra e não gastar
+## chamas à toa, porque a recarga da chama não cabe no tempo de uma tocha.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
 
@@ -21,11 +17,9 @@ const BOWL_COLOR := Color(0.45, 0.4, 0.42)
 const FLAME_COLOR := Color(1.0, 0.7, 0.2)
 const CORE_COLOR := Color(1.0, 0.95, 0.6)
 
-## Segundos acesa. Zero, fica acesa para sempre.
-var burn_time := 0.0
+## Segundos acesa (pedido de Marcelo em 2026-11-14: 4 segundos).
+var burn_time := 4.0
 var lit := false
-## Vez da tocha na sequência da sala, a partir de 1. Zero, sem sequência.
-var order := 0
 ## Ligado quando a porta já abriu: a tocha não apaga mais.
 var held := false
 
@@ -33,7 +27,6 @@ var _lit_tick := 0
 
 
 func _ready() -> void:
-	add_to_group("lab_torches")
 	collision_layer = Layers.SCENERY
 	var shape := CollisionShape2D.new()
 	var rectangle := RectangleShape2D.new()
@@ -58,21 +51,15 @@ func _physics_process(_delta: float) -> void:
 	if not lit:
 		return
 	queue_redraw()
-	if burn_time > 0.0 and not held and Clock.tick - _lit_tick >= GameMath.ticks(burn_time):
+	if not held and Clock.tick - _lit_tick >= GameMath.ticks(burn_time):
 		lit = false
 		Sfx.play(&"ice_melt")
 		changed.emit()
 
 
-## Apaga a tocha sem avisar a sala, para a sequência errada.
-func put_out() -> void:
-	lit = false
-	queue_redraw()
-
-
-## Fração do tempo que ainda resta, de 1 a 0. Sempre 1 na tocha sem tempo.
+## Fração do tempo que ainda resta, de 1 a 0.
 func _remaining() -> float:
-	if burn_time <= 0.0 or held:
+	if held:
 		return 1.0
 	return clampf(1.0 - float(Clock.tick - _lit_tick) / GameMath.ticks(burn_time), 0.0, 1.0)
 
@@ -81,12 +68,6 @@ func _draw() -> void:
 	GroundShadow.draw(self, Vector2(0.0, -2.0), 22.0)
 	draw_rect(Rect2(-11.0, -16.0, 22.0, 16.0), DoorArt.OUTLINE_COLOR)
 	draw_rect(Rect2(-9.0, -14.0, 18.0, 12.0), BOWL_COLOR)
-	if burn_time > 0.0:
-		# Faixa clara no braseiro: a tocha com tempo.
-		draw_rect(Rect2(-9.0, -8.0, 18.0, 2.0), CORE_COLOR)
-	for i: int in order:
-		draw_circle(Vector2(-10.0 + i * 7.0, 5.0), 3.0, DoorArt.OUTLINE_COLOR)
-		draw_circle(Vector2(-10.0 + i * 7.0, 5.0), 2.0, CORE_COLOR)
 	if not lit:
 		return
 	var height := 8.0 + 14.0 * _remaining()

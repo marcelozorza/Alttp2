@@ -25,14 +25,10 @@ jobs:
         run: gdlint .
       - name: Conferir os capítulos
         run: |
-          for dados in world/tutorial/tutorial_data.gd world/chapter_*/chapter_*_data.gd world/lab/lab_data.gd; do
+          for dados in world/tutorial/tutorial_data.gd world/chapter_*/chapter_*_data.gd tools/bench/bench_data.gd; do
             echo "== $dados"
             python3 tools/check_chapter.py "$dados"
           done
-      - name: Conferir que o mapa do laboratório está em dia com o gerador
-        run: |
-          python3 tools/lab/build_lab.py
-          git diff --exit-code world/lab/lab_data.gd
       - name: Conferir a pixel art
         run: python3 tools/check_art.py
       - name: Gerar o editor de dungeons

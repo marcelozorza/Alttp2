@@ -28,11 +28,6 @@ const TUTORIAL := 0
 ## das seeds (world/gallery/gallery_data.gd).
 const GALLERY_SOURCE := preload("res://world/gallery/gallery_data.gd")
 const GALLERY := -1
-## O laboratório, a dungeon fechada em que as mecânicas novas são testadas,
-## fora do mundo e das seeds (world/lab/lab_data.gd).
-const LAB_SOURCE := preload("res://world/lab/lab_data.gd")
-const LAB := -2
-
 ## Número do capítulo, a partir de 1. Zero é o tutorial.
 var number := 1
 var rows: Array = []
@@ -54,11 +49,9 @@ var room_themes := {}
 var messages := {}
 ## O personagem não perde vida, como na galeria.
 var no_damage := false
-## Levas de inimigos de uma sala de combate, pela tela dela: cada leva é um
-## texto com um caractere de inimigo por marcador de nascimento.
+## Levas de inimigos de uma arena, pela tela dela: cada leva é um texto com
+## um caractere de inimigo por marcador de nascimento.
 var waves := {}
-## Telas das salas escuras.
-var dark_rooms: Array = []
 
 
 static func count() -> int:
@@ -67,19 +60,19 @@ static func count() -> int:
 
 ## Carrega o capítulo pelo número, ou o tutorial com TUTORIAL.
 static func load_number(chapter: int) -> ChapterData:
-	var data := ChapterData.new()
-	var source: Script = TUTORIAL_SOURCE
 	if chapter == GALLERY:
-		data.number = GALLERY
-		source = GALLERY_SOURCE
-	elif chapter == LAB:
-		data.number = LAB
-		source = LAB_SOURCE
-	elif chapter != TUTORIAL:
-		data.number = clampi(chapter, 1, SOURCES.size())
-		source = SOURCES[data.number - 1]
-	else:
-		data.number = TUTORIAL
+		return from_source(GALLERY_SOURCE, GALLERY)
+	if chapter == TUTORIAL:
+		return from_source(TUTORIAL_SOURCE, TUTORIAL)
+	var number := clampi(chapter, 1, SOURCES.size())
+	return from_source(SOURCES[number - 1], number)
+
+
+## Lê as constantes de um arquivo de dados. Os testes usam esta função para
+## abrir um capítulo que não está no jogo (tools/bench/bench_data.gd).
+static func from_source(source: Script, chapter: int) -> ChapterData:
+	var data := ChapterData.new()
+	data.number = chapter
 	var constants := source.get_script_constant_map()
 	data.rows = constants["MAP"]
 	data.blocks = constants["BLOCKS"]
@@ -92,5 +85,4 @@ static func load_number(chapter: int) -> ChapterData:
 	data.messages = constants.get("MESSAGES", {})
 	data.no_damage = constants.get("NO_DAMAGE", false)
 	data.waves = constants.get("WAVES", {})
-	data.dark_rooms = constants.get("DARK_ROOMS", [])
 	return data

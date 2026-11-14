@@ -1,9 +1,9 @@
 class_name Fan
 extends StaticBody2D
-## Ventilador do laboratório: um pilar que sopra sem parar numa direção fixa
-## (lab/wind.gd). Não fere nem morre. Serve para empurrar o personagem numa
-## travessia e para carregar uma bomba por cima de um buraco até um alvo de
-## explosão. Só sopra com o personagem na sala (set_active). Arte provisória.
+## Ventilador: um pilar que sopra sem parar numa direção fixa
+## (mechanics/wind.gd). Não fere nem morre. O vento empurra o personagem e
+## carrega a bomba solta no chão até onde não se chega a pé. Só sopra com o
+## personagem na sala (set_active). Arte provisória.
 ##
 ## A origem fica no centro da base, para a ordenação por profundidade.
 

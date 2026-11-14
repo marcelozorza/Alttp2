@@ -14,7 +14,7 @@ extends RefCounted
 ##   de pedras, "x" tatu de pedra, "y" morcego, "z" planta de espinhos, "c"
 ##   caixa leve, "0" bloco pesado, "=" interruptor no chão e "?" placa de
 ##   mensagem, que mostra um texto enquanto o personagem está em cima.
-## - Os outros inimigos e os objetos do laboratório estão em
+## - Os outros inimigos e os objetos de mecanismo estão em
 ##   progression/map_legend.gd.
 ## - "*" guardião de gelo, "&" sentinela, "%" guardião antigo e "$" colosso, os
 ##   chefes.
@@ -32,20 +32,12 @@ enum Block {
 	TALL_LEDGE,
 	GATE,
 	BOARDED,
-	# Bloqueios do laboratório (lab/), ainda fora das três dungeons.
+	# Portas de mecanismo (mechanics/), ainda fora das três dungeons.
 	SHUTTER,
 	BARRIER,
 	BARRIER_ALT,
 	TORCH_DOOR,
-	BLAST_DOOR,
 	TIMED_GATE,
-	PIT,
-	WIDE_PIT,
-	GAP,
-	WEB,
-	BEAM_DOOR,
-	POWER_DOOR,
-	VOLLEY_DOOR,
 }
 
 ## Tipos de bloqueio em que o mesmo caractere serve a vários bloqueios
@@ -56,15 +48,7 @@ const SHARED := [
 	Block.BARRIER,
 	Block.BARRIER_ALT,
 	Block.TORCH_DOOR,
-	Block.BLAST_DOOR,
 	Block.TIMED_GATE,
-	Block.PIT,
-	Block.WIDE_PIT,
-	Block.GAP,
-	Block.WEB,
-	Block.BEAM_DOOR,
-	Block.POWER_DOOR,
-	Block.VOLLEY_DOOR,
 ]
 
 ## Tamanho de uma casa, em pixels.
@@ -87,6 +71,11 @@ func _init(rows: Array, blocks: Dictionary) -> void:
 		width = maxi(width, row.length())
 	height = _rows.size()
 	_blocks = blocks
+
+
+## Casa de um ponto do mundo, em pixels.
+static func cell_of(point: Vector2) -> Vector2i:
+	return Vector2i((point / TILE).floor())
 
 
 static func is_location(character: String) -> bool:

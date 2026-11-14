@@ -128,19 +128,9 @@ func _push_direction() -> Vector2:
 	var aside := absf(offset.dot(Vector2(direction.y, direction.x)))
 	if absf(behind) > PUSH_REACH or aside > PUSH_SIDE:
 		return Vector2.ZERO
-	if not _can_move_to(_cell() + Vector2i(direction)):
+	if not rail.has(_cell() + Vector2i(direction)):
 		return Vector2.ZERO
 	return direction
-
-
-## Diz se o bloco pode tombar para a casa: só dentro do trilho.
-func _can_move_to(cell: Vector2i) -> bool:
-	return rail.has(cell)
-
-
-## Chamado quando o bloco para na casa nova, depois do baque.
-func _on_landed() -> void:
-	pass
 
 
 ## Casa do trilho em que o bloco está.
@@ -166,7 +156,6 @@ func _advance_tumble() -> void:
 		_stop_tumble()
 		_thud_tick = Clock.tick
 		Sfx.play(&"bump")
-		_on_landed()
 		return
 	global_position = _tumble_from + _tumble_direction * tile * progress
 	if _tumble_direction.x != 0.0:

@@ -1,6 +1,6 @@
 class_name FirePatch
 extends Node2D
-## Chama no chão deixada pelo rastro (lab/trail.gd). Fica alguns segundos,
+## Chama no chão deixada pelo rastro (mechanics/trail.gd). Fica alguns segundos,
 ## fere o personagem que pisa nela e some. Pular por cima não fere. Fica com
 ## os efeitos do chão, que somem ao trocar de sala. Arte provisória.
 

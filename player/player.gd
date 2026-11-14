@@ -101,6 +101,10 @@ const NO_HOLD := -1
 @export_range(0.0, 1.0, 0.01) var acceleration_time := 0.0
 ## Segundos para parar a partir da velocidade máxima. Zero é parada instantânea.
 @export_range(0.0, 1.0, 0.01) var deceleration_time := 0.0
+## No chão de gelo: segundos para ir do repouso à velocidade máxima, e para
+## parar a partir dela.
+@export_range(0.0, 3.0, 0.01) var ice_acceleration_time := 0.6
+@export_range(0.0, 3.0, 0.01) var ice_stop_time := 1.2
 
 @export_group("Correr")
 ## Velocidade da corrida, em pixels por segundo.
@@ -216,11 +220,9 @@ var health := 0
 ## Chaves pequenas guardadas. Cada porta trancada gasta uma.
 var keys := 0
 
-## Direção em que o personagem desliza no gelo liso, ou zero fora dele. Quem
-## decide é o gelo (lab/ice_field.gd).
-var slide_direction := Vector2.ZERO
-## Velocidade do deslize, em pixels por segundo.
-var slide_speed := 240.0
+## Ligado enquanto o personagem pisa no chão de gelo. Quem decide é o gelo
+## (mechanics/ice_field.gd).
+var on_ice := false
 
 ## Última ferramenta pedida sem carga e o tick do pedido. O HUD lê.
 var denied_tool := -1
@@ -451,21 +453,7 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 			_low_health_tick = Clock.tick + GameMath.ticks(LOW_HEALTH_DELAY)
 
 
-## Queda num buraco (lab/pit.gd): perde vida e volta ao ponto dado, parado.
-func fall_into_pit(back: Vector2, amount: int) -> void:
-	if _state == State.DEAD:
-		return
-	Sfx.play(&"ledge_drop")
-	global_position = back
-	velocity = Vector2.ZERO
-	slide_direction = Vector2.ZERO
-	_enter(State.WALK)
-	# A queda fere mesmo correndo ou logo depois de outro golpe.
-	_invincible_until_tick = 0
-	take_hit(amount, Vector2.ZERO)
-
-
-## Empurrão de vento (lab/blower.gd): desloca o personagem sem tirar o
+## Empurrão de vento (mechanics/wind.gd): desloca o personagem sem tirar o
 ## controle dele, parando em paredes.
 func shove(motion: Vector2) -> void:
 	if _state != State.DEAD:
@@ -732,10 +720,6 @@ func _is_free_at(target: Vector2) -> bool:
 
 
 func _steer(direction: Vector2, delta: float) -> void:
-	if slide_direction != Vector2.ZERO:
-		# No gelo liso, desliza reto, sem controle (lab/ice_field.gd).
-		velocity = slide_direction * slide_speed
-		return
 	var move_direction := direction
 	var speed := run_speed if _state == State.RUN else walk_speed
 	if is_tired():
@@ -745,7 +729,7 @@ func _steer(direction: Vector2, delta: float) -> void:
 		move_direction = Vector2.ZERO
 	_update_velocity(move_direction, speed, delta)
 	var nudge := _corner_nudge(move_direction, speed, delta)
-	if nudge != Vector2.ZERO:
+	if nudge != Vector2.ZERO and not on_ice:
 		velocity = nudge
 
 
@@ -844,6 +828,9 @@ func _update_facing(direction: Vector2) -> void:
 func _update_velocity(direction: Vector2, speed: float, delta: float) -> void:
 	var target := direction * speed
 	var time_to_full := acceleration_time if direction != Vector2.ZERO else deceleration_time
+	if on_ice:
+		# No gelo o personagem escorrega: demora a pegar velocidade e a parar.
+		time_to_full = ice_acceleration_time if direction != Vector2.ZERO else ice_stop_time
 	if time_to_full <= 0.0:
 		velocity = target
 	else:

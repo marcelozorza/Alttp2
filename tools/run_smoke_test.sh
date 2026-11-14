@@ -39,20 +39,12 @@ elif ! diff tools/smoke_expected.txt "$FOUND"; then
 	echo "FALHOU: algum valor do teste de fumaça mudou (esperado < e encontrado >)"
 	exit 1
 fi
-# O laboratório tem um teste próprio, que confere cada mecânica nova na sala
-# dela (tools/lab_test.gd).
-LAB="$(mktemp)"
-"$GODOT" --headless --fixed-fps 60 --path . res://tools/lab_test.tscn 2>&1 | tee "$LAB"
-if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$LAB" || ! grep -q "^LABORATÓRIO: .* 0 falhas" "$LAB"; then
-	echo "FALHOU: o teste do laboratório acusou erro"
-	exit 1
-fi
-# Depois, um piloto joga as salas que dependem de tempo ou de distância só
-# pelos botões, para provar que dão para vencer (tools/lab_play.gd).
-PLAY="$(mktemp)"
-"$GODOT" --headless --fixed-fps 60 --path . res://tools/lab_play.tscn 2>&1 | tee "$PLAY"
-if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$PLAY" || ! grep -q "^PILOTO: .* 0 falhas" "$PLAY"; then
-	echo "FALHOU: o piloto do laboratório não venceu alguma sala"
+# Os mecanismos de sala têm um teste próprio, que confere cada um na bancada
+# e atravessa as salas de tempo pelos botões (tools/mechanics_test.gd).
+MECH="$(mktemp)"
+"$GODOT" --headless --fixed-fps 60 --path . res://tools/mechanics_test.tscn 2>&1 | tee "$MECH"
+if grep -q -e "SCRIPT ERROR" -e "^FALHOU" "$MECH" || ! grep -q "^MECANISMOS: .* 0 falhas" "$MECH"; then
+	echo "FALHOU: o teste dos mecanismos acusou erro"
 	exit 1
 fi
 echo "Teste de fumaça sem erros."
