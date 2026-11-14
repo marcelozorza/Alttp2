@@ -303,6 +303,7 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Meta:** Steam e consoles.
 - **Renderizador:** Compatibility. Exige menos do hardware e permite exportar para navegador, o que ajuda em testes rápidos. A troca para outro renderizador é simples, se necessária.
 - **Resolução base:** 640x360 com escala inteira (2x em 720p, 3x em 1080p, 6x em 4K), casas de 32 pixels e 20 por 10 casas por tela. Era 320x180 com casas de 16 até 2026-11-07, quando dobrou para caber mais detalhe nos desenhos (ver a direção visual).
+- **Celular (2026-11-14):** versão Android instalável por fora da loja (preset "Android" em `export_presets.cfg`, só arm64, tela deitada, tela cheia). iOS fica para depois, porque exige Mac e conta paga da Apple. Os controles de toque (`touch/touch_controls.gd`) ligam sozinhos no celular e viram as mesmas ações do controle, sem mudar regra de jogo: direcional que nasce onde o polegar encosta no lado esquerdo, os quatro botões numa área redonda em volta do losango do HUD, e pausa e mapa na barra do alto. O botão Voltar do Android abre a pausa, e sair do aplicativo no meio do jogo também. No computador, `-- --toque` liga os controles com o mouse para testar. A chave que assina o APK fica fora do repositório, na pasta do projeto (`android/`).
 
 ## Ideias guardadas
 
