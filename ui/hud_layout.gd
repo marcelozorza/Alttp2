@@ -6,23 +6,23 @@ class_name HudLayout
 ## fica com MIN_SIDE e cobre a borda do jogo, meio transparente.
 ##
 ## Faixa esquerda: corações, chaves e minimapa no alto, direcional embaixo.
-## Faixa direita: mapa e pausa no alto, o tempo, e os quatro botões embaixo.
+## Faixa direita: mapa e pausa no alto, o tempo, e a coluna dos quatro botões.
 
 const MIN_SIDE := 80.0
-## Raio dos botões de face: o dobro do antigo (16) quando a faixa permite
-## (pedido de Marcelo em 2026-11-14), e nunca menos que o antigo.
-const BUTTON_RADIUS_MIN := 16.0
-const BUTTON_RADIUS_MAX := 32.0
-## Distância do centro de cada botão ao centro do losango, em raios.
-const BUTTON_SPREAD := 1.45
-## Posição de cada botão no losango, pelo índice do Godot, que segue a posição
-## física do botão: 0 embaixo, 1 à direita, 2 à esquerda e 3 em cima.
-const FACE_DIRECTIONS: Array[Vector2] = [Vector2.DOWN, Vector2.RIGHT, Vector2.LEFT, Vector2.UP]
-## Cores dos botões do Super Famicom, na mesma posição física: B amarelo
-## embaixo, A vermelho à direita, Y verde à esquerda e X azul em cima.
-const FACE_COLORS: Array[Color] = [
-	Color("e8b730"), Color("d23c3c"), Color("3f9e4d"), Color("3a5fc8")
-]
+## Botões de ação numa coluna na faixa direita (pedido de Marcelo em
+## 2026-11-14, depois de jogar o losango: área de toque maior, só o ícone,
+## sem as cores do Super Famicom). Cada botão é uma fileira inteira da coluna,
+## e a área de toque vai da borda da tela até um pouco dentro do jogo.
+## Ordem de cima para baixo, pelo índice do Godot do botão: bomba (3), chama
+## (2), pulo (1) e espada (0), embaixo, onde o polegar descansa.
+const COLUMN_ORDER: Array[int] = [3, 2, 1, 0]
+## Onde a coluna começa, abaixo de mapa, pausa e tempo.
+const COLUMN_TOP := 84.0
+## Quanto a área de toque de cada fileira entra no quadro de jogo.
+const TOUCH_INTO_GAME := 24.0
+const BUTTON_RADIUS_MAX := 30.0
+## Raio do direcional que nasce onde o dedo encosta.
+const STICK_RADIUS := 30.0
 ## Folga entre a borda da tela e as peças.
 const MARGIN := 6.0
 ## Botões pequenos de mapa e pausa, no alto da faixa direita.
@@ -48,31 +48,43 @@ static func right_side(screen: Vector2) -> Rect2:
 	return Rect2(screen.x - width, 0.0, width, screen.y)
 
 
+## Altura de cada fileira da coluna de botões.
+static func row_height(screen: Vector2) -> float:
+	return floorf((screen.y - COLUMN_TOP - MARGIN) / COLUMN_ORDER.size())
+
+
 static func button_radius(screen: Vector2) -> float:
-	var fit := (side_width(screen) - 2.0 * MARGIN) / (2.0 * BUTTON_SPREAD + 2.0)
-	return clampf(floorf(fit), BUTTON_RADIUS_MIN, BUTTON_RADIUS_MAX)
+	var fit := minf(side_width(screen) / 2.0, row_height(screen) / 2.0) - 4.0
+	return minf(BUTTON_RADIUS_MAX, floorf(fit))
 
 
-## Centro do losango dos botões, embaixo na faixa direita.
-static func buttons_center(screen: Vector2) -> Vector2:
-	var side := right_side(screen)
-	var reach := button_radius(screen) * (BUTTON_SPREAD + 1.0)
-	return Vector2(side.get_center().x, screen.y - MARGIN - reach)
-
-
+## Centro do botão de índice index (0 embaixo no controle, a espada).
 static func button_center(screen: Vector2, index: int) -> Vector2:
-	var offset := FACE_DIRECTIONS[index] * button_radius(screen) * BUTTON_SPREAD
-	return buttons_center(screen) + offset.round()
+	var row := COLUMN_ORDER.find(index)
+	var side := right_side(screen)
+	var height := row_height(screen)
+	return Vector2(side.get_center().x, COLUMN_TOP + (row + 0.5) * height).floor()
 
 
-## Raio do direcional fixo: do mesmo alcance do losango dos botões.
-static func dpad_radius(screen: Vector2) -> float:
-	return button_radius(screen) * (BUTTON_SPREAD + 1.0)
+## Botão sob o ponto, pela fileira, ou -1 fora da coluna.
+static func button_at(screen: Vector2, point: Vector2) -> int:
+	var side := right_side(screen)
+	if point.x < side.position.x - TOUCH_INTO_GAME or point.y < COLUMN_TOP - MARGIN:
+		return -1
+	var row := clampi(floori((point.y - COLUMN_TOP) / row_height(screen)), 0, 3)
+	return COLUMN_ORDER[row]
 
 
-## Centro do direcional, embaixo na faixa esquerda, na altura dos botões.
-static func dpad_center(screen: Vector2) -> Vector2:
-	return Vector2(left_side(screen).get_center().x, buttons_center(screen).y)
+## Área em que um dedo faz nascer o direcional: a metade esquerda da tela.
+static func stick_area(screen: Vector2) -> Rect2:
+	return Rect2(0.0, 0.0, floorf(screen.x / 2.0), screen.y)
+
+
+## Onde o direcional aparece, apagado, enquanto ninguém toca: embaixo, no meio
+## da faixa esquerda.
+static func stick_home(screen: Vector2) -> Vector2:
+	var side := left_side(screen)
+	return Vector2(side.get_center().x, screen.y - MARGIN - 2.0 * STICK_RADIUS).floor()
 
 
 static func map_rect(screen: Vector2) -> Rect2:

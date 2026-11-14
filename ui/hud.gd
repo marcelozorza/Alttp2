@@ -8,13 +8,13 @@ extends Control
 ## o direcional dos controles de toque (touch/touch_controls.gd).
 ##
 ## Faixa direita: os botões de mapa e pausa do toque, o capítulo e o
-## cronômetro, e embaixo os quatro botões de face num losango, nas cores do
-## Super Famicom. O botão de uma ferramenta que o personagem ainda não tem
-## aparece apagado e vazio. Depois de pegar a ferramenta, ele mostra o ícone
-## dela, ou o da melhoria, e uma fileira de pontos com as cargas, e escurece
-## quando elas acabam. A espada fica sempre no seu botão, com a lâmina magenta
+## cronômetro, e embaixo a coluna dos quatro botões, só com o ícone sobre um
+## aro (ui/hud_layout.gd). O botão de uma ferramenta que o personagem ainda
+## não tem mostra só o aro. Depois de pegar a ferramenta, ele mostra o ícone
+## dela, ou o da melhoria, e uma fileira de pontos com as cargas, e o ícone
+## escurece quando elas acabam. A espada fica sempre no seu botão, com a lâmina magenta
 ## enquanto está travada. Os botões são os mesmos que o toque aperta, e o
-## losango segue o mapa de entrada do projeto: trocar um botão em
+## coluna segue o mapa de entrada do projeto: trocar um botão em
 ## Configurações do Projeto, aba Mapa de Entrada, basta.
 
 ## Coração de dois pontos de vida: cheio, pela metade e vazio (Marcelo pediu
@@ -30,11 +30,11 @@ const SIDE_COLOR := Color(0.07, 0.07, 0.09, 1.0)
 ## Faixa que cobre a borda do jogo, numa tela estreita.
 const OVERLAP_COLOR := Color(0.07, 0.07, 0.09, 0.55)
 const TEXT_COLOR := Color(0.85, 0.85, 0.8, 1.0)
-const BUTTON_RIM := Color(0.05, 0.05, 0.07, 1.0)
-## Mistura com o escuro do botão de uma ferramenta que o personagem não tem.
-const EMPTY_DIM := 0.65
-## Sombra sobre o botão de uma ferramenta sem cargas.
-const SPENT_SHADE := Color(0.0, 0.0, 0.0, 0.55)
+## Aro e fundo de cada botão de ação.
+const RING_COLOR := Color(1.0, 1.0, 1.0, 0.35)
+const RING_FILL := Color(1.0, 1.0, 1.0, 0.06)
+## Tom do ícone de uma ferramenta sem cargas.
+const SPENT_TINT := Color(0.35, 0.35, 0.4, 1.0)
 const CHARGE_COLOR := Color(0.98, 0.95, 0.85, 1.0)
 const SPENT_CHARGE_COLOR := Color(0.12, 0.12, 0.14, 0.8)
 const CHARGE_SIZE := Vector2(4.0, 4.0)
@@ -53,7 +53,7 @@ const TIME_TOP := 50.0
 ## Ligado, desenha as faixas dos lados (mundo e capítulo).
 @export var show_bar := false
 
-## Posição no losango (0 a 3) de cada ação, lida do mapa de entrada.
+## Posição na coluna (índice 0 a 3 do botão) de cada ação, lida do mapa de entrada.
 var _button_slots := {}
 
 
@@ -148,14 +148,15 @@ func _draw_keys(player: Player, side: Rect2, top: float) -> float:
 	return top + 16.0
 
 
-## Os quatro botões de face, na cor do Super Famicom de cada posição.
+## Os quatro botões, em coluna na faixa direita, só com o ícone sobre um
+## aro discreto (pedido de Marcelo em 2026-11-14). Antes de o personagem ter a
+## ferramenta, só o aro aparece.
 func _draw_buttons(player: Player, screen: Vector2) -> void:
 	var radius := HudLayout.button_radius(screen)
-	var icon_scale := 2.0 if radius >= 24.0 else 1.0
+	var icon_scale := 3.0 if radius >= 24.0 else 1.0
 	if _button_slots.has(&"attack"):
-		var slot: int = _button_slots[&"attack"]
-		var center := HudLayout.button_center(screen, slot)
-		_draw_disc(center, radius, HudLayout.FACE_COLORS[slot])
+		var center := HudLayout.button_center(screen, _button_slots[&"attack"])
+		_draw_ring(center, radius)
 		draw_set_transform(center, 0.0, Vector2.ONE * icon_scale)
 		ToolIcons.draw_sword(self, Vector2.ZERO, player.is_sword_locked())
 		# A espada forte mostra o selo x2, como as outras melhorias.
@@ -165,28 +166,24 @@ func _draw_buttons(player: Player, screen: Vector2) -> void:
 	for action: StringName in TOOL_ACTIONS:
 		if not _button_slots.has(action):
 			continue
-		var slot: int = _button_slots[action]
-		var center := HudLayout.button_center(screen, slot)
+		var center := HudLayout.button_center(screen, _button_slots[action])
 		var id: int = TOOL_ACTIONS[action]
 		if id == player.denied_tool:
 			center += DoorArt.shake_offset(player.denied_tick)
-		var color: Color = HudLayout.FACE_COLORS[slot]
+		_draw_ring(center, radius)
 		if not player.has_tool(id):
-			_draw_disc(center, radius, color.lerp(SIDE_COLOR, EMPTY_DIM))
 			continue
-		_draw_disc(center, radius, color)
-		draw_set_transform(center, 0.0, Vector2.ONE * icon_scale)
-		ToolIcons.draw(self, _shown_item(player, id), Vector2.ZERO)
-		draw_set_transform(Vector2.ZERO)
 		var left := player.charges_left(id)
-		if left == 0:
-			draw_circle(center, radius, SPENT_SHADE)
+		var tint := SPENT_TINT if left == 0 else Color.WHITE
+		draw_set_transform(center, 0.0, Vector2.ONE * icon_scale)
+		ToolIcons.draw(self, _shown_item(player, id), Vector2.ZERO, tint)
+		draw_set_transform(Vector2.ZERO)
 		_draw_charges(center, radius, left, player.max_charges(id))
 
 
-func _draw_disc(center: Vector2, radius: float, color: Color) -> void:
-	draw_circle(center, radius, BUTTON_RIM)
-	draw_circle(center, radius - 2.0, color)
+func _draw_ring(center: Vector2, radius: float) -> void:
+	draw_circle(center, radius, RING_FILL)
+	draw_arc(center, radius, 0.0, TAU, 40, RING_COLOR, 1.0)
 
 
 ## Item desenhado no botão da ferramenta: a melhoria, se o personagem a tem.
@@ -206,7 +203,7 @@ func _draw_charges(center: Vector2, radius: float, left: int, maximum: int) -> v
 	if maximum <= 0:
 		return
 	var width := (maximum - 1) * CHARGE_STEP + CHARGE_SIZE.x
-	var corner := Vector2(floorf(center.x - width / 2.0), floorf(center.y + radius * 0.55))
+	var corner := Vector2(floorf(center.x - width / 2.0), floorf(center.y + radius * 0.7))
 	for i: int in maximum:
 		var color := CHARGE_COLOR if i >= maximum - left else SPENT_CHARGE_COLOR
 		draw_rect(Rect2(corner + Vector2(i * CHARGE_STEP, 0.0), CHARGE_SIZE), color)

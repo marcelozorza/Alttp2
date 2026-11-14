@@ -198,6 +198,8 @@ var _state := State.WALK
 var _state_tick := 0
 var _freeze_until_tick := 0
 var _invincible_until_tick := 0
+## Fração de ponto de vida de golpes já recebidos que ainda não tirou vida.
+var _damage_debt := 0.0
 ## Tick em que o aviso de vida baixa toca. Zero quando não há aviso à espera.
 var _low_health_tick := 0
 ## No ar, ou no chão ainda em cima de um inimigo.
@@ -384,7 +386,11 @@ func take_hit(amount: int, _direction: Vector2, _kind := Hit.Kind.SWORD) -> void
 		return
 	if invulnerable:
 		return
-	amount = ceili(amount * damage_scale)
+	# Com o dano pela metade (Difficulty), um golpe de 1 ponto tira meio
+	# coração a cada dois golpes: a fração que sobra fica guardada.
+	_damage_debt += amount * damage_scale * Difficulty.DAMAGE_TAKEN
+	amount = floori(_damage_debt)
+	_damage_debt -= amount
 	health -= amount
 	_invincible_until_tick = Clock.tick + GameMath.ticks(invincibility_time)
 	if health <= 0:

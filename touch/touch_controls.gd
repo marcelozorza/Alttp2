@@ -9,26 +9,24 @@ extends CanvasLayer
 ## comando veio do toque ou do controle. As peças ficam nas faixas dos lados
 ## do quadro de jogo, nas posições de ui/hud_layout.gd.
 ##
-## Direcional fixo, embaixo na faixa esquerda (decisão de Marcelo em
-## 2026-11-14, depois de jogar o direcional que nascia onde o dedo encostava e
-## recentrava a cada toque). A direção é a do dedo em relação ao centro, uma
-## das 8, e o dedo pode sair e voltar sem recalibrar nada. O toque vale numa
-## área um pouco maior que o desenho.
+## Direcional que nasce onde o dedo encosta, em qualquer ponto da metade
+## esquerda da tela, e vira um joystick ali (pedido de Marcelo em 2026-11-14,
+## depois de jogar o direcional fixo). A direção é a do dedo em relação ao
+## centro, uma das 8. Se o dedo passa da borda, o centro vem atrás dele, então
+## o dedo nunca fica preso dentro do desenho. Voltar ao centro conta como
+## soltar.
 ##
-## Botões de face: o HUD desenha o losango, com as cores do Super Famicom e os
-## ícones. Cada botão responde a toques dentro de uma área maior que o
-## desenho, a fatia do losango mais perto do dedo. Arrastar o dedo para outra
-## fatia troca de botão.
+## Botões de ação: o HUD desenha a coluna com os ícones. Cada botão responde
+## a toques na sua fileira inteira, da borda da tela até um pouco dentro do
+## jogo. Arrastar o dedo para outra fileira troca de botão.
 
 ## Fração do raio do direcional que conta como centro, sem direção.
 const STICK_DEAD_ZONE := 0.25
-## Quanto além do desenho o toque ainda vale, em raios.
-const TOUCH_REACH := 1.5
-## Ação de cada fatia do losango, pelo índice do botão no losango:
-## 0 embaixo, 1 à direita, 2 à esquerda e 3 em cima.
+## Ação de cada botão, pelo índice do Godot do botão: 0 a espada, 1 o pulo,
+## 2 a chama e 3 a bomba.
 const FACE_ACTIONS: Array[StringName] = [&"attack", &"jump", &"use_fire", &"use_bomb"]
-const DPAD_COLOR := Color(0.24, 0.23, 0.29, 1.0)
-const DPAD_PRESSED := Color(0.5, 0.48, 0.58, 1.0)
+const STICK_IDLE := Color(1.0, 1.0, 1.0, 0.18)
+const STICK_ACTIVE := Color(1.0, 1.0, 1.0, 0.45)
 const PRESSED_COLOR := Color(1.0, 1.0, 1.0, 0.35)
 const BUTTON_BACK := Color(0.16, 0.16, 0.2, 1.0)
 const BUTTON_EDGE := Color(1.0, 1.0, 1.0, 0.7)
@@ -37,8 +35,10 @@ const BUTTON_EDGE := Color(1.0, 1.0, 1.0, 0.7)
 var enabled := false
 ## Escondido depois de um botão de controle ou tecla, até o próximo toque.
 var _hidden_by_pad := false
-## Dedo do direcional, -1 sem dedo.
+## Dedo do direcional (-1 sem dedo), centro e ponta.
 var _stick_finger := -1
+var _stick_center := Vector2.ZERO
+var _stick_tip := Vector2.ZERO
 ## Direção atual do direcional, uma das 8 ou zero.
 var _stick_direction := Vector2.ZERO
 ## Botão de face (0 a 3) de cada dedo nos botões.
@@ -115,14 +115,20 @@ func _on_press(finger: int, point: Vector2) -> void:
 	if face >= 0:
 		_face_fingers[finger] = face
 		_set_action(FACE_ACTIONS[face], true)
-	elif _stick_finger < 0 and _on_dpad(point):
+	elif _stick_finger < 0 and HudLayout.stick_area(screen).has_point(point):
 		_stick_finger = finger
-		_set_direction(_direction_of(point))
+		_stick_center = point
+		_stick_tip = point
+		_set_direction(Vector2.ZERO)
 
 
 func _on_drag(finger: int, point: Vector2) -> void:
 	if finger == _stick_finger:
-		_set_direction(_direction_of(point))
+		var offset := point - _stick_center
+		if offset.length() > HudLayout.STICK_RADIUS:
+			_stick_center = point - offset.normalized() * HudLayout.STICK_RADIUS
+		_stick_tip = point
+		_set_direction(_direction_of(point - _stick_center))
 	elif _face_fingers.has(finger):
 		var face := _face_at(point)
 		var old: int = _face_fingers[finger]
@@ -154,32 +160,13 @@ func _on_back() -> void:
 		_tap(&"ui_cancel")
 
 
-## Botão do losango sob o ponto, o mais perto do dedo, ou -1 longe dele.
 func _face_at(point: Vector2) -> int:
-	var screen := _screen()
-	var radius := HudLayout.button_radius(screen)
-	var best := -1
-	var best_distance := radius * TOUCH_REACH
-	for i: int in FACE_ACTIONS.size():
-		var distance := point.distance_to(HudLayout.button_center(screen, i))
-		if distance < best_distance:
-			best_distance = distance
-			best = i
-	return best
+	return HudLayout.button_at(_screen(), point)
 
 
-func _on_dpad(point: Vector2) -> bool:
-	var screen := _screen()
-	var reach := HudLayout.dpad_radius(screen) * TOUCH_REACH
-	return point.distance_to(HudLayout.dpad_center(screen)) <= reach
-
-
-## Uma das 8 direções do dedo em relação ao centro do direcional, ou zero
-## dentro da zona morta.
-func _direction_of(point: Vector2) -> Vector2:
-	var screen := _screen()
-	var offset := point - HudLayout.dpad_center(screen)
-	if offset.length() < HudLayout.dpad_radius(screen) * STICK_DEAD_ZONE:
+## Uma das 8 direções do deslocamento do dedo, ou zero dentro da zona morta.
+func _direction_of(offset: Vector2) -> Vector2:
+	if offset.length() < HudLayout.STICK_RADIUS * STICK_DEAD_ZONE:
 		return Vector2.ZERO
 	var step := roundi(offset.angle() / (PI / 4.0))
 	var angle := step * PI / 4.0
@@ -244,26 +231,24 @@ func _draw_controls() -> void:
 	_draw_small_button(HudLayout.pause_rect(screen), true)
 	if get_tree().paused:
 		return
-	_draw_dpad(screen)
+	_draw_stick(screen)
 	var radius := HudLayout.button_radius(screen)
 	for face: int in _face_fingers.values():
 		_canvas.draw_circle(HudLayout.button_center(screen, face), radius, PRESSED_COLOR)
 
 
-## Direcional em cruz, com o braço apertado aceso.
-func _draw_dpad(screen: Vector2) -> void:
-	var center := HudLayout.dpad_center(screen)
-	var radius := HudLayout.dpad_radius(screen)
-	var arm := floorf(radius * 0.36)
-	_canvas.draw_rect(Rect2(center.x - arm, center.y - radius, arm * 2.0, radius * 2.0), DPAD_COLOR)
-	_canvas.draw_rect(Rect2(center.x - radius, center.y - arm, radius * 2.0, arm * 2.0), DPAD_COLOR)
-	if _stick_direction == Vector2.ZERO:
-		return
-	for axis: Vector2 in [Vector2(_stick_direction.x, 0.0), Vector2(0.0, _stick_direction.y)]:
-		if axis == Vector2.ZERO:
-			continue
-		var tip := center + axis * (radius - arm)
-		_canvas.draw_rect(Rect2(tip - Vector2(arm, arm), Vector2(arm, arm) * 2.0), DPAD_PRESSED)
+## Base e ponta do direcional: onde o dedo está, ou apagado no lugar de
+## descanso quando ninguém toca.
+func _draw_stick(screen: Vector2) -> void:
+	var center := _stick_center
+	var tip := _stick_tip
+	var color := STICK_ACTIVE
+	if _stick_finger < 0:
+		center = HudLayout.stick_home(screen)
+		tip = center
+		color = STICK_IDLE
+	_canvas.draw_arc(center, HudLayout.STICK_RADIUS, 0.0, TAU, 32, color, 2.0)
+	_canvas.draw_circle(tip, HudLayout.STICK_RADIUS * 0.45, color)
 
 
 ## Botão pequeno do alto da faixa direita: pausa (duas barras) ou mapa (folha dobrada).

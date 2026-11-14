@@ -296,10 +296,10 @@ func _update_state() -> void:
 		State.WINDUP:
 			if elapsed >= GameMath.ticks(windup_time):
 				_lunge_landed = false
-				velocity = _lunge_direction * lunge_speed
+				velocity = _lunge_direction * Difficulty.lunge_speed(lunge_speed)
 				_enter(State.LUNGE)
 		State.LUNGE:
-			if elapsed >= GameMath.ticks(lunge_time):
+			if elapsed >= Difficulty.lunge_ticks(lunge_time):
 				_enter(State.RECOVER)
 		State.RECOVER:
 			if elapsed >= GameMath.ticks(recover_time):
