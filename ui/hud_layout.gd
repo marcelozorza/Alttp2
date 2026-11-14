@@ -1,9 +1,9 @@
 class_name HudLayout
 ## Onde cada peça do HUD e dos controles de toque fica, nas faixas dos lados
 ## do quadro de jogo (GameView), pela largura da tela. Num celular deitado de
-## 1080 linhas a tela tem 800x360 e cada faixa tem 160 pixels. No computador,
-## em 16:9, 640x360 e faixas de 80. Abaixo de MIN_SIDE (tablet 4:3), a faixa
-## fica com MIN_SIDE e cobre a borda do jogo, meio transparente.
+## 1080 linhas a tela tem 800x360 e cada faixa tem 112 pixels. Numa tela
+## mais estreita (16:9 do computador, tablet 4:3) a faixa fica com MIN_SIDE e
+## cobre a borda do jogo, meio transparente.
 ##
 ## Faixa esquerda: corações, chaves e minimapa no alto, direcional embaixo.
 ## Faixa direita: mapa e pausa no alto, o tempo, e a coluna dos quatro botões.
@@ -17,7 +17,11 @@ const MIN_SIDE := 80.0
 ## (2), pulo (1) e espada (0), embaixo, onde o polegar descansa.
 const COLUMN_ORDER: Array[int] = [3, 2, 1, 0]
 ## Onde a coluna começa, abaixo de mapa, pausa e tempo.
-const COLUMN_TOP := 84.0
+const COLUMN_TOP := 72.0
+## Folga embaixo da coluna, para a espada não ficar colada no pé da tela e o
+## polegar apertar com conforto (pedido de Marcelo em 2026-11-14). O toque
+## nessa folga ainda vale para a espada.
+const COLUMN_BOTTOM_GAP := 40.0
 ## Quanto a área de toque de cada fileira entra no quadro de jogo.
 const TOUCH_INTO_GAME := 24.0
 const BUTTON_RADIUS_MAX := 30.0
@@ -50,7 +54,7 @@ static func right_side(screen: Vector2) -> Rect2:
 
 ## Altura de cada fileira da coluna de botões.
 static func row_height(screen: Vector2) -> float:
-	return floorf((screen.y - COLUMN_TOP - MARGIN) / COLUMN_ORDER.size())
+	return floorf((screen.y - COLUMN_TOP - COLUMN_BOTTOM_GAP) / COLUMN_ORDER.size())
 
 
 static func button_radius(screen: Vector2) -> float:
