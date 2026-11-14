@@ -309,6 +309,7 @@ Os inimigos comuns seguem o mesmo padrão: percebe o personagem, se aproxima, pr
 - **Quadro mais largo (2026-11-14, tarde):** Marcelo liberou a proporção ("não precisa ser nem 4x3, nem 16x9") e pediu o quadro 10% mais largo de cada lado: 576x360. As faixas do celular de 800x360 ficaram com 112 pixels. A coluna de botões subiu e deixou 40 pixels livres embaixo, para a espada não ficar colada no pé da tela.
 - **Tela cheia (2026-11-14):** o jogo ocupa a tela inteira do celular e as faixas do HUD e dos botões ficam por cima dele, pretas e meio transparentes, em qualquer formato de tela. O quadro de 576x360 continua sendo a área que a câmera garante mostrar.
 - **Volta ao 16:9 (2026-11-14, noite):** na tela cheia o celular de Marcelo ficou pesado, com lag. O jogo voltou ao quadro fixo de 640x360, sem esticar (`aspect="keep"`): num celular mais largo sobram barras pretas dos lados. HUD e botões ficam dentro do quadro, em faixas de 80 px meio transparentes por cima do jogo. O jogo também ficou limitado a 60 quadros por segundo, para não trabalhar dobrado em telas de 90 ou 120 Hz.
+- **Chama acima da espada (2026-11-14):** depois de jogar até o final, Marcelo trocou chama e pulo de lugar na coluna. De cima para baixo ficou bomba, pulo, chama e espada. Ele também confirmou o quadro fechado em 16:9, com a largura de sala do Windows (20 casas), sem a aproximação de 20% que chegou a ver em print.
 
 ## Ideias guardadas
 

@@ -11,9 +11,11 @@ const MIN_SIDE := 80.0
 ## 2026-11-14, depois de jogar o losango: área de toque maior, só o ícone,
 ## sem as cores do Super Famicom). Cada botão é uma fileira inteira da coluna,
 ## e a área de toque vai da borda da tela até um pouco dentro do jogo.
-## Ordem de cima para baixo, pelo índice do Godot do botão: bomba (3), chama
-## (2), pulo (1) e espada (0), embaixo, onde o polegar descansa.
-const COLUMN_ORDER: Array[int] = [3, 2, 1, 0]
+## Ordem de cima para baixo, pelo índice do Godot do botão: bomba (3), pulo
+## (1), chama (2) e espada (0), embaixo, onde o polegar descansa. A chama fica
+## logo acima da espada (Marcelo trocou chama e pulo de lugar em 2026-11-14,
+## depois de jogar até o final).
+const COLUMN_ORDER: Array[int] = [3, 1, 2, 0]
 ## Onde a coluna começa, abaixo de mapa, pausa e tempo.
 const COLUMN_TOP := 72.0
 ## Folga embaixo da coluna, para a espada não ficar colada no pé da tela e o
