@@ -1,10 +1,7 @@
 class_name HudLayout
 ## Onde cada peça do HUD e dos controles de toque fica, nas faixas dos lados
-## do quadro de jogo (GameView), pela largura da tela. O jogo ocupa a tela
-## inteira e as faixas ficam por cima dele, meio transparentes. Num celular
-## deitado de 1080 linhas a tela tem 800x360 e cada faixa tem 112 pixels. Numa
-## tela mais estreita (16:9 do computador, tablet 4:3) a faixa fica com
-## MIN_SIDE e entra no quadro de jogo.
+## do quadro de jogo (GameView), por cima do jogo e meio transparentes. O
+## quadro é fixo em 640x360, então cada faixa tem MIN_SIDE pixels.
 ##
 ## Faixa esquerda: corações, chaves e minimapa no alto, direcional embaixo.
 ## Faixa direita: mapa e pausa no alto, o tempo, e a coluna dos quatro botões.
