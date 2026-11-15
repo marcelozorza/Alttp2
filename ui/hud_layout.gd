@@ -1,12 +1,16 @@
 class_name HudLayout
 ## Onde cada peça do HUD e dos controles de toque fica, nas faixas dos lados
-## do quadro de jogo (GameView), por cima do jogo e meio transparentes. O
-## quadro é fixo em 640x360, então cada faixa tem MIN_SIDE pixels.
+## do quadro de jogo (GameView), pela largura da tela. O quadro de 16:9 fica
+## inteiro no meio e as faixas ocupam o que sobra dos lados, opacas, sem cobrir
+## o jogo (pedido de Marcelo em 2026-11-14: um amigo dele não via a saída de
+## uma sala sob a faixa). Num celular deitado de 2400x1080 sobram 80 pixels de
+## cada lado, num de 2280x1080, 60. Só numa tela com menos que MIN_SIDE de sobra
+## (16:9 do computador) a faixa entra no jogo, meio transparente.
 ##
 ## Faixa esquerda: corações, chaves e minimapa no alto, direcional embaixo.
 ## Faixa direita: mapa e pausa no alto, o tempo, e a coluna dos quatro botões.
 
-const MIN_SIDE := 80.0
+const MIN_SIDE := 60.0
 ## Botões de ação numa coluna na faixa direita (pedido de Marcelo em
 ## 2026-11-14, depois de jogar o losango: área de toque maior, só o ícone,
 ## sem as cores do Super Famicom). Cada botão é uma fileira inteira da coluna,
@@ -29,13 +33,19 @@ const BUTTON_RADIUS_MAX := 30.0
 const STICK_RADIUS := 30.0
 ## Folga entre a borda da tela e as peças.
 const MARGIN := 6.0
-## Botões pequenos de mapa e pausa, no alto da faixa direita.
-const SMALL_BUTTON := Vector2(34.0, 26.0)
+## Botões pequenos de mapa e pausa, lado a lado no alto da faixa direita.
+const SMALL_BUTTON := Vector2(26.0, 24.0)
+const SMALL_GAP := 2.0
 
 
 ## Largura de cada faixa lateral.
 static func side_width(screen: Vector2) -> float:
 	return maxf(MIN_SIDE, floorf((screen.x - GameView.SIZE.x) / 2.0))
+
+
+## A faixa entra no quadro de jogo (tela sem sobra suficiente).
+static func overlaps(screen: Vector2) -> bool:
+	return (screen.x - GameView.SIZE.x) / 2.0 < MIN_SIDE
 
 
 static func left_side(screen: Vector2) -> Rect2:
@@ -87,10 +97,10 @@ static func stick_home(screen: Vector2) -> Vector2:
 
 
 static func map_rect(screen: Vector2) -> Rect2:
-	var side := right_side(screen)
-	return Rect2(Vector2(side.position.x + MARGIN, MARGIN), SMALL_BUTTON)
+	var middle := right_side(screen).get_center().x
+	return Rect2(Vector2(middle - SMALL_GAP / 2.0 - SMALL_BUTTON.x, MARGIN).floor(), SMALL_BUTTON)
 
 
 static func pause_rect(screen: Vector2) -> Rect2:
-	var side := right_side(screen)
-	return Rect2(Vector2(side.end.x - MARGIN - SMALL_BUTTON.x, MARGIN), SMALL_BUTTON)
+	var middle := right_side(screen).get_center().x
+	return Rect2(Vector2(middle + SMALL_GAP / 2.0, MARGIN).floor(), SMALL_BUTTON)
