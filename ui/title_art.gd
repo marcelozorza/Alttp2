@@ -41,7 +41,15 @@ const STARS := [
 ]  # gdlint: ignore=max-line-length
 
 
+## Desvio que centraliza a arte, feita para 640 de largura, numa tela mais
+## larga (celular deitado). A grama vai de uma borda à outra.
+static func shift(screen_width: float) -> float:
+	return maxf(0.0, floorf((screen_width - SCREEN.x) / 2.0))
+
+
 func _draw() -> void:
+	var dx := shift(size.x)
+	draw_set_transform(Vector2(dx, 0.0))
 	for i: int in STARS.size():
 		var color := Color("a9aac2") if i % 3 else Color("f7c53a")
 		draw_rect(Rect2(STARS[i], Vector2(2.0, 2.0) if i % 4 == 0 else Vector2.ONE), color)
@@ -54,16 +62,18 @@ func _draw() -> void:
 	var portrait_size := PORTRAIT.get_size()
 	var portrait_left := floorf((SCREEN.x - portrait_size.x) / 2.0)
 	draw_texture(PORTRAIT, Vector2(portrait_left, top + PORTRAIT_SINK - portrait_size.y))
-	for column: int in 20:
+	var first := -ceili(dx / TILE)
+	for column: int in range(first, 20 - first):
 		for row: int in 2:
 			var origin := Vector2(column * TILE, top + row * TILE)
-			draw_texture(GRASS[(column * 7 + row * 3) % GRASS.size()], origin)
+			draw_texture(GRASS[posmod(column * 7 + row * 3, GRASS.size())], origin)
 		# A beira de cima da grama, serrilhada contra o céu.
-		draw_set_transform(Vector2(column * TILE, top) + Vector2(TILE, 0.0), PI)
+		draw_set_transform(Vector2(dx + column * TILE, top) + Vector2(TILE, 0.0), PI)
 		draw_texture(FRINGE, Vector2.ZERO)
-		draw_set_transform(Vector2.ZERO)
+		draw_set_transform(Vector2(dx, 0.0))
 		if not column in CLEARING:
 			continue
 		draw_texture(TREES[column % 2], Vector2(column * TILE, top - 6.0))
 		draw_texture(TREES[(column + 1) % 2], Vector2(column * TILE, top + TILE - 2.0))
 	draw_texture(HERO, Vector2(194.0, SCREEN.y - 58.0))
+	draw_set_transform(Vector2.ZERO)

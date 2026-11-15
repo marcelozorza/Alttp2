@@ -246,10 +246,10 @@ func _update_state() -> void:
 		State.CHARGE_WINDUP:
 			if elapsed >= GameMath.ticks(charge_windup_time):
 				_charge_landed = false
-				velocity = _charge_direction * charge_speed
+				velocity = _charge_direction * Difficulty.lunge_speed(charge_speed)
 				_enter(State.CHARGE)
 		State.CHARGE:
-			if elapsed >= GameMath.ticks(charge_time):
+			if elapsed >= Difficulty.lunge_ticks(charge_time):
 				_enter(State.CHARGE_RECOVER)
 		State.CHARGE_RECOVER:
 			if elapsed >= GameMath.ticks(charge_recover_time):

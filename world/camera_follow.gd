@@ -8,11 +8,26 @@ class_name CameraFollow
 ## da sala ou do mapa. Pedido de Marcelo em 2026-11-06: com a câmera sempre
 ## centrada, parecia que o personagem ficava parado e o mundo é que andava.
 
-const HALF_SCREEN := Vector2(320.0, 180.0)
+const HALF_SCREEN := GameView.HALF
 ## Casas entre o personagem e a borda da tela a partir das quais a câmera anda.
 ## Nas salas, 6 dos lados e 4 em cima e embaixo, o mesmo do mundo: Marcelo
 ## mostrou numa captura, em 2026-11-13, a sexta casa a partir da borda.
 const EDGE_TILES := Vector2i(6, 4)
+
+
+## Limites do centro da câmera para nunca mostrar fora de area, com top_inset
+## pixels cobertos no alto da tela. Numa direção em que a área é menor que o
+## quadro de jogo, a câmera fica parada no meio dela.
+static func limits(area: Rect2, top_inset := 0.0) -> Array[Vector2]:
+	var low := area.position + Vector2(HALF_SCREEN.x, HALF_SCREEN.y - top_inset)
+	var high := area.end - HALF_SCREEN
+	if low.x > high.x:
+		low.x = (low.x + high.x) / 2.0
+		high.x = low.x
+	if low.y > high.y:
+		low.y = (low.y + high.y) / 2.0
+		high.y = low.y
+	return [low, high]
 
 
 ## Câmera centrada no alvo, presa aos limites. Serve para o primeiro quadro

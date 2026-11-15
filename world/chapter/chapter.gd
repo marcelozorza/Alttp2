@@ -34,10 +34,6 @@ extends Node2D
 
 ## Distância máxima, em casas, do início até a parede da porta de saída.
 const EXIT_DOOR_REACH := 4
-## Altura da barra do HUD no alto da tela. A sala aparece logo abaixo dela.
-const HUD_HEIGHT := 40.0
-## Metade da tela, em pixels.
-const HALF_SCREEN := Vector2(320.0, 180.0)
 const PLAYER_SCENE := preload("res://player/player.tscn")
 const BONE_DROP_SCENE := preload("res://items/bone_drop.tscn")
 const CHEST_SCENE := preload("res://items/chest.tscn")
@@ -488,18 +484,16 @@ func _finish() -> void:
 		_end_screen.show_results(time_text(), mode_text(), chests_text)
 
 
-## Centro da câmera. Numa sala de uma tela, é o centro dela, deslocado para
-## cima pela barra do HUD. Numa sala maior, a câmera segue o personagem com
+## Centro da câmera. Numa sala que cabe no quadro de jogo (GameView), é o
+## centro dela. Numa sala maior, a câmera segue o personagem com
 ## zona morta (CameraFollow), presa aos limites da sala, para nunca mostrar a
 ## sala vizinha. Ao entrar na sala, a câmera parte centrada no personagem.
 func _camera_target(pushed := false) -> Vector2:
-	var pixels := rooms.pixels(rooms.current)
-	var low := pixels.position + Vector2(HALF_SCREEN.x, HALF_SCREEN.y - HUD_HEIGHT)
-	var high := pixels.end - HALF_SCREEN
+	var bounds := CameraFollow.limits(rooms.pixels(rooms.current))
 	var target := _player.global_position
 	if pushed:
-		return CameraFollow.pushed(_camera.position, target, low, high, HUD_HEIGHT)
-	return CameraFollow.centered(target, low, high)
+		return CameraFollow.pushed(_camera.position, target, bounds[0], bounds[1], 0.0)
+	return CameraFollow.centered(target, bounds[0], bounds[1])
 
 
 func _cell_center(cell: Vector2i) -> Vector2:

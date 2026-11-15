@@ -2,6 +2,7 @@ class_name SeedField
 extends Control
 ## Campo dos seis dígitos da seed. Esquerda e direita escolhem o dígito, cima
 ## e baixo mudam, os números do teclado digitam, e confirmar avisa a tela.
+## No celular, tocar na metade de cima de um dígito soma um, e na de baixo tira.
 
 signal confirmed
 
@@ -34,6 +35,8 @@ func _gui_input(event: InputEvent) -> void:
 		_add(-1)
 	elif event.is_action_pressed("ui_accept"):
 		confirmed.emit()
+	elif event is InputEventMouseButton and event.is_pressed():
+		_on_tap((event as InputEventMouseButton).position)
 	elif event is InputEventKey and event.is_pressed() and _is_digit_key(event as InputEventKey):
 		_set_digit((event as InputEventKey).unicode - 48)
 		cursor = mini(cursor + 1, DIGITS - 1)
@@ -43,6 +46,14 @@ func _gui_input(event: InputEvent) -> void:
 		Sfx.play(&"menu_move")
 		accept_event()
 		queue_redraw()
+
+
+## Toque no celular (chega como clique): escolhe o dígito tocado, e a metade
+## de cima soma um e a de baixo tira um.
+func _on_tap(point: Vector2) -> void:
+	grab_focus()
+	cursor = clampi(floori(point.x / DIGIT_WIDTH), 0, DIGITS - 1)
+	_add(1 if point.y < HEIGHT / 2.0 else -1)
 
 
 func _is_digit_key(event: InputEventKey) -> bool:
