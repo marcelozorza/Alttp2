@@ -7,7 +7,9 @@ extends Control
 ## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
 ## continua no projeto, para os testes.
 
-const MENU_AREA := Rect2(472.0, 104.0, 140.0, 100.0)
+## Altura para os três botões de sempre e as seis dungeons de teste, que usam
+## a letra pequena para caber.
+const MENU_AREA := Rect2(472.0, 56.0, 140.0, 260.0)
 
 
 func _ready() -> void:
@@ -31,6 +33,9 @@ func _ready() -> void:
 		MenuKit.button("Randomizado", _on_randomized),
 		MenuKit.button("Playtest", _on_gallery),
 	]
+	# Dungeons de teste, só para Marcelo experimentar (2026-11-21).
+	for number: int in ChapterData.TEST_NAMES:
+		entries.append(MenuKit.button(ChapterData.TEST_NAMES[number], _on_test.bind(number), true))
 	for entry: Button in entries:
 		MenuKit.compact(entry)
 		column.add_child(entry)
@@ -51,4 +56,10 @@ func _on_randomized() -> void:
 ## por tema, sem perder vida (pedido de Marcelo em 2026-11-08).
 func _on_gallery() -> void:
 	RunSettings.chapter = ChapterData.GALLERY
+	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)
+
+
+## Abre uma dungeon de teste avulsa, como a galeria: nada é gravado.
+func _on_test(number: int) -> void:
+	RunSettings.chapter = number
 	get_tree().change_scene_to_file(Flow.CHAPTER_SCENE)

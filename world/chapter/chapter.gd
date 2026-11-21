@@ -185,6 +185,8 @@ func mode_text() -> String:
 		return "Dungeon de teste"
 	if data.number == ChapterData.GALLERY:
 		return "Playtest"
+	if ChapterData.is_test(data.number):
+		return ChapterData.TEST_NAMES[data.number]
 	return "Cap. %d" % data.number
 
 
