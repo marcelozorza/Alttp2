@@ -103,6 +103,31 @@ var _default_theme: DungeonTheme
 var _water_frame := 0
 ## Um nó de chamas por tema, porque cada tema tem a sua chama.
 var _flames_by_theme := {}
+## Água do mundo, num nó à parte, atrás deste. Só ela é redesenhada quando o
+## quadro da água troca. Antes, a troca redesenhava o mundo inteiro (lag no
+## PC, 2026-11-20).
+var _water := WaterLayer.new()
+
+
+## Casas de água do mundo, desenhadas atrás do MapView para a franja de grama
+## ficar por cima delas.
+class WaterLayer:
+	extends Node2D
+
+	## Canto e variação (0 ou 1) de cada casa de água.
+	var cells: Array[Vector2] = []
+	var parities: Array[int] = []
+	var frame := 0
+
+	func _draw() -> void:
+		var textures: Array = GROUNDS["~"]
+		for i: int in cells.size():
+			draw_texture(textures[(parities[i] + frame) % 2], cells[i])
+
+
+func _ready() -> void:
+	_water.show_behind_parent = true
+	add_child(_water)
 
 
 func _physics_process(_delta: float) -> void:
@@ -111,7 +136,8 @@ func _physics_process(_delta: float) -> void:
 	var frame := (Clock.tick / WATER_TICKS) % 2
 	if frame != _water_frame:
 		_water_frame = frame
-		queue_redraw()
+		_water.frame = frame
+		_water.queue_redraw()
 
 
 func _draw() -> void:
@@ -120,6 +146,8 @@ func _draw() -> void:
 	if not theme:
 		theme = DungeonTheme.stone()
 	_default_theme = theme
+	_water.cells.clear()
+	_water.parities.clear()
 	var tile := float(ChapterMap.TILE)
 	for y: int in map.height:
 		for x: int in map.width:
@@ -144,6 +172,7 @@ func _draw() -> void:
 		_draw_wall_outlines()
 		_draw_decor()
 	theme = _default_theme
+	_water.queue_redraw()
 
 
 ## Nome do tema da casa, para os bloqueios que mudam de desenho com ele.
@@ -183,8 +212,10 @@ func _draw_outdoor(cell: Vector2i, character: String, origin: Vector2) -> void:
 	var textures: Array = GROUNDS[ground]
 	var index := (cell.x + cell.y) % 2
 	if ground == "~":
-		index = (index + _water_frame) % 2
-	draw_texture(textures[index], origin)
+		_water.cells.append(origin)
+		_water.parities.append(index)
+	else:
+		draw_texture(textures[index], origin)
 	var center := origin + Vector2(tile, tile) / 2.0
 	var grassy: Array[bool] = []
 	for step: Vector2i in [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]:

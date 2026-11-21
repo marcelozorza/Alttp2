@@ -26,6 +26,13 @@ const HUD_CELL := Vector2(20.0, 10.0)
 ## Quadros de cada fase do pisca.
 const BLINK_FRAMES := 20
 
+## Aberturas já calculadas, por tela e lado, do mapa em _openings_map. O
+## desenho em texto não muda durante o capítulo, então cada divisa é medida
+## uma vez só, e não a cada quadro para cada sala visitada (lag no PC,
+## 2026-11-20).
+static var _openings_cache := {}
+static var _openings_map: ChapterMap
+
 
 ## Fase do pisca: verdadeiro na metade acesa. Usa os quadros de processamento,
 ## que seguem contando com o jogo parado.
@@ -77,6 +84,18 @@ static func _draw_links(
 ## Trechos abertos da divisa entre a tela e a vizinha do lado side, como a
 ## fração do lado (0 a 1) onde fica o meio de cada trecho.
 static func _openings(
+	map: ChapterMap, room_tiles: Vector2i, screen: Vector2i, side: Vector2i
+) -> Array[float]:
+	if map != _openings_map:
+		_openings_map = map
+		_openings_cache.clear()
+	var key := Vector4i(screen.x, screen.y, side.x, side.y)
+	if not _openings_cache.has(key):
+		_openings_cache[key] = _measure_openings(map, room_tiles, screen, side)
+	return _openings_cache[key]
+
+
+static func _measure_openings(
 	map: ChapterMap, room_tiles: Vector2i, screen: Vector2i, side: Vector2i
 ) -> Array[float]:
 	var along := Vector2i(abs(side.y), abs(side.x))
