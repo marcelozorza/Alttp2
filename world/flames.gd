@@ -11,15 +11,27 @@ const FLICKER_FRAMES := 7
 var frames: Array[Texture2D] = []
 var positions: Array[Vector2] = []
 
+## Fase desenhada por último. As chamas só são redesenhadas quando ela muda,
+## e não a cada quadro (lag no PC, 2026-11-20).
+var _step := -1
+
 
 func _process(_delta: float) -> void:
-	if not positions.is_empty():
+	if positions.is_empty():
+		return
+	var step := _current_step()
+	if step != _step:
+		_step = step
 		queue_redraw()
+
+
+func _current_step() -> int:
+	return floori(Engine.get_process_frames() / float(FLICKER_FRAMES))
 
 
 func _draw() -> void:
 	if frames.is_empty():
 		return
-	var step := floori(Engine.get_process_frames() / float(FLICKER_FRAMES))
+	var step := _current_step()
 	for i: int in positions.size():
 		draw_texture(frames[(step + i) % frames.size()], positions[i])

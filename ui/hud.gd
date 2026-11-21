@@ -81,6 +81,11 @@ const MINIMAP_CORNER := Vector2(4.0, 344.0)
 ## HUD acompanha uma troca de botões feita no editor, em Configurações do
 ## Projeto, aba Mapa de Entrada. Uma ação sem botão de face fica de fora.
 var _button_centers := {}
+## Passo de física do último redesenho. Tudo o que o HUD mostra muda no passo
+## de física, então redesenhar mais de uma vez por passo, num monitor acima de
+## 60 Hz, é trabalho à toa (lag no PC, 2026-11-20). O contador do Godot segue
+## com o jogo parado, para o pisca do minimapa continuar na pausa.
+var _drawn_frame := -1
 
 
 func _ready() -> void:
@@ -90,7 +95,10 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	queue_redraw()
+	var frame := Engine.get_physics_frames()
+	if frame != _drawn_frame:
+		_drawn_frame = frame
+		queue_redraw()
 
 
 func _draw() -> void:

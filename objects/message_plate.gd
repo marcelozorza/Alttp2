@@ -57,13 +57,25 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	var was_stood := _stood
+	var was_shown := _shown
 	_stood = false
 	for body: Node2D in get_overlapping_bodies():
 		if body is Player:
 			_stood = true
 	_shown = clampi(_shown + (1 if _stood else -1), 0, FADE_TICKS)
-	queue_redraw()
-	_box.queue_redraw()
+	# Só a placa à vista pulsa. As das outras salas, que o jogo mantém
+	# montadas, não são redesenhadas a cada passo (lag no PC, 2026-11-20).
+	if _stood != was_stood or (not _stood and _on_screen()):
+		queue_redraw()
+	if _shown != was_shown:
+		_box.queue_redraw()
+
+
+## Se a placa está na tela ou perto dela.
+func _on_screen() -> bool:
+	var point := get_global_transform_with_canvas().origin
+	return get_viewport_rect().grow(SIZE.x).has_point(point)
 
 
 func _draw() -> void:

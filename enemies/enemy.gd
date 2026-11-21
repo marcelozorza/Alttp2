@@ -204,6 +204,38 @@ func _ready() -> void:
 	_health_bar.add_child(frame)
 	health = max_health
 	_next_throw_tick = Clock.tick + GameMath.ticks(first_throw_delay)
+	_measure_frames()
+
+
+## Mede a parte pintada de todos os desenhos já na montagem da dungeon. Medir
+## lê a imagem de volta da placa de vídeo, o que trava o quadro: feito no meio
+## do jogo, travava na primeira vez que cada pose aparecia (lag ao entrar em
+## sala nova, Marcelo, 2026-11-20).
+func _measure_frames() -> void:
+	var textures: Array[Texture2D] = []
+	for list: Array[Texture2D] in [
+		walk_frames,
+		back_frames,
+		side_frames,
+		lunge_frames,
+		lunge_back_frames,
+		lunge_side_frames,
+		throw_windup_frames,
+		throw_recover_frames,
+	]:
+		textures.append_array(list)
+	for single: Texture2D in [
+		windup_frame,
+		lunge_frame,
+		recover_frame,
+		hit_frame,
+		throw_windup_frame,
+		throw_recover_frame,
+	]:
+		textures.append(single)
+	for texture: Texture2D in textures:
+		if texture:
+			GroundShadow.used_rect(texture)
 
 
 ## Recebe um golpe. O empurrão vem separado, pela física.
