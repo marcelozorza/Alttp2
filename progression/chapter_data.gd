@@ -35,8 +35,18 @@ const TEST_SOURCES := {
 	-2: preload("res://world/test_dungeons/fortress/fortress_data.gd"),
 	-3: preload("res://world/test_dungeons/cavern/cavern_data.gd"),
 	-4: preload("res://world/test_dungeons/temple/temple_data.gd"),
+	-5: preload("res://world/test_dungeons/frozen_lake/frozen_lake_data.gd"),
+	-6: preload("res://world/test_dungeons/tower/tower_data.gd"),
+	-7: preload("res://world/test_dungeons/garden/garden_data.gd"),
 }
-const TEST_NAMES := {-2: "Fortaleza", -3: "Caverna", -4: "Templo"}
+const TEST_NAMES := {
+	-2: "Fortaleza",
+	-3: "Caverna",
+	-4: "Templo",
+	-5: "Lago gelado",
+	-6: "Torre",
+	-7: "Jardim",
+}
 ## Número do capítulo, a partir de 1. Zero é o tutorial.
 var number := 1
 var rows: Array = []

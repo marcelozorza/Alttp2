@@ -7,8 +7,9 @@ extends Control
 ## "Dungeon de teste" e "Treino" saíram do menu no mesmo dia. A tela de treino
 ## continua no projeto, para os testes.
 
-## Altura para os três botões de sempre e as três dungeons de teste.
-const MENU_AREA := Rect2(472.0, 80.0, 140.0, 200.0)
+## Altura para os três botões de sempre e as seis dungeons de teste, que usam
+## a letra pequena para caber.
+const MENU_AREA := Rect2(472.0, 56.0, 140.0, 260.0)
 
 
 func _ready() -> void:
@@ -34,7 +35,7 @@ func _ready() -> void:
 	]
 	# Dungeons de teste, só para Marcelo experimentar (2026-11-21).
 	for number: int in ChapterData.TEST_NAMES:
-		entries.append(MenuKit.button(ChapterData.TEST_NAMES[number], _on_test.bind(number)))
+		entries.append(MenuKit.button(ChapterData.TEST_NAMES[number], _on_test.bind(number), true))
 	for entry: Button in entries:
 		MenuKit.compact(entry)
 		column.add_child(entry)
