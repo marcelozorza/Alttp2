@@ -28,6 +28,15 @@ const TUTORIAL := 0
 ## das seeds (world/gallery/gallery_data.gd).
 const GALLERY_SOURCE := preload("res://world/gallery/gallery_data.gd")
 const GALLERY := -1
+## Dungeons de teste, do tamanho da geleira, abertas só pelo menu de título
+## para Marcelo experimentar (pedido de 2026-11-21). Fora do mundo, das seeds
+## e da progressão. Números negativos a partir de -2, nome no menu ao lado.
+const TEST_SOURCES := {
+	-2: preload("res://world/test_dungeons/fortress/fortress_data.gd"),
+	-3: preload("res://world/test_dungeons/cavern/cavern_data.gd"),
+	-4: preload("res://world/test_dungeons/temple/temple_data.gd"),
+}
+const TEST_NAMES := {-2: "Fortaleza", -3: "Caverna", -4: "Templo"}
 ## Número do capítulo, a partir de 1. Zero é o tutorial.
 var number := 1
 var rows: Array = []
@@ -54,6 +63,11 @@ var no_damage := false
 var waves := {}
 
 
+## Verdadeiro para as dungeons de teste do menu (TEST_SOURCES).
+static func is_test(chapter: int) -> bool:
+	return TEST_SOURCES.has(chapter)
+
+
 static func count() -> int:
 	return SOURCES.size()
 
@@ -64,6 +78,8 @@ static func load_number(chapter: int) -> ChapterData:
 		return from_source(GALLERY_SOURCE, GALLERY)
 	if chapter == TUTORIAL:
 		return from_source(TUTORIAL_SOURCE, TUTORIAL)
+	if TEST_SOURCES.has(chapter):
+		return from_source(TEST_SOURCES[chapter], chapter)
 	var number := clampi(chapter, 1, SOURCES.size())
 	return from_source(SOURCES[number - 1], number)
 

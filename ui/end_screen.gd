@@ -41,6 +41,8 @@ func _ready() -> void:
 		title = "Dungeon de teste concluída"
 	elif RunSettings.chapter == ChapterData.GALLERY:
 		title = "Playtest"
+	elif ChapterData.is_test(RunSettings.chapter):
+		title = "%s concluída" % ChapterData.TEST_NAMES[RunSettings.chapter]
 	_title = MenuKit.label(title, 32)
 	column.add_child(_title)
 	_summary = MenuKit.label("", 20)
